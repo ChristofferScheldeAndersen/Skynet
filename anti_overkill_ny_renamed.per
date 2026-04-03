@@ -1,0 +1,663 @@
+; Define non temp goals
+    (defconst gl-local-loop-first-rule 10004)
+    (defconst gl-remote-loop-first-rule 10005)
+    (defconst gl-end-of-shooting-rules 10006)
+
+; Define temp goals
+    (defconst gl-remote-unit-1-id__#000 1009)
+    (defconst gl-remote-unit-2-id__#000 1010)
+    (defconst gl-remote-unit-3-id__#000 1011)
+    (defconst gl-remote-unit-4-id__#000 1012)
+    (defconst gl-remote-unit-5-id__#000 1013)
+    (defconst gl-remote-unit-6-id__#000 1014)
+    (defconst gl-remote-unit-7-id__#000 1015)
+    (defconst gl-remote-unit-8-id__#000 1016)
+    (defconst gl-remote-unit-9-id__#000 1017)
+    (defconst gl-remote-unit-10-id__#000 1018)
+    (defconst gl-remote-unit-11-id__#000 1019)
+    (defconst gl-remote-unit-12-id__#000 1020)
+    (defconst gl-remote-unit-13-id__#000 1021)
+    (defconst gl-remote-unit-14-id__#000 1022)
+    (defconst gl-remote-unit-15-id__#000 1023)
+    (defconst gl-remote-unit-16-id__#000 1024)
+    (defconst gl-remote-unit-17-id__#000 1025)
+    (defconst gl-remote-unit-18-id__#000 1026)
+    (defconst gl-remote-unit-19-id__#000 1027)
+    (defconst gl-remote-unit-20-id__#000 1028)
+    (defconst gl-remote-unit-21-id__#000 1029)
+    (defconst gl-remote-unit-22-id__#000 1030)
+    (defconst gl-remote-unit-23-id__#000 1031)
+    (defconst gl-remote-unit-24-id__#000 1032)
+    (defconst gl-remote-unit-25-id__#000 1033)
+    (defconst gl-remote-unit-26-id__#000 1034)
+    (defconst gl-remote-unit-27-id__#000 1035)
+    (defconst gl-remote-unit-28-id__#000 1036)
+    (defconst gl-remote-unit-29-id__#000 1037)
+    (defconst gl-remote-unit-30-id__#000 1038)
+    (defconst gl-remote-unit-31-id__#000 1039)
+    (defconst gl-remote-unit-32-id__#000 1040)
+    (defconst gl-remote-unit-33-id__#000 1041)
+    (defconst gl-remote-unit-34-id__#000 1042)
+    (defconst gl-remote-unit-35-id__#000 1043)
+    (defconst gl-remote-unit-36-id__#000 1044)
+    (defconst gl-remote-unit-37-id__#000 1045)
+    (defconst gl-remote-unit-38-id__#000 1046)
+    (defconst gl-remote-unit-39-id__#000 1047)
+    (defconst gl-remote-unit-40-id__#000 1048)
+    (defconst gl-remote-unit-1-hp__#000 1049)
+    (defconst gl-remote-unit-2-hp__#000 1050)
+    (defconst gl-remote-unit-3-hp__#000 1051)
+    (defconst gl-remote-unit-4-hp__#000 1052)
+    (defconst gl-remote-unit-5-hp__#000 1053)
+    (defconst gl-remote-unit-6-hp__#000 1054)
+    (defconst gl-remote-unit-7-hp__#000 1055)
+    (defconst gl-remote-unit-8-hp__#000 1056)
+    (defconst gl-remote-unit-9-hp__#000 1057)
+    (defconst gl-remote-unit-10-hp__#000 1058)
+    (defconst gl-remote-unit-11-hp__#000 1059)
+    (defconst gl-remote-unit-12-hp__#000 1060)
+    (defconst gl-remote-unit-13-hp__#000 1061)
+    (defconst gl-remote-unit-14-hp__#000 1062)
+    (defconst gl-remote-unit-15-hp__#000 1063)
+    (defconst gl-remote-unit-16-hp__#000 1064)
+    (defconst gl-remote-unit-17-hp__#000 1065)
+    (defconst gl-remote-unit-18-hp__#000 1066)
+    (defconst gl-remote-unit-19-hp__#000 1067)
+    (defconst gl-remote-unit-20-hp__#000 1068)
+    (defconst gl-remote-unit-21-hp__#000 1069)
+    (defconst gl-remote-unit-22-hp__#000 1070)
+    (defconst gl-remote-unit-23-hp__#000 1071)
+    (defconst gl-remote-unit-24-hp__#000 1072)
+    (defconst gl-remote-unit-25-hp__#000 1073)
+    (defconst gl-remote-unit-26-hp__#000 1074)
+    (defconst gl-remote-unit-27-hp__#000 1075)
+    (defconst gl-remote-unit-28-hp__#000 1076)
+    (defconst gl-remote-unit-29-hp__#000 1077)
+    (defconst gl-remote-unit-30-hp__#000 1078)
+    (defconst gl-remote-unit-31-hp__#000 1079)
+    (defconst gl-remote-unit-32-hp__#000 1080)
+    (defconst gl-remote-unit-33-hp__#000 1081)
+    (defconst gl-remote-unit-34-hp__#000 1082)
+    (defconst gl-remote-unit-35-hp__#000 1083)
+    (defconst gl-remote-unit-36-hp__#000 1084)
+    (defconst gl-remote-unit-37-hp__#000 1085)
+    (defconst gl-remote-unit-38-hp__#000 1086)
+    (defconst gl-remote-unit-39-hp__#000 1087)
+    (defconst gl-remote-unit-40-hp__#000 1088)
+    (defconst gl-group-search-range__#000 1093)
+    (defconst gl-local-group-x__#000 1094)
+    (defconst gl-local-group-y__#000 1095)
+    (defconst gl-upgrade-dmg-bonus__#000 1098)
+    (defconst gl-upgrade-range-bonus__#000 1099)
+    (defconst gl-ordered-to-shoot__#000 1100)
+    (defconst gl-max-remote-units__#000 1102)
+    (defconst gl-infinate-negative__#000 1103)
+    (defconst gl-added-precise-range-bonus__#000 1104)
+    (defconst gl-close-unit-precise-distance__#000 1105)
+    (defconst gl-starting-score__#000 1106)
+    (defconst gl-local-unit-dmg-score-multiplier__#000 1107)
+    (defconst gl-local-remote-distance-score-multiplier__#000 1108)
+    (defconst gl-remaining-hits-score-multiplier__#000 1109)
+    (defconst gl-excessive-hits-score-multiplier__#000 1110)
+    (defconst gl-one-hit-remaining-score-bonus__#000 1111)
+    (defconst gl-alive-unit-score-bonus__#000 1112)
+    (defconst gl-close-unit-score-bonus__#000 1113)
+    (defconst gl-max-remote-index__#000 1114)
+    (defconst gl-current-unit-id-goal-constant__#000 1115)
+    (defconst gl-last-unit-id-goal-constant__#000 1116)
+    (defconst gl-last-unit-id-goal-constant?__#000 1117)
+    (defconst gl-current-unit-hp-goal-constant__#000 1118)
+    (defconst gl-remote-unit-id__#000 1119)
+    (defconst gl-remote-unit-hp__#000 1120)
+    (defconst gl-local-index__#000 1121)
+    (defconst gl-remote-index__#000 1122)
+    (defconst gl-max-local-index__#000 1123)
+    (defconst gl-best-remote-unit-id__#000 1124)
+    (defconst gl-best-score__#000 1125)
+    (defconst gl-local-unit-id__#000 1126)
+    (defconst gl-local-unit-precise-x__#000 1127)
+    (defconst gl-local-unit-precise-y__#000 1128)
+    (defconst gl-local-unit-range__#000 1129)
+    (defconst gl-local-unit-precise-extended-range__#000 1130)
+    (defconst gl-local-unit-precise-min-range__#000 1131)
+    (defconst gl-local-unit-type__#000 1132)
+    (defconst gl-local-unit-dmg__#000 1133)
+    (defconst gl-local-unit-bonus-dmg__#000 1134)
+    (defconst gl-remote-unit-id-goal-constant__#000 1135)
+    (defconst gl-remote-unit-precise-x__#000 1136)
+    (defconst gl-remote-unit-precise-y__#000 1137)
+    (defconst gl-local-remote-precise-distance__#000 1138)
+    (defconst gl-remote-unit-class__#000 1139)
+    (defconst gl-remote-unit-armor__#000 1140)
+    (defconst gl-local-unit-dmg-vs-remote__#000 1141)
+    (defconst gl-remote-unit-hp-goal-constant__#000 1142)
+    (defconst gl-remaining-hits__#000 1143)
+    (defconst gl-approx-remote-unit-hp__#000 1144)
+    (defconst gl-local-unit-dmg-score__#000 1145)
+    (defconst gl-local-remote-distance-score__#000 1146)
+    (defconst gl-total-score__#000 1147)
+    (defconst gl-remaining-hits-score__#000 1148)
+    (defconst gl-best-remote-index__#000 1149)
+    (defconst gl-best-remote-unit-hp__#000 1150)
+    (defconst gl-best-local-unit-dmg-vs-remote__#000 1151)
+
+; Additions for Rehoboam compatability
+
+    (defrule
+    (true)
+    =>
+    (generate-random-number 100)
+    (up-get-fact random-number 0 gl-temp2)
+    (set-goal gl-ordered-to-shoot__#000 -1)
+    )
+
+    (defrule
+    (or(up-compare-goal gl-time-since-last-pass > 1000) ;dont wait for enemy to shoot on 2x speed
+    (or(up-compare-goal 13 < 300) ; dont wait if closest enemy is within 3 tiles of local group center
+    (or(goal 11 1) ; dont wait our army advantage is enough to jump the enemy
+    (or(up-point-distance gl-temp9-x gl-temp10-x < 400) ; dont wait if local group center is within 400 tiles of remote center (which is actually mostly close remote units)
+    (or(and(up-compare-goal gl-temp11 g:<= 10) ;Time untill some enemy unit can shoot (gl-temp11) is smaller than average time between last 4 passes (goal nr 10)
+    (up-compare-goal gl-temp11 >= 1)) ;at least some enemy cannot shoot right now.
+    (up-compare-goal gl-time-since-last-shot >= 5700)))))) ; upper limit to how long we wait between shots
+    =>
+        (set-goal gl-temp 1)
+    )
+
+    (defrule
+    (or(up-compare-goal gl-real-time-since-last-shot >= 5700) ; unsure how "real" time differs
+    (or(and(up-compare-goal gl-real-time-since-last-shot > 0)
+    (up-compare-goal gl-archer-micro-priority != ranged-units)) ; shoot right away if we are not in vs ranged mode
+    (and(up-compare-goal gl-time-since-last-shot >= 3500) 
+    (up-compare-goal gl-temp2 > 70)))) ; after 3,5 seconds we can shoot the 30% of times our random roll hits
+    (goal gl-army-is-outnumbered -1) ; ignore this shooting rule if army is outnumbered
+        =>
+        (set-goal gl-temp 1)
+    )
+
+    (defrule
+    (up-compare-goal gl-archer-micro-priority == ranged-units)
+
+    (up-compare-goal gl-temp10 == 0) ; our units are rdy to fire (probably all of them, but it's a bit messy to say)
+    (or(up-compare-goal gl-time-since-last-shot > 400)
+    (up-compare-goal gl-temp12 == 1)) ; most enemy units have ballistics
+    (goal gl-temp 1) ; last rules conditions were fullfilled
+    (goal gl-army-is-outnumbered -1) ; army is not outnumbered
+    =>
+    (set-goal gl-ordered-to-shoot__#000 1)
+    )
+
+
+    (defrule
+    (or(up-compare-goal gl-archer-micro-priority == melee-units) ; no delay for melee units
+    (up-compare-goal gl-archer-micro-priority == all-units)) ;probably doesn't do anything
+
+    (up-compare-goal gl-temp10 == 0); our units are rdy to fire (probably all of them, but it's a bit messy to say)
+    (up-compare-goal gl-time-since-last-shot > 400)
+    =>
+    (set-goal gl-ordered-to-shoot__#000 1)
+    )
+
+; Additional simpler compatability settings
+
+    (defrule
+        (true)
+        =>
+        (set-goal gl-shot-fired-this-pass -1)
+        (set-goal gl-group-search-range__#000 11)
+        (up-copy-point gl-local-group-x__#000 gl-temp9-x__#000) ; from Old Reho code
+        (set-goal gl-upgrade-dmg-bonus__#000 0)
+        (set-goal gl-upgrade-range-bonus__#000 0)
+    )
+
+    (defrule
+    (research-completed ri-fletching)
+    =>
+    (up-modify-goal gl-upgrade-dmg-bonus__#000 c:+ 1)
+    (up-modify-goal gl-upgrade-range-bonus__#000 c:+ 1)
+    )
+
+    (defrule
+    (research-completed ri-bodkin-arrow)
+    =>
+    (up-modify-goal gl-upgrade-dmg-bonus__#000 c:+ 1)
+    (up-modify-goal gl-upgrade-range-bonus__#000 c:+ 1)
+    )
+
+    (defrule
+    (research-completed ri-bracer)
+    =>
+    (up-modify-goal gl-upgrade-dmg-bonus__#000 c:+ 1)
+    (up-modify-goal gl-upgrade-range-bonus__#000 c:+ 1)
+    )
+
+    (defrule
+    (research-completed ri-chemistry)
+    =>
+    (up-modify-goal gl-upgrade-dmg-bonus__#000 c:+ 1)
+    )
+
+; Skip shooting if not rdy.
+
+    (defrule
+        (up-compare-goal gl-ordered-to-shoot__#000 != 1)
+        (up-compare-goal gl-end-of-shooting-rules__#000 != -1)
+        =>
+        (up-jump-direct g: gl-end-of-shooting-rules__#000)
+    )
+
+; Ajust values for targeting (Controll center)
+
+    (defrule
+    (true)
+    =>
+    (set-goal gl-max-remote-units__#000 5) ; The number of remote units to loop trough for each local unit
+    (set-goal gl-infinate-negative__#000 -99999) ; The score to beat
+
+    (set-goal gl-added-precise-range-bonus__#000 25) ; We pretend the precise range is larger than it is to allow more units to shoot
+    (set-goal gl-close-unit-precise-distance__#000 250) ; Units within this range likely wont be missed and thus gets special priority.
+    (set-goal gl-starting-score__#000 0) ;The number the score starts at. Use higher value to avoid negative scores.
+
+    (set-goal gl-local-unit-dmg-score-multiplier__#000 10) ; increases score
+    (set-goal gl-local-remote-distance-score-multiplier__#000 10) ; lowers score
+    (set-goal gl-remaining-hits-score-multiplier__#000 10) ; lowers score
+    (set-goal gl-excessive-hits-score-multiplier__#000 10) ; lowers score
+
+    (set-goal gl-one-hit-remaining-score-bonus__#000 50) ; dmg dealt does not matter when remote unit is only one hit from dying
+    (set-goal gl-alive-unit-score-bonus__#000 10000) ; Always prioritise units that is not expected to die first.
+    (set-goal gl-close-unit-score-bonus__#000 100) ; Special priority for units that are to close to avoid the shot
+    )
+
+; Choose remote units and save their id's
+
+    (defrule 
+        (true)
+        =>
+        (up-full-reset-search)
+        (up-set-target-point gl-local-group-x__#000)
+        (set-strategic-number sn-focus-player-number 1)
+        (up-filter-distance c: -1 g: gl-group-search-range__#000)
+    )
+
+    (defrule ; the optimised version should ideally include close units in the list first if there are more than 40 total
+        (players-stance focus-player enemy)
+        =>
+        (up-filter-include cmdid-monk -1 -1 -1)
+        (up-find-remote c: monk c: 40)
+        (up-filter-include cmdid-military -1 -1 -1)   
+        (up-find-remote c: all-units-class c: 40)
+        (up-filter-include cmdid-villager -1 -1 -1)
+        (up-find-remote c: all-units-class c: 40)
+    )
+
+    (defrule
+        (up-compare-sn sn-focus-player-number < 8)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -2)
+    )
+
+    (defrule
+        (true)
+        =>
+        (up-set-target-point gl-local-group-x__#000)
+        (up-clean-search search-remote object-data-distance search-order-asc) ; should maybe be done via precise distance?
+        (up-get-search-state gl-local-total)
+        (up-remove-objects search-remote object-data-index g:>= gl-max-remote-units__#000)
+    )
+
+    (defrule
+        (up-compare-goal gl-remote-total g:< gl-max-remote-units__#000)
+        =>
+        (up-modify-goal gl-max-remote-units__#000 g:= gl-remote-total)
+    )
+
+    (defrule
+        (true)
+        =>
+        (up-modify-goal gl-max-remote-index__#000 g:= gl-max-remote-units__#000)
+        (up-modify-goal gl-max-remote-index__#000 c:- 1)
+        (set-goal gl-current-unit-id-goal-constant__#000 gl-remote-unit-1-id__#000)
+        (set-goal gl-last-unit-id-goal-constant__#000 gl-remote-unit-1-id__#000) ; I'm not sure we actually need gl-last-unit-id-goal-constant?__#000
+        (up-modify-goal gl-last-unit-id-goal-constant__#000 g:+ gl-max-remote-units__#000) 
+        (set-goal gl-current-unit-hp-goal-constant__#000 gl-remote-unit-1-hp__#000)
+    )
+
+    (defrule
+        (up-set-target-object search-remote c: 0)
+        =>
+        (up-get-object-data object-data-id gl-remote-unit-id__#000)
+        (up-set-indirect-goal g: gl-current-unit-id-goal-constant__#000 g: gl-remote-unit-id__#000)
+        (up-get-object-data object-data-hitpoints gl-remote-unit-hp__#000)
+        (up-set-indirect-goal g: gl-current-unit-hp-goal-constant__#000 g: gl-remote-unit-hp__#000)
+        (up-modify-goal gl-current-unit-id-goal-constant__#000 c:+ 1)
+        (up-modify-goal gl-current-unit-hp-goal-constant__#000 c:+ 1)
+        (up-remove-objects search-remote object-data-index == 0)
+        (up-jump-rule -1)
+    )
+
+; Loop through local units
+
+    (defrule
+        (true)
+        =>
+        (set-goal gl-local-index__#000 0)
+        (set-goal gl-remote-index__#000 0)
+        (up-full-reset-search)
+        (up-set-group search-local c: archer-group) ; Should ideally work for multiple groups later
+        (up-get-search-state gl-local-total)
+        (up-modify-goal gl-max-local-index__#000 g:= gl-local-total)
+        (up-modify-goal gl-max-local-index__#000 c:- 1)
+    )
+
+    (defrule
+        (true)
+        =>
+        (up-get-rule-id gl-local-loop-first-rule__#000)
+        (set-goal gl-best-remote-unit-id__#000 -1)
+        (up-modify-goal gl-best-score__#000 g:= gl-infinate-negative__#000)
+        (up-full-reset-search)
+        (up-set-group search-local c: archer-group) ; Should ideally work for multiple groups later
+    )
+
+    (defrule
+        (up-set-target-object search-local g: gl-local-index__#000)
+        =>
+        (up-get-object-data object-data-id gl-local-unit-id__#000)
+        (up-get-object-data object-data-precise-x gl-local-unit-precise-x__#000)
+        (up-get-object-data object-data-precise-y gl-local-unit-precise-y__#000)
+        (up-get-object-data object-data-range gl-local-unit-range__#000)
+        (up-modify-goal gl-local-unit-range__#000 g:+ gl-upgrade-range-bonus__#000)
+        (up-modify-goal gl-local-unit-precise-extended-range__#000 g:= gl-local-unit-range__#000)
+        (up-modify-goal gl-local-unit-precise-extended-range__#000 c:* 100)
+        (up-modify-goal gl-local-unit-precise-extended-range__#000 g:+ gl-added-precise-range-bonus__#000)
+        (up-get-object-data object-data-min-range gl-local-unit-precise-min-range__#000)
+        (up-modify-goal gl-local-unit-precise-min-range__#000 c:* 100)
+        (up-get-object-data object-data-type gl-local-unit-type__#000)
+        (up-get-object-data object-data-base-attack gl-local-unit-dmg__#000)
+        (up-modify-goal gl-local-unit-dmg__#000 g:+ gl-upgrade-dmg-bonus__#000)
+    )
+
+; Loop though remote units
+
+    (defrule
+        (true)
+        =>
+        (up-get-rule-id gl-remote-loop-first-rule__#000)
+        (set-goal gl-local-unit-bonus-dmg__#000 0)
+    )
+
+    (defrule
+        (true)
+        =>
+        (set-goal gl-remote-unit-id-goal-constant__#000 gl-remote-unit-1-id__#000)
+        (up-modify-goal gl-remote-unit-id-goal-constant__#000 g:+ gl-remote-index__#000)
+        (up-get-indirect-goal g: gl-remote-unit-id-goal-constant__#000 gl-remote-unit-id__#000)
+    )
+
+    (defrule
+        (up-set-target-by-id g: gl-remote-unit-id__#000)
+        =>
+        (up-get-object-data object-data-precise-x gl-remote-unit-precise-x__#000)
+        (up-get-object-data object-data-precise-y gl-remote-unit-precise-y__#000)
+        (up-get-point-distance gl-local-unit-precise-x__#000 gl-remote-unit-precise-x__#000 gl-local-remote-precise-distance__#000)
+    )
+
+; Skip if not in range
+
+    (defrule
+        (or(up-compare-goal gl-local-remote-precise-distance__#000 g:> gl-local-unit-precise-extended-range__#000)
+        (up-compare-goal gl-local-remote-precise-distance__#000 g:< gl-local-unit-precise-min-range__#000))
+        (up-compare-goal gl-remote-index__#000 g:< gl-max-remote-index__#000)
+        =>
+        (up-modify-goal gl-remote-index__#000 c:+ 1)
+        (up-jump-direct g: gl-remote-loop-first-rule__#000)
+    )
+
+; Calculate damage
+
+    (defrule
+        (up-set-target-by-id g: gl-remote-unit-id__#000)
+        =>
+        (up-get-object-data object-data-class gl-remote-unit-class__#000)
+        (up-get-object-data object-data-pierce-armor gl-remote-unit-armor__#000)
+        (up-modify-goal gl-local-unit-dmg-vs-remote__#000 g:= gl-local-unit-dmg__#000)
+        (up-modify-goal gl-local-unit-dmg-vs-remote__#000 g:- gl-remote-unit-armor__#000)
+    )
+
+    (defrule ; every unit with bonus dmg will need seperate rules eventually
+        (up-compare-goal gl-local-unit-type__#000 == skirmisher)
+        (up-compare-goal gl-remote-unit-class__#000 == archery-class)
+        (not(research-completed ri-elite-skirmisher))
+        =>
+        (up-modify-goal gl-local-unit-bonus-dmg__#000 c:+ skirmisher-archer-bonus-dmg) ;3
+    )
+
+    (defrule
+        (up-compare-goal gl-local-unit-type__#000 == skirmisher)
+        (up-compare-goal gl-remote-unit-class__#000 == archery-class)
+        (research-completed ri-elite-skirmisher)
+        =>
+        (up-modify-goal gl-local-unit-bonus-dmg__#000 c:+ elite-skirmisher-archer-bonus-dmg) ;4
+    )
+    
+    (defrule
+        (up-compare-goal gl-local-unit-dmg-vs-remote__#000 >= 1)
+        =>
+        (up-modify-goal gl-local-unit-dmg-vs-remote__#000 g:+ gl-local-unit-bonus-dmg__#000)
+    )
+
+    (defrule
+        (up-compare-goal gl-local-unit-dmg-vs-remote__#000 < 1)
+        (up-compare-goal gl-local-unit-bonus-dmg__#000 == 0)
+        =>
+        (set-goal gl-local-unit-dmg-vs-remote__#000 1)
+    )
+
+    (defrule
+        (up-compare-goal gl-local-unit-dmg-vs-remote__#000 < 1)
+        (up-compare-goal gl-local-unit-bonus-dmg__#000 != 0)
+        =>
+        (up-modify-goal gl-local-unit-dmg-vs-remote__#000 g:= gl-local-unit-bonus-dmg__#000)
+    )
+
+; Calculate remaining hits
+
+    (defrule
+        (up-set-target-by-id g: gl-remote-unit-id__#000)
+        =>
+        (set-goal gl-remote-unit-hp-goal-constant__#000 gl-remote-unit-1-hp__#000)
+        (up-modify-goal gl-remote-unit-hp-goal-constant__#000 g:+ gl-remote-index__#000)
+        (up-get-indirect-goal g: gl-remote-unit-hp-goal-constant__#000 gl-remote-unit-hp__#000)
+        (up-modify-goal gl-remaining-hits__#000 g:= gl-remote-unit-hp__#000)
+        (up-modify-goal gl-remaining-hits__#000 g:/ gl-local-unit-dmg-vs-remote__#000)
+        (up-modify-goal gl-approx-remote-unit-hp__#000 g:= gl-remaining-hits__#000)
+        (up-modify-goal gl-approx-remote-unit-hp__#000 g:* gl-local-unit-dmg-vs-remote__#000)
+    )
+
+    (defrule ; ajust for fractions
+        (up-compare-goal gl-remote-unit-hp__#000 g:> gl-approx-remote-unit-hp__#000)
+        =>
+        (up-modify-goal gl-remaining-hits__#000 c:+ 1)
+    )
+
+; Calculate score for each remote unit and save unit-id and score if better than earlier
+
+    (defrule
+        (true)
+        =>
+        (up-modify-goal gl-local-unit-dmg-score__#000 g:= gl-local-unit-dmg-vs-remote__#000)
+        (up-modify-goal gl-local-unit-dmg-score__#000 g:* gl-local-unit-dmg-score-multiplier__#000)
+
+        (up-modify-goal gl-local-remote-distance-score__#000 g:= gl-local-remote-precise-distance__#000)
+        (up-modify-goal gl-local-remote-distance-score__#000 g:* gl-local-remote-distance-score-multiplier__#000)
+
+        (up-modify-goal gl-total-score__#000 g:= gl-starting-score__#000)
+        (up-modify-goal gl-total-score__#000 g:+ gl-local-unit-dmg-score__#000)
+        (up-modify-goal gl-total-score__#000 g:+ gl-local-remote-distance-score__#000)
+    )
+
+    (defrule
+        (up-compare-goal gl-remaining-hits__#000 > 0)
+        =>
+        (up-modify-goal gl-remaining-hits-score__#000 g:= gl-remaining-hits__#000)
+        (up-modify-goal gl-remaining-hits-score__#000 g:* gl-remaining-hits-score-multiplier__#000)
+        (up-modify-goal gl-total-score__#000 g:- gl-remaining-hits-score__#000)
+        (up-modify-goal gl-total-score__#000 g:+ gl-alive-unit-score-bonus__#000)
+    )
+
+    (defrule
+        (up-compare-goal gl-remaining-hits__#000 <= 0)
+        =>
+        (up-modify-goal gl-remaining-hits-score__#000 g:= gl-remaining-hits__#000)
+        (up-modify-goal gl-remaining-hits-score__#000 g:* gl-excessive-hits-score-multiplier__#000)
+        (up-modify-goal gl-total-score__#000 g:+ gl-remaining-hits-score__#000)
+    )
+
+    (defrule
+        (up-compare-goal gl-remaining-hits__#000 == 1)
+        =>
+        (up-modify-goal gl-total-score__#000 g:+ gl-one-hit-remaining-score-bonus__#000)
+    )
+
+    (defrule
+        (up-compare-goal gl-local-remote-precise-distance__#000 g:< gl-close-unit-precise-distance__#000) 
+        =>
+        (up-modify-goal gl-total-score__#000 g:+ gl-close-unit-score-bonus__#000)        
+    )
+
+; Update highest score and save remote unit values
+
+    (defrule
+        (up-compare-goal gl-total-score__#000 g:> gl-best-score__#000)
+        (not(or(up-compare-goal gl-local-remote-precise-distance__#000 g:> gl-local-unit-precise-extended-range__#000)
+        (up-compare-goal gl-local-remote-precise-distance__#000 g:< gl-local-unit-precise-min-range__#000)))
+        =>
+        (up-modify-goal gl-best-score__#000 g:= gl-total-score__#000)
+        (up-modify-goal gl-best-remote-unit-id__#000 g:= gl-remote-unit-id__#000)
+        (up-modify-goal gl-best-remote-index__#000 g:= gl-remote-index__#000)
+        (up-modify-goal gl-best-remote-unit-hp__#000 g:= gl-remote-unit-hp__#000)
+        (up-modify-goal gl-best-local-unit-dmg-vs-remote__#000 g:= gl-local-unit-dmg-vs-remote__#000)
+    )
+; Repeat remote loop.
+
+    (defrule
+        (up-compare-goal gl-remote-index__#000 g:< gl-max-remote-index__#000)
+        =>
+        (up-modify-goal gl-remote-index__#000 c:+ 1)
+        (up-jump-direct g: gl-remote-loop-first-rule__#000)
+    )
+
+; Order local unit to shoot
+
+    (defrule
+        (up-set-target-by-id g: gl-local-unit-id__#000)
+        (up-set-target-by-id g: gl-best-remote-unit-id__#000)
+        =>
+        (up-full-reset-search)        
+        (up-add-object-by-id search-local g: gl-local-unit-id__#000)
+        (up-add-object-by-id search-remote g: gl-best-remote-unit-id__#000)
+        (up-target-objects 0 action-default -1 -1)
+
+        (up-modify-goal gl-best-remote-unit-hp__#000 g:- gl-best-local-unit-dmg-vs-remote__#000)
+        (set-goal gl-remote-unit-hp-goal-constant__#000 gl-remote-unit-1-hp__#000)
+        (up-modify-goal gl-remote-unit-hp-goal-constant__#000 g:+ gl-best-remote-index__#000)
+        (up-set-indirect-goal g: gl-remote-unit-hp-goal-constant__#000 g: gl-best-remote-unit-hp__#000)
+
+        (set-goal gl-shot-fired-this-pass 1)
+    )
+
+
+; Repeat local loop
+
+    (defrule
+        (up-compare-goal gl-local-index__#000 g:< gl-max-local-index__#000)
+        =>
+        (set-goal gl-remote-index__#000 0)
+        (up-modify-goal gl-local-index__#000 c:+ 1)
+        (up-jump-direct g: gl-local-loop-first-rule__#000)
+    )
+
+
+;
+
+
+
+; Okay. Det er godt nok mega roddet, men nu burde vi kunne komme med et bud på hvad vi skal tillægge koden
+
+
+
+
+
+; Det vi mangler lige nu er at få sat gl-ordered-to-shoot.__#000 Det viser sig at dette først gøres midt inde i shooting loopet for Reho
+; hvilket er ret dårligt design. Det tager nok lidt tid at forsimple det og flytte det uden for loopet, så lad os klare den i morgen.
+; Derefter kan i høre chat gpt en sidste gang og så ellers gå over til rigtig testing.
+
+
+
+; Okay. Chat gpt var faktisk utroligt brugbar til at finde bugs. Den fandt nogle få ting, der ikke var bugs, nogle simple bugs 
+; og så fandt den imponerende nok også en række bugs der simpelthen var fejl i min logik, der nok havde taget mig super lang tid
+; selv at debugge mig frem til, så det har sparet en masse tid!!
+
+
+
+
+; Det tyder da ret godt at det nu fylder 300 vs. de tidligere 1500+ linjer
+
+
+; Okay. Vi har nu lavet første gennemlæsning. Der er formentligt stadig nogle få fejl, det kan vi oplagt spørge chat gpt om
+; inden vi tester. Der er også nogle udregninger der allerede er lavet i Rehoboam, hvor jeg kommer til at kopiere det meste. 
+; Spørgsmålet her er så om det giver bedst mening at arbejde videre i Rehoboam eller i en seperat fil. Tja... Hvis udgangspunktet
+; er at det under alle omstændigheder skal integreres i Rehoboam giver det nok bedst mening at starte der. Så måske bare starte
+; med at gøre dette i den lettest mulige form hvor kun skriver ny kode, hvor det er allermest nødvendigt. Så kan vi teste lag for 
+; Rehoboam før og efter den nye targeting på et map med mange enemy units og med højt antal max enemy units. Når så vi er glade
+; for resultatet kan vi overveje at gøre Rehoboams kode lidt simplere. Vi kunne her oplagt bruge chat gpt til at komme med forslag
+; til dette.
+
+
+
+
+
+
+
+;Chat gpt i thingking mode er faktisk overraskende fin til AOE2 scripting. Den laver stadig nogle suttle ting, som kan fører til 
+;bugs, men som en mindre erfarren scripter næppe ville indse. Man kan betragte det som dårlige vaner. Jeg tænker som sådan godt
+;jeg kan bruge den til nogle ting, sålænge jeg selv har et kritisk blik på samtidigt. Jeg tror bl.a. den kan være god til hurtigt 
+;at finde nål-i-høstak bugs eller at udbygge eksisterende kode og fixe navngivning.
+;man kunne overveje om man kunne scrape fra discord serveren og eksisterende ai's og fodre chat gpt med den data.s
+
+; Herefter kan vi oplagt lave en bedre navngivning af goals
+; Derefter kan vi skrive et program, der selv definerer defconsts og bruge det.
+; Til sidst kan vi kigge på hvad vi kunne mangle for at kunne indsætte scriptet i Rehoboam
+
+; hvis det ikke reducerer lag nok kan man oplagt:
+; 1 forsimple score systemet
+; 2 nedsætte antal remote units til 3-4
+; 3 huske remaining hits frem for remaining hp så dette ikke skal udregnes for hver unit. (men også forringer targeting)
+
+
+
+
+
+
+; IDE!!!
+; Jeg har fået en ny ide, der har potentiale til at revulotionere ranged-vs-ranged micro. Hvem siger at en gruppe af ranged
+; units altid skal skyde på samme tid? Lige nu kører ai's enten fuld koordination eller ingen koordination mellem group 
+; units, og her er der potentielt et kæmpe uforløst potentiale, umiddelbart kan jeg se mindst 3 potentielle kæmpe fordele 
+; ved at ændre på dette:
+; 1: Hvis man (nogle gange) skyder med en subgruppe af gruppens units, venter og venter til modstanderen skal lige til at 
+; skyde kan man snyde modstanderen til at tro man ikke er klar og dermed ramme ham med anden bølge, der nok bør være
+; størstedelen af ens hær.
+; 2: Selv hvis modstanderen forsøger at tage højde for punkt 1, vil han pludselig få svært ved at vurdere, hvornår han kan 
+; skyde mod grupper med ukoordineret micro eller hvornår han overhovedet kan skyde sikkert, hvis vi varierer timing, antal
+; units og andre ting i der her skudbølger. Jeg tænker simpelthen det må være fremtiden.
+; 3: Aktuelt har Rehoboam nogen gange et problem hvor enkelte units nogle gange kommer væk fra resten af gruppen, typisk
+; tættere på enemy end resten, hvilket kan få denne unit til at skyde selvstændigt og forsinke resten af gruppens skydeevne
+; eller få resten af gruppen til at flytte tættere på modstanderen og ofre den ene unit. Opdateringen burde også hjælpe på
+; dette
+;
+; Ovenstående burde på papiret fuldstændigt smadre de aktuelle bedste former for fuldt koordineret ranged-vs-ranged micro.
+; Et oplagt sted at starte kunne være at teste ideen, hvor jeg som menneske microer mod Rehoboam, Immortal og shadow og
+; tester hypotesen.
+;
+; Ud over ovenstående tiltag ville det nok også hjælpe at begrænse chasingadfær når man ikke har en stor numbers advantage 
+; og at tilføje chasing, når modstanderen ikke er klar til at skyde.
