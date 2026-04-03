@@ -1,0 +1,711 @@
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;ECONOMY DUC AND STUFF'''''''''''''''''''''''''''''''''''''''
+
+(defrule
+	(up-research-status c: feudal-age < research-pending)
+	(research-completed ri-loom)
+	(timer-triggered t-drop-food)
+;	(up-pending-objects c: villager < 2)
+	(or	(and	(food-amount < 50)
+			(up-pending-objects c: villager < 2))
+		(and	(food-amount > 400)
+			(unit-type-count-total villager g:>= g-dark-vills)))
+	(food-amount < 500)
+=>
+	(chat-to-player my-player-number "drop food")
+	(up-drop-resources food c: 10)
+	(up-drop-resources forage-bush-class c: 5)
+	(up-drop-resources livestock-class c: 5)
+	(enable-timer t-drop-food 15)
+)
+(defrule
+	(unit-type-count villager >= 10)
+	(dropsite-min-distance boar-hunting < 35)
+	(dropsite-min-distance boar-hunting >= 8)
+=>
+;	(set-goal g-boar-remaining-food 65535)
+	(set-strategic-number sn-minimum-number-hunters 1)
+	(set-strategic-number sn-enable-boar-hunting 2)
+	(set-strategic-number sn-maximum-hunt-drop-distance 34)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 1))
+
+(defrule
+	(strategic-number sn-maximum-hunt-drop-distance > 20)
+	(or	(dropsite-min-distance boar-hunting >= 35)
+		(dropsite-min-distance boar-hunting == -1))
+=>
+	(set-goal g-boar-remaining-food 65535)
+	(set-strategic-number sn-enable-boar-hunting 1)
+	(set-strategic-number sn-minimum-number-hunters 0)
+	(set-strategic-number sn-maximum-hunt-drop-distance 20))
+
+(defrule
+	(unit-type-count villager >= 10)
+	(dropsite-min-distance boar-hunting >= 8)
+	(dropsite-min-distance deer-hunting < 8)
+=>
+	(set-strategic-number sn-enable-boar-hunting 0)
+	(set-strategic-number sn-minimum-number-hunters 4)
+	(set-strategic-number sn-maximum-hunt-drop-distance 10)
+)
+
+(defrule
+	(unit-type-count villager >= 10)
+	(dropsite-min-distance boar-hunting < 8)
+	(dropsite-min-distance boar-hunting > -1)
+	(strategic-number sn-maximum-hunt-drop-distance != 10)
+=>
+	(chat-to-player my-player-number "Send vills to boar using Strategic numbers")
+	(set-strategic-number sn-maximum-hunt-drop-distance 10)
+	(set-strategic-number sn-minimum-number-hunters 8)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 7))
+
+(defrule
+	(unit-type-count villager >= 10)
+	(dropsite-min-distance boar-hunting >= 35)
+	(dropsite-min-distance deer-hunting >= 8)
+=>
+	(set-strategic-number sn-minimum-number-hunters 0)
+	(set-strategic-number sn-maximum-hunt-drop-distance 20)
+	(set-strategic-number sn-enable-boar-hunting 1)
+)
+
+;Scouting management
+;1
+(defrule
+	(true)
+=>
+	(set-goal check-goal 0)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: -1 c: 40)
+)
+
+;6
+(defrule
+	(game-time > 0)
+	(game-time < 900)
+	(goal gl-dlure 100)
+	(timer-triggered t-4-sec)
+	(up-find-remote c: livestock-class c: 1)
+=>
+	(up-reset-filters)
+	(chat-to-player my-player-number "Move to sheep")
+	(up-find-local c: scout-unit c: 1)
+	(up-target-objects 0 action-move -1 -1)
+)
+
+(defrule
+	(idle-farm-count > 0)
+	(unit-type-count villager-forager > 2)
+=>
+	(up-reset-filters)
+	(up-reset-search 1 1 1 1)
+	(up-find-local c: forager1 c: 16)
+	(up-find-local c: forager2 c: 16)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-reset-search 1 1 1 1)
+	(set-goal check-goal 1))
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: farm c: 200)
+=>
+	(up-remove-objects search-local object-data-tasks-count > 0)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-reset-search 1 1 1 1)
+
+	(up-find-local c: forager1 c: 20)
+	(up-find-local c: forager2 c: 20)
+	(up-clean-search search-local object-data-distance search-order-asc)
+	(up-clean-search search-local object-data-hitpoints search-order-asc)
+	(up-remove-objects search-local object-data-index > 0)
+	(up-target-objects 1 action-default -1 -1))
+
+
+(defrule
+	(unit-type-count villager-forager > 0)
+=>
+	(up-reset-filters)
+	(up-reset-search 1 1 1 1)
+	(up-find-local c: forager1 c: 16)
+	(up-find-local c: forager2 c: 16)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-reset-search 1 1 1 1)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-filter-status c: status-gather c: list-inactive)
+	(up-filter-distance c: -1 c: 10)
+	(set-goal check-goal -1))
+(defrule
+	(goal check-goal -1)
+	(or	(up-find-status-remote c: livestock-class c: 20)
+	(or	(up-find-status-remote c: wild-animals-class c: 20)
+	(or	(up-find-status-remote c: prey-animals-class c: 20)
+		(and	(up-modify-sn sn-focus-player-number c:= my-player-number)
+			(up-find-remote c: livestock-class c: 1)))))
+=>
+	(chat-to-player my-player-number "send forager to dead animals")
+	(up-remove-objects search-remote object-data-tasks-count > 4)
+	(up-remove-objects search-remote object-data-carry < 50)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-reset-search 1 1 1 1)
+
+	(up-find-local c: forager1 c: 20)
+	(up-find-local c: forager2 c: 20)
+	(up-clean-search search-local object-data-distance search-order-asc)
+	(up-clean-search search-local object-data-hitpoints search-order-asc)
+	(up-remove-objects search-local object-data-index > 0)
+	(up-target-objects 1 action-default -1 -1))
+
+
+
+
+(defrule
+	(true)
+=>
+	(set-goal g-boar-distance -1)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-filters)
+	(up-reset-search 1 1 1 1)
+	(up-get-point position-self p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: -1 c: 10)
+	(set-goal check-goal 0))
+
+(defrule
+	(not (up-find-remote c: wild-animals-class c: 1))
+	(dropsite-min-distance boar-hunting < 8)
+;	(up-remaining-boar-amount < 300)
+;	(up-gaia-type-count c: wild-animals-class > 0)
+=>
+	(up-set-target-by-id g: g-boar-id)
+
+	(up-get-object-data object-data-carry g-boar-remaining-food)
+
+
+
+;	(up-chat-data-to-player my-player-number "Remaining boar food: %d" g: g-boar-remaining-food)
+
+
+;	(chat-to-player my-player-number "get boar distance")
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-get-point position-self p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: 10 c: 34)
+	(up-find-remote c: wild-animals-class c: 40)
+	(up-remove-objects search-remote object-data-carry < 1)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(set-goal check-goal 1))
+(defrule
+	(goal check-goal 1)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal check-goal 2)
+	(up-get-point position-object p-x-2)
+	(up-get-point-distance p-x-1 p-x-2 g-boar-distance)
+	(up-modify-goal g-boar-distance c:* 6);8 was too fast
+;	(up-chat-data-to-all "g-boar-distance: %d" g: g-boar-distance)
+)
+
+
+
+
+(defrule
+	(true)
+=>
+	(up-get-fact unit-type-count villager-hunter g-math-1)
+;	(up-chat-data-to-all "Villager hunter %d" g: g-math-1)
+	(set-goal g-math-3 0)
+	(set-goal g-math-2 0)
+	(set-goal check-goal 0))
+
+;send second lurer to stop boar from running away lol
+(defrule
+	(dropsite-min-distance boar-hunting >= 8)
+	(dropsite-min-distance boar-hunting < 12)
+	(unit-type-count villager-hunter < 2)
+	(unit-type-count villager-food >= 6);high number to disable it unles testing it
+=>
+	(set-strategic-number sn-focus-player-number 0)
+	(up-get-fact unit-type-count villager-hunter g-math-3);g-math-3 is hunters
+	(up-get-fact unit-type-count villager-food g-math-4);g-math-4 is total foodies
+	(up-modify-goal g-math-4 c:min 2)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-get-point position-self p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: -1 c: 12)
+	(set-goal check-goal 1)
+;	(up-modify-sn sn-minimum-boar-hunt-group-size g:= g-math-4)
+	(up-modify-sn sn-minimum-number-hunters g:= g-math-4))
+
+(defrule
+	(dropsite-min-distance boar-hunting < 8)
+	(dropsite-min-distance boar-hunting > -1)
+	(unit-type-count villager-hunter < 8)
+	(unit-type-count villager-food >= 6);high number to disable it unles testing it
+=>
+	(set-strategic-number sn-focus-player-number 0)
+	(up-get-fact unit-type-count villager-hunter g-math-3);g-math-3 is hunters
+	(up-get-fact unit-type-count villager-food g-math-4);g-math-4 is total foodies
+	(up-modify-goal g-math-4 c:min 8)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-get-point position-self p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: -1 c: 10)
+	(set-goal check-goal 1)
+;	(up-modify-sn sn-minimum-boar-hunt-group-size g:= g-math-4)
+	(up-modify-sn sn-minimum-number-hunters g:max g-math-4)
+	(set-strategic-number sn-maximum-hunt-drop-distance 10)
+	(up-find-remote c: wild-animals-class c: 20)
+	(up-remove-objects search-remote object-data-carry < 1)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+)
+
+(defrule
+	(goal check-goal 1)
+	(up-compare-goal g-math-3 g:< g-math-4)
+=>
+	(up-filter-distance c: -1 c: 12))
+
+
+(defrule
+	(goal check-goal 1)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id g-boar-id)
+	(up-filter-exclude -1 actionid-build -1 -1)
+	(set-goal check-goal 2))
+
+
+(defrule
+	(goal check-goal 2)
+	(up-find-local c: villager-class c: 1)
+	(up-compare-goal g-math-3 g:< g-math-4)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-resource g-math-2)
+	(set-goal check-goal 3))
+
+(defrule
+	(goal check-goal 3)
+	(up-compare-goal g-math-2 != food)
+;	(up-compare-goal g-math-2 != meat-storage)
+	(up-compare-goal g-math-2 != berry-storage)
+	(up-compare-goal g-math-2 != fish-storage)
+;	(up-compare-goal g-math-2 != wild-animals-class);
+;	(up-compare-goal g-math-2 != shore-fish-class)
+=>
+	(up-reset-search 0 1 0 0)
+	(set-goal check-goal 2)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 1)
+	(up-compare-goal g-math-3 g:< g-math-4)
+=>
+	(up-filter-distance c: 10 c: 20))
+
+(defrule
+	(goal check-goal 2)
+	(up-compare-goal g-math-3 g:< g-math-4)
+	(up-find-local c: forager1 c: 1)
+=>
+	(set-goal check-goal 3))
+(defrule
+	(goal check-goal 2)
+	(up-compare-goal g-math-3 g:< g-math-4)
+	(up-find-local c: forager2 c: 1)
+=>
+	(set-goal check-goal 3))
+
+(defrule
+	(goal check-goal 3)
+=>
+	(up-target-objects 0 action-default -1 -1)
+	(set-goal check-goal 2)
+	(up-modify-goal g-math-3 c:+ 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -6))
+
+
+
+
+
+
+(defrule
+	(true)
+=>
+	(set-goal check-goal 0))
+
+(defrule
+;	(research-completed ri-loom)
+	(strategic-number sn-minimum-number-hunters > 0)
+	(unit-type-count villager >= 11)
+	(unit-type-count villager-hunter == 0)
+	(dropsite-min-distance boar-food > 10)
+	(dropsite-min-distance boar-food < 30)
+=>
+	(chat-to-player my-player-number "first boar!")
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal check-goal 1))
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: forager1 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: forager2 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 0)
+	(game-time < 600)
+	(research-completed ri-loom)
+	(up-timer-status t-hunt != timer-running)
+;	(dropsite-min-distance boar-food < 10) 
+	(or	(up-gaia-type-count c: wild-deer > 0)
+		(up-gaia-type-count c: wild-animals-class > 0))
+;	(up-remaining-boar-amount g:< g-boar-distance)
+	(up-compare-goal g-boar-remaining-food g:< g-boar-distance)
+=>
+	(chat-to-player my-player-number "Search for second lurer")
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal check-goal 1))
+
+
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: farmer1 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: farmer2 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: hunter1 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: hunter2 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: shepherd1 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 1)
+	(up-find-local c: shepherd2 c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-hitpoints g-math-1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-compare-goal g-math-1 < 40)
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -2))
+(defrule
+	(goal check-goal 2)
+=>
+	(chat-to-player my-player-number "found lurer")
+;	(up-set-target-object search-local c: 0)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: -1 c: 34)
+	(up-find-remote c: wild-animals-class c: 20)
+	(up-remove-objects search-remote object-data-carry < 1)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(set-goal check-goal 3))
+
+(defrule
+	(goal check-goal 3)
+	(up-set-target-object search-remote c: 0)
+=>
+	(chat-to-player my-player-number "We get second boar now")
+	(up-target-objects 1 action-default -1 -1)
+	(enable-timer t-hunt 140)
+	(set-goal check-goal 0)
+)
+
+
+
+;(defrule
+;	(true)
+;=>
+;	(up-full-reset-search)
+;	(up-filter-include -1 actionid-build -1 -1)
+;	(up-find-local c: villager-class c: 5)
+;	(up-remove-objects search-local object-data-tasks-count > 1)
+;	(up-remove-objects search-local object-data-index > 0))
+;(defrule
+;	(up-set-target-object search-local c: 0)
+;=>
+;	(chat-to-player my-player-number "we have builder")
+;	(up-get-object-target-data object-data-point-x p-x-1)
+;	(up-get-object-target-data object-data-point-y p-y-1)
+;	(up-set-target-point p-x-1)
+;	(up-reset-filters)
+;	(up-filter-distance c: -1 c: 10)
+;	(set-strategic-number sn-focus-player-number 0)
+;	(up-filter-status c: status-ready c: list-active)
+;	(up-find-resource c: wood s: sn-wood-gatherer-percentage)
+;	(up-filter-status c: status-resource c: list-active)
+;	(up-find-resource c: gold s: sn-gold-gatherer-percentage)
+;	(up-find-resource c: stone s: sn-stone-gatherer-percentage)
+;	(up-filter-status c: status-gather c: list-inactive)
+;	(up-find-resource c: food c: 5)
+;	(up-clean-search search-remote object-data-full-distance search-order-asc)
+;)
+;(defrule
+;	(up-set-target-object search-remote c: 0)
+;=>
+;	(chat-to-player my-player-number "we have food")
+;	(set-strategic-number sn-keystates 3)
+;	(up-target-objects 1 action-default -1 -1)
+;	(set-strategic-number sn-keystates 0)
+;)
+
+
+(defrule
+	(current-age < castle-age)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: 33 c: -1)
+	(up-filter-exclude -1 actionid-build -1 -1)
+	(up-find-local c: villager-class c: 60)
+	(up-remove-objects search-local object-data-tasks-count <= 0)
+	(up-get-search-state lt)
+)
+
+(defrule
+	(current-age < castle-age)
+	(up-compare-goal lt > 0)
+=>
+	(up-full-reset-search)
+	(up-get-point position-self p-self-x)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: 33 c: -1)
+	(up-filter-exclude -1 actionid-build -1 -1)
+	(up-find-local c: villager-class c: 60)
+	(up-remove-objects search-local object-data-tasks-count <= 0)
+	(up-clean-search search-local object-data-full-distance search-order-desc)
+	(up-remove-objects search-local object-data-index > 0)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object p-x-1)
+	(up-lerp-tiles p-x-1 p-self-x c: 5)
+	(chat-to-player my-player-number "Villagers going too far")
+	(up-target-point p-x-1 action-move -1 -1)
+)
+
+
+;(defrule
+;	(timer-triggered t-4-sec)
+;	(unit-type-count villager-forager > 2)
+;=>
+;	(set-goal check-goal 392)
+;	(up-get-fact unit-type-count villager-food g-math-1)
+;	(up-get-fact unit-type-count villager-wood g-math-3)
+;	(up-get-fact unit-type-count villager g-math-2)
+;	(up-modify-goal g-math-4 g:= g-math-2)
+;	(up-modify-goal g-math-2 s:* sn-food-gatherer-percentage)
+;	(up-modify-goal g-math-4 s:* sn-wood-gatherer-percentage)
+;	(up-modify-goal g-math-2 c:/ 100)
+;	(up-modify-goal g-math-4 c:/ 100)
+;)
+
+;(defrule
+;	(goal check-goal 392)
+;	(up-compare-goal g-math-1 g:> g-math-2)
+;	(up-compare-goal g-math-3 g:< g-math-4)
+;=>
+;	(chat-to-all "too much food"))
+
+;(defrule
+;	(true)
+;=>
+;	(set-goal check-goal 0)
+;	(set-goal g-math-1 0)
+;	(up-full-reset-search)
+;	(up-set-target-point p-self-x)
+;	(up-filter-include -1 actionid-gather -1 -1)
+;	(up-find-local c: villager c: 100)
+;	(up-remove-objects search-local object-data-carry > 0)
+;	(up-clean-search search-local object-data-full-distance search-order-desc)
+;	(up-create-group 0 0 c: temp-group-1)
+;)
+;(defrule
+;	(up-set-target-object search-local g: g-math-1)
+;=>
+;	(up-get-rule-id g-jump-direct-1)
+;	(up-get-object-data object-data-id g-current-unit-id)
+;	(up-get-object-data object-data-point-x p-x-1)
+;	(up-get-object-data object-data-point-y p-y-1)
+;	(up-get-object-target-data object-data-point-x p-x-2)
+;	(up-get-object-target-data object-data-point-y p-y-2)
+;)
+;(defrule
+;	(up-set-target-object search-local g: g-math-1)
+;	(up-point-distance p-x-1 p-x-2 < 3)
+;=>
+;	(up-modify-goal g-math-1 c:+ 1)
+;	(up-jump-rule -2)
+;)
+;(defrule
+;	(up-set-target-object search-local g: g-math-1)
+;=>
+;	(set-goal check-goal 1)
+;	(up-full-reset-search)
+;	(up-set-target-point p-x-1)
+;	(up-filter-distance c: -1 c: 7)
+;	(up-find-local c: lumber-camp c: 5)
+;	(up-find-local c: mining-camp c: 5)
+;	(up-find-local c: mill c: 5)
+;;	(up-find-local c: town-center c: 5)
+;	(up-find-local c: settlement c: 5)
+;	(up-clean-search search-local object-data-full-distance search-order-asc)
+;)
+;(defrule
+;	(goal check-goal 1)
+;	(up-set-target-object search-local c: 0)
+;	(up-object-data object-data-type == lumber-camp)
+;=>
+;	(up-get-point position-object p-x-2)
+;	(up-set-target-point p-x-2)
+;	(up-full-reset-search)
+;	(up-filter-status c: status-ready c: list-active)
+;	(up-filter-distance c: -1 c: 7)
+;	(up-find-resource c: wood c: 15)
+;	(up-remove-objects search-remote object-data-tasks-count > 1)
+;	(up-clean-search search-remote object-data-distance search-order-asc)
+;)
+;(defrule
+;	(goal check-goal 1)
+;	(up-set-target-object search-remote c: 0)
+;=>
+;	(up-add-object-by-id search-local g: g-current-unit-id)
+;	(chat-to-player my-player-number "retask gatherer")
+;	(set-strategic-number sn-keystates 2)
+;	(up-target-objects 1 action-default -1 -1)
+;	(set-strategic-number sn-keystates 0)
+;)
+;(defrule
+;	(goal check-goal 1)
+;=>
+;	(set-goal check-goal 0)
+;	(up-modify-goal g-math-1 c:+ 1)
+;	(up-set-group search-local c: temp-group-1)
+;	(up-jump-direct g: g-jump-direct-1)
+;)
+
+
+

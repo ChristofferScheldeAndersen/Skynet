@@ -1,0 +1,2754 @@
+(defconst ri-elite-fire-lancer 982)
+(defconst ri-heavy-rocket-cart 980)
+
+(defrule
+(true)
+=>
+(chat-local-to-self "Expansion Tech Tree Installed")
+(disable-self)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-expansion-upgrades on)
+(can-research ri-conscription)
+=>
+(research ri-conscription)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-wood-upgrades on)
+(can-research ri-double-bit-axe)
+(up-object-type-count-total g: building-type-goal >= 2)
+(up-compare-goal gl-game-strategy != boom)
+(up-compare-goal gl-game-strategy != castle-drop)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(research ri-double-bit-axe)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-wood-upgrades on)
+(can-research ri-double-bit-axe)
+(or(up-compare-goal gl-game-strategy == boom)
+(up-compare-goal gl-game-strategy == castle-drop))
+(current-age == castle-age)
+=>
+(research ri-double-bit-axe)
+)
+
+(defrule
+(up-research-status c: castle-age >= research-pending)
+(up-compare-goal gl-game-strategy == fast-imp)
+(can-research ri-double-bit-axe)
+=>
+(research ri-double-bit-axe)
+)
+
+(defrule
+(map-type team-islands)
+(can-research ri-double-bit-axe)
+=>
+(research ri-double-bit-axe)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-wood-upgrades on)
+(can-research ri-bow-saw)
+(up-compare-goal 10 >= mc-v-high)
+=>
+(research ri-bow-saw)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == boom)
+(can-research ri-bow-saw)
+=>
+(research ri-bow-saw)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == fast-imp)
+(up-research-status c: imperial-age >= research-pending)
+(building-type-count-total siege-workshop > 0)
+(or(building-type-count-total monastery > 0)
+(building-type-count-total university > 0))
+(can-research ri-bow-saw)
+=>
+(research ri-bow-saw)
+)
+
+(defrule
+(map-type team-islands)
+(can-research ri-bow-saw)
+=>
+(research ri-bow-saw)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-wood-upgrades on)
+(can-research ri-two-man-saw)
+(up-compare-goal 10 >= mc-v-high)
+=>
+(research ri-two-man-saw)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == boom)
+(can-research ri-two-man-saw)
+=>
+(research ri-two-man-saw)
+)
+
+(defrule
+(map-type team-islands)
+(can-research ri-two-man-saw)
+=>
+(research ri-two-man-saw)
+)
+
+(defrule
+(goal halt-production off)
+;(goal research-farm-upgrades on)
+(building-type-count-total farm >= 16)
+(not(goal military-mode assault))
+(can-research ri-horse-collar)
+=>
+(research ri-horse-collar)
+)
+
+(defrule
+(up-research-status c: castle-age >= research-pending)
+(up-compare-goal gl-game-strategy == fast-imp)
+(can-research ri-horse-collar)
+=>
+(research ri-horse-collar)
+)
+
+(defrule
+(goal halt-production off)
+;(goal research-farm-upgrades on)
+(building-type-count-total farm >= 16)
+(not(goal military-mode assault))
+(can-research ri-heavy-plow)
+(current-age-time > 120)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(research ri-heavy-plow)
+)
+
+(defrule
+(false)
+(goal halt-production off)
+(goal research-farm-upgrades on)
+(can-research ri-crop-rotation)
+=>
+(research ri-crop-rotation)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 1893 c: 240)
+(up-find-local c: 1897 c: 240)
+(up-clean-search search-local 0 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal halt-production off)
+;(goal research-farm-upgrades on)
+(up-compare-goal gl-local-total >= 8)
+(not(goal military-mode assault))
+(can-research ri-domestication)
+=>
+(research ri-domestication)
+)
+
+(defrule
+(up-research-status c: castle-age >= research-pending)
+(up-compare-goal gl-game-strategy == fast-imp)
+(can-research ri-domestication)
+=>
+(research ri-domestication)
+)
+
+(defrule
+(goal halt-production off)
+;(goal research-farm-upgrades on)
+(up-compare-goal gl-local-total >= 8)
+(not(goal military-mode assault))
+(can-research ri-pastoralism)
+(current-age-time > 120)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(research ri-pastoralism)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 16)
+(not(goal military-mode assault))
+(goal research-farm-upgrades on)
+(can-research ri-transhumance)
+=>
+(research ri-transhumance)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-gold-upgrades on)
+(can-research ri-gold-mining)
+(up-compare-goal 10 >= mc-high)
+(up-group-size c: 9 >= 2)
+(not(goal military-mode assault))
+=>
+(research ri-gold-mining)
+)
+
+(defrule
+(current-age >= castle-age)
+(up-compare-goal gl-game-strategy == boom)
+(can-research ri-gold-mining)
+=>
+(research ri-gold-mining)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == fast-imp)
+(can-research ri-gold-mining)
+=>
+(research ri-gold-mining)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-gold-upgrades on)
+(can-research ri-gold-shaft-mining)
+(up-compare-goal 10 >= mc-high)
+(up-group-size c: 9 >= 2)
+(not(goal military-mode assault))
+=>
+(research ri-gold-shaft-mining)
+)
+
+(defrule
+(current-age >= castle-age)
+(up-compare-goal gl-game-strategy == boom)
+(can-research ri-gold-shaft-mining)
+=>
+(research ri-gold-shaft-mining)
+)
+
+(defrule
+(false)
+(goal halt-production off)
+(goal research-stone-upgrades on)
+(can-research ri-stone-mining)
+(up-compare-goal 10 >= mc-high)
+(unit-type-count villager-stone > 0)
+(not(goal military-mode assault))
+=>
+(research ri-stone-mining)
+)
+
+(defrule
+(false)
+(goal halt-production off)
+(goal research-stone-upgrades on)
+(can-research ri-stone-shaft-mining)
+(up-compare-goal 10 >= mc-high)
+(unit-type-count villager-stone > 0)
+(not(goal military-mode assault))
+=>
+(research ri-stone-shaft-mining)
+)
+
+(defrule
+(goal halt-production off)
+(up-compare-goal gl-game-strategy == castle-drop)
+(can-research ri-stone-mining)
+=>
+(research ri-stone-mining)
+)
+
+(defrule
+(goal halt-production off)
+(up-compare-goal gl-game-strategy == castle-drop)
+(can-research ri-stone-shaft-mining)
+=>
+(research ri-stone-shaft-mining)
+)
+
+(defrule
+;(goal research-dock-upgrades on)
+(unit-type-count-total fishing-ship >= 8)
+(up-compare-goal 10 > mc-equal)
+(can-research ri-fishing-lines)
+=>
+(research ri-fishing-lines)
+)
+
+(defrule
+;(goal research-dock-upgrades on)
+(unit-type-count-total fishing-ship >= 10)
+(up-compare-goal 10 > mc-equal)
+(can-research ri-gillnets)
+=>
+(research ri-gillnets)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(goal research-monk-upgrades on)
+(can-research ri-theocracy)
+(unit-type-count-total monk > 2)
+=>
+(research ri-theocracy)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(goal research-monk-upgrades on)
+(can-research ri-redemption)
+(unit-type-count-total monk > 2)
+=>
+(research ri-redemption)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(goal research-monk-upgrades on)
+(can-research ri-illumination)
+(unit-type-count-total monk > 2)
+=>
+(research ri-illumination)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(goal research-monk-upgrades on)
+(can-research ri-block-printing)
+(unit-type-count-total monk > 2)
+=>
+(research ri-block-printing)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(goal research-monk-upgrades on)
+(can-research ri-sanctity)
+(unit-type-count-total monk > 2)
+=>
+(research ri-sanctity)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(goal research-monk-upgrades on)
+(can-research ri-atonement)
+(unit-type-count-total monk > 2)
+=>
+(research ri-atonement)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(players-unit-type-count any-enemy monk >= 5);10
+(can-research ri-devotion)
+=>
+(research ri-devotion)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(players-unit-type-count any-enemy monk >= 5);10
+(can-research ri-faith)
+=>
+(research ri-faith)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(players-unit-type-count any-enemy monk >= 5);10
+(can-research ri-heresy)
+=>
+(research ri-heresy)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(goal research-monk-upgrades on)
+(can-research ri-fervor)
+(unit-type-count-total monk > 2)
+=>
+(research ri-fervor)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(can-research ri-ballistics)
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(building-type-count-total watch-tower-line >= 1)
+(or(building-type-count-total donjon >= 1)
+(or(building-type-count-total krepost >= 1)
+(building-type-count-total castle >= 1))))))
+=>
+(research ri-ballistics)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == castle-drop)
+(or(building-type-count-total castle > 0)
+(building-type-count-total krepost > 0))
+(can-research ri-ballistics)
+=>
+(research ri-ballistics)
+)
+
+(defrule
+;(goal halt-production off)
+;(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(or(unit-type-count-total cavalry-archer-line >= 3)
+(unit-type-count-total chu-ko-nu-line >= 3)))))
+(can-research ri-fletching)
+=>
+(research ri-fletching)
+)
+
+(defrule
+;(goal halt-production off)
+;(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total archer-line >= 3)
+(unit-type-count-total skirmisher-line >= 3))
+(can-research ri-fletching)
+=>
+(research ri-fletching)
+)
+
+(defrule
+(civ-selected khmer)
+(map-type michi)
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == castle-drop)
+(or(building-type-count-total castle > 0)
+(building-type-count-total krepost > 0))
+(can-research ri-fletching)
+=>
+(research ri-fletching)
+)
+
+(defrule
+(unit-type-count-total galley-line >= 5)
+(can-research ri-fletching)
+=>
+(research ri-fletching)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(or(unit-type-count-total cavalry-archer-line >= 3)
+(unit-type-count-total chu-ko-nu-line >= 3)))))
+(can-research ri-bodkin-arrow)
+=>
+(research ri-bodkin-arrow)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total archer-line >= 3)
+(unit-type-count-total skirmisher-line >= 3))
+(can-research ri-bodkin-arrow)
+=>
+(research ri-bodkin-arrow)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == castle-drop)
+(or(building-type-count-total castle > 0)
+(building-type-count-total krepost > 0))
+(can-research ri-bodkin-arrow)
+=>
+(research ri-bodkin-arrow)
+)
+
+(defrule
+(unit-type-count-total galley-line >= 5)
+(can-research ri-bodkin-arrow)
+=>
+(research ri-bodkin-arrow)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(or(unit-type-count-total cavalry-archer-line >= 3)
+(unit-type-count-total chu-ko-nu-line >= 3)))))
+(can-research ri-bracer)
+=>
+(research ri-bracer)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total archer-line >= 3)
+(unit-type-count-total skirmisher-line >= 3))
+(can-research ri-bracer)
+=>
+(research ri-bracer)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == castle-drop)
+(or(building-type-count-total castle > 0)
+(building-type-count-total krepost > 0))
+(can-research ri-bracer)
+=>
+(research ri-bracer)
+)
+
+(defrule
+(unit-type-count-total galley-line >= 5)
+(can-research ri-bracer)
+=>
+(research ri-bracer)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(or(unit-type-count-total cavalry-archer-line >= 3)
+(unit-type-count-total chu-ko-nu-line >= 3)))))
+(up-research-status c: ri-fletching >= research-pending)
+(can-research ri-padded-archer-armor)
+=>
+(research ri-padded-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total archer-line >= 3)
+(unit-type-count-total skirmisher-line >= 3))
+(can-research ri-padded-archer-armor)
+(up-research-status c: ri-fletching >= research-pending)
+=>
+(research ri-padded-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(or(unit-type-count-total cavalry-archer-line >= 3)
+(unit-type-count-total chu-ko-nu-line >= 3)))))
+(can-research ri-leather-archer-armor)
+(up-research-status c: ri-bodkin-arrow >= research-pending)
+=>
+(research ri-leather-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total archer-line >= 3)
+(unit-type-count-total skirmisher-line >= 3))
+(can-research ri-leather-archer-armor)
+(up-research-status c: ri-bodkin-arrow >= research-pending)
+=>
+(research ri-leather-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(or(unit-type-count-total cavalry-archer-line >= 3)
+(unit-type-count-total chu-ko-nu-line >= 3)))))
+(can-research ri-ring-archer-armor)
+(up-research-status c: ri-bracer >= research-pending)
+=>
+(research ri-ring-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total archer-line >= 3)
+(unit-type-count-total skirmisher-line >= 3))
+(can-research ri-ring-archer-armor)
+(up-research-status c: ri-bracer >= research-pending)
+=>
+(research ri-ring-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(unit-type-count-total hand-cannoneer >= 3)
+(can-research ri-padded-archer-armor)
+(or(up-compare-goal gl-game-strategy != fast-imp)
+(up-compare-goal 10 >= mc-v-high))
+=>
+(research ri-padded-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(unit-type-count-total hand-cannoneer >= 3)
+(can-research ri-leather-archer-armor)
+(or(up-compare-goal gl-game-strategy != fast-imp)
+(up-compare-goal 10 >= mc-v-high))
+=>
+(research ri-leather-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(unit-type-count-total hand-cannoneer >= 3)
+(can-research ri-ring-archer-armor)
+(or(up-compare-goal gl-game-strategy != fast-imp)
+(up-compare-goal 10 >= mc-v-high))
+=>
+(research ri-ring-archer-armor)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-infantry-upgrades on)
+(unit-type-count-total 906 >= 3)
+(can-research ri-scale-mail)
+=>
+(research ri-scale-mail)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-infantry-upgrades on)
+(unit-type-count-total 906 >= 3)
+(can-research ri-chain-mail)
+=>
+(research ri-chain-mail)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-infantry-upgrades on)
+(unit-type-count-total 906 >= 3)
+(can-research ri-plate-mail)
+=>
+(research ri-plate-mail)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-cavalry-upgrades on)
+(or(unit-type-count-total 912 >= 3)
+(unit-type-count-total 947 >= 3))
+(can-research ri-scale-barding)
+=>
+(research ri-scale-barding)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-cavalry-upgrades on)
+(or(unit-type-count-total 912 >= 3)
+(unit-type-count-total 947 >= 3))
+(can-research ri-chain-barding)
+=>
+(research ri-chain-barding)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-cavalry-upgrades on)
+(or(unit-type-count-total 912 >= 3)
+(unit-type-count-total 947 >= 3))
+(can-research ri-plate-barding)
+=>
+(research ri-plate-barding)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-infantry-upgrades on)
+;(goal research-cavalry-upgrades on))
+(or(unit-type-count-total 906 >= 3)
+(unit-type-count-total 912 >= 3))
+(or(not(research-available ri-scale-mail))
+(not(research-available ri-scale-barding)))
+(or(not(research-available ri-chain-mail))
+(not(research-available ri-chain-barding)))
+(can-research ri-forging)
+=>
+(research ri-forging)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-cavalry-upgrades on)
+(unit-type-count-total 947 >= 3)
+(can-research ri-forging)
+(or(not(research-available ri-scale-mail))
+(not(research-available ri-scale-barding)))
+(or(not(research-available ri-chain-mail))
+(not(research-available ri-chain-barding)))
+=>
+(research ri-forging)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-infantry-upgrades on)
+;(goal research-cavalry-upgrades on))
+(or(unit-type-count-total 906 >= 3)
+(unit-type-count-total 912 >= 3))
+(can-research ri-iron-casting)
+(or(not(research-available ri-scale-mail))
+(not(research-available ri-scale-barding)))
+(or(not(research-available ri-chain-mail))
+(not(research-available ri-chain-barding)))
+=>
+(research ri-iron-casting)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-infantry-upgrades on)
+;(goal research-cavalry-upgrades on))
+(unit-type-count-total 947 >= 3)
+(can-research ri-iron-casting)
+(or(not(research-available ri-scale-mail))
+(not(research-available ri-scale-barding)))
+(or(not(research-available ri-chain-mail))
+(not(research-available ri-chain-barding)))
+=>
+(research ri-iron-casting)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-infantry-upgrades on)
+;(goal research-cavalry-upgrades on))
+(or(unit-type-count-total 906 >= 3)
+(unit-type-count-total 912 >= 3))
+(can-research ri-blast-furnace)
+=>
+(research ri-blast-furnace)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-infantry-upgrades on)
+;(goal research-cavalry-upgrades on))
+(unit-type-count-total 947 >= 3)
+(can-research ri-blast-furnace)
+=>
+(research ri-blast-furnace)
+)
+
+(defrule
+(current-age == castle-age)
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-infantry-upgrades on)
+(unit-type-count-total 906 >= 3)
+(can-research ri-arson)
+=>
+(research ri-arson)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total archer-line >= 5)
+(can-research ri-crossbow)
+=>
+(research ri-crossbow)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total archer-line >= 5)
+(can-research ri-arbalest)
+=>
+(research ri-arbalest)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total skirmisher-line >= 5)
+(can-research ri-elite-skirmisher)
+=>
+(research ri-elite-skirmisher)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total skirmisher-line >= 5)
+(can-research ri-imperial-skirmisher)
+=>
+(research ri-imperial-skirmisher)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total cavalry-archer-line >= 5)
+(can-research ri-heavy-cavalry-archer)
+=>
+(research ri-heavy-cavalry-archer)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total genitour-line >= 5)
+(can-research ri-elite-genitour)
+=>
+(research ri-elite-genitour)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 900 >= 3)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(or(unit-type-count-total cavalry-archer-line >= 3)
+(unit-type-count-total chu-ko-nu-line >= 3)))))
+(can-research ri-thumb-ring)
+=>
+(research ri-thumb-ring)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total archer-line >= 3)
+(unit-type-count-total skirmisher-line >= 3))
+(can-research ri-thumb-ring)
+=>
+(research ri-thumb-ring)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-cavalry-archer-upgrades on)
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(unit-type-count-total cavalry-archer-line >= 3)))
+(can-research ri-parthian-tactics)
+=>
+(research ri-parthian-tactics)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total militiaman-line >= 4)
+(up-research-status c: ri-man-at-arms >= research-pending)
+(can-research ri-supplies)
+=>
+(research ri-supplies)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total militiaman-line >= 4)
+(can-research ri-gambesons)
+=>
+(research ri-gambesons)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total militiaman-line >= 5)
+(can-research ri-man-at-arms)
+=>
+(research ri-man-at-arms)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total militiaman-line >= 5)
+(can-research ri-long-swordsman)
+=>
+(research ri-long-swordsman)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total militiaman-line >= 5)
+(can-research ri-two-handed-swordsman)
+=>
+(research ri-two-handed-swordsman)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total militiaman-line >= 5)
+(can-research ri-champion)
+=>
+(research ri-champion)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total militiaman-line >= 5)
+(can-research ri-legionary)
+=>
+(research ri-legionary)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total champi-scout-line >= 5)
+(can-research ri-champi-runner)
+=>
+(research ri-champi-runner)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total champi-scout-line >= 5)
+(can-research ri-champi-warrior)
+=>
+(research ri-champi-warrior)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total champi-scout-line >= 5)
+(can-research ri-elite-champi-warrior)
+=>
+(research ri-elite-champi-warrior)
+)
+
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total spearman-line >= 5)
+(can-research ri-pikeman)
+=>
+(research ri-pikeman)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total spearman-line >= 5)
+(can-research ri-halberdier)
+=>
+(research ri-halberdier)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total fire-lancer-line >= 5)
+(can-research ri-elite-fire-lancer)
+=>
+(research ri-elite-fire-lancer)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total eagle-warrior-line >= 5)
+(can-research ri-eagle-warrior)
+=>
+(research ri-eagle-warrior)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total eagle-warrior-line >= 5)
+(can-research ri-elite-eagle-warrior)
+=>
+(research ri-elite-eagle-warrior)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-infantry-upgrades on)
+(unit-type-count-total 906 >= 3)
+(can-research ri-tracking)
+=>
+(research ri-tracking)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-infantry-upgrades on)
+(unit-type-count-total 906 >= 3)
+(up-compare-goal 10 >= mc-high)
+(can-research ri-squires)
+=>
+(research ri-squires)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total scout-cavalry-line >= 5)
+(can-research ri-light-cavalry)
+=>
+(research ri-light-cavalry)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total scout-cavalry-line >= 5)
+(can-research ri-hussar)
+=>
+(research ri-hussar)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total scout-cavalry-line >= 5)
+(can-research ri-winged-hussar)
+=>
+(research ri-winged-hussar)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total steppe-lancer-line >= 5)
+(can-research ri-elite-steppe-lancer)
+=>
+(research ri-elite-steppe-lancer)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total knight-line >= 5)
+(can-research ri-cavalier)
+=>
+(research ri-cavalier)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total knight-line >= 5)
+(can-research ri-paladin)
+=>
+(research ri-paladin)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total knight-line >= 5)
+(can-research ri-savar)
+=>
+(research ri-savar)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total hei-guang-cavalry-line >= 5)
+(can-research ri-heavy-hei-guang-cavalry)
+=>
+(research ri-heavy-hei-guang-cavalry)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total camel-line >= 5)
+(can-research ri-heavy-camel)
+=>
+(research ri-heavy-camel)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total camel-line >= 5)
+(can-research ri-imperial-camel)
+=>
+(research ri-imperial-camel)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total battle-elephant-line >= 3)
+(can-research ri-elite-battle-elephant)
+=>
+(research ri-elite-battle-elephant)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total elephant-archer-line >= 3)
+(can-research ri-elite-elephant-archer)
+=>
+(research ri-elite-elephant-archer)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-cavalry-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total 912 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(unit-type-count-total cavalry-archer-line >= 3))))
+(can-research ri-bloodlines)
+=>
+(research ri-bloodlines)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-cavalry-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(unit-type-count-total 947 >= 6)
+(can-research ri-bloodlines)
+=>
+(research ri-bloodlines)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count my-unique-unit >= 5)
+(can-research my-unique-unit-upgrade)
+=>
+(research my-unique-unit-upgrade)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-cavalry-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(or(unit-type-count-total 936 >= 3)
+(or(unit-type-count-total 912 >= 3)
+(or(unit-type-count-total genitour-line >= 3)
+(unit-type-count-total cavalry-archer-line >= 3))))
+(can-research ri-husbandry)
+(food-amount > 300); swap with version 20
+=>
+(research ri-husbandry)
+)
+
+(defrule
+;(goal halt-production off)
+(goal research-military-upgrades on)
+;(or(goal research-cavalry-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(unit-type-count-total 947 >= 3)
+(can-research ri-husbandry)
+(food-amount > 300); swap with version 20
+=>
+(research ri-husbandry)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total 922 >= 1)
+(can-research ri-war-galley)
+=>
+(research ri-war-galley)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total 922 >= 1)
+(can-research ri-galleon)
+=>
+(research ri-galleon)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total fire-ship-line >= 3)
+(can-research ri-siphons)
+=>
+(research ri-siphons)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total fire-ship-line >= 3)
+(can-research ri-incendiaries)
+=>
+(research ri-incendiaries)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total fire-ship-line >= 3)
+(can-research 1010);dragon-ship
+=>
+(research 1010)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total demolition-ship-line >= 3)
+(can-research ri-heavy-demolition-ship)
+=>
+(research ri-heavy-demolition-ship)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total cannon-galleon-line >= 3)
+(can-research ri-elite-cannon-galleon)
+=>
+(research ri-elite-cannon-galleon)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-dock-upgrades on)
+(unit-type-count-total 922 >= 3)
+(can-research ri-careening)
+=>
+(research ri-careening)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total 922 >= 3)
+(can-research ri-dry-dock)
+=>
+(research ri-dry-dock)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-dock-upgrades on)
+(can-research ri-shipwright)
+=>
+(research ri-shipwright)
+)
+
+(defrule
+(goal halt-production off)
+(building-type-count-total watch-tower-line >= 1)
+(goal research-fortification-upgrades on)
+(can-research ri-guard-tower)
+=>
+(research ri-guard-tower)
+)
+
+(defrule
+(goal halt-production off)
+(building-type-count-total watch-tower-line >= 1)
+(goal research-fortification-upgrades on)
+(can-research ri-keep)
+=>
+(research ri-keep)
+)
+
+(defrule
+(goal halt-production off)
+(or(building-type-count-total watch-tower-line >= 1)
+(building-type-count-total castle >= 1))
+(goal research-fortification-upgrades on)
+(can-research ri-arrowslits)
+=>
+(research ri-arrowslits)
+)
+
+(defrule
+(gold-amount > 1000)
+(building-type-count castle > 0)
+(goal halt-production off)
+(goal research-fortification-upgrades on)
+(can-research ri-bombard-tower)
+=>
+(research ri-bombard-tower)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total battering-ram-line >= 4)
+(can-research ri-capped-ram)
+=>
+(research ri-capped-ram)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total battering-ram-line >= 4)
+(can-research ri-siege-ram)
+=>
+(research ri-siege-ram)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total armored-elephant-line >= 4)
+(can-research ri-siege-elephant)
+=>
+(research ri-siege-elephant)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total mangonel-line >= 4)
+(can-research ri-onager)
+=>
+(research ri-onager)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total mangonel-line >= 4)
+(can-research ri-siege-onager)
+=>
+(research ri-siege-onager)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total rocket-cart-line >= 4)
+(can-research ri-heavy-rocket-cart)
+=>
+(research ri-heavy-rocket-cart)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+(unit-type-count-total scorpion-line >= 4)
+(can-research ri-heavy-scorpion)
+=>
+(research ri-heavy-scorpion)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-fortification-upgrades on)
+(can-research ri-masonry)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(research ri-masonry)
+)
+
+(defrule
+;(building-type-count gate > 0)
+(map-type arena)
+(goal halt-production off)
+(goal research-fortification-upgrades on)
+(can-research ri-fortified-wall)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(research ri-fortified-wall)
+)
+
+(defrule
+(goal halt-production off)
+(or(players-unit-type-count any-enemy galley-line > 0)
+(or(players-unit-type-count any-enemy fire-ship-line > 0)
+(or(players-unit-type-count any-enemy hulk-line > 0)
+(players-building-type-count any-enemy dock >= 4))))
+(goal research-fortification-upgrades on)
+(can-research ri-heated-shot)
+=>
+(research ri-heated-shot)
+)
+
+(defrule
+(goal halt-production off)
+(or(building-type-count-total watch-tower-line >= 1)
+(building-type-count-total castle >= 1))
+(can-research ri-murder-holes)
+=>
+(research ri-murder-holes)
+)
+
+(defrule
+(goal halt-production off)
+(can-research ri-stonecutting)
+;(goal research-military-expansion-upgrades on)
+(up-compare-goal gl-game-strategy != fast-imp)
+(up-compare-goal 10 >= mc-high)
+=>
+(research ri-stonecutting)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-fortification-upgrades on)
+(can-research ri-architecture)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(research ri-architecture)
+)
+
+(defrule
+(goal halt-production off)
+;(or(goal research-archer-upgrades on)
+;(goal research-cavalry-archer-upgrades on))
+(can-research ri-chemistry)
+=>
+(research ri-chemistry)
+)
+
+(defrule
+(goal halt-production off)
+(or(goal research-siege-upgrades on)
+(goal research-fortification-upgrades on))
+(can-research ri-chemistry)
+=>
+(research ri-chemistry)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-military-upgrades on)
+;(goal research-siege-upgrades on)
+(can-research ri-siege-engineers)
+=>
+(research ri-siege-engineers)
+)
+
+(defrule
+(unit-type-count trade-cart > 0)
+(not(goal research-trade-upgrades on))
+=>
+(set-goal research-trade-upgrades on)
+)
+
+(defrule
+(goal halt-production off)
+(players-building-type-count any-ally barracks > 0)
+(goal research-trade-upgrades on)
+(can-research ri-cartography)
+=>
+(research ri-cartography)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-trade-upgrades on)
+(can-research ri-coinage)
+=>
+(research ri-coinage)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-trade-upgrades on)
+(can-research ri-banking)
+=>
+(research ri-banking)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-trade-upgrades on)
+(can-research ri-caravan)
+=>
+(research ri-caravan)
+)
+
+(defrule
+(false)
+(goal halt-production off)
+(can-research ri-guilds)
+(current-age == imperial-age)
+=>
+(research ri-guilds)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-fortification-upgrades on)
+(can-research ri-hoardings)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(research ri-hoardings)
+)
+
+(defrule
+(goal halt-production off)
+(goal research-villager-upgrades on)
+(can-research ri-sappers)
+=>
+(research ri-sappers)
+)
+
+;(defrule
+;(can-research ri-spies)
+;=>
+;(research ri-spies)
+;)
+
+#load-if-defined ARMENIANS-CIV
+
+(defrule
+   (goal halt-production off)
+   (building-type-count dock >= 1)
+   (can-research 922)
+   =>
+   (research 922)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count militiaman-line >= 3)
+   (or(unit-type-count condottiero >= 3)
+   (unit-type-count warrior-priest >= 3)))
+   (can-research 921)
+   =>
+   (research 921)
+)
+
+#end-if
+
+#load-if-defined AZTEC-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count skirmisher-line >= 3)
+   (can-research 460)
+   =>
+   (research 460)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count 906 >= 3)
+   (or(unit-type-count eagle-warrior-line >= 3)
+   (or(unit-type-count militiaman-line >= 3)
+   (or(unit-type-count condottiero >= 3)
+   (or(unit-type-count spearman-line >= 3)
+   (unit-type-count jaguar-warrior-line >= 3))))))
+   (can-research 24)
+   =>
+   (research 24)
+)
+
+#end-if
+
+#load-if-defined BENGALIS-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total battle-elephant-line >= 5)
+   (or(unit-type-count-total ratha-set >= 5)
+   (unit-type-count-total elephant-archer-line >= 5)))
+   (can-research 833)
+   =>
+   (research 833)
+)
+
+(defrule
+   (goal halt-production off)
+   (can-research 834)
+   =>
+   (research 834)
+)
+
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total camel-line >= 3)
+   (unit-type-count-total camel-archer-line >= 3)
+   (can-research 579)
+   =>
+   (research 579)
+)
+
+(defrule
+   (goal halt-production off)
+   (can-research 578)
+   =>
+   (research 578)
+)
+
+#end-if
+
+#load-if-defined BOHEMIANS-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total hand-cannoneer >= 3)
+   (or(unit-type-count-total hussite-wagon-line >= 3)
+   (unit-type-count-total bombard-cannon-line >= 3)))
+   (can-research 784)
+   =>
+   (research 784)
+)
+
+(defrule
+   (goal halt-production off)
+   (building-type-count-total monastery >= 1)
+   (can-research 785)
+   =>
+   (research 785)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total bombard-cannon-line >= 3)
+   (can-research ri-houfnice)
+   =>
+   (research ri-houfnice)
+)
+
+#end-if
+
+#load-if-defined BRITON-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 3)
+   =>
+   (research 3)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total trebuchet >= 2)
+   (can-research 461)
+   =>
+   (research 461)
+)
+
+#end-if
+
+#load-if-defined BULGARIANS-CIV
+
+(defrule
+(goal halt-production off)
+(unit-type-count 912 >= 3)
+(can-research 685)
+=>
+(research 685)
+)
+
+(defrule
+(goal halt-production off)
+(unit-type-count militiaman-line >= 3)
+(can-research 686)
+=>
+(research 686)
+)
+
+#end-if
+
+#load-if-defined BURGUNDIANS-CIV
+
+(defrule
+(goal halt-production off)
+(can-research 754)
+=>
+(research 754)
+)
+
+(defrule
+(goal halt-production off)
+(can-research 755)
+(up-compare-goal 10 >= mc-high)
+(up-group-size c: 9 >= 2)
+=>
+(research 755)
+)
+
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total battle-elephant >= 3)
+   (can-research 626)
+   =>
+   (research 626)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total 912 >= 3)
+   (can-research 627)
+   =>
+   (research 627)
+)
+
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total fire-ship-line >= 3)
+   (building-type-count-total bombard-tower >= 3))
+   (can-research 464)
+   =>
+   (research 464)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total cataphract-line >= 3)
+   (can-research 61)
+   =>
+   (research 61)
+)
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total scorpion-line >= 3)
+   (or(unit-type-count-total mangonel-line >= 3)
+   (unit-type-count-total battering-ram-line >= 3)))
+   (can-research 5)
+   =>
+   (research 5)
+)
+
+(defrule
+   (goal halt-production off)
+   (building-type-count castle >= 1)
+   (can-research 482)
+   =>
+   (research 482)
+)
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+(defrule
+   (goal halt-production off)
+   (current-age == imperial-age)
+   (or(unit-type-count scorpion-line > 3)
+   (unit-type-count chu-ko-nu-line > 3))
+   (can-research 52)
+   =>
+   (research 52)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(building-type-count watch-tower-line >= 3)
+   (building-type-count gate > 0))
+   (can-research 462)
+   =>
+   (research 462)
+)   
+
+#end-if
+
+#load-if-defined CUMANS-CIV
+
+(defrule
+(goal halt-production off)
+(or(unit-type-count 936 >= 3)
+(unit-type-count 912 >= 3))
+(can-research 689)
+=>
+(research 689)
+)
+
+(defrule
+(goal halt-production off)
+(can-research 690)
+=>
+(research 690)
+)
+
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+
+(defrule
+(goal halt-production off)
+(or(unit-type-count elephant-archer-line >= 3)
+(unit-type-count battle-elephant-line >= 3))
+(can-research 831)
+=>
+(research 831)
+)
+
+(defrule
+(goal halt-production off)
+(or(unit-type-count 906 >= 3)
+(unit-type-count 912 >= 3))
+(can-research 832)
+=>
+(research 832)
+)
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total scorpion-line >= 3)
+   (or(unit-type-count-total mangonel-line >= 3)
+   (unit-type-count-total bombard-cannon >= 3)))
+   (can-research 575)
+   =>
+   (research 575)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total my-unique-unit-line >= 3)
+   (unit-type-count-total camel-line >= 3))
+   (can-research 574)
+   =>
+   (research 574)
+)
+
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 493)
+   =>
+   (research 493)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total my-unique-unit-line >= 3)
+   (can-research 83)
+   =>
+   (research 83)
+)
+
+#end-if
+
+#load-if-defined GEORGIANS-CIV
+
+(defrule
+   (goal halt-production off)
+   (building-type-count watch-tower-line >= 1)
+   (can-research 923)
+   =>
+   (research 923)
+)
+
+(defrule
+   (goal halt-production off)
+   (population >= upper-population-limit)
+   (can-research 924)
+   =>
+   (research 924)
+)
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 457)
+   =>
+   (research 457)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(goal chosen-military-unit scout-cavalry-line)
+   (or(goal chosen-military-unit skirmisher-line)
+   (or(goal supporting-military-unit scout-cavalry-line)
+   (goal supporting-military-unit skirmisher-line))))
+   (can-research 17)
+   =>
+   (research 17)
+)
+
+#end-if
+
+#load-if-defined GURJARAS-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 835)
+   =>
+   (research 835)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total camel-line > 5)
+   (unit-type-count-total elephant-archer-line > 5))
+   (can-research 836)
+   =>
+   (research 836)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total shrivamsha-rider-line > 3)
+   (can-research ri-elite-shrivamsha-rider)
+   =>
+   (research ri-elite-shrivamsha-rider)
+)
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 21)
+   =>
+   (research 21)
+)
+
+(defrule
+   (goal halt-production off)
+   (up-compare-goal 10 >= mc-high)
+   (can-research 483)
+   =>
+   (research 483)
+)
+
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total my-unique-unit-line >= 3)
+   (or(unit-type-count-total eagle-warrior-line >= 3)
+   (unit-type-count-total slinger >= 3)))
+   (can-research 517)
+   =>
+   (research 517)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total skirmisher-line >= 3)
+   (unit-type-count-total slinger >= 3))
+   (can-research 516)
+   =>
+   (research 516)
+)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 506)
+   =>
+   (research 506)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total hand-cannoneer >= 3)
+   (can-research 507)
+   =>
+   (research 507)
+)
+
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 499)
+   =>
+   (research 499)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count 900 >= 3)
+   (unit-type-count condottiero >= 3))
+   (can-research 494)
+   =>
+   (research 494)
+)
+
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total trebuchet-set >= 3)
+   (can-research 59)
+   =>
+   (research 59)
+)
+
+(defrule
+   (goal halt-production off)
+   (building-type-count watch-tower-line >= 3)
+   (can-research 484)
+   =>
+   (research 484)
+)
+
+#end-if
+
+#load-if-defined JURCHENS-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(building-type-count watch-tower-line >= 5)
+   (building-type-count castle >= 2))
+   (can-research ri-fortified-bastions)
+   =>
+   (research ri-fortified-bastions)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total grenadier >= 5)
+   (or(unit-type-count-total rocket-cart-line >= 5)
+   (unit-type-count-total lou-chuan >= 3)))
+   (can-research ri-thunderclap-bombs)
+   =>
+   (research ri-thunderclap-bombs)
+)
+
+#end-if
+
+#load-if-defined KHITANS-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total 906 >= 5)
+   (unit-type-count-total skirmisher-line >= 5))
+   (can-research ri-lamellar-armor)
+   =>
+   (research ri-lamellar-armor)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total 912 >= 5)
+   (can-research ri-ordo-cavalry)
+   =>
+   (research ri-ordo-cavalry)
+)
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total scorpion-line >= 3)
+   (unit-type-count-total my-unique-unit-line >= 3))
+   (can-research 623)
+   =>
+   (research 623)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count battle-elephant-line >= 3)
+   (can-research 622)
+   =>
+   (research 622)
+)
+
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total mangonel-line >= 3)
+   (can-research 445)
+   =>
+   (research 445)
+)
+
+(defrule
+   (goal halt-production off)
+   (building-type-count-total watch-tower-line >= 3)
+   (can-research 486)
+   =>
+   (research 486)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total war-wagon-line >= 3)
+   (can-research 450); elite-war-wagon
+   =>
+   (research 450)
+)
+
+#end-if
+
+#load-if-defined LITHUANIANS-CIV
+
+(defrule
+(goal halt-production off)
+(can-research 691)
+=>
+(research 691)
+)
+
+(defrule
+(goal halt-production off)
+(or(unit-type-count spearman-line >= 3)
+(or(unit-type-count genitour-line >= 3)
+(unit-type-count skirmisher-line >= 3)))
+(can-research 692)
+=>
+(research 692)
+)
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total 936 >= 3)
+   (unit-type-count-total genitour-line >= 3))
+   (can-research 515)
+   =>
+   (research 515)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count my-unique-unit-line >= 3)
+   (can-research 514)
+   =>
+   (research 514)
+)
+
+#end-if
+
+#load-if-defined MALAY-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total militiaman-line >= 3)
+   (can-research 625)
+   =>
+   (research 625)
+)
+
+(defrule
+   (goal halt-production off)
+   (building-type-count-total dock >= 1)
+   (can-research 624)
+   =>
+   (research 624)
+)
+
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total 912 >= 3)
+   (can-research 577)
+   =>
+   (research 577)
+)
+
+(defrule
+   (goal halt-production off)
+   (can-research 576)
+   =>
+   (research 576)
+)
+
+#end-if
+
+#load-if-defined MAPUCHE-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total bolas-rider-line >= 3)
+   (or(unit-type-count-total slinger >= 3)
+   (unit-type-count-total skirmisher-line >= 3)))
+   (can-research 1379)
+   =>
+   (research 1379)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total bolas-rider-line >= 3)
+   (players-building-type-count any-ally castle > 0))
+   (can-research 1380)
+   =>
+   (research 1380)
+)
+
+#end-if
+
+
+#load-if-defined MAYAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total skirmisher-line >= 3)
+   (unit-type-count-total genitour-line >= 3))
+   (can-research 485)
+   =>
+   (research 485)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total eagle-warrior-line >= 3)
+   (can-research 4)
+   =>
+   (research 4)
+)
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+(defrule
+   (goal halt-production off)
+   (current-age == imperial-age)
+   (can-research 6)
+   =>
+   (research 6)
+)
+
+#end-if
+
+#load-if-defined MUISCA-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total archer-line >= 3)
+   (unit-type-count-total champi-scout-line >= 3))
+   (can-research 1365)
+   =>
+   (research 1365)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total slinger >= 3)
+   (can-research 1366)
+   =>
+   (research 1366)
+)
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 7)
+   =>
+   (research 7)
+)
+
+(defrule
+   (goal halt-production off)
+   (can-research 488)
+   =>
+   (research 488)
+)
+
+#end-if
+
+#load-if-defined POLES-CIV
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total knight-line >= 3)
+   (can-research 782)
+   =>
+   (research 782)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total scout-cavalry-line >= 3)
+   (can-research 783)
+   =>
+   (research 783)
+)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total hand-cannoneer >= 3)
+   (or(unit-type-count-total bombard-cannon >= 3)
+   (unit-type-count-total my-unique-unit-line >= 3)))
+   (can-research 573)
+   =>
+   (research 573)
+)
+
+(defrule
+   (goal halt-production off)
+   (building-type-count-total dock >= 1)
+   (can-research 572)
+   =>
+   (research 572)
+)
+
+#end-if
+
+#load-if-defined ROMANS-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total scorpion-line >= 3)
+   (unit-type-count-total galley-line >= 3))
+   (can-research 883)
+   =>
+   (research 883)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total militiaman-line >= 3)
+   (or(unit-type-count-total knight-line >= 3)
+   (unit-type-count-total centurion-line >= 3)))
+   (can-research 884)
+   =>
+   (research 884)
+)
+
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total trebuchet-set >= 3)
+   (unit-type-count-total mangonel-line >= 3))
+   (can-research 454)
+   =>
+   (research 454)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total monk >= 3)
+   (unit-type-count 943 >= 3))
+   (can-research 9)
+   =>
+   (research 9)
+)
+
+#end-if
+
+#load-if-defined SHU-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total spearman-line >= 5)
+   (unit-type-count-total white-feather-guard-line >= 5))
+   (can-research ri-coiled-serpent-array)
+   =>
+   (research ri-coiled-serpent-array)
+)
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total archer-line >= 5)
+   (or(unit-type-count-total war-chariot-focus-fire >= 5)
+   (or(unit-type-count-total war-chariot-barrage >= 5)
+   (unit-type-count-total lou-chuan >= 3))))
+   (can-research ri-bolt-magazine)
+   =>
+   (research ri-bolt-magazine)
+)
+
+#end-if
+
+#load-if-defined SICILIANS-CIV
+
+(defrule
+   (goal halt-production off)
+   (building-type-count-total town-center >= 4)
+   (can-research 756)
+   =>
+   (research 756)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total knight-line >= 5)
+   (can-research 757)
+   =>
+   (research 757)
+)
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 455)
+   =>
+   (research 455)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total 906 >= 3)
+   (can-research 513)
+   =>
+   (research 513)
+)
+
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 440)
+=>
+   (research 440)
+)
+
+(defrule
+   (research-completed my-unique-research)
+   (unit-type-count villager >= 95)
+   =>
+   (set-strategic-number sn-allow-civilian-offense 1)
+   (set-strategic-number sn-allow-civilian-defense 3)
+   (set-strategic-number sn-number-civilian-militia 100)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total 918 >= 3)
+   (can-research 492)
+   =>
+   (research 492)
+)
+
+#end-if
+
+#load-if-defined TATARS-CIV
+
+(defrule
+(goal halt-production off)
+(or(unit-type-count-total scout-cavalry-line >= 3)
+(or(unit-type-count-total steppe-lancer-line >= 3)
+(unit-type-count-total 936 >= 3)))
+(can-research 687)
+=>
+(research 687)
+)
+
+(defrule
+(goal halt-production off)
+(unit-type-count trebuchet-set >= 1)
+(can-research 688)
+=>
+(research 688)
+)
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 11)
+   =>
+   (research 11)
+)
+
+(defrule
+   (goal halt-production off)
+   (can-research 489)
+   (or(unit-type-count-total battering-ram-line >= 3)
+   (or(unit-type-count-total scorpion-line >= 3)
+   (unit-type-count-total mangonel-line >= 3)))
+   =>
+   (research 489)
+)
+
+#end-if
+
+#load-if-defined TUPI-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total champi-scout-line >= 3)
+   (unit-type-count-total slinger >= 3))
+   (can-research 1392)
+   =>
+   (research 1392)
+)
+
+(defrule
+   (goal halt-production off)
+   (can-research 1393)
+   =>
+   (research 1393)
+)
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(building-type-count-total bombard-tower > 0)
+   (unit-type-count-total bombard-cannon > 0))
+   (can-research 10)
+   =>
+   (research 10)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total 936 >= 3)
+   (can-research 491)
+   =>
+   (research 491)
+)
+
+#end-if
+
+#load-if-defined VIETNAMISE-CIV
+
+(defrule
+   (goal halt-production off)
+   (can-research 629)
+   =>
+   (research 629)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count battle-elephant-line >= 3)
+   (can-research 628)
+   =>
+   (research 628)
+)
+
+#end-if
+
+#load-if-defined VIKING-CIV
+
+(defrule
+   (goal halt-production off)
+   (current-age == imperial-age)
+   (or(unit-type-count-total archer-line >= 3)
+   (unit-type-count-total longboat-line >= 3))
+   (can-research my-unique-research)
+   =>
+   (research my-unique-research)
+)
+
+(defrule
+   (goal halt-production off)
+   (unit-type-count-total 906 >= 3)
+   (can-research 463)
+   =>
+   (research 463)
+)
+
+#end-if
+
+#load-if-defined WEI-CIV
+
+(defrule
+   (goal halt-production off)
+   (military-population >= 40)
+   (can-research ri-tuntian)
+   =>
+   (research ri-tuntian)
+)
+
+(defrule
+   (goal halt-production off)
+   (current-age == imperial-age)
+   (or(unit-type-count-total 912 >= 5)
+   (or(unit-type-count-total scout-cavalry-line >= 5)
+   (unit-type-count-total 936 >= 5)))
+   (can-research ri-ming-guang-armor)
+   =>
+   (research ri-ming-guang-armor)
+)
+
+#end-if
+
+#load-if-defined WU-CIV
+
+(defrule
+   (goal halt-production off)
+   (or(unit-type-count-total demolition-ship-line >= 3)
+   (unit-type-count-total fire-archer-line >= 5))
+   (can-research ri-red-cliff-tactics)
+   =>
+   (research ri-red-cliff-tactics)
+)
+
+(defrule
+   (goal halt-production off)
+   (current-age == imperial-age)
+   (or(unit-type-count-total traction-trebuchet >= 3)
+   (unit-type-count-total lou-chuan >= 3))
+   (can-research ri-sitting-tiger)
+   =>
+   (research ri-sitting-tiger)
+)
+
+#end-if

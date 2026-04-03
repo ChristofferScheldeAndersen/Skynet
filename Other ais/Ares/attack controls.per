@@ -1,0 +1,200 @@
+(defrule
+	(goal g-fifth-turn 2)
+	(nor	(goal g-attack tsa-clean)
+		(goal g-attack tsa-raid))
+=>
+	(up-set-defense-priority c: blacksmith c: 10)
+	(up-set-defense-priority c: university c: 10)
+	(up-set-defense-priority c: house c: 10)
+
+	(up-set-defense-priority c: mill c: 400)
+	(up-set-defense-priority c: lumber-camp c: 45)
+	(up-set-defense-priority c: mining-camp c: 50)
+
+	(up-set-defense-priority c: castle c: 2500)
+	(up-set-defense-priority c: town-center c: 500)
+
+	(up-set-defense-priority c: barracks c: 350)
+	(up-set-defense-priority c: archery-range c: 350)
+	(up-set-defense-priority c: stable c: 350)
+	(up-set-defense-priority c: monastery c: 375)
+	(up-set-defense-priority c: siege-workshop c: 360)
+	(up-set-defense-priority c: dock c: 200)
+
+	(up-set-defense-priority c: market c: 250)
+)
+
+(defrule
+	(goal g-fifth-turn 2)
+	(goal g-attack tsa-raid)
+=>
+	(up-set-defense-priority c: blacksmith c: 10)
+	(up-set-defense-priority c: university c: 10)
+	(up-set-defense-priority c: house c: 10)
+
+	(up-set-defense-priority c: mill c: 400)
+	(up-set-defense-priority c: lumber-camp c: 450)
+	(up-set-defense-priority c: mining-camp c: 500)
+
+	(up-set-defense-priority c: castle c: 250)
+	(up-set-defense-priority c: town-center c: 5)
+
+	(up-set-defense-priority c: barracks c: 350)
+	(up-set-defense-priority c: archery-range c: 350)
+	(up-set-defense-priority c: stable c: 350)
+	(up-set-defense-priority c: monastery c: 375)
+	(up-set-defense-priority c: siege-workshop c: 360)
+	(up-set-defense-priority c: dock c: 200)
+
+	(up-set-defense-priority c: market c: 325)
+)
+
+(defrule
+	(goal g-fifth-turn 2)
+	(goal g-attack tsa-clean)
+=>
+	(up-set-defense-priority c: blacksmith c: 10)
+	(up-set-defense-priority c: university c: 10)
+	(up-set-defense-priority c: house c: 10)
+
+	(up-set-defense-priority c: mill c: 40)
+	(up-set-defense-priority c: lumber-camp c: 45)
+	(up-set-defense-priority c: mining-camp c: 50)
+
+	(up-set-defense-priority c: castle c: 2500)
+	(up-set-defense-priority c: town-center c: 3000)
+
+	(up-set-defense-priority c: barracks c: 350)
+	(up-set-defense-priority c: archery-range c: 350)
+	(up-set-defense-priority c: stable c: 350)
+	(up-set-defense-priority c: monastery c: 375)
+	(up-set-defense-priority c: siege-workshop c: 360)
+	(up-set-defense-priority c: dock c: 200)
+
+	(up-set-defense-priority c: market c: 325)
+)
+
+(defrule
+	(timer-triggered t-11-sec)
+=>
+	(set-strategic-number sn-number-civilian-militia 8)
+	(set-strategic-number sn-allow-civilian-defense 2)
+	(set-strategic-number sn-allow-civilian-offense 2)
+	(set-goal g-attack no)
+)
+
+(defrule
+	(or	(players-building-type-count target-player castle < 3)
+	(or	(population > 190)
+		(unit-type-count trebuchet-set > 2)))
+	(or	(players-military-population target-player s:<= sn-military-superiority)
+	(or	(and	(population > 190)
+			(up-compare-goal g-research-status >= research-complete))
+	(or	(up-compare-goal g-initial-attack != -1)
+		(and	(strategic-number sn-military-superiority > 10)
+			(strategic-number sn-civilian-superiority < 0)))))
+	(military-population > 2)
+	(current-age g:>= g-rushing-age)
+=>
+	(set-strategic-number sn-number-civilian-militia 0)
+	(set-strategic-number sn-allow-civilian-defense 1)
+	(set-strategic-number sn-allow-civilian-offense 0)
+	(set-goal g-attack yes))
+
+
+(defrule
+	(goal g-attack yes)
+	(or	(players-building-type-count target-player mill > 0)
+	(or	(players-building-type-count target-player lumber-camp > 0)
+	(or	(players-building-type-count target-player mining-camp > 0)
+;	(or	(players-building-type-count target-player settlement > 0)
+		(players-building-type-count target-player gate-class > 0))));)
+	(or	(up-building-type-in-town c: palisade-wall > 0)
+		(up-building-type-in-town c: stone-wall-line > 0))
+=>
+	(set-goal g-attack tsa-raid)
+)
+
+(defrule
+	(goal g-attack yes)
+	(players-population target-player < 80)
+	(or	(players-building-type-count target-player town-center > 0)
+	(or	(players-building-type-count target-player watch-tower > 0)
+		(players-building-type-count target-player castle > 0)))
+	(or	(population >= 180)
+		(strategic-number sn-military-superiority >= 40))
+=>
+	(set-goal g-attack tsa-clean)
+)
+
+
+(defrule
+	(goal g-attack yes)
+	(or	(players-building-type-count target-player town-center > 0)
+	(or	(players-building-type-count target-player watch-tower > 0)
+		(players-building-type-count target-player castle > 0)))
+	(or	(up-building-type-in-town c: palisade-wall > 0)
+		(up-building-type-in-town c: stone-wall-line > 0))
+=>
+	(set-goal g-attack tsa-clean)
+)
+
+(defrule
+	(goal g-attack yes)
+=>
+	(set-goal g-attack tsa)
+)
+
+(defrule
+	(strategic-number sn-maximum-town-size >= 37)
+	(goal g-attack no)
+=>
+	(set-strategic-number sn-maximum-town-size 10)
+)
+
+
+(defrule
+	(goal g-attack tsa)
+	(nor	(enemy-buildings-in-town)
+		(town-under-attack))
+	(strategic-number sn-maximum-town-size < 340)
+=>
+	(up-modify-sn sn-maximum-town-size c:+ 2))
+(defrule
+	(goal g-attack tsa)
+	(town-under-attack)
+	(enemy-buildings-in-town)
+	(timer-triggered t-4-sec)
+	(strategic-number sn-maximum-town-size > 40)
+=>
+	(up-modify-sn sn-maximum-town-size c:- 1))
+
+(defrule
+	(goal g-attack tsa-raid)
+	(up-building-type-in-town c: mill == 0)
+	(up-building-type-in-town c: gate-class == 0)
+	(up-building-type-in-town c: lumber-camp == 0)
+	(up-building-type-in-town c: mining-camp == 0)
+;	(up-building-type-in-town c: settlement == 0)
+	(strategic-number sn-maximum-town-size < 340)
+=>
+	(up-modify-sn sn-maximum-town-size c:+ 2))
+
+(defrule
+	(goal g-attack tsa-clean)
+	(up-building-type-in-town c: castle == 0)
+	(up-building-type-in-town c: town-center == 0)
+	(up-building-type-in-town c: watch-tower == 0)
+	(strategic-number sn-maximum-town-size < 340)
+=>
+	(up-modify-sn sn-maximum-town-size c:+ 2))
+
+(defrule
+	(or	(strategic-number sn-maximum-town-size >= 40)
+		(population < 100))
+=>
+	(set-strategic-number sn-number-civilian-militia 0)
+	(set-strategic-number sn-allow-civilian-defense 1)
+	(set-strategic-number sn-allow-civilian-offense 0)
+)
+

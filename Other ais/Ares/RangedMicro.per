@@ -1,0 +1,1229 @@
+
+;Much of the ranged micro is based largely off Fireball's rangedmicro snippet (although mostly unrecognizable now)
+
+(defconst TCRetreatDistance 9) ;closer than this distance group will retreat from TCs
+(defconst TCRetreatResetDistance 13) ;distance at which group will stop retreat from TCs
+
+(defconst CastleRetreatDistance 11) ;closer than this distance group will retreat from Castles
+(defconst CastleRetreatResetDistance 15) ;distance at which group will stop retreat from Castles
+
+(defconst TowerRetreatDistance 8) ;closer than this distance group will retreat from Towers 
+(defconst TowerRetreatResetDistance 12)  ;distance at which group will stop retreat from Towers
+
+
+
+;------------------------Renew group flags
+;(defrule
+;	(false)
+;=>
+;	(up-full-reset-search)
+;	(up-find-local c: archery-class c: 150)
+;	(up-find-local c: archery-cannon-class c: 150)
+;	(up-find-local c: cavalry-archer-class c: 150)
+;	(up-remove-objects search-local object-data-group-flag != 6)
+;	(up-reset-group c: 6)
+;	(up-create-group 0 0 c: 6)
+;	(up-modify-group-flag 0 c: 6)
+;)
+
+(defrule
+	(up-group-size c: 1 > 0)
+=>
+;	(chat-to-all "group 1 working")
+	(up-full-reset-search)
+	(up-set-group search-local c: 1)
+	(up-modify-group-flag 0 c: 1)
+	(up-reset-group c: 1)
+	(up-create-group 0 0 c: 1)
+	(up-modify-group-flag 1 c: 1)
+)
+
+(defrule
+	(up-group-size c: 2 > 0)
+=>
+;	(chat-to-all "group 2 working")
+	(up-full-reset-search)
+	(up-set-group search-local c: 2)
+	(up-modify-group-flag 0 c: 2)
+	(up-reset-group c: 2)
+	(up-create-group 0 0 c: 2)
+	(up-modify-group-flag 1 c: 2)
+)
+
+(defrule
+	(up-group-size c: 3 > 0)
+=>
+;	(chat-to-all "group 3 working")
+	(up-full-reset-search)
+	(up-set-group search-local c: 3)
+	(up-modify-group-flag 0 c: 3)
+	(up-reset-group c: 3)
+	(up-create-group 0 0 c: 3)
+	(up-modify-group-flag 1 c: 3)
+)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CREATE RANGED GROUPS
+
+
+(defrule
+	(up-group-size c: 1 < 1)
+=>
+	(up-modify-group-flag 0 c: 1)
+	(up-reset-group c: 1)
+	(up-full-reset-search)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-class c: 150)
+	(up-find-local c: archery-cannon-class c: 150)
+	(up-find-local c: cavalry-archer-class c: 150)
+	(up-remove-objects search-local object-data-group-flag == 2)
+	(up-remove-objects search-local object-data-group-flag == 3)
+	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-create-group 0 0 c: 1)
+	(up-modify-group-flag 1 c: 1)
+)
+
+(defrule
+	(up-group-size c: 1 > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-type g-group1-type)
+)
+
+
+(defrule
+	(up-group-size c: 2 < 1)
+	(up-group-size c: 1 > 0)
+=>
+	(up-modify-group-flag 0 c: 2)
+	(up-reset-group c: 2)
+	(up-full-reset-search)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-class c: 150)
+	(up-find-local c: archery-cannon-class c: 150)
+	(up-find-local c: cavalry-archer-class c: 150)
+	(up-remove-objects search-local object-data-group-flag == 1)
+	(up-remove-objects search-local object-data-group-flag == 3)
+	(up-remove-objects search-local object-data-type g:== g-group1-type)
+	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-create-group 0 0 c: 2)
+	(up-modify-group-flag 1 c: 2)
+)
+
+(defrule
+	(up-group-size c: 2 < 1)
+	(up-group-size c: 1 >= 60)
+=>
+	(up-modify-group-flag 0 c: 2)
+	(up-reset-group c: 2)
+	(up-full-reset-search)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-class c: 150)
+	(up-find-local c: archery-cannon-class c: 150)
+	(up-find-local c: cavalry-archer-class c: 150)
+	(up-remove-objects search-local object-data-group-flag == 1)
+	(up-remove-objects search-local object-data-group-flag == 3)
+	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-create-group 0 0 c: 2)
+	(up-modify-group-flag 1 c: 2)
+)
+
+(defrule
+	(up-group-size c: 2 > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local c: 2)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-type g-group2-type)
+)
+
+(defrule
+	(up-group-size c: 3 < 1)
+	(up-group-size c: 1 > 0)
+	(up-group-size c: 2 > 0)
+=>
+	(up-modify-group-flag 0 c: 3)
+	(up-reset-group c: 3)
+	(up-full-reset-search)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-class c: 150)
+	(up-find-local c: archery-cannon-class c: 150)
+	(up-find-local c: cavalry-archer-class c: 150)
+	(up-remove-objects search-local object-data-group-flag == 1)
+	(up-remove-objects search-local object-data-group-flag == 2)
+	(up-remove-objects search-local object-data-type g:== g-group1-type)
+	(up-remove-objects search-local object-data-type g:== g-group2-type)
+	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-create-group 0 0 c: 3)
+	(up-modify-group-flag 1 c: 3)
+)
+
+(defrule
+	(up-group-size c: 3 < 1)
+	(up-group-size c: 1 >= 60)
+=>
+	(up-modify-group-flag 0 c: 3)
+	(up-reset-group c: 3)
+	(up-full-reset-search)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-class c: 150)
+	(up-find-local c: archery-cannon-class c: 150)
+	(up-find-local c: cavalry-archer-class c: 150)
+	(up-remove-objects search-local object-data-group-flag == 1)
+	(up-remove-objects search-local object-data-group-flag == 2)
+	(up-remove-objects search-local object-data-type g:== g-group2-type)
+	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-create-group 0 0 c: 3)
+	(up-modify-group-flag 1 c: 3)
+)
+
+(defrule
+	(up-group-size c: 3 < 1)
+	(up-group-size c: 2 >= 60)
+=>
+	(up-modify-group-flag 0 c: 3)
+	(up-reset-group c: 3)
+	(up-full-reset-search)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-class c: 240)
+	(up-find-local c: archery-cannon-class c: 240)
+	(up-find-local c: cavalry-archer-class c: 240)
+	(up-remove-objects search-local object-data-group-flag == 1)
+	(up-remove-objects search-local object-data-group-flag == 2)
+	(up-remove-objects search-local object-data-type g:== g-group1-type)
+	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-create-group 0 0 c: 3)
+	(up-modify-group-flag 1 c: 3)
+)
+
+(defrule
+	(up-group-size c: 3 < 1)
+	(up-group-size c: 1 >= 60)
+	(up-group-size c: 2 >= 60)
+=>
+	(up-modify-group-flag 0 c: 3)
+	(up-reset-group c: 3)
+	(up-full-reset-search)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-class c: 240)
+	(up-find-local c: archery-cannon-class c: 240)
+	(up-find-local c: cavalry-archer-class c: 240)
+	(up-remove-objects search-local object-data-group-flag == 1)
+	(up-remove-objects search-local object-data-group-flag == 2)
+	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-create-group 0 0 c: 3)
+	(up-modify-group-flag 1 c: 3)
+)
+
+(defrule
+	(up-group-size c: 3 > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local c: 3)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-type g-group3-type)
+)
+
+
+(defrule
+	(true)
+=>
+	(set-goal g-ranged-group-size 0)
+	(set-goal p-largest-ranged-group-x -255)
+	(up-copy-point p-backline-x p-march-x)
+	(up-lerp-tiles p-backline-x p-self-x c: 2)
+	(up-bound-point p-backline-x p-backline-x)
+)
+
+;cancels the jump
+(defrule
+	(true)
+=>
+	(set-goal g-current-ranged-group -1)
+)
+
+;function start
+(defrule
+	(true)
+=>
+	(up-get-rule-id jump-to-ranged-group-function)
+)
+
+
+
+
+
+
+
+
+;>>>>>>>>>>> OUR RANGED-GROUP-X POSITION  (by Panda)
+;same as above, but for our group. It is more precise than just choosing the position of one unit.
+;it helps determine when another unit is in range and many other things
+
+
+
+(defrule
+	(true)
+=>
+	(set-goal check-goal 0))
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+	(up-get-search-state lt)
+	(set-goal p-x-1 0)
+	(set-goal p-y-1 0)
+	(set-goal g-math-1 0)
+	(set-goal lt 0)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-object-data object-data-point-x p-x-2)
+	(up-get-object-data object-data-point-y p-y-2)
+	(up-modify-goal p-x-1 g:+ p-x-2)
+	(up-modify-goal p-y-1 g:+ p-y-2)
+	(up-modify-goal g-math-1 c:+ 1) ;number of points checked
+	(up-get-search-state lt)
+	(set-goal check-goal 1)
+)
+
+(defrule
+	(goal check-goal 1)
+	(up-compare-goal lt > 0)
+=>
+	(up-remove-objects search-local -1 == 0)
+	(up-get-search-state lt)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(goal check-goal 1)
+	(up-compare-goal g-math-1 > 0)
+=>
+	(up-modify-goal p-x-1 g:/ g-math-1)
+	(up-modify-goal p-y-1 g:/ g-math-1)
+	(up-copy-point p-ranged-group-x p-x-1) ;local group center of gravity
+)
+
+(defrule
+	(goal check-goal 1)
+	(up-compare-goal g-math-1 g:> g-ranged-group-size)
+=>
+	(set-goal p-backline-x -324)
+	(up-modify-goal g-ranged-group-size g:= g-math-1)
+	(up-copy-point p-largest-ranged-group-x p-x-1)
+)
+
+
+;;;;;;;;;;;;;;;;;;INITIALISE RANGED GROUPS
+
+
+(defrule	;add new units to group
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-modify-group-flag 0 g: g-current-ranged-group)
+	(up-reset-group g: g-current-ranged-group)
+	(up-full-reset-search)
+	(up-set-target-point p-ranged-group-x)
+	(up-filter-distance c: -1 c: 6)
+	(up-find-local c: cavalry-archer-class c: 240)
+	(up-find-local c: archery-cannon-class c: 240)
+	(up-find-local c: archery-class c: 240)
+	(up-remove-objects search-local object-data-type g:!= g-current-ranged-group-type)
+	(up-remove-objects search-local object-data-group-flag g:== g-other-ranged-group1)
+	(up-remove-objects search-local object-data-group-flag g:== g-other-ranged-group2)
+;	(up-remove-objects search-local object-data-group-flag == 6)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local -1 > 60)
+	(up-create-group 0 0 g: g-current-ranged-group)
+	(up-modify-group-flag 1 g: g-current-ranged-group)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-target-time g-math-2)
+;	(up-chat-data-to-player my-player-number "target time: %d" g: g-math-2)
+;	(up-get-object-data object-data-reload-time g-projectile-release-delay)    
+	(up-get-object-data object-data-attack-delay g-projectile-release-delay)    
+;	(up-chat-data-to-player my-player-number "reload time: %d" g: g-projectile-release-delay)
+;	(up-get-object-data object-data-target-time g-projectile-release-delay)
+;	(up-modify-goal g-math-10 c:mod 10)
+;	(up-modify-goal g-math-3 c:+ 50)
+;	(up-modify-goal g-projectile-release-delay g:- g-math-3)
+;	(up-chat-data-to-player my-player-number "attack delay: %d" g: g-projectile-release-delay)
+;	(up-chat-data-to-player my-player-number "time before moving: %d" g: g-projectile-release-delay)
+	(up-get-object-data object-data-range g-firing-range)
+	(up-modify-goal saved-archer-range-2 g:= g-firing-range)
+	(up-modify-goal saved-archer-range-2 c:- 2)
+	(up-modify-goal g-tracking-range g:= g-firing-range)
+	(up-modify-goal g-tracking-range c:+ 4)
+)
+
+
+;@@@@@@@@@@@@@@ II-B. REINFORCEMENTS
+;sends ungrouped units to the ranged group to join the it
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-group-size g: g-current-ranged-group < 60)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-ranged-group-x)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-find-local c: archery-cannon-class c: 240)
+	(up-find-local c: archery-class c: 240)
+	(up-find-local c: cavalry-archer-class c: 240)
+	(up-remove-objects search-local object-data-group-flag == 1)
+	(up-remove-objects search-local object-data-group-flag == 2)
+	(up-remove-objects search-local object-data-group-flag == 3)
+;	(up-remove-objects search-local object-data-group-flag == 6)
+	(up-remove-objects search-local object-data-type g:!= g-current-ranged-group-type)
+;	(up-remove-objects search-local object-data-next-attack g:> g-projectile-release-delay)
+	(up-copy-point p-x-1 p-ranged-group-x)
+	(up-bound-point p-x-1 p-x-1)
+	(set-strategic-number sn-keystates 2)
+	(up-target-point p-x-1 action-move -1 stance-no-attack)
+	(set-strategic-number sn-keystates 0)
+)
+
+
+
+;======== MELEE NEARBY
+;count the number of melee units near the group, to know when to move backwards while firing
+;this uses a focus player loop, which basically just runs the same search enough times to search for each 
+;player number in the game, since sn-focus-player-number can only be set to one player at a time. This is 
+;important in games with multiple players, otherwise the group will "ignore" certain players' units
+
+;1. SET UP THE SEARCH 
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-full-reset-search)
+	(up-set-target-point p-ranged-group-x)
+	(set-goal rt 5)
+	(up-modify-goal rt g:min saved-archer-range-2)
+	(up-filter-distance c: -1 g: rt)
+	(set-goal p-enemy-melee-group-x -1)
+	(set-goal p-enemy-melee-group-y -1)
+
+
+	(set-goal g-melee-nearby 0)
+	(set-goal rt 0)
+	(set-goal p-x-1 0)
+	(set-goal p-y-1 0)
+)
+
+;2. SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: villager-class c: 10)
+)
+
+;3. LOOP THE SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-remove-objects search-remote object-data-action != actionid-attack)
+	(set-strategic-number sn-focus-player-number 1)
+)
+;2. SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: infantry-class c: 10)
+	(up-find-remote c: cavalry-class c: 10)
+	(up-find-remote c: scout-cavalry-class c: 10)
+)
+
+;3. LOOP THE SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-remove-objects search-remote object-data-type == spearman-line)
+	(up-remove-objects search-remote object-data-target == monastery-class)
+	(up-remove-objects search-remote object-data-target == villager-class)
+	(up-remove-objects search-remote object-data-target == cavalry-class)
+	(up-remove-objects search-remote object-data-target == siege-weapon-class)
+	(up-remove-objects search-remote object-data-target == building-class)
+	(up-remove-objects search-remote object-data-target == infantry-class)
+	(up-remove-objects search-remote object-data-target == scout-cavalry-class)
+	(up-remove-objects search-remote object-data-target == tower-class)
+	(up-clean-search search-remote -1 search-order-asc)
+	(set-goal check-goal 0)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-set-target-object search-remote c: 0)
+	(goal check-goal 0)
+=>
+	(up-get-object-data object-data-point-x p-x-2)
+	(up-get-object-data object-data-point-y p-y-2)
+	(up-modify-goal p-x-1 g:+ p-x-2)
+	(up-modify-goal p-y-1 g:+ p-y-2)
+	(up-modify-goal g-melee-nearby c:+ 1)
+	(set-goal check-goal 1)
+)
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal check-goal 1)
+=>
+	(set-goal check-goal 0)
+	(up-remove-objects search-remote -1 == 0)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-melee-nearby > 0)
+=>
+	(up-modify-goal p-x-1 g:/ g-melee-nearby)
+	(up-modify-goal p-y-1 g:/ g-melee-nearby)
+	(up-copy-point p-enemy-melee-group-x p-x-1) ;remote group center of gravity
+)
+
+;======== ENEMY RANGED NEARBY
+;this section counts the number of enemy ranged units near our ranged group, mainly important for judging whether to push forward, dodge, or retreat.
+;it is another focus loop, filtered by distance from near the ranged group, searching for any enemy ranged units and saving the results to a goal
+
+
+
+;1. SET UP THE SEARCH 
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(set-goal g-math-1 0)
+	(set-goal g-enemy-max-range 0)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-full-reset-search)
+	(up-set-target-point p-ranged-group-x)
+	(set-goal rt 10)
+	(up-modify-goal rt g:min g-tracking-range)
+	(up-modify-goal rt g:max g-firing-range)
+	(up-filter-distance c: -1 g: rt)
+	(set-goal g-enemy-ranged-nearby 0)
+	(set-goal rt 0)
+	(set-goal p-enemy-ranged-group-x -1)
+	(set-goal p-enemy-ranged-group-y -1)
+	(set-goal p-x-1 0)
+	(set-goal p-y-1 0)
+	(up-find-local c: cavalry-class c: 60)
+	(up-find-local c: infantry-class c: 60)
+	(up-find-local c: scout-cavalry-class c: 60)
+	(up-find-local c: archery-class c: 60)
+	(up-find-local c: cavalry-archer-class c: 60)
+	(up-find-local c: archery-cannon-class c: 60)
+)
+
+;2. SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: archery-class c: 60)
+	(up-find-remote c: siege-weapon-class c: 60)
+	(up-find-remote c: cavalry-archer-class c: 60)
+	(up-find-remote c: archery-cannon-class c: 60)
+)
+
+;3. LOOP THE SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+;	(up-remove-objects search-remote object-data-target == monastery-class)
+;	(up-remove-objects search-remote object-data-target == villager-class)
+;	(up-remove-objects search-remote object-data-target == siege-weapon-class)
+;	(up-remove-objects search-remote object-data-target == building-class)
+	(up-get-search-state lt)
+	(up-modify-goal g-local-fight-evaluation g:= lt)
+	(up-modify-goal g-local-fight-evaluation g:- rt)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-point-x p-x-2)
+	(up-get-object-data object-data-point-y p-y-2)
+	(up-get-object-data object-data-range g-math-1)
+	(up-modify-goal p-x-1 g:+ p-x-2)
+	(up-modify-goal p-y-1 g:+ p-y-2)
+	(up-modify-goal g-enemy-ranged-nearby c:+ 1)
+	(up-modify-goal g-enemy-max-range g:max g-math-1)
+	(up-get-search-state lt)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal rt > 0)
+=>
+	(up-remove-objects search-remote -1 == 0)
+	(up-get-search-state lt)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-enemy-ranged-nearby > 0)
+=>
+	(up-modify-goal p-x-1 g:/ g-enemy-ranged-nearby)
+	(up-modify-goal p-y-1 g:/ g-enemy-ranged-nearby)
+	(up-copy-point p-enemy-ranged-group-x p-x-1) ;remote group center of gravity
+)
+
+;======== ENEMY VILLAGER NEARBY
+
+
+;1. SET UP THE SEARCH 
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(set-goal g-enemy-vills-nearby no)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-full-reset-search)
+	(up-set-target-point p-ranged-group-x)
+	(set-goal g-math-1 10)
+	(up-modify-goal g-math-1 g:min g-tracking-range)
+	(up-modify-goal g-math-1 g:max g-firing-range)
+	(up-filter-distance c: -1 g: g-math-1)
+	(up-filter-exclude -1 actionid-attack -1 -1)
+)
+
+;2. SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(stance-toward focus-player enemy)
+	(or	(up-find-remote c: villager-class c: 40)
+	(or	(up-find-remote c: monastery-class c: 20)
+		(up-find-remote c: monk-with-relic-class c: 2)))
+=>
+	(set-goal g-enemy-vills-nearby yes)
+)
+
+;3. LOOP THE SEARCH
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-enemy-vills-nearby yes)
+=>
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object p-enemy-vill-x)
+)
+
+;>>>>>>>>>>> NEAREST TOWER-X
+;same as tc, except for towers
+
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(set-goal p-nearest-enemy-tower-x -1)
+	(set-goal p-nearest-enemy-tower-y -1)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-full-reset-search)
+	(up-filter-status c: status-ready c: list-active)
+)
+(defrule
+;	(up-projectile-target projectile-town-center != siege-weapon-class)
+;	(up-projectile-target projectile-town-center != infantry-class)
+;	(up-projectile-target projectile-town-center != cavalry-class)
+;	(up-projectile-target projectile-town-center != building-class)
+;	(up-projectile-target projectile-town-center != scout-cavalry-class)
+	(up-group-size g: g-current-ranged-group > 0)
+	(or	(up-projectile-detected projectile-town-center < 5000)
+		(strategic-number sn-military-superiority < 4))
+	(stance-toward focus-player enemy)
+=>
+	(up-find-status-remote c: town-center c: 15)
+)
+(defrule
+;	(up-projectile-target projectile-fortification != siege-weapon-class)
+;	(up-projectile-target projectile-fortification != infantry-class)
+;	(up-projectile-target projectile-fortification != cavalry-class)
+;	(up-projectile-target projectile-fortification != building-class)
+;	(up-projectile-target projectile-fortification != scout-cavalry-class)
+	(up-group-size g: g-current-ranged-group > 0)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-status-remote c: tower-class c: 15)
+	(up-find-status-remote c: castle c: 15)
+	(up-find-status-remote c: krepost c: 15)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -3)
+)
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-set-target-point p-ranged-group-x)
+	(up-remove-objects search-remote object-data-target == siege-weapon-class)
+	(up-remove-objects search-remote object-data-target == infantry-class)
+	(up-remove-objects search-remote object-data-target == cavalry-class)
+	(up-remove-objects search-remote object-data-target == building-class)
+	(up-remove-objects search-remote object-data-target == scout-cavalry-class)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-point position-object p-nearest-enemy-tower-x)
+)
+;--------------------------------DECISIONS-------------------------------------------------------------
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-copy-point p-destination-x p-ranged-group-x)
+	(up-lerp-tiles p-destination-x p-march-x c: 8)
+	(up-bound-point p-destination-x p-destination-x)
+	(set-goal g-archer-mode p-march-x)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-enemy-vills-nearby yes)
+=>
+	(up-copy-point p-destination-x p-enemy-vill-x)
+	(set-goal g-archer-mode g-enemy-vills-nearby)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-enemy-ranged-nearby > 0)
+=>
+	(set-goal g-archer-mode sidling)
+)
+
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-enemy-ranged-nearby > 0)
+	(or	(and	(up-point-distance p-ranged-group-x p-enemy-ranged-group-x g:> g-firing-range)
+			(up-compare-goal g-local-fight-evaluation > 3))
+	(or	(up-compare-goal g-local-fight-evaluation > 7)
+		(up-compare-goal g-enemy-max-range g:> g-firing-range)))
+	(up-compare-goal g-local-fight-evaluation >= 0)
+	(up-point-distance p-ranged-group-x p-enemy-ranged-group-x g:>= saved-archer-range-2)
+=>
+	(up-copy-point p-destination-x p-enemy-ranged-group-x)
+	(set-goal g-archer-mode sidling-push)
+)
+
+
+
+
+(defrule
+	(or	(up-point-distance p-ranged-group-x p-enemy-ranged-group-x g:<= g-firing-range)
+		(and	(up-compare-goal g-enemy-max-range g:> g-firing-range)
+			(up-compare-goal g-local-fight-evaluation < 0)))
+	(up-compare-goal g-enemy-ranged-nearby > 0)
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-local-fight-evaluation < 5)
+=>
+	(up-copy-point p-destination-x p-self-x)
+	(set-goal g-archer-mode sidle-away)
+)
+
+
+(defrule
+	(up-point-distance p-enemy-ranged-group-x p-ranged-group-x g:>= saved-archer-range-2)
+	(or	(up-compare-goal g-local-fight-evaluation >= 15)
+		(up-compare-goal g-enemy-ranged-nearby g:< g-local-fight-evaluation))
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-enemy-ranged-nearby > 0)
+=>
+	(up-copy-point p-destination-x p-enemy-ranged-group-x)
+	(set-goal g-archer-mode p-march-y)
+)
+
+
+
+(defrule
+	(up-point-distance p-ranged-group-x p-self-x > 15)
+	(up-compare-goal g-enemy-max-range g:> g-firing-range)
+	(up-compare-goal g-enemy-ranged-nearby > 0)
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-local-fight-evaluation < -4)
+=>
+	(up-copy-point p-destination-x p-self-x)
+	(set-goal g-archer-mode retreat)
+)
+
+
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-melee-nearby > 0)
+=>
+	(up-copy-point p-destination-x p-ranged-group-x)
+	(up-lerp-tiles p-destination-x p-enemy-melee-group-x c: -5)
+	(set-goal g-archer-mode retreat-from-melee)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-point-distance p-ranged-group-x p-nearest-enemy-tower-x < 14)
+=>
+	(set-goal g-archer-mode retreat-from-fort)
+)
+;--------------------MARCHING--------------------------------------------------------------------------
+
+(defrule
+	(goal g-archer-mode p-march-x)
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-copy-point p-order-x p-ranged-group-x)
+	(up-lerp-tiles p-order-x p-march-x c: 8)
+	(up-bound-point p-order-x p-order-x)
+)
+
+;==========TRACKING=====================================
+
+
+(defrule
+	(goal g-archer-mode p-march-y)
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-copy-point p-order-x p-enemy-ranged-group-x)
+	(up-lerp-tiles p-order-x p-ranged-group-x c: 2)
+	(up-bound-point p-order-x p-order-x)
+)
+
+
+;;;;;------------AGGRESSIVE SIDLING------------------------------------------
+;edge closer to enemy ranged
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode sidling-push)
+=>
+	(up-get-point-distance p-ranged-group-x p-enemy-ranged-group-x g-math-1)
+	(up-modify-goal g-math-1 c:+ 7)
+	(up-copy-point p-x-1 p-enemy-ranged-group-x)
+	(up-copy-point p-x-2 p-enemy-ranged-group-x)
+	(up-cross-tiles p-x-1 p-ranged-group-x g: g-math-1)
+	(up-modify-goal g-math-1 c:* -1)
+	(up-cross-tiles p-x-2 p-ranged-group-x g: g-math-1)
+	(up-bound-point p-x-1 p-x-1)
+	(up-bound-point p-x-2 p-x-2)
+	(up-get-point-distance p-dodge-x p-x-1 g-math-1)
+	(up-copy-point p-order-x p-x-1)
+	(up-get-point-elevation p-order-x g-math-2)
+)
+(defrule
+	(up-point-elevation p-x-2 g:>= g-math-2)
+	(or	(and	(up-point-distance p-x-2 p-nearest-enemy-tower-x g:> g-math-1)
+			(goal g-ballistic-enemies yes))
+	(or	(up-point-elevation p-x-2 g:> g-math-2)
+		(and	(goal p-dodge-x 1)
+			(goal g-ballistic-enemies no))))
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode sidling-push)
+=>
+	(up-copy-point p-order-x p-x-2)
+)
+;------------------------TRACK VILLAGERS-----------------------
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode g-enemy-vills-nearby)
+=>
+	(up-copy-point p-order-x p-enemy-vill-x)
+	(up-lerp-tiles p-order-x p-ranged-group-x c: 2)
+	(up-bound-point p-order-x p-order-x)
+)
+
+;-------------------------------------------------------------------
+;------------------------SIDLE AWAY---------------------------------------------------------------------------
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode sidle-away)
+=>
+	(up-copy-point p-order-x p-ranged-group-x)
+	(up-lerp-tiles p-order-x p-enemy-ranged-group-x c: -5)
+	(up-copy-point p-x-2 p-order-x)
+	(up-cross-tiles p-order-x p-enemy-ranged-group-x c: 10)
+	(up-cross-tiles p-x-2 p-enemy-ranged-group-x c: -10)
+	(up-bound-point p-order-x p-order-x)
+	(up-bound-point p-x-2 p-x-2)
+	(up-get-point-distance p-order-x p-self-x g-math-1)
+	(up-copy-point p-order-x p-x-1)
+	(up-get-point-elevation p-order-x g-my-elevation)
+	(up-get-point-elevation p-x-2 g-enemy-elevation)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-enemy-elevation g:>= g-my-elevation)
+	(or	(and	(up-point-distance p-x-2 p-self-x g:< g-math-1)
+			(goal g-ballistic-enemies yes))
+	(or	(up-compare-goal g-enemy-elevation g:> g-my-elevation)
+		(and	(goal p-dodge-x 1)
+			(goal g-ballistic-enemies no))))
+	(goal g-archer-mode sidle-away)
+=>
+	(up-copy-point p-order-x p-x-2)
+)
+
+;;;;;------------SIDLING------------------------------------------
+;move perpendicular
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode sidling)
+=>
+	(up-copy-point p-x-1 p-ranged-group-x)
+	(up-copy-point p-x-2 p-ranged-group-x)
+	(up-cross-tiles p-x-1 p-enemy-ranged-group-x c: 5)
+	(up-cross-tiles p-x-2 p-enemy-ranged-group-x c: -5)
+	(up-bound-point p-x-1 p-x-1)
+	(up-bound-point p-x-2 p-x-2)
+	(up-get-point-distance p-destination-x p-x-1 g-math-1)
+	(up-copy-point p-order-x p-x-1)
+	(up-get-point-elevation p-order-x g-math-2)
+)
+(defrule
+	(up-point-elevation p-x-2 g:>= g-math-2)
+	(or	(and	(goal p-dodge-x 1)
+			(goal g-ballistic-enemies no))
+	(or	(up-point-elevation p-x-2 g:> g-math-2)
+		(and	(up-point-distance p-destination-x p-x-2 g:< g-math-1)
+			(goal g-ballistic-enemies yes))))
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode sidling)
+=>
+	(up-copy-point p-order-x p-x-2)
+)
+;-----------------------------RETREAT FROM MELEE-------------------------------------------------------------------------------------
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode retreat-from-melee)
+=>
+	(up-copy-point p-order-x p-ranged-group-x)
+	(up-lerp-tiles p-order-x p-enemy-melee-group-x c: -6)
+	(up-bound-point p-order-x p-order-x)
+)
+(defrule
+	(up-point-distance p-order-x p-self-x g:> g-firing-range)
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode retreat-from-melee)
+=>
+	(up-lerp-tiles p-order-x p-self-x c: 4)
+	(up-lerp-tiles p-order-x p-ranged-group-x c: -2)
+	(up-bound-point p-order-x p-order-x)
+)
+;-------------------------------------------FULL RETREAT--------------------------------------------------------------
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode retreat)
+=>
+	(up-copy-point p-order-x p-ranged-group-x)
+	(up-lerp-tiles p-order-x p-self-x c: 9)
+	(up-bound-point p-order-x p-order-x)
+)
+;------------------------AVOID FORTIFICATIONS---------------------------------------------------------------------------
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-archer-mode retreat-from-fort)
+=>
+	(up-copy-point p-x-1 p-ranged-group-x)
+	(up-lerp-tiles p-x-1 p-nearest-enemy-tower-x c: -5)
+	(up-copy-point p-x-2 p-x-1)
+	(up-cross-tiles p-x-1 p-nearest-enemy-tower-x c: 10)
+	(up-cross-tiles p-x-2 p-nearest-enemy-tower-x c: -10)
+	(up-bound-point p-x-1 p-x-1)
+	(up-bound-point p-x-2 p-x-2)
+	(up-get-point-distance p-x-1 p-destination-x g-math-1)
+	(up-copy-point p-order-x p-x-1)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal g-ballistic-enemies yes)
+	(up-point-distance p-x-2 p-destination-x g:< g-math-1)
+	(goal g-archer-mode retreat-from-fort)
+=>
+	(up-copy-point p-order-x p-x-2)
+)
+
+;--------------------------Avoid Trees
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(set-goal g-math-1 3)
+	(set-goal g-math-2 -3)
+)
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-copy-point p-x-1 p-order-x)
+	(up-copy-point p-x-2 p-order-x)
+	(up-lerp-tiles p-x-1 p-ranged-group-x g: g-math-2)
+	(up-lerp-tiles p-x-2 p-ranged-group-x g: g-math-2)
+	(up-cross-tiles p-x-1 p-ranged-group-x g: g-math-1)
+	(up-cross-tiles p-x-2 p-ranged-group-x g: g-math-2)
+	(up-bound-point p-x-1 p-x-1)
+	(up-bound-point p-x-2 p-x-2)
+)
+
+(defrule
+	(not	(up-point-contains p-x-1 c: trees-class))
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-copy-point p-order-x p-x-1)
+	(up-jump-rule 2)
+)
+(defrule
+	(not	(up-point-contains p-x-2 c: trees-class))
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-copy-point p-order-x p-x-2)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal g-math-1 < 25)
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-modify-goal g-math-1 c:+ 2)
+	(up-modify-goal g-math-2 c:- 2)
+	(up-jump-rule -4)
+)
+;---------------------------------------ATTACK---------------------------
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+;	(up-remove-objects search-local object-data-group-flag != 6)
+;	(up-remove-objects search-local object-data-next-attack != 0)
+	(up-remove-objects search-local object-data-target-time != -2)
+	(up-create-group 0 0 c: 6)
+	(up-modify-group-flag 0 c: 6)
+
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+;	(up-remove-objects search-local object-data-group-flag != 6)
+	(up-remove-objects search-local object-data-next-attack == 0)
+	(up-create-group 0 0 c: 6)
+	(up-modify-group-flag 0 c: 6)
+)
+(load "Ares/RangedAttack")
+;---------------------------------------MOVE--------------------------------
+
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-compare-goal g-archer-mode != retreat-from-melee)
+	(goal p-backline-x -324)
+=>
+	(up-copy-point p-backline-x p-ranged-group-x)
+	(up-lerp-tiles p-backline-x p-order-x c: -2)
+	(up-bound-point p-backline-x p-backline-x)
+)
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+	(goal p-backline-x -324)
+=>
+	(up-copy-point p-backline-x p-order-x)
+	(up-lerp-tiles p-backline-x p-enemy-melee-group-x c: -2)
+)
+;(defrule
+;	(up-group-size g: g-current-ranged-group > 0)
+;=>
+;	(up-full-reset-search)
+;	(up-set-group search-local g: g-current-ranged-group)
+;	(up-remove-objects search-local object-data-next-attack == 0)
+;	(up-remove-objects search-local object-data-group-flag == 6)
+;	(set-strategic-number sn-keystates 1)
+;	(up-target-point p-order-x action-patrol -1 stance-no-attack)
+;	(up-remove-objects search-local object-data-next-attack g:>= g-projectile-release-delay)
+;	(set-strategic-number sn-keystates 0)
+;	(up-target-point p-order-x action-move -1 stance-no-attack)
+;)
+(defrule
+	(not(up-projectile-detected projectile-siege < 1500))
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-group-size g: g-current-ranged-group <= 6)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+;	(up-remove-objects search-local object-data-next-attack != 0)
+;	(up-remove-objects search-local object-data-target-time != -2)
+	(up-remove-objects search-local object-data-group-flag == 6)
+;	(set-strategic-number sn-keystates 1)
+;	(up-target-point p-order-x action-patrol -1 stance-no-attack)
+;	(up-remove-objects search-local object-data-next-attack g:>= g-projectile-release-delay)
+;	(set-strategic-number sn-keystates 0)
+	(up-target-point p-order-x action-move formation-box stance-no-attack)
+)
+
+(defrule
+	(not(up-projectile-detected projectile-siege < 1500))
+	(up-group-size g: g-current-ranged-group > 6)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+;	(up-remove-objects search-local object-data-next-attack != 0)
+;	(up-remove-objects search-local object-data-target-time != -2)
+	(up-remove-objects search-local object-data-group-flag == 6)
+;	(set-strategic-number sn-keystates 1)
+;	(up-target-point p-order-x action-patrol -1 stance-no-attack)
+;	(up-remove-objects search-local object-data-next-attack g:>= g-projectile-release-delay)
+;	(set-strategic-number sn-keystates 0)
+	(up-target-point p-order-x action-move formation-line stance-no-attack)
+)
+
+(defrule
+	(up-projectile-detected projectile-siege < 1500)
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+;	(up-remove-objects search-local object-data-next-attack != 0)
+;	(up-remove-objects search-local object-data-target-time != -2)
+	(up-remove-objects search-local object-data-group-flag == 6)
+;	(set-strategic-number sn-keystates 1)
+;	(up-target-point p-order-x action-patrol -1 stance-no-attack)
+;	(up-remove-objects search-local object-data-next-attack g:>= g-projectile-release-delay)
+;	(set-strategic-number sn-keystates 0)
+	(up-target-point p-order-x action-move formation-flank stance-no-attack)
+)
+
+;-----------------------
+
+(defrule
+	(up-compare-goal g-current-ranged-group != -1)
+=>
+	(up-jump-direct g: function-recall-jump))
+
+(defrule
+	(up-group-size c: 1 > 0)
+=>
+	(set-goal g-current-ranged-group 1)
+	(set-goal g-other-ranged-group1 3)
+	(set-goal g-other-ranged-group2 2)
+	(up-modify-goal g-current-ranged-group-type g:= g-group1-type)
+	(up-get-rule-id function-recall-jump)
+	(up-modify-goal function-recall-jump c:+ 1)
+	(up-jump-direct g: jump-to-ranged-group-function)
+)
+
+
+
+(defrule
+	(up-group-size c: 2 > 0)
+=>
+	(set-goal g-current-ranged-group 2)
+	(set-goal g-other-ranged-group1 1)
+	(set-goal g-other-ranged-group2 3)
+	(up-modify-goal g-current-ranged-group-type g:= g-group2-type)
+	(up-get-rule-id function-recall-jump)
+	(up-modify-goal function-recall-jump c:+ 1)
+	(up-jump-direct g: jump-to-ranged-group-function)
+)
+
+(defrule
+	(up-group-size c: 3 > 0)
+=>
+	(set-goal g-current-ranged-group 3)
+	(set-goal g-other-ranged-group1 1)
+	(set-goal g-other-ranged-group2 2)
+	(up-modify-goal g-current-ranged-group-type g:= g-group3-type)
+	(up-get-rule-id function-recall-jump)
+	(up-modify-goal function-recall-jump c:+ 1)
+	(up-jump-direct g: jump-to-ranged-group-function)
+)
+(defrule
+	(up-compare-goal g-group1-type != -1)
+	(up-group-size c: 1 < 1)
+=>
+	(set-goal g-group1-type -1)
+)
+(defrule
+	(up-compare-goal g-group2-type != -1)
+	(up-group-size c: 2 < 1)
+=>
+	(set-goal g-group2-type -1)
+)
+(defrule
+	(up-compare-goal g-group3-type != -1)
+	(up-group-size c: 3 < 1)
+=>
+	(set-goal g-group3-type -1)
+)
+
+
+(defrule
+	(goal g-ranged-group-size 0)
+	(goal p-largest-ranged-group-x -255)
+=>
+	(up-copy-point p-largest-ranged-group-x p-march-x))

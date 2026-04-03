@@ -1,0 +1,561 @@
+(defrule; don't move this rule
+	(up-compare-goal G-age <= GV-feudal)
+	(up-compare-goal G-build-order g:!= G-strat-bo)
+	=>
+	(up-modify-goal G-build-order g:= G-strat-bo))
+
+; (defrule; failsafe
+; 	(goal G-switch-strat 1)
+; 	=>
+; 	(set-goal G-strat DEFAULT-STRAT)
+; 	(set-goal G-switch-strat 0))
+
+(defrule
+	(goal G-age GV-upimp)
+	(up-compare-goal G-strat != GV-monks-only)
+	(up-compare-goal G-strat != GV-eagleflood)
+	=>
+	(set-goal G-locked-strat 0)
+	(disable-self))
+
+; == EAGLEFLOOD UNLOCK ==
+(defrule
+	(goal G-strat GV-eagleflood)
+	(goal G-locked-strat 1)
+	(current-age == imperial-age)
+	(current-age-time >= 360)
+	=>
+	(set-goal G-locked-strat 0))
+
+; === TOWER DEFENCE ==
+(defrule
+	(goal G-age GV-dark)
+	(goal G-position GV-flank)
+	(or	(goal G-build-order GV-fast-castle)
+		(goal G-build-order GV-slow-castle))
+	(goal G-maptype GV-land-open)
+	(dropsite-min-distance stone < 26); ?
+	(dropsite-min-distance stone > -1)
+	(up-compare-goal G-strat != GV-klewproper)
+	(up-compare-goal G-locked-strat c:!= 1)
+	=>
+	(set-goal G-build-order GV-feudal-war))
+(defrule
+	(or	(goal G-age GV-upfeudal)
+		(goal G-age GV-feudal))
+	(goal G-position GV-flank)
+	(goal G-maptype GV-land-open)
+	(dropsite-min-distance stone < 26); ?
+	(dropsite-min-distance stone > -1)
+	(or	(goal G-build-order GV-fast-castle)
+		(goal G-build-order GV-slow-castle))
+	(up-compare-goal G-strat != GV-klewproper)
+	=>
+	(set-goal G-tower-defence 1)
+;	(chat-to-player my-player-number "tower defence")
+	(disable-self))
+; (defrule; feudal threat
+; 	(up-compare-goal G-tower-defence < 1)
+; 	(goal G-age GV-feudal)
+; 	(goal G-maptype GV-land-open)
+; 	(goal G-position GV-flank)
+; 	(up-get-fact military-population 0 G-temp1)
+; 	(up-get-target-fact military-population 0 G-temp2)
+; 	(up-modify-goal G-temp2 g:- G-temp1)
+; 	(up-compare-goal G-temp2 >= 7)
+; 	(up-compare-goal G-strat != GV-klewproper)
+; 	=>
+; 	(chat-to-player my-player-number "tower defence")
+; 	(set-goal G-tower-defence 1))
+
+(defrule
+	(goal G-tower-defence 1)
+	(up-get-fact building-type-count mining-camp G-temp1)
+	(up-get-fact building-type-count lumber-camp G-temp2)
+	(up-get-fact building-type-count mill G-temp3)
+	(up-get-fact building-type-count settlement G-temp4)
+;	(up-get-fact building-type-count mule-cart G-temp5)
+	(up-modify-goal G-temp1 g:+ G-temp2)
+	(up-modify-goal G-temp1 g:+ G-temp3)
+	(up-modify-goal G-temp1 g:+ G-temp4)
+;	(up-modify-goal G-temp1 g:+ G-temp5)
+	(or	(building-type-count-total TOWER >= 6)
+		(or	(building-type-count-total TOWER g:> G-temp1)
+			(or	(up-compare-goal G-age >= GV-castle)
+				(and	(building-type-count-total TOWER >= 3)
+					(up-compare-goal G-age >= GV-upcastle)))))
+	=>
+	(set-goal G-tower-defence -1))
+
+; stop when enemy not making much military
+
+
+; ===================
+; ==== FEUDAL UP ====
+; ===================
+(defrule
+	(goal G-build-order GV-feudal-war)
+	(goal G-eco-balance GV-early-feudal)
+	(current-age < feudal-age)
+	=>
+	(set-goal G-saving-wood 1); rax
+	(disable-self))
+(defrule
+	(nor	(civ-selected celtic)
+		(civ-selected japanese))
+	(goal G-build-order GV-feudal-war)
+	(goal G-eco-balance GV-early-feudal)
+	(goal G-age GV-upfeudal)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 26)
+	(set-strategic-number sn-wood-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 4)
+	(up-retask-gatherers food c: 5)
+	(disable-self))
+(defrule
+	(or	(civ-selected celtic)
+		(civ-selected japanese))
+	(goal G-build-order GV-feudal-war)
+	(goal G-eco-balance GV-early-feudal)
+	(goal G-age GV-upfeudal)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 64)
+	(set-strategic-number sn-gold-gatherer-percentage 4)
+	(up-retask-gatherers food c: 4)
+	(disable-self))
+
+; ==========================
+; ==== TRASH WAR SWITCH ====
+; ==========================
+(defrule
+	(or	(or	(or	(current-age < castle-age); imp
+				(goal G-strat GV-trashwar))
+			(gold-amount > 700))
+		(and	(up-research-status c: ri-hussite-reforms >= research-pending)
+			(goal G-strat-class1 monastery-class)))
+	=>
+	(up-jump-rule 3))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-modify-goal G-temp1 g:= G-min-gaia-gold)
+	(up-modify-goal G-temp1 c:+ 4))
+(defrule
+	(up-compare-goal G-trade != 1)
+	(goal G-strat GV-monks-only)
+	(or	(up-gaia-type-count c: gold g:< G-min-gaia-gold)
+		(cc-players-unit-type-count 0 gold-mine g:< G-min-gaia-gold))
+	(cc-players-unit-type-count 0 gold-mine g:< G-temp1)
+	=>
+	(set-goal G-strat GV-trashwar)
+	(set-goal G-locked-strat 1)
+	(chat-to-all "Running out of gold. I can't do monks only anymore :(")
+	(up-jump-rule 1))
+(defrule
+	(up-compare-goal G-trade != 1)
+	(or	(up-gaia-type-count c: gold g:< G-min-gaia-gold)
+		(cc-players-unit-type-count 0 gold-mine g:< G-min-gaia-gold))
+	(cc-players-unit-type-count 0 gold-mine g:< G-temp1)
+	=>
+;	(chat-to-player my-player-number "initiating trash war")
+	(set-goal G-strat GV-trashwar)
+	(set-goal G-locked-strat 1))
+;-----------------------------------------------------------------------
+
+
+; =========================
+; ==== STRAT SELECTION ====
+; =========================
+; == DEFAULT STRAT ==
+(defrule
+ 	(up-compare-goal G-default-strat <= 0)
+	(up-compare-const FIRELANCERCIV > MONKCIV-CASTLE)
+	(or	(up-compare-goal G-maptype < 2)
+		(up-compare-goal G-maptype > 5)); open maps
+ 	=>
+;	(chat-to-allies "default strat: fire lancers")
+	(set-goal G-default-strat GV-firelancers)
+	(disable-self))
+(defrule
+ 	(up-compare-goal G-default-strat <= 0)
+	(up-compare-const ARCHERCIV > MONKCIV-CASTLE)
+	(and	(up-compare-goal G-maptype >= 2)
+		(up-compare-goal G-maptype <= 5)); closed maps
+ 	=>
+;	(chat-to-allies "default strat: xbows")
+	(set-goal G-default-strat GV-xbows)
+	(disable-self))
+
+(defrule
+	(up-compare-goal G-age < GV-upfeudal)
+	(and	(up-compare-goal G-maptype >= 2)
+		(up-compare-goal G-maptype <= 5)); closed maps
+	(up-compare-goal G-maptype != GV-land-michi)
+	(up-compare-const UUCIV-CASTLE > MONKCIV-CASTLE)
+;	(up-compare-const UUCIV-CASTLE >= FIRELANCERCIV)
+	(up-compare-const UUCIV-CASTLE >= EAGLECIV)
+	(or	(up-compare-const UUCIV-CASTLE > ARCHERCIV)
+		(civ-selected vietnamese))
+	; (up-compare-const UUCIV-CASTLE >= SCORPCIV)
+;	(or	(fencrazy mega food!)
+		(up-compare-const UU-RESOURCE == wood);)
+	(up-gaia-type-count-total c: stone >= 4); does not see ally scouted res!
+	=>
+;	(chat-to-allies "default strat: castle drop")
+	(set-goal G-default-strat GV-cdropproper)
+	(disable-self))
+(defrule
+	(up-compare-goal G-age < GV-upfeudal)
+	(or	(up-compare-goal G-maptype < 2)
+		(up-compare-goal G-maptype > 5)); open maps
+	(up-compare-const UUCIV-CASTLE >= MONKCIV-CASTLE)
+	; (up-compare-const UUCIV-CASTLE >= FIRELANCERCIV)
+	(or	(goal G-position GV-flank)
+		(and	(up-compare-const UUCIV-CASTLE >= EAGLECIV)
+			(nand	(up-compare-const CHAMP == champi-line)
+				(up-compare-const CHAMPCIV >= UUCIV-CASTLE))))
+	; (up-compare-const UUCIV-CASTLE >= ARCHERCIV)
+;	(or	(fencrazy mega food!)
+		(up-compare-const UU-RESOURCE == wood);)
+	(up-gaia-type-count-total c: stone >= 4)
+	=>
+;	(chat-to-allies "default strat: castle drop")
+	(set-goal G-default-strat GV-cdropproper)
+	(disable-self))
+
+(defrule
+	(up-compare-const EAGLECIV > MONKCIV-CASTLE)
+;	(up-compare-const EAGLECIV > UUCIV-CASTLE)
+	=>
+;	(chat-to-allies "default strat: eagles")
+	(set-goal G-default-strat GV-klew); GV-eagleflood
+	(disable-self))
+(defrule
+	(up-compare-const CHAMP == champi-line)
+	(up-compare-const CHAMPCIV > MONKCIV-CASTLE)
+	=>
+	(set-goal G-default-strat GV-champflood)
+	(disable-self))
+
+(defrule
+	; (up-compare-const MONKCIV-CASTLE >= SCORPCIV)
+;	(up-compare-const MONKCIV-CASTLE >= UUCIV-CASTLE)
+	(up-compare-const MONKCIV-CASTLE >= EAGLECIV)
+	(nand	(up-compare-const CHAMP == champi-line)
+		(up-compare-const CHAMPCIV > MONKCIV-CASTLE))	
+	(or	(up-compare-const MONKCIV-CASTLE >= FIRELANCERCIV)
+		(and	(up-compare-goal G-maptype >= 2)
+			(up-compare-goal G-maptype <= 5))); closed maps
+	(or	(up-compare-const MONKCIV-CASTLE >= ARCHERCIV)
+		(or	(up-compare-goal G-maptype < 2)
+			(up-compare-goal G-maptype > 5))); open maps
+	(or	(and	(up-compare-goal G-maptype >= 2)
+			(up-compare-goal G-maptype <= 5)); closed maps
+		(or	(up-compare-const MONKCIV-CASTLE > UUCIV-CASTLE)
+			(or	(up-gaia-type-count-total c: stone < 4)
+				(up-compare-const UU-RESOURCE != wood))))
+	=>
+;	(chat-to-allies "default strat: monks")
+	(set-goal G-default-strat GV-monkflood)
+	(disable-self))
+
+; == PURE BOOM ==
+(defrule
+	(goal G-maptype GV-land-michi)
+	=>
+	(set-goal G-strat GV-boom)
+	(disable-self))
+
+; == LOCK IN DEFAULT STRAT ==
+(defrule
+	(up-compare-goal G-strat <= 0)
+	(or	(or	(unit-type-count-total villager >= 20)
+			(unit-type-count-total villager g:>= G-desired-vills))
+		(up-compare-goal G-age >= GV-upfeudal))
+	=>
+	(up-modify-goal G-strat g:= G-default-strat)
+	(disable-self))
+(defrule
+	(goal G-strat GV-boom)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-modify-goal G-strat g:= G-default-strat)
+	(disable-self))
+
+
+
+
+
+; ===============
+; ==== SLING ====
+; ===============
+
+
+
+; ================================
+; ==== GENERAL STRAT SWITCHES ====
+; ================================
+(defrule; cdrop castle complete
+	(goal G-strat GV-cdrop)
+	(building-type-count-total castle > 0)
+	=>
+	(set-strategic-number sn-percent-building-cancellation 1)
+	(up-retask-gatherers stone c: 10)
+	(set-goal G-strat GV-unique)
+	(disable-self))
+(defrule; cdrop castle complete
+	(goal G-strat GV-cdropproper)
+	(or	(building-type-count-total castle > 0)
+		(and	(building-type-count donjon > 0)
+			(civ-selected sicilians)))
+	=>
+	(set-strategic-number sn-percent-building-cancellation 1)
+	(up-retask-gatherers stone c: 5)
+	(set-goal G-strat GV-unique)
+	(disable-self))
+
+(defrule; imp-up eagle
+	(up-compare-const EAGLECIV >= 2)
+	(not	(goal G-strat GV-eagleflood))
+	(up-compare-goal G-age >= GV-upimp)
+	(not	(goal G-strat GV-monkflood))
+	(not	(goal G-locked-strat 1))
+	=>
+	(set-goal G-strat GV-eagleflood)
+	(disable-self))
+
+
+; (defrule; back to default strat
+; 	(up-compare-goal G-age >= GV-upcastle)
+; 	(up-timer-status T-clicked-up != timer-running)
+; 	(or	(and	(up-compare-goal G-strat != GV-cdropproper)
+; 			(up-compare-goal G-strat != GV-unique))
+; 		(and	(unit-type-count villager-stone < 5)
+; 			(building-type-count-total castle < 1)))
+; 	(or	(up-compare-goal G-strat != GV-unique)
+; 		(building-type-count-total castle < 1))
+; 	(up-compare-goal G-strat != GV-monkflood)
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(up-compare-goal G-locked-strat < 1)
+; 	(or	(players-current-age target-player > feudal-age)
+; 		(strategic-number SN-superiority > 100))
+; 	(nand	(goal G-strat GV-eagleflood)
+; 		(up-compare-const EAGLECIV > MONKCIV-IMP))
+; 	(nand	(goal G-strat GV-siegehalbs)
+; 		(and	(up-compare-const SCORPCIV > MONKCIV-IMP)
+; 			(up-compare-const PIKECIV > MONKCIV-IMP)))
+; 	(nand	(goal G-strat GV-unique)
+; 		(up-compare-const UUCIV-IMP > MONKCIV-IMP))
+; 	=>
+; 	(set-goal G-strat GV-monkflood))
+
+
+;; - ACTIVE DEFENCE -
+; (defrule
+; 	(goal G-age GV-upcastle)
+; 	(up-compare-goal G-locked-strat < 1)
+; 	(or	(up-compare-goal G-strat < 15)
+; 		(up-compare-goal G-strat >= 40))
+; 	(players-current-age target-player == feudal-age)
+; 	(town-under-attack)
+; 	(players-military-population target-player >= 4)
+; 	(strategic-number SN-superiority < 35)
+; 	(up-modify-goal G-temp1 g:= G-total-threat)
+; 	(up-modify-goal G-temp1 c:/ 2)
+; 	(up-modify-goal G-temp2 g:= G-main-inf-threat)
+; 	(up-modify-goal G-temp2 g:+ G-pike-threat)
+; 	(up-compare-goal G-temp1 g:> G-temp2)
+; 	=>
+; 	(set-goal G-temp8 111000111))
+; (defrule; knights
+; 	(goal G-temp8 111000111)
+; 	(up-compare-const KNIGHTCIV-CASTLE > 0)
+; 	=>
+; 	(set-goal G-strat GV-krush))
+; (defrule; elephants
+; 	(goal G-temp8 111000111)
+; 	(up-compare-const ELECIV > KNIGHTCIV-CASTLE)
+; 	=>
+; 	(set-goal G-strat GV-ele))
+; (defrule; eagles
+; 	(goal G-temp8 111000111)
+; 	(up-compare-const EAGLECIV > KNIGHTCIV-CASTLE)
+; 	=>
+; 	(set-goal G-strat GV-klew))
+
+
+
+
+
+
+; == FORCED STRAT SWITCH ==
+
+
+
+
+
+(defrule
+	(up-compare-goal J-strategy > 0)
+	(up-compare-goal G-switch-strat <= 0)
+	=>
+	(up-jump-direct g: J-strategy))
+
+
+; ; ==== STRAT EVALUATION ====
+; ; STONE AMOUNT
+; (defrule
+; 	(goal G-temp9 5687184)
+; 	=>
+; 	(set-goal G-temp4 0)
+; 	(up-full-reset-search)
+; ;	(up-set-target-point P-self-x)
+; 	(up-filter-distance c: -1 g: G-camp-max-distance)
+; 	(up-filter-status c: status-resource c: list-active)
+; 	(up-find-resource c: stone c: 240)
+; 	(up-get-search-state G-local-total)
+; 	(up-modify-goal G-remote-total c:- 1))
+; (defrule
+; 	(goal G-temp9 5687184)
+; 	(up-compare-goal G-remote-total >= 0)
+; 	(up-set-target-object search-remote g: G-remote-total)
+; 	=>
+; 	(up-get-object-data object-data-carry G-temp5)
+; 	(up-modify-goal G-temp4 g:+ G-temp5)
+; 	(up-modify-goal G-remote-total c:- 1)
+; 	(up-jump-rule -1))
+; (defrule
+; 	(goal G-temp9 5687184)
+; 	=>
+; 	(up-get-fact stone-amount 0 G-temp5)
+; 	(up-modify-goal G-temp4 g:+ G-temp5)
+; 	(up-chat-data-to-player my-player-number "total stone: %d" g: G-temp4))
+; (defrule
+; 	(goal G-temp9 5687184)
+; 	(up-compare-goal G-temp4 < 1200)
+; 	=>
+; 	(up-modify-goal HAX8 c:- 10))
+; (defrule
+; 	(goal G-temp9 5687184)
+; 	(goal G-maptype GV-land-open)
+; 	(up-compare-goal G-temp4 < 800)
+; 	=>
+; 	(up-modify-goal HAX1 c:+ 2))
+; (defrule
+; 	(goal G-temp9 5687184)
+; 	(goal G-maptype GV-land-open)
+; 	(up-compare-goal G-temp4 < 300)
+; 	=>
+; 	(up-modify-goal HAX1 c:+ 10))
+
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	=>
+; 	(set-goal HAX0 -1); current (old) score
+; 	(set-goal HAX1 -1); highest scoring strat (G-strat goal values)
+; 	(set-goal HAX2 -1); highest score
+; 	(set-goal G-temp2 -1)); score being calculated
+
+; ; UNIQUE UNIT
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	(up-compare-goal G-age < GV-upimp)
+; 	=>
+; 	(set-goal G-temp2 100)
+; 	(up-modify-goal G-temp2 c:* UUCIV-CASTLE)
+; 	(up-jump-rule 1))
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	=>
+; 	(set-goal G-temp2 100)
+; 	(up-modify-goal G-temp2 c:* UUCIV-IMP))
+
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	(building-type-count-total castle >= 1)
+; 	=>
+; 	(up-get-fact building-type-count-total castle G-temp4)
+; 	(up-get-fact civilian-population 0 G-temp5)
+; 	...
+
+; (defrule; debug
+; 	(up-compare-goal J-strategy > 0)
+; 	=>
+; 	(up-chat-data-to-all "UU score: %d" g: G-temp2))
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	(up-compare-goal G-strat == GV-unique)
+; 	=>
+; 	(up-modify-goal HAX0 g:= G-temp2)
+; 	(up-chat-data-to-all "current score: %d (UU)" g: G-temp2)); debug
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	(up-compare-goal G-temp2 > HAX2)
+; 	=>
+; 	(up-modify-goal HAX1 c:= GV-unique)
+; 	(up-modify-goal HAX2 g:= G-temp2))
+
+
+
+
+
+
+
+; ; SAMPLE 1x CIV FACTOR
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	=>
+; 	(set-goal G-temp2 100)
+; 	(up-modify-goal c:* %CIV))
+
+; ; SAMPLE 2x CIV FACTOR
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	(up-compare-goal G-age < GV-up-imp)
+; 	=>
+; 	(set-goal G-temp2 100)
+; 	(up-modify-goal c:* %CIV-CASTLE)
+; 	(up-jump-rule 1))
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	=>
+; 	(set-goal G-temp2 100)
+; 	(up-modify-goal c:* %CIV-IMP))
+
+
+
+
+
+
+; ; ==== FINALISE NEW STRAT ====
+; ; G-switch-strat 1: always trigger
+; ; G-switch-strat 2: only switch if current strat is really low and/or best strat is much higher
+
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	(up-compare-goal G-switch-strat == 1)
+; 	=>
+; 	(up-modify-goal G-strat g:= HAX1))
+
+; (defrule
+; 	(up-compare-goal J-strategy > 0)
+; 	(up-compare-goal G-switch-strat == 2)
+; 	(up-modify-goal G-temp7 g:= HAX2)
+; 	(up-modify-goal G-temp7 c:z/ 2)
+; 	(up-compare-goal G-temp7 g:> HAX0)
+; 	=>
+; 	(up-modify-goal G-strat g:= HAX1)
+; 	(chat-to-player my-player-number "suboptimal strategy, switching..."))
+
+(defrule
+	(up-compare-goal J-strategy > 0)
+	=>
+	(set-goal G-switch-strat 0))
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-strategy)
+	(disable-self))
+
+

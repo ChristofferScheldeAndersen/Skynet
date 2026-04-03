@@ -1,0 +1,1241 @@
+; =========================================================
+; Definitioner opdelt efter type
+; =========================================================
+
+; Goals
+	(defconst gl-retask-return-label 2)
+	(defconst gl-wood-dropoff-support-count 79)
+	(defconst gl-target-resource 27)
+	(defconst gl-source-villager-id 28)
+	(defconst gl-direct-reassign-search-radius 29)
+	(defconst gl-same-resource-stay-distance 32)
+	(defconst gl-local-radius-divisor 33)
+	(defconst gl-wood-fallback-anchor-enabled 36)
+	(defconst gl-farm-crowding-threshold 34)
+	(defconst gl-resource-balance-weight 35)
+	(defconst gl-anchor-resource-search-radius 37)
+	(defconst gl-fallback-anchor-count 38)
+	(defconst gl-food-anchor-branch-lock 23)
+	(defconst gl-forced-food-retask-mode 39)
+	(defconst gl-reassign-result-code 40)
+	(defconst gl-scaled-idle-farm-threshold 415)
+	(defconst gl-villager-origin-pos 416)
+	(defconst gl-source-villager-role 418)
+	(defconst gl-source-villager-resource 419)
+	(defconst gl-villager-move-target-pos 421)
+	(defconst gl-villager-move-target-pos-x 421)
+	(defconst gl-villager-move-target-pos-y 422)
+	(defconst gl-villager-distance-origin-pos 423)
+	(defconst gl-villager-to-move-target-distance 425)
+	(defconst gl-source-villager-tag 426)
+	(defconst gl-max-allowed-target-tasks 427)
+	(defconst gl-target-work-group 428)
+	(defconst gl-local-anchor-search-radius 415)
+	(defconst gl-best-anchor-id 421)
+	(defconst gl-best-anchor-score 422)
+	(defconst gl-local-anchor-index 420)
+	(defconst gl-current-anchor-id 423)
+	(defconst gl-current-anchor-distance 424)
+	(defconst gl-current-anchor-class-id 429)
+	(defconst gl-current-anchor-is-farm 430)
+	(defconst gl-current-anchor-pos 432)
+	(defconst gl-current-anchor-crowding-score 433)
+	(defconst gl-required-group-tag 434)
+	(defconst gl-crowding-overflow-penalty 435)
+	(defconst gl-current-anchor-resource-count-score 429)
+	(defconst gl-current-anchor-nearest-resource-score 431)
+	(defconst gl-resource-shortage-penalty 432)
+	(defconst gl-resource-balance-score 434)
+	(defconst gl-adjusted-nearest-resource-distance 435)
+	(defconst gl-weighted-crowding-score 432)
+	(defconst gl-current-anchor-total-score 434)
+	(defconst gl-best-anchor-pos 423)
+	(defconst gl-best-anchor-class-id 429)
+	(defconst gl-quick-pass-random-roll 420)
+	(defconst gl-nearby-pass-random-roll 420)
+	(defconst gl-second-pass-search-radius 420)
+	(defconst gl-second-pass-random-roll 420)
+	(defconst gl-second-pass-target-index 420)
+	(defconst gl-probe-east-pos 429)
+	(defconst gl-probe-east-pos-x 429)
+	(defconst gl-probe-south-pos 431)
+	(defconst gl-probe-south-pos-y 432)
+	(defconst gl-probe-west-pos 433)
+	(defconst gl-probe-west-pos-x 433)
+	(defconst gl-probe-north-pos 435)
+	(defconst gl-probe-north-pos-y 436)
+	(defconst gl-final-task-limit 420)
+	(defconst gl-unload-state-offset 26)
+	(defconst gl-required-unload-sn82-state 415)
+	(defconst gl-local-total 45)
+	(defconst gl-local-last 46)
+	(defconst gl-remote-total 47)
+	(defconst gl-remote-last 48)
+	(defconst gl-search-state-scratch-base 94)
+	(defconst gl-search-state-scratch-base_F 94)
+	(defconst gl-search-state-scratch-base_W 95)
+	(defconst gl-search-state-scratch-base_S 96)
+	(defconst gl-search-state-scratch-base_G 97)
+	(defconst gl-food-anchor-branch-lock 23)
+	(defconst gl-preselected-source-villager-id 243)
+	(defconst gl-direct-reassign-resource-balance-weight 26)
+	(defconst gl-second-pass-direct-search-radius 26)
+	(defconst gl-second-pass-stay-distance-threshold 230)
+	(defconst gl-second-pass-local-radius-divisor 241)
+	(defconst gl-second-pass-wood-alt-search-mode 242)
+	(defconst gl-second-pass-farm-crowding-threshold 243)
+	(defconst gl-second-pass-resource-balance-weight 244)
+	(defconst gl-second-pass-anchor-resource-search-radius 278)
+	(defconst gl-fallback-pass-attempts-remaining 43)
+	(defconst gl-unused-temp-goal-388 388)
+	(defconst gl-first-cleanup-candidate-index 26)
+	(defconst gl-first-cleanup-tag-resource 43)
+	(defconst gl-first-cleanup-normalized-resource 51)
+	(defconst gl-first-cleanup-language-id 65)
+	(defconst gl-first-cleanup-candidate-id 107)
+	(defconst gl-first-cleanup-tick-modulo 26)
+	(defconst gl-second-cleanup-candidate-index 43)
+	(defconst gl-second-cleanup-candidate-id 51)
+	(defconst gl-second-cleanup-candidate-group-flag 65)
+	(defconst gl-second-cleanup-candidate-resource 107)
+	(defconst gl-second-cleanup-move-distance 251)
+	(defconst gl-second-cleanup-target-class 278)
+	(defconst gl-second-cleanup-target-group-plus-one 26)
+	(defconst gl-second-cleanup-tick-modulo 26)
+	(defconst gl-nearby-farm-scan-index 51)
+	(defconst gl-nearby-farm-move-distance 251)
+	(defconst gl-fallback-candidate-index 26)
+	(defconst gl-fallback-candidate-id 51)
+	(defconst gl-fallback-candidate-group-flag 65)
+	(defconst gl-fallback-candidate-resource 107)
+	(defconst gl-fallback-candidate-gather-type 230)
+	(defconst gl-fallback-candidate-language-id 241)
+	(defconst gl-fallback-target-language-id 230)
+	(defconst gl-fallback-current-target-id 241)
+	(defconst gl-fallback-candidate-carry-amount 242)
+	(defconst gl-fallback-target-group-flag-min 243)
+	(defconst gl-fallback-target-group-flag-max 244)
+	(defconst gl-nearby-dropoff-group-flag-min 243)
+	(defconst gl-nearby-dropoff-group-flag-max 244)
+	(defconst gl-food-followup-anchor-pos 241)
+	(defconst gl-food-followup-anchor-pos-x 241)
+	(defconst gl-food-followup-anchor-pos-y 242)
+	(defconst gl-second-cleanup-candidate-move-target-pos 241)
+	(defconst gl-second-cleanup-candidate-move-target-pos-x 241)
+	(defconst gl-second-cleanup-candidate-move-target-pos-y 242)
+	(defconst gl-second-cleanup-candidate-current-pos 243)
+	(defconst gl-second-cleanup-candidate-current-pos-x 243)
+	(defconst gl-second-cleanup-candidate-current-pos-y 244)
+	(defconst gl-nearby-farm-candidate-move-target-pos 241)
+	(defconst gl-nearby-farm-candidate-move-target-pos-x 241)
+	(defconst gl-nearby-farm-candidate-move-target-pos-y 242)
+	(defconst gl-nearby-farm-candidate-current-pos 243)
+	(defconst gl-nearby-farm-candidate-current-pos-x 243)
+	(defconst gl-nearby-farm-candidate-current-pos-y 244)
+	(defconst gl-fallback-target-anchor-pos 243)
+	(defconst gl-fallback-target-anchor-pos-x 243)
+	(defconst gl-fallback-target-anchor-pos-y 244)
+	(defconst gl-second-cleanup-candidate-move-target-pos_x 10000)
+	(defconst gl-second-cleanup-candidate-move-target-pos_y 10001)
+	(defconst gl-nearby-farm-candidate-move-target-pos_x 10002)
+	(defconst gl-nearby-farm-candidate-move-target-pos_y 10003)
+
+	; Rule-id goals for jump markers
+	(defconst gl-rule-3408-abort-early-food-retasking-id 500)
+	(defconst gl-rule-3430-derive-first-local-search-id 501)
+	(defconst gl-rule-3439-clean-local-anchor-list-id 502)
+	(defconst gl-rule-3440-exit-local-anchor-loop-id 503)
+	(defconst gl-rule-3449-filter-resource-list-around-id 504)
+	(defconst gl-rule-3451-rescale-scoring-routine-special-id 505)
+	(defconst gl-rule-3454-finalize-local-anchor-pass-id 506)
+	(defconst gl-rule-3464-roll-random-value-decide-id 507)
+	(defconst gl-rule-3471-clean-quick-retask-candidate-id 508)
+	(defconst gl-rule-3474-snapshot-quick-retask-search-id 509)
+	(defconst gl-rule-3481-filter-second-pass-resource-id 510)
+	(defconst gl-rule-3484-move-second-pass-search-id 511)
+	(defconst gl-rule-3488-snapshot-candidate-list-obstruction-id 512)
+	(defconst gl-rule-3494-relax-congestion-threshold-final-id 513)
+	(defconst gl-rule-3495-snapshot-final-candidate-list-id 514)
+	(defconst gl-rule-3503-abort-fallback-anchor-survived-id 515)
+	(defconst gl-rule-3510-filter-sort-fallback-targets-id 516)
+	(defconst gl-rule-3518-set-final-failure-code-id 517)
+	(defconst gl-rule-9408-skip-immediate-food-clean-id 518)
+	(defconst gl-rule-9413-gate-first-large-retask-id 519)
+	(defconst gl-rule-9415-skip-first-cleanup-pass-id 520)
+	(defconst gl-rule-9423-start-first-cleanup-cooldown-id 521)
+	(defconst gl-rule-9426-continue-scanning-remaining-candidates-id 522)
+	(defconst gl-rule-9427-gate-second-cleanup-pass-id 523)
+	(defconst gl-rule-9429-skip-second-cleanup-pass-id 524)
+	(defconst gl-rule-9438-start-second-cleanup-cooldown-id 525)
+	(defconst gl-rule-9440-continue-scanning-remaining-active-id 526)
+	(defconst gl-rule-9441-gate-broad-fallback-retask-id 527)
+	(defconst gl-rule-9443-stop-pruning-broad-candidates-id 528)
+	(defconst gl-rule-9447-freeze-pruned-candidate-set-id 529)
+	(defconst gl-rule-9448-end-fallback-sweep-grouped-id 530)
+	(defconst gl-rule-9457-snapshot-candidate-villager-target-id 531)
+	(defconst gl-rule-9464-route-non-food-villagers-id 532)
+	(defconst gl-rule-9466-skip-further-fallback-attempts-id 533)
+	(defconst gl-rule-9468-first-wood-attempt-failed-id 534)
+	(defconst gl-rule-9469-wood-failed-try-gold-id 535)
+	(defconst gl-rule-9470-gold-failed-try-stone-id 536)
+	(defconst gl-rule-9471-exit-food-family-fallback-id 537)
+	(defconst gl-rule-9472-route-non-wood-villagers-id 538)
+	(defconst gl-rule-9474-failed-try-wood-again-id 539)
+	(defconst gl-rule-9475-skip-deeper-fallback-chain-id 540)
+	(defconst gl-rule-9477-gold-failed-try-stone-id 541)
+	(defconst gl-rule-9478-stone-failed-try-food-id 542)
+	(defconst gl-rule-9479-exit-wood-family-fallback-id 543)
+	(defconst gl-rule-9480-route-non-gold-villagers-id 544)
+	(defconst gl-rule-9482-skip-deeper-fallback-chain-id 545)
+	(defconst gl-rule-9484-failed-try-wood-again-id 546)
+	(defconst gl-rule-9485-wood-failed-try-stone-id 547)
+	(defconst gl-rule-9486-stone-failed-try-food-id 548)
+	(defconst gl-rule-9487-exit-gold-family-fallback-id 549)
+	(defconst gl-rule-9488-skip-stone-family-branch-id 550)
+	(defconst gl-rule-9490-skip-deeper-fallback-chain-id 551)
+	(defconst gl-rule-9492-gold-failed-try-wood-id 552)
+	(defconst gl-rule-9493-failed-try-wood-again-id 553)
+	(defconst gl-rule-9494-wood-failed-try-food-id 554)
+	(defconst gl-rule-9495-start-broad-fallback-cooldown-id 555)
+	(defconst gl-rule-9498-refresh-top-level-resource-id 556)
+
+	(defconst gl-vill-hopping-target-resource 26)
+	(defconst gl-vill-hopping-target-group 43)
+	(defconst gl-vill-hopping-required-villager-role 51)
+	(defconst gl-vill-hopping-required-drop-site-line 65)
+	(defconst gl-vill-hopping-center-pos 58)
+	(defconst gl-vill-hopping-center-pos-x 58)
+	(defconst gl-vill-hopping-center-pos-y 59)
+	(defconst gl-vill-hopping-hunter-count 415)
+	(defconst gl-vill-hopping-nearby-same-role-count 415)
+	(defconst gl-vill-hopping-hunter-shepherd-count 416)
+	(defconst gl-vill-hopping-time-modulo 417)
+	(defconst gl-vill-hopping-nearby-tagged-worker-count 417)
+	(defconst gl-vill-hopping-source-garrison-count 418)
+	(defconst gl-vill-hopping-selected-worker-id 418)
+	(defconst gl-vill-hopping-selected-drop-site-id 419)
+	(defconst gl-vill-hopping-drop-site-loop-index 423)
+	(defconst gl-vill-hopping-search-radius 423)
+	(defconst gl-vill-hopping-best-drop-site-id 419)
+	(defconst gl-vill-hopping-found-resource-id 420)
+	(defconst gl-vill-hopping-best-drop-site-score 422)
+	(defconst gl-vill-hopping-primary-resource-id 422)
+	(defconst gl-vill-hopping-next-unload-state 422)
+	(defconst gl-vill-hopping-current-drop-site-pos 426)
+	(defconst gl-vill-hopping-current-drop-site-pos-x 426)
+	(defconst gl-vill-hopping-current-drop-site-pos-y 427)
+	(defconst gl-vill-hopping-current-drop-site-distance-score 428)
+	(defconst gl-vill-hopping-current-drop-site-total-score 429)
+	(defconst gl-wood-drop-site-line-id 557)
+	(defconst gl-mining-drop-site-line-id 558)
+	(defconst gl-buildability-probe-line-id 559)
+	(defconst gl-vill-hopping-source-town-center-id 560)
+	(defconst gl-vill-hopping-gather-point-target-id 561)
+	(defconst gl-vill-hopping-nearby-drop-site-pos 422)
+	(defconst gl-vill-hopping-nearby-drop-site-pos-x 422)
+	(defconst gl-vill-hopping-nearby-drop-site-pos-y 423)
+
+	; Rule-id goals for added vill-hopping branch markers
+	(defconst gl-rule-3531-start-vill-hopping-branch-id 557)
+	(defconst gl-rule-3545-evaluate-next-drop-site-candidate-id 558)
+	(defconst gl-rule-3549-finalize-drop-site-selection-id 559)
+	(defconst gl-rule-3555-filter-found-resource-targets-id 560)
+	(defconst gl-rule-3557-check-nearby-wood-fallback-id 561)
+	(defconst gl-rule-3560-abort-without-resource-target-id 562)
+	(defconst gl-rule-3572-return-from-vill-hopping-branch-id 563)
+
+	(defconst gl-test-config-initialized 590)
+	(defconst gl-enable-vill-hopping 591)
+
+	(defconst fl-retask-workflow-handoff 497)
+	(defconst fl-food-resource-availability 811)
+	(defconst fl-wood-resource-availability 812)
+	(defconst fl-stone-resource-availability 813)
+	(defconst fl-gold-resource-availability 814)
+	(defconst fl-resource-availability-reset-state 815)
+; Strategic numbers (SNs)
+	(defconst sn-keystates 312)
+	(defconst sn-retask-economy-size 71)
+	(defconst sn-reassign-target-resource 484)
+	(defconst sn-unload-support-state 82)
+
+; Flags
+	(defconst fl-wood-town-center-fallback-mode 227)
+	(defconst fl-food-idle-farm-mode 227)
+	(defconst fl-food-idle-farm-mode-value 1048576)
+	(defconst fl-wood-town-center-fallback-mode-value 524288)
+
+
+	(defconst fl-vill-hopping-wood-fallback-needed 421)
+	(defconst fl-opening-wood-priority 106)
+	(defconst fl-opening-wood-priority-value 134217728)
+	(defconst fl-midgame-wood-support-a 114)
+	(defconst fl-midgame-wood-support-a-value 65536)
+	(defconst fl-midgame-wood-support-b 54)
+	(defconst fl-midgame-wood-support-b-value 2097152)
+
+; Groups
+	(defconst food-villager-group 1)
+	(defconst wood-villager-group 2)
+	(defconst stone-villager-group 3)
+	(defconst gold-villager-group 4)
+
+
+	(defconst generic-work-group-5 5)
+	(defconst generic-work-group-6 6)
+	(defconst generic-work-group-7 7)
+	(defconst generic-work-group-8 8)
+	(defconst generic-work-group-9 9)
+
+; Timers
+	(defconst food-stay-put-timer 15)
+	(defconst unload-support-timer 46)
+	(defconst retask-first-cleanup-cooldown-timer 43)
+	(defconst retask-second-cleanup-cooldown-timer 44)
+	(defconst retask-fallback-cooldown-timer 45)
+
+; Konstanter der ikke kan ændres direkte som goals/flags/timers
+(defconst object-data-idling 49)
+	(defconst old-only -1)
+	(defconst stance-ignore -1)
+	(defconst mill 68)
+	(defconst town-center 109)
+	(defconst palisade-wall 72)
+	(defconst lumber-camp 562)
+	(defconst mule-cart 1808)
+	(defconst villager-class 904)
+	(defconst farm-class 949)
+	(defconst food 0)
+	(defconst wood 1)
+	(defconst stone 2)
+	(defconst gold 3)
+	(defconst idle-farm-count 4)
+	(defconst building-type-count-total 29)
+	(defconst random-number 33)
+	(defconst formation-ignore -1)
+	(defconst lid_villager-shepherd 5496)
+	(defconst lid_villager-farmer 5123)
+	(defconst lid_villager-forager 5402)
+	(defconst lid_villager-lumberjack 5125)
+	(defconst lid_villager-gold-miner 5482)
+	(defconst lid_villager-stone-miner 5126)
+	(defconst object-data-index -1)
+	(defconst object-data-id 0)
+	(defconst object-data-class 2)
+	(defconst object-data-garrison-count 18)
+	(defconst object-data-player 20)
+	(defconst object-data-tasks-count 32)
+	(defconst object-data-distance 44)
+	(defconst object-data-precise-distance 45)
+	(defconst object-data-full-distance 46)
+	(defconst object-data-move-x 50)
+	(defconst object-data-move-y 51)
+	(defconst object-data-gather-type 71)
+	(defconst object-data-language-id 72)
+	(defconst object-data-group-flag 73)
+	(defconst list-active 0)
+	(defconst status-pending 0)
+	(defconst status-ready 2)
+	(defconst status-resource 3)
+	(defconst status-down 4)
+	(defconst status-gather 5)
+	(defconst position-curr-object 12)
+	(defconst amount-food 0)
+	(defconst amount-wood 1)
+	(defconst amount-stone 2)
+	(defconst amount-gold 3)
+	(defconst search_order-ascending 1)
+	(defconst search-local 1)
+	(defconst search-remote 2)
+	(defconst action-default 0)
+	(defconst action-unload 9)
+	(defconst timer-triggered 1)
+	(defconst timer-running 2)
+	(defconst build-line-check-mode 6)
+	(defconst retask-idle-farm-scale-divisor 70)
+	(defconst building-class 903)
+	(defconst mining-camp 584)
+	(defconst farm 50)
+	(defconst villager-food 978)
+	(defconst villager-wood 979)
+	(defconst actionid-attack 600)
+	(defconst actionid-build 602)
+	(defconst actionid-explore 605)
+	(defconst actionid-gather 609)
+	(defconst actionid-hunt 613)
+	(defconst actionid-enter 617)
+	(defconst object-data-action 5)
+	(defconst object-data-target-class-id 7)
+	(defconst object-data-carry 16)
+	(defconst object-data-target-unique-id 23)
+	(defconst object-data-precise-x 38)
+	(defconst object-data-precise-y 39)
+	(defconst lid_villager-builder 5122)
+	(defconst lid_villager-hunter 5124)
+	(defconst lid_villager-fisherman 5499)
+	(defconst timeSec 15)
+	(defconst timeMilli 11)
+	(defconst msecPerLoop 8)
+	(defconst _fcn_manualReassignVillager 3408)
+
+
+	(defconst berry-bush-class 907)
+	(defconst villager-hunter 976)
+	(defconst villager-shepherd 973)
+	(defconst action-garrison 7)
+	(defconst action-set-gather-point 11)
+	(defconst action-goto-work 13)
+	(defconst search-order-none 0)
+        (defconst search-order-asc 1)
+        (defconst search-order-desc 2)
+
+
+; =========================================================
+; Test setup for standalone retask-segment execution
+; =========================================================
+
+	(defconst action-stop 5)
+
+
+	;sn's
+	(defrule
+		(true)
+		=>
+		(set-strategic-number sn-maximum-food-drop-distance -2)
+	(set-strategic-number sn-maximum-wood-drop-distance -2)
+	(set-strategic-number sn-maximum-gold-drop-distance -2)
+	(set-strategic-number sn-maximum-stone-drop-distance -2)
+	(set-strategic-number sn-maximum-hunt-drop-distance -2)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 0)
+	(set-strategic-number sn-food-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-percent-civilian-gatherers 0)
+
+	(set-strategic-number sn-percent-civilian-builders 0)
+	(set-strategic-number sn-cap-civilian-builders 0)
+
+
+	(set-strategic-number sn-allow-civilian-offense 1)
+	(set-strategic-number sn-allow-civilian-defense 0)
+	(set-strategic-number sn-number-civilian-militia 0)
+	(set-strategic-number sn-disable-villager-garrison 3)
+	(set-strategic-number sn-maximum-town-size 220) ; vills attacked outside of maximum town size might still attempt to garrison.
+		(disable-self)
+	)
+	
+
+
+
+
+	(defconst gl-current-villager-index 1000)
+	(defconst gl-find-buggy-villager-first-rule 1001)
+	(defconst gl-max-villager-index 1002)
+	(defconst gl-current-villager-id 1003)
+	(defconst gl-villager-target-ressource 1004)
+	(defconst gl-temp-x  1005)
+	(defconst gl-temp-y 1006)
+	(defconst gl-villager-language-id 1007)
+	(defconst gl-current-villager-group 1008)
+	(defconst gl-set-new-villager-group-rule-id 1009)
+	(defconst gl-current-villager-group-res 1010)
+	(defconst gl-first-rule-setting-villager-groups 1011)
+	(defconst gl-current-building-type 1012)
+
+
+
+(defconst gl-first-retasking-rule-id 1013)
+(defconst gl-dropsite-index 1014)
+(defconst gl-best-dropsite-score 1015)
+(defconst gl-villager-dropsite-distance-score-multiplier 1016)
+(defconst gl-crowding-score-multiplier 1017)
+(defconst gl-dropsite-res-count-score-multiplier 1018)
+(defconst gl-dropsite-res-distance-score-multiplier 1019)
+(defconst gl-first-dropsite-rule-id 1020)
+(defconst gl-villager-to-be-retasked-id 1021)
+(defconst gl-current-group 1022)
+(defconst gl-intended-target-res 1023)
+(defconst gl-villager-to-be-retasked-x 1024)
+(defconst gl-villager-to-be-retasked-y 1025)
+(defconst gl-dropsite-max-index 1026)
+(defconst gl-dropsite-id 1027)
+(defconst gl-dropsite-x 1028)
+(defconst gl-dropsite-y 1029)
+(defconst gl-crowding 1030)
+(defconst gl-dropsite-res-count 1031)
+(defconst gl-dropsite-res-precise-distance 1032)
+(defconst gl-villager-dropsite-distance 1033)
+(defconst gl-villager-dropsite-distance-score 1034)
+(defconst gl-crowding-score 1035)
+(defconst gl-dropsite-res-count-score 1036)
+(defconst gl-dropsite-res-distance-score 1037)
+(defconst gl-dropsite-score 1038)
+(defconst gl-best-villager-dropsite-distance-score 1039)
+(defconst gl-best-crowding-score 1040)
+(defconst gl-best-dropsite-res-distance-score 1041)
+(defconst gl-end-of-retasking-rules 1042)
+(defconst gl-post-retasking-rule-id 1043)
+(defconst gl-best-dropsite-id 1045)
+(defconst gl-best-dropsite-res-count-score 1046)
+(defconst gl-best-dropsite-x 1047)
+(defconst gl-best-dropsite-y 1048)
+
+(defconst gl-current-target-index 1049)
+(defconst gl-first-final-retasking-rule-id 1050)
+(defconst gl-max-target-index 1051)
+(defconst gl-current-target-id 1052)
+
+(defconst gl-target-x 1053)
+(defconst gl-target-y 1054)
+
+(defconst gl-top-right-x 1055)
+(defconst gl-top-right-y 1056)
+
+(defconst gl-bottom-right-x 1057)
+(defconst gl-bottom-right-y 1058)
+
+(defconst gl-bottom-left-x 1059)
+(defconst gl-bottom-left-y 1060)
+
+(defconst gl-top-left-x 1061)
+(defconst gl-top-left-y 1062)
+
+(defconst gl-new-target-id-current-goal-constant 1064)
+(defconst gl-new-target-id-last-goal-constant 1065)
+(defconst gl-nr-new-targets-this-pass 1066)
+(defconst gl-current-index-target-id 1067)
+(defconst gl-temp 1068)
+(defconst gl-new-target-id-first-goal-constant 1100)
+(defconst gl-new-target-id-very-last-goal-constant 1299)
+
+
+
+
+	(defrule
+		(true)
+		=>
+		(set-goal gl-current-villager-index 0)
+	)
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-first-rule-setting-villager-groups)
+	)
+
+	(defrule
+		(true)
+		=>
+		(set-goal gl-villager-to-be-retasked-id -1)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-max-villager-index g:= gl-local-total)
+		(up-modify-goal gl-max-villager-index c:- 1)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-current-villager-index)
+		(game-time < 5)
+		=>
+		(up-get-point position-object gl-temp-x)
+		(up-set-target-point gl-temp-x)
+		(up-modify-sn sn-focus-player-number c:= my-player-number)
+		(up-find-remote c: mill c: 40)
+		(up-find-remote c: lumber-camp c: 40)
+		(up-find-remote c: mining-camp c: 40)
+		(up-find-remote c: town-center c: 40)
+		(up-get-search-state gl-local-total)
+		(up-clean-search search-remote object-data-distance search-order-asc)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-current-villager-index)
+		(up-set-target-object search-remote c: 0)
+		=>
+		(up-get-object-data object-data-type gl-current-building-type)
+	)
+
+	(defrule
+		(up-compare-goal gl-current-building-type == lumber-camp)
+		(up-set-target-object search-remote c: 0)
+		(up-set-target-object search-local g: gl-current-villager-index)
+		=>
+		(up-get-object-data object-data-id gl-current-villager-id)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-remove-objects search-local object-data-group-flag != wood-villager-group)
+		(up-add-object-by-id search-local g: gl-current-villager-id)
+		(up-reset-group c: wood-villager-group)
+		(up-modify-group-flag 0 c: wood-villager-group)
+		(up-create-group 0 0 c: wood-villager-group)
+		(up-modify-group-flag 1 c: wood-villager-group)
+	)
+
+	(defrule
+		(up-set-target-object search-remote c: 0)
+		(up-compare-goal gl-current-building-type == mining-camp)
+		(up-set-target-object search-local g: gl-current-villager-index)
+		=>
+		(up-get-object-data object-data-id gl-current-villager-id)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-remove-objects search-local object-data-group-flag != gold-villager-group)
+		(up-add-object-by-id search-local g: gl-current-villager-id)
+		(up-modify-group-flag 0 c: gold-villager-group)
+		(up-create-group 0 0 c: gold-villager-group)
+		(up-modify-group-flag 1 c: gold-villager-group)
+	)
+
+	(defrule
+		(up-set-target-object search-remote c: 0)
+		(or(up-compare-goal gl-current-building-type == mill)
+		(up-compare-goal gl-current-building-type == town-center))
+		(up-set-target-object search-local g: gl-current-villager-index)
+		=>
+		(up-get-object-data object-data-id gl-current-villager-id)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-remove-objects search-local object-data-group-flag != food-villager-group)
+		(up-add-object-by-id search-local g: gl-current-villager-id)
+		(up-reset-group c: food-villager-group)
+		(up-modify-group-flag 0 c: food-villager-group)
+		(up-create-group 0 0 c: food-villager-group)
+		(up-modify-group-flag 1 c: food-villager-group)
+	)
+
+	(defrule
+		(up-compare-goal gl-current-villager-index g:< gl-max-villager-index)
+		(up-compare-goal gl-first-rule-setting-villager-groups != -1)
+		=>
+		(up-modify-goal gl-current-villager-index c:+ 1)
+		(up-jump-direct g: gl-first-rule-setting-villager-groups)
+	)
+
+
+
+	(defrule
+		(game-time < 5)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		;(up-reset-group c: food-villager-group)
+		;(up-modify-group-flag 0 c: food-villager-group)
+		;(up-create-group 0 0 c: food-villager-group)
+		;(up-modify-group-flag 1 c: food-villager-group)
+	)
+
+
+
+
+	
+	(defrule
+		(true)
+		=>
+		(set-goal gl-current-villager-group gold-villager-group) ; 4
+		(set-goal gl-current-villager-group-res 3) 
+		(set-goal gl-nr-new-targets-this-pass 0)
+		(set-goal gl-new-target-id-current-goal-constant gl-new-target-id-first-goal-constant)
+		(set-goal gl-new-target-id-last-goal-constant gl-new-target-id-first-goal-constant)
+		;(chat-to-all "new pass")
+	)
+
+	; food-worker: food → wood → gold → stone
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-set-new-villager-group-rule-id)
+	)
+
+	(defrule
+		(true)
+		=>
+		(set-goal gl-current-villager-index 0)
+	)
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-find-buggy-villager-first-rule)
+		(up-full-reset-search)
+		(up-set-group search-local g: gl-current-villager-group)
+
+		;(up-remove-objects search-local object-data-carry c:> 0)
+		(up-remove-objects search-local object-data-action c:== actionid-build)
+		(up-remove-objects search-local object-data-action c:== actionid-attack)
+		(up-remove-objects search-local object-data-action c:== actionid-explore)
+		(up-remove-objects search-local object-data-tasks-count c:> 0)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-max-villager-index g:= gl-local-total)
+		(up-modify-goal gl-max-villager-index c:- 1)
+		(set-goal gl-villager-target-ressource -1)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-current-villager-index)
+		=>
+		(up-get-object-data object-data-id gl-current-villager-id)
+		(up-get-object-data object-data-language-id gl-villager-language-id)
+	)
+
+	(defrule
+		(or (or (or (or (up-compare-goal gl-villager-language-id c:== lid_villager-farmer)
+						(up-compare-goal gl-villager-language-id c:== lid_villager-forager))
+					(up-compare-goal gl-villager-language-id c:== lid_villager-shepherd))
+				(up-compare-goal gl-villager-language-id c:== lid_villager-hunter))
+			(up-compare-goal gl-villager-language-id c:== lid_villager-fisherman))
+		=>
+		(up-modify-goal gl-villager-target-ressource c:= food))
+
+	(defrule
+		(up-compare-goal gl-villager-language-id c:== lid_villager-lumberjack)
+		=>
+		(up-modify-goal gl-villager-target-ressource c:= wood))
+
+	(defrule
+		(up-compare-goal gl-villager-language-id c:== lid_villager-stone-miner)
+		=>
+		(up-modify-goal gl-villager-target-ressource c:= stone))
+
+	(defrule
+		(up-compare-goal gl-villager-language-id c:== lid_villager-gold-miner)
+		=>
+		(up-modify-goal gl-villager-target-ressource c:= gold))
+
+	(defrule
+		(up-set-target-object search-local g: gl-current-villager-index)
+		(or(up-compare-goal gl-villager-target-ressource g:!= gl-current-villager-group-res)
+		(up-object-data object-data-idling == 1))
+		(up-compare-goal gl-first-retasking-rule-id != -1)
+		=>
+		;up-full-reset-search)
+		;(up-add-object-by-id search-local g: gl-current-villager-id)
+		;(up-chat-data-to-all "wrong res is %d" g: gl-villager-target-ressource)
+		;(up-target-point gl-temp-x action-stop -1 -1)
+		(up-modify-goal gl-villager-to-be-retasked-id g:= gl-current-villager-id)
+		;(chat-to-all "found vill to retask")
+		(up-jump-direct g: gl-first-retasking-rule-id)
+		)
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-post-retasking-rule-id)
+	)
+
+	(defrule
+		(up-compare-goal gl-current-villager-index g:< gl-max-villager-index)
+		(up-compare-goal gl-find-buggy-villager-first-rule != -1)
+		=>
+		(up-modify-goal gl-current-villager-index c:+ 1)
+		(up-jump-direct g: gl-find-buggy-villager-first-rule)
+	)
+
+	(defrule
+		(up-compare-goal gl-current-villager-group > 1)
+		(up-compare-goal gl-set-new-villager-group-rule-id != -1)
+		=>
+		(up-modify-goal gl-current-villager-group c:- 1)
+		(up-modify-goal gl-current-villager-group-res c:- 1)
+		(up-jump-direct g: gl-set-new-villager-group-rule-id)
+	)
+
+	(defrule
+		(up-compare-goal gl-end-of-retasking-rules != -1)
+		=>
+		(up-jump-direct g: gl-end-of-retasking-rules)
+	)
+
+
+
+
+
+
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-first-retasking-rule-id)
+	)
+
+	(defrule
+		(true)
+		=>
+		(set-goal gl-dropsite-index 0)
+		(set-goal gl-best-dropsite-score -99999)
+
+		(set-goal gl-villager-dropsite-distance-score-multiplier 2000) ;100
+		(set-goal gl-crowding-score-multiplier 200)
+		(set-goal gl-dropsite-res-count-score-multiplier 100)
+		(set-goal gl-dropsite-res-distance-score-multiplier 500)
+	)
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-first-dropsite-rule-id)
+	)
+
+	(defrule
+		(up-set-target-by-id g: gl-villager-to-be-retasked-id)
+		=>
+		(up-get-object-data object-data-group-flag gl-current-group)
+		(up-modify-goal gl-intended-target-res g:= gl-current-group)
+		(up-modify-goal gl-intended-target-res c:- 1)
+		(up-get-point position-object gl-villager-to-be-retasked-x)
+		(up-full-reset-search)
+		; evt. filter distance på 40
+		(up-find-local c: town-center c: 240)
+	)
+
+	(defrule
+		(up-compare-goal gl-intended-target-res == wood)
+		=>
+		(up-find-local c: lumber-camp c: 240)
+	)
+
+	(defrule
+		(up-compare-goal gl-intended-target-res == food)
+		=>
+		(up-find-local c: mill c: 240)
+	)
+
+	(defrule
+		(or(up-compare-goal gl-intended-target-res == gold)
+		(up-compare-goal gl-intended-target-res == stone))
+		=>
+		(up-find-local c: mining-camp c: 240)
+	)
+
+	(defrule
+		(true)
+		=>
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-dropsite-max-index g:= gl-local-total)
+		(up-modify-goal gl-dropsite-max-index c:- 1)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-dropsite-index)
+		(up-compare-goal gl-intended-target-res == wood)
+		=>
+		(up-get-object-data object-data-id gl-dropsite-id)
+		(up-get-point position-object gl-dropsite-x)
+		(up-get-point-distance gl-villager-to-be-retasked-x gl-dropsite-x gl-villager-dropsite-distance)
+		(up-set-target-point gl-dropsite-x)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-remove-objects search-local object-data-distance > 7)
+		(up-remove-objects search-local object-data-group-flag g:!= gl-current-group)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-crowding g:= gl-local-total)
+		(up-filter-distance c: -1 c: 5)
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-filter-distance c: 5 c: 7)
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-remove-objects search-remote object-data-tasks-count > 1)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-dropsite-res-count g:= gl-remote-total)
+		(up-clean-search search-remote object-data-full-distance search-order-asc)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-dropsite-index)
+		(up-compare-goal gl-intended-target-res == food)
+		=>
+		(up-get-object-data object-data-id gl-dropsite-id)
+		(up-get-point position-object gl-dropsite-x)
+		(up-get-point-distance gl-villager-to-be-retasked-x gl-dropsite-x gl-villager-dropsite-distance)
+		(up-set-target-point gl-dropsite-x)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-remove-objects search-local object-data-distance > 7)
+		(up-remove-objects search-local object-data-group-flag g:!= gl-current-group)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-crowding g:= gl-local-total)
+		(up-filter-distance c: -1 c: 10)
+		(up-modify-sn sn-focus-player-number c:= my-player-number)
+		(up-find-remote c: farm-class c: 40)
+		(up-remove-objects search-remote object-data-tasks-count > 0)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: food c: 40)
+		(up-remove-objects search-remote object-data-tasks-count > 1)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-dropsite-res-count g:= gl-remote-total)
+		(up-clean-search search-remote object-data-full-distance search-order-asc)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-dropsite-index)
+		(up-compare-goal gl-intended-target-res == gold)
+		=>
+		(up-get-object-data object-data-id gl-dropsite-id)
+		(up-get-point position-object gl-dropsite-x)
+		(up-get-point-distance gl-villager-to-be-retasked-x gl-dropsite-x gl-villager-dropsite-distance)
+		(up-set-target-point gl-dropsite-x)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-remove-objects search-local object-data-distance > 7)
+		(up-remove-objects search-local object-data-group-flag g:!= gl-current-group)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-crowding g:= gl-local-total)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: gold c: 40)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-dropsite-res-count g:= gl-remote-total)
+		(up-clean-search search-remote object-data-full-distance search-order-asc)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-dropsite-index)
+		(up-compare-goal gl-intended-target-res == stone)
+		=>
+		(up-get-object-data object-data-id gl-dropsite-id)
+		(up-get-point position-object gl-dropsite-x)
+		(up-get-point-distance gl-villager-to-be-retasked-x gl-dropsite-x gl-villager-dropsite-distance)
+		(up-set-target-point gl-dropsite-x)
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 200)
+		(up-remove-objects search-local object-data-distance > 7)
+		(up-remove-objects search-local object-data-group-flag g:!= gl-current-group)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-crowding g:= gl-local-total)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: stone c: 40)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-dropsite-res-count g:= gl-remote-total)
+		(up-clean-search search-remote object-data-full-distance search-order-asc)
+	)
+
+	(defrule
+		(up-set-target-object search-local g: gl-dropsite-index)
+		(up-set-target-object search-remote c: 0)
+		=>
+		(up-get-object-data object-data-precise-distance gl-dropsite-res-precise-distance)
+	)
+
+	(defrule
+		(true)
+		=>
+		(up-modify-goal gl-villager-dropsite-distance-score g:= gl-villager-dropsite-distance)
+		(up-modify-goal gl-villager-dropsite-distance-score g:* gl-villager-dropsite-distance-score-multiplier)
+
+		(up-modify-goal gl-crowding-score g:= gl-crowding)
+		(up-modify-goal gl-crowding-score g:* gl-crowding-score-multiplier)
+
+		(up-modify-goal gl-dropsite-res-count-score g:= gl-dropsite-res-count)
+		(up-modify-goal gl-dropsite-res-count-score g:* gl-dropsite-res-count-score-multiplier)
+
+		(up-modify-goal gl-dropsite-res-distance-score g:= gl-dropsite-res-precise-distance)
+		(up-modify-goal gl-dropsite-res-distance-score g:* gl-dropsite-res-distance-score-multiplier)
+		(up-modify-goal gl-dropsite-res-distance-score c:/ 100)
+		
+		(set-goal gl-dropsite-score 0)
+		(up-modify-goal gl-dropsite-score g:- gl-villager-dropsite-distance-score)
+		(up-modify-goal gl-dropsite-score g:- gl-crowding-score)
+		(up-modify-goal gl-dropsite-score g:+ gl-dropsite-res-count-score)
+		(up-modify-goal gl-dropsite-score g:- gl-dropsite-res-distance-score)
+	)
+
+	(defrule
+		(up-compare-goal gl-best-dropsite-score g:< gl-dropsite-score)
+		(up-compare-goal gl-dropsite-res-count-score > 0)
+		=>
+		(up-modify-goal gl-best-dropsite-id g:= gl-dropsite-id)
+		(up-modify-goal gl-best-dropsite-x g:= gl-dropsite-x)
+		(up-modify-goal gl-best-dropsite-y g:= gl-dropsite-y)
+		(up-modify-goal gl-best-dropsite-score g:= gl-dropsite-score)
+		(up-modify-goal gl-best-villager-dropsite-distance-score g:= gl-villager-dropsite-distance-score)
+		(up-modify-goal gl-best-crowding-score g:= gl-crowding-score)
+		(up-modify-goal gl-best-dropsite-res-count-score g:= gl-dropsite-res-count-score)
+		(up-modify-goal gl-best-dropsite-res-distance-score g:= gl-dropsite-res-distance-score)
+
+	)
+
+	(defrule
+		(up-compare-goal gl-dropsite-index g:< gl-dropsite-max-index)
+		=>
+		(up-modify-goal gl-dropsite-index c:+ 1)
+		(up-jump-direct g: gl-first-dropsite-rule-id)
+	)
+
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-set-target-by-id g: gl-villager-to-be-retasked-id)
+		(up-compare-goal gl-post-retasking-rule-id != -1)
+		=>
+		;(up-full-reset-search)
+		;(up-add-object-by-id search-local g: gl-villager-to-be-retasked-id)
+		;(up-add-object-by-id search-remote g: gl-best-dropsite-id)
+		;(up-target-objects 0 action-default -1 -1)
+		;(up-chat-data-to-all "best score: %d" g: gl-best-dropsite-score)
+		;(up-chat-data-to-all "villager-dropsite distance score: %d" g: gl-best-villager-dropsite-distance-score)
+		;(up-chat-data-to-all "crowding score: %d" g: gl-best-crowding-score)
+		;(up-chat-data-to-all "dropsite-res count score: %d" g: gl-best-dropsite-res-count-score)
+		;(up-chat-data-to-all "dropsite-res distance score: %d" g: gl-best-dropsite-res-distance-score)
+		;(up-jump-direct g: gl-post-retasking-rule-id)
+		;(chat-to-all "found best dropsite")
+		;(up-send-flare gl-best-dropsite-x)
+		(set-goal gl-current-target-index 0)
+	)
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-first-final-retasking-rule-id)
+	)
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-compare-goal gl-intended-target-res == wood)
+		=>
+		(up-full-reset-search)
+		(up-set-target-point gl-best-dropsite-x)
+		(up-filter-distance c: -1 c: 5)
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-filter-distance c: 5 c: 7)
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: wood c: 40)
+		(up-remove-objects search-remote object-data-tasks-count > 1)
+		(set-goal gl-new-target-id-current-goal-constant gl-new-target-id-first-goal-constant)
+	)
+	
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-compare-goal gl-intended-target-res == gold)
+		=>
+		(up-full-reset-search)
+		(up-set-target-point gl-best-dropsite-x)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: gold c: 40)
+		(up-remove-objects search-remote object-data-tasks-count > 1)
+		(set-goal gl-new-target-id-current-goal-constant gl-new-target-id-first-goal-constant)
+	)
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-compare-goal gl-intended-target-res == food)
+		=>
+		(up-full-reset-search)
+		(up-set-target-point gl-best-dropsite-x)
+		(up-modify-sn sn-target-player-number c:= my-player-number)
+		(up-filter-distance c: -1 c: 10)
+		(up-find-remote c: farm-class c: 40)
+		(up-remove-objects search-remote object-data-tasks-count > 0)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: food c: 40)
+		(up-remove-objects search-remote object-data-tasks-count > 1)
+		(set-goal gl-new-target-id-current-goal-constant gl-new-target-id-first-goal-constant)
+	)
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-compare-goal gl-new-target-id-current-goal-constant g:< gl-new-target-id-last-goal-constant)
+		=>
+		(up-get-indirect-goal g: gl-new-target-id-current-goal-constant gl-current-index-target-id)
+	)
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-compare-goal gl-new-target-id-current-goal-constant g:< gl-new-target-id-last-goal-constant)
+		(up-set-target-by-id g: gl-current-index-target-id)
+		(or(up-point-distance gl-best-dropsite-x gl-villager-to-be-retasked-x > 3)
+		(up-object-data object-data-class == farm-class))
+		=>
+		(up-remove-objects search-remote object-data-id g:== gl-current-index-target-id)
+		(up-modify-goal gl-new-target-id-current-goal-constant c:+ 1)
+		(up-jump-rule -2)
+	)
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-compare-goal gl-new-target-id-current-goal-constant g:< gl-new-target-id-last-goal-constant)
+		(up-set-target-by-id g: gl-current-index-target-id)
+		=>
+		(up-modify-goal gl-new-target-id-current-goal-constant c:+ 1)
+		(up-jump-rule -3)
+	)
+
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		=>
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-max-target-index g:= gl-remote-total)
+		(up-modify-goal gl-max-target-index c:- 1)
+		(up-set-target-point gl-best-dropsite-x)
+		(up-clean-search search-remote object-data-distance search-order-asc)
+	)
+
+	(defrule
+		(up-point-distance gl-best-dropsite-x gl-villager-to-be-retasked-x <= 3)
+		=>
+		(up-set-target-point gl-villager-to-be-retasked-x)
+		(up-clean-search search-remote object-data-distance search-order-asc)
+	)
+
+	(defrule
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-set-target-object search-remote g: gl-current-target-index)
+		=>
+		(up-get-object-data object-data-id gl-current-target-id)
+		(up-get-point position-object gl-target-x)
+		(up-copy-point gl-top-right-x gl-target-x)
+		(up-modify-goal gl-top-right-x c:+ 1)
+		(up-copy-point gl-bottom-right-x gl-target-x)
+		(up-modify-goal gl-bottom-right-y c:+ 1)
+		(up-copy-point gl-bottom-left-x gl-target-x)
+		(up-modify-goal gl-bottom-left-x c:- 1)
+		(up-copy-point gl-top-left-x gl-target-x)
+		(up-modify-goal gl-top-left-y c:- 1)
+	)
+
+	(defrule
+		(can-afford-building palisade-wall)
+		(up-set-target-object search-remote g: gl-current-target-index)
+		(or(up-object-data object-data-class == farm-class)
+		(or(up-can-build-line 0 gl-top-right-x c: palisade-wall)
+		(or(up-can-build-line 0 gl-bottom-right-x c: palisade-wall)
+		(or(up-can-build-line 0 gl-bottom-left-x c: palisade-wall)
+		(up-can-build-line 0 gl-top-left-x c: palisade-wall)))))
+		=>
+		(up-full-reset-search)
+		(up-add-object-by-id search-local g: gl-villager-to-be-retasked-id)
+		(up-add-object-by-id search-remote g: gl-current-target-id)
+		(up-target-objects 0 action-default -1 -1)
+		;(up-chat-data-to-all "vill nr %d retasked" g: gl-nr-new-targets-this-pass)
+		(set-goal gl-new-target-id-current-goal-constant gl-new-target-id-first-goal-constant)
+		(up-modify-goal gl-new-target-id-current-goal-constant g:+ gl-nr-new-targets-this-pass)
+		(up-set-indirect-goal g: gl-new-target-id-current-goal-constant g: gl-current-target-id)
+		;(up-chat-data-to-all "tree %d added to prev targets" g: gl-current-target-id)
+		(up-modify-goal gl-new-target-id-last-goal-constant c:+ 1)
+		(up-modify-goal gl-nr-new-targets-this-pass c:+ 1)
+		(up-jump-rule 1)
+	)
+
+	(defrule
+		(up-compare-goal gl-current-target-index g:< gl-max-target-index)
+		(up-compare-goal gl-first-final-retasking-rule-id != -1)
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-set-target-by-id g: gl-villager-to-be-retasked-id)
+		=>
+		(up-modify-goal gl-current-target-index c:+ 1)
+		(up-jump-direct g: gl-first-final-retasking-rule-id)
+	)
+
+	(defrule
+		(up-compare-goal gl-post-retasking-rule-id != -1)
+		(up-set-target-by-id g: gl-best-dropsite-id)
+		(up-set-target-by-id g: gl-villager-to-be-retasked-id)
+		=>
+		(up-jump-direct g: gl-post-retasking-rule-id)
+	)
+
+
+
+
+
+
+
+
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-end-of-retasking-rules)
+	)
+
+
+
+
+; ===== INPUT / OUTPUT GOALS =====
+(defconst gl-vill-total      1)
+
+(defconst gl-pct-food        2)
+(defconst gl-pct-wood        3)
+(defconst gl-pct-gold        4)
+(defconst gl-pct-stone       5)
+
+(defconst gl-vills-food      6)
+(defconst gl-vills-wood      7)
+(defconst gl-vills-gold      8)
+(defconst gl-vills-stone     9)
+
+(defconst gl-bound-food      10)
+(defconst gl-bound-foodwood  11)
+(defconst gl-bound-foodwoodgold 12)
+
+(defrule
+    (true)
+=>
+    ; hent aktuelle gather percentages
+    ;(up-modify-goal gl-pct-food  s:= sn-food-gatherer-percentage)
+    ;(up-modify-goal gl-pct-wood  s:= sn-wood-gatherer-percentage)
+    ;(up-modify-goal gl-pct-gold  s:= sn-gold-gatherer-percentage)
+    ;(up-modify-goal gl-pct-stone s:= sn-stone-gatherer-percentage)
+	(up-modify-goal gl-pct-food  c:= 55)
+    (up-modify-goal gl-pct-wood  c:= 25)
+    (up-modify-goal gl-pct-gold  c:= 15)
+    (up-modify-goal gl-pct-stone c:= 5)
+
+    ; hent aktuelt antal villagers
+    (up-get-fact unit-type-count-total villager gl-vill-total)
+
+    ; bound_food = round(total * food / 100)
+    (up-modify-goal gl-bound-food g:= gl-vill-total)
+    (up-modify-goal gl-bound-food g:* gl-pct-food)
+    (up-modify-goal gl-bound-food c:/ 100)
+
+    ; bound_foodwood = round(total * (food + wood) / 100)
+    (up-modify-goal gl-bound-foodwood g:= gl-pct-food)
+    (up-modify-goal gl-bound-foodwood g:+ gl-pct-wood)
+    (up-modify-goal gl-bound-foodwood g:* gl-vill-total)
+    (up-modify-goal gl-bound-foodwood c:/ 100)
+
+    ; bound_foodwoodgold = round(total * (food + wood + gold) / 100)
+    (up-modify-goal gl-bound-foodwoodgold g:= gl-pct-food)
+    (up-modify-goal gl-bound-foodwoodgold g:+ gl-pct-wood)
+    (up-modify-goal gl-bound-foodwoodgold g:+ gl-pct-gold)
+    (up-modify-goal gl-bound-foodwoodgold g:* gl-vill-total)
+    (up-modify-goal gl-bound-foodwoodgold c:/ 100)
+)
+
+(defrule
+	(true)
+	=>
+	; endelige mål
+    (up-modify-goal gl-vills-food g:= gl-bound-food)
+
+    (up-modify-goal gl-vills-wood g:= gl-bound-foodwood)
+    (up-modify-goal gl-vills-wood g:- gl-bound-food)
+
+    (up-modify-goal gl-vills-gold g:= gl-bound-foodwoodgold)
+    (up-modify-goal gl-vills-gold g:- gl-bound-foodwood)
+
+    (up-modify-goal gl-vills-stone g:= gl-vill-total)
+    (up-modify-goal gl-vills-stone g:- gl-bound-foodwoodgold)
+	;(up-chat-data-to-all "nr food: %d" g: gl-vills-food)
+	;(up-chat-data-to-all "nr wood: %d" g: gl-vills-wood)
+	;(up-chat-data-to-all "nr gold: %d" g: gl-vills-gold)
+	;(up-chat-data-to-all "nr stone: %d" g: gl-vills-stone)
+)

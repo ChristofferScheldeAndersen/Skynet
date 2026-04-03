@@ -1,0 +1,200 @@
+#load-if-defined DIFFICULTY-HARD
+#load-if-defined DIFFICULTY-HARDEST
+#load-if-defined DIFFICULTY-EXTREME
+
+(defrule
+(up-players-in-game ally == 1)
+(game-time > 1200)
+(current-age == dark-age)
+(up-research-status c: feudal-age >= 2)
+(not(players-current-age any-enemy == dark-age))
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "Stuck in dark age, GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+#end-if
+#end-if
+#end-if
+
+(defrule
+(up-players-in-game ally == 1)
+(game-time > 900)
+(population < 20)
+(players-population any-enemy > 40);50
+(not(players-current-age any-enemy == dark-age))
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "Crippled early game GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+(defrule
+(false)
+(up-players-in-game ally == 1)
+(game-time > 1200)
+(or(population < 40)
+(and(unit-type-count-total villager < 40)
+(military-population < 5)))
+(or(players-military-population any-enemy >= 50)
+(players-population any-enemy >= 100))
+(or(players-civilian-population any-enemy >= 75)
+(players-population any-enemy >= 100))
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "Their eco and military are too strong. GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+(defrule
+(false)
+(up-players-in-game ally == 1)
+(game-time > 1200)
+(or(population < 60)
+(and(unit-type-count-total villager < 60)
+(military-population < 10)))
+(or(players-military-population any-enemy >= 80)
+(players-population any-enemy >= 150));160
+(or(players-civilian-population any-enemy >= 125)
+(players-population any-enemy >= 150));160
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "We may still have a lot, but they are too strong. GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+(defrule
+(up-players-in-game ally == 1)
+(building-type-count-total town-center < 1)
+(unit-type-count-total villager < 30)
+(players-population any-enemy >= 60)
+(military-population < 5)
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "Lost TCs, GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+#load-if-not-defined CUSTOM-MAP
+
+(defrule
+(up-players-in-game ally == 1)
+(game-time > 600)
+(unit-type-count-total villager < 10)
+(military-population < 5)
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "We have too few villagers to fight back, GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+#end-if
+
+(defrule
+(up-players-in-game ally == 1)
+(game-time > 1500)
+(unit-type-count-total villager < 20)
+(players-population any-enemy >= 40)
+(military-population < 5)
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "Lost too many vills at this stage, GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+(defrule
+(false)
+(up-players-in-game ally == 1)
+(up-players-in-game enemy > 1)
+(up-compare-goal 10 == mc-danger)
+(military-population < 20)
+(up-compare-goal gl-resign < 1)
+=>
+;(chat-to-all "I am terribly outnumbered GG")
+(up-modify-goal gl-resign c:= 1)
+)
+
+(defrule
+(goal my-colour-id 1)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-blue)
+(chat-to-allies taunt-resign-ally-blue)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 2)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-red)
+(chat-to-allies taunt-resign-ally-red)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 3)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-green)
+(chat-to-allies taunt-resign-ally-green)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 4)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-yellow)
+(chat-to-allies taunt-resign-ally-yellow)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 5)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-cyan)
+(chat-to-allies taunt-resign-ally-cyan)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 6)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-purple)
+(chat-to-allies taunt-resign-ally-purple)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 7)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-grey)
+(chat-to-allies taunt-resign-ally-grey)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 8)
+(up-compare-goal gl-resign == 1)
+=>
+(chat-to-enemies taunt-resign-enemy-orange)
+(chat-to-allies taunt-resign-ally-orange)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal gl-resign > 0)
+=>
+(up-modify-goal gl-resign c:+ 1)
+)
+
+(defrule
+(up-compare-goal gl-resign > 30)
+=>
+(resign)
+)

@@ -1,0 +1,90 @@
+(defconst gl-pasture-index 533)
+(defconst gl-pasture-x 534)
+(defconst gl-pasture-y 535)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-pasture-index c:= 0)
+(disable-self)
+)
+
+(defrule
+(or(unit-type-count 1893 > 0)
+(unit-type-count 1897 > 0))
+=>
+(up-full-reset-search)
+(up-find-local c: 1893 c: 240)
+(up-find-local c: 1897 c: 240)
+(up-clean-search search-local 0 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(or(unit-type-count 1893 > 0)
+(unit-type-count 1897 > 0))
+(up-set-target-object search-local g: gl-pasture-index)
+=>
+(up-get-point position-object gl-pasture-x)
+(up-set-target-point gl-pasture-x)
+(up-modify-goal gl-pasture-x c:- 2)
+(up-modify-goal gl-pasture-y c:- 2)
+)
+
+(defrule
+(or(unit-type-count 1893 > 0)
+(unit-type-count 1897 > 0))
+=>
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-distance c: -1 c: 4)
+(up-find-remote c: 1899 c: 240)
+(up-find-remote c: 1900 c: 240)
+(up-filter-status c: 5 c: 0)
+(up-find-status-remote c: 1899 c: 240)
+(up-find-status-remote c: 1900 c: 240)
+(up-remove-objects search-remote 8 g:< gl-pasture-x)
+(up-remove-objects search-remote 9 g:< gl-pasture-y)
+(up-modify-goal gl-pasture-x c:+ 3)
+(up-modify-goal gl-pasture-y c:+ 3)
+(up-remove-objects search-remote 8 g:> gl-pasture-x)
+(up-remove-objects search-remote 9 g:> gl-pasture-y)
+(up-remove-objects search-remote 32 < 1)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-dot-x g:= gl-remote-total)
+(up-remove-objects search-remote 32 < 2)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-remote-total g:+ gl-dot-x)
+)
+
+(defrule
+(or(unit-type-count 1893 > 0)
+(unit-type-count 1897 > 0))
+(up-compare-goal gl-remote-total < 1)
+(up-object-data 73 > 0)
+=>
+;(up-chat-data-to-self "animals %d" g: gl-remote-total)
+(up-remove-objects search-local -1 g:!= gl-pasture-index)
+(up-get-object-data 73 gl-remote-total);just using gl-remote-total as a temporary goal here for efficiency it can be any temp goal
+(up-create-group 0 0 g: gl-remote-total)
+(up-modify-group-flag 0 g: gl-remote-total)
+(up-modify-goal gl-pasture-index c:+ 1)
+(up-jump-rule 1)
+)
+
+(defrule
+(or(unit-type-count 1893 > 0)
+(unit-type-count 1897 > 0))
+(up-compare-goal gl-remote-total > 0)
+=>
+;(up-chat-data-to-self "animals %d" g: gl-remote-total)
+(up-remove-objects search-local -1 g:!= gl-pasture-index)
+(up-create-group 0 0 g: gl-remote-total)
+(up-modify-group-flag 1 g: gl-remote-total)
+(up-modify-goal gl-pasture-index c:+ 1)
+)
+
+(defrule
+(up-compare-goal gl-pasture-index g:>= gl-local-total)
+=>
+(up-modify-goal gl-pasture-index c:= 0)
+)

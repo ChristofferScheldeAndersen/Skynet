@@ -1,0 +1,1282 @@
+; (defrule
+;       (true)
+;       =>
+;       (up-get-precise-time 0 13898))
+
+; ====================
+; ==== UPDATE SNS ====
+; ====================
+(defrule
+	(strategic-number sn-enable-training-queue == 1)
+	(or	(unit-type-count-total villager g:>= G-fc-vills)
+		(or	(food-amount > 420); blaze it
+			(goal G-force-tc-idle 1)))
+	=>
+	(set-strategic-number sn-enable-training-queue 0))
+
+(defrule; hunt deer if no scout to lure it
+	(current-age == dark-age)
+	(or	(goal G-scout-unit villager-class)
+		(not	(up-set-target-by-id g: ID-myscout)))
+	(strategic-number sn-maximum-hunt-drop-distance < 15)
+	(unit-type-count villager >= 8)
+	=>
+;	(chat-to-player my-player-number "no scout, increase hunt range")
+	(set-strategic-number sn-maximum-hunt-drop-distance 15))
+
+(defrule
+	(strategic-number sn-percent-building-cancellation == 1)
+	(building-type-count castle > 0)
+	=>
+	(set-strategic-number sn-percent-building-cancellation 25))
+(defrule
+	(strategic-number sn-percent-building-cancellation == 1)
+	(goal G-starting-tcs 0)
+	(building-type-count town-center >= 1)
+	(nand	(building-type-count castle == 0)
+		(building-type-count-total castle == 0))
+	=>
+	(set-strategic-number sn-percent-building-cancellation 25))
+
+(defrule
+	(strategic-number sn-allow-adjacent-dropsites != 1)
+	(or	(or	(or	(up-pending-placement c: MINING-CAMP)
+				(up-pending-placement c: LUMBER-CAMP))
+			(up-pending-placement c: MILL))
+		(up-pending-placement c: town-center))
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1))
+
+; civilian militia
+(defrule
+	(strategic-number sn-allow-civilian-offense == 2)
+	(enemy-buildings-in-town)
+	(nor	(up-building-type-in-town c: watch-tower > 0)
+		(up-building-type-in-town c: donjon > 0))
+	=>
+	(set-strategic-number sn-allow-civilian-offense 0))
+(defrule
+	(strategic-number sn-allow-civilian-defense == 3)
+	(or	(up-compare-goal G-attack >= 1)
+		(or	(strategic-number sn-number-civilian-militia == 0)
+			(or	(up-compare-goal G-main-arch-threat > 9)
+				(or	(players-military-population any-enemy >= 10)
+					(players-current-age any-enemy >= castle-age)))))
+	=>
+	(set-strategic-number sn-allow-civilian-defense 1)
+	(set-strategic-number sn-allow-civilian-offense 0))
+(defrule
+	(strategic-number sn-number-civilian-militia > 0)
+	(up-compare-goal P-enemytc-x > 0)
+	(or	(and	(up-building-type-in-town c: town-center >= 1)
+			(goal G-attack -1))
+		(up-point-distance P-self-x P-enemytc-x < 36))
+	=>
+;	(chat-to-player my-player-number "enemy close, disabling civilian militia")
+	(set-strategic-number sn-allow-civilian-defense 0)
+	(set-strategic-number sn-allow-civilian-offense 0)
+	(set-strategic-number sn-number-civilian-militia 0))
+(defrule
+	(strategic-number sn-maximum-hunt-drop-distance > 7)
+	(current-age < castle-age)
+	(up-compare-goal P-enemytc-x > 0)
+	(or	(and	(up-building-type-in-town c: town-center >= 1)
+			(goal G-attack -1))
+		(up-point-distance P-self-x P-enemytc-x < 24))
+	=>
+;	(chat-to-player my-player-number "enemy close, reduce hunt range")
+	(up-get-point-distance P-self-x P-enemytc-x G-temp1)
+	(up-modify-goal G-temp1 c:- 9)
+	(up-modify-goal G-temp1 c:max 6)
+	(up-modify-sn sn-maximum-hunt-drop-distance g:= G-temp1))
+
+(defrule; stop vill spaz
+	(strategic-number sn-villager-attack-reset != 0)
+	(goal G-trushed 1)
+	=>
+	(set-strategic-number sn-villager-attack-reset 0))
+
+(defrule; back to default
+	(strategic-number sn-villager-attack-reset != 1)
+	(or	(strategic-number sn-allow-civilian-offense == 0)
+		(nor	(up-building-type-in-town c: watch-tower > 0)
+			(up-building-type-in-town c: donjon > 0)))
+	=>
+	(set-strategic-number sn-villager-attack-reset 1))
+
+
+#load-if-not-defined TINY-MAP
+(defrule
+	(current-age >= castle-age)
+	(strategic-number SN-superiority >= 90)
+	(military-population >= 12)
+	=>
+	(set-strategic-number sn-number-explore-groups 2)
+	(set-strategic-number sn-total-number-explorers 2)
+	(disable-self))
+#end-if
+
+; ====================
+; ==== TICK COUNT ====
+; ====================
+(defrule
+	(true)
+	=>
+	(up-modify-goal G-tick-count c:+ 1)
+	(up-modify-goal G-2nd-tick g:= G-tick-count)
+	(up-modify-goal G-2nd-tick c:mod 2)
+	(up-modify-goal G-3rd-tick g:= G-tick-count)
+	(up-modify-goal G-3rd-tick c:mod 3)
+	(up-modify-goal G-5th-tick g:= G-tick-count)
+	(up-modify-goal G-5th-tick c:mod 5))
+
+; ========================
+; ==== GENERAL TIMERS ====
+; ========================
+(defrule
+	(up-timer-status T-1 == timer-disabled)
+	=>
+	(enable-timer T-1 1))
+(defrule
+	(timer-triggered T-1)
+	=>
+	(disable-timer T-1))
+(defrule
+	(up-timer-status T-2 == timer-disabled)
+	=>
+	(enable-timer T-2 2))
+(defrule
+	(timer-triggered T-2)
+	=>
+	(disable-timer T-2))
+(defrule
+	(up-timer-status T-5 == timer-disabled)
+	=>
+	(enable-timer T-5 5))
+(defrule
+	(timer-triggered T-5)
+	=>
+	(disable-timer T-5))
+(defrule
+	(up-timer-status T-10 == timer-disabled)
+	=>
+	(enable-timer T-10 10))
+(defrule
+	(timer-triggered T-10)
+	=>
+	(disable-timer T-10))
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	=>
+	(enable-timer T-15 15))
+(defrule
+	(timer-triggered T-15)
+	=>
+	(disable-timer T-15))
+(defrule
+	(up-timer-status T-27 == timer-disabled)
+	=>
+	(enable-timer T-27 27))
+(defrule
+	(timer-triggered T-27)
+	=>
+	(disable-timer T-27))
+(defrule
+	(up-timer-status T-30 == timer-disabled)
+	=>
+	(enable-timer T-30 30))
+(defrule
+	(timer-triggered T-30)
+	=>
+	(disable-timer T-30))
+(defrule
+	(up-timer-status T-60 == timer-disabled)
+	=>
+	(enable-timer T-60 60))
+(defrule
+	(timer-triggered T-60)
+	=>
+	(disable-timer T-60))
+(defrule
+	(up-timer-status T-111 == timer-disabled)
+	=>
+	(enable-timer T-111 111))
+(defrule
+	(timer-triggered T-111)
+	=>
+	(disable-timer T-111))
+;(defrule
+;	(up-timer-status T-eco == timer-disabled)
+;	=>
+;	(enable-timer T-eco 10))
+;(defrule
+;	(up-timer-status T-eco == timer-triggered)
+;	=>
+;	(disable-timer T-eco))
+
+; ========================
+; ==== TSA PRIORITIES ====
+; ========================
+(defrule
+	(goal G-targeting-priorities GV-nonsiege-active)	
+	(or	(or	(unit-type-count RAM >= 2); 3
+			(unit-type-count trebuchet-set >= 2)); 3
+		(and	(goal G-tower-response GV-wreck-it)
+			(or	(players-building-type-count target-player watch-tower > 0)
+				(players-building-type-count target-player donjon > 0))))
+	=>
+	(set-goal G-targeting-priorities GV-siege-switch))
+(defrule
+	(goal G-targeting-priorities GV-siege-active)	
+	(unit-type-count RAM <= 1)
+	(unit-type-count trebuchet-set <= 1)
+	(or	(up-compare-goal G-tower-response != GV-wreck-it)
+		(and	(players-building-type-count target-player watch-tower == 0)
+			(players-building-type-count target-player donjon == 0)))
+	=>
+	(set-goal G-targeting-priorities GV-nonsiege-switch))
+
+(defrule
+	(goal G-targeting-priorities GV-nonsiege-switch)
+	(goal G-maptype GV-land-walled)
+	=>
+	(set-strategic-number sn-wall-targeting-mode 0)
+	(up-set-defense-priority c: palisade-wall c: 1500)
+	(up-set-defense-priority c: stone-wall c: 10)
+	(up-set-defense-priority c: gate-class c: 900))
+(defrule
+	(goal G-targeting-priorities GV-nonsiege-switch)
+	=>
+	(up-set-defense-priority c: town-center-foundation c: 6000)
+	(up-set-defense-priority c: town-center c: 500)
+	(up-set-defense-priority c: lumber-camp c: 5000)
+	(up-set-defense-priority c: mining-camp c: 5000)
+	(up-set-defense-priority c: settlement c: 5000)
+	(up-set-defense-priority c: mule-cart c: 5000)
+	(up-set-defense-priority c: mill c: 1000)
+	(up-set-defense-priority c: house c: 20)
+	(up-set-defense-priority c: castle c: 10)
+	(up-set-defense-priority c: krepost c: 10)
+	(up-set-defense-priority c: watch-tower c: 50)
+	(up-set-defense-priority c: donjon c: 50)
+	(up-set-defense-priority c: bombard-tower c: 50)
+	(up-set-defense-priority c: barracks c: 2000)
+	(up-set-defense-priority c: archery-range c: 2000)
+	(up-set-defense-priority c: stable c: 2000)
+	(up-set-defense-priority c: siege-workshop c: 2000)
+	(up-set-defense-priority c: monastery c: 1000)
+	(set-goal G-targeting-priorities GV-nonsiege-active))
+
+(defrule
+	(goal G-targeting-priorities GV-siege-switch)
+;	(goal G-maptype GV-land-walled)
+	=>
+	(set-strategic-number sn-wall-targeting-mode 1)
+	(up-set-defense-priority c: palisade-wall c: 1000)
+	(up-set-defense-priority c: stone-wall c: 1000)
+	(up-set-defense-priority c: gate-class c: 4300))
+(defrule
+	(goal G-targeting-priorities GV-siege-switch)
+	=>
+	(up-set-defense-priority c: town-center-foundation c: 6000)
+	(up-set-defense-priority c: town-center c: 6000)
+	(up-set-defense-priority c: lumber-camp c: 1200)
+	(up-set-defense-priority c: mining-camp c: 1200)
+	(up-set-defense-priority c: settlement c: 1200)
+	(up-set-defense-priority c: mule-cart c: 1200)
+	(up-set-defense-priority c: mill c: 1200)
+	(up-set-defense-priority c: house c: 20)
+	(up-set-defense-priority c: castle c: 6400)
+	(up-set-defense-priority c: krepost c: 6300)
+	(up-set-defense-priority c: watch-tower c: 5800)
+	(up-set-defense-priority c: donjon c: 5800)
+	(up-set-defense-priority c: bombard-tower c: 6200)
+	(up-set-defense-priority c: barracks c: 2000)
+	(up-set-defense-priority c: archery-range c: 2000)
+	(up-set-defense-priority c: stable c: 2000)
+	(up-set-defense-priority c: siege-workshop c: 3000)
+	(up-set-defense-priority c: monastery c: 3500)
+	(set-goal G-targeting-priorities GV-siege-active))
+
+; ==========================
+; ==== EVERY TICK SETUP ====
+; ==========================
+(defrule
+	(true); before resetting cost data
+	=>
+	(up-get-fact wood-amount 0 G-free-wood)
+	(up-get-fact food-amount 0 G-free-food)
+	(up-get-fact gold-amount 0 G-free-gold)
+	(up-modify-goal G-free-wood g:- G-cost-wood)
+	(up-modify-goal G-free-food g:- G-cost-food)
+	(up-modify-goal G-free-gold g:- G-cost-gold)
+	(up-get-fact enemy-units-in-town 0 G-temp1)
+	(up-modify-sn SN-enemy-units-in-town g:= G-temp1))
+(defrule
+	(true)
+	=>
+	(up-reset-cost-data G-cost-food)
+	(set-goal G-temp0 -1)
+	(set-goal G-temp1 -1)
+	(set-goal G-temp2 -1)
+	(set-goal G-temp3 -1)
+	(set-goal G-temp4 -1)
+	(set-goal G-temp5 -1)
+	(set-goal G-temp6 -1)
+	(set-goal G-temp7 -1)
+	(set-goal G-temp8 -1)
+	(set-goal G-temp9 -1))
+;(defrule; redundant
+;	(true)
+;	=>
+;	(set-goal HAX1 0)
+;	(set-goal HAX2 0)
+;	(set-goal HAX3 0)
+;	(set-goal HAX4 0)
+;	(set-goal HAX5 0)
+;	(set-goal HAX6 0)
+;	(set-goal HAX7 0)
+;	(set-goal HAX8 0)
+;	(set-goal HAX9 0)
+;	(set-goal HAX10 0))
+;(defrule
+;	(true)
+;	=>
+;	(set-goal HAX11 0)
+;	(set-goal HAX12 0)
+;	(set-goal HAX13 0)
+;	(set-goal HAX14 0)
+;	(set-goal HAX15 0)
+;	(set-goal HAX16 0)
+;	(set-goal HAX17 0)
+;	(set-goal HAX18 0)
+;	(set-goal HAX19 0)
+;	(set-goal HAX20 0))
+
+; == UPDATE SCOUT DATA ==
+(defrule; update scout type and id
+	(game-time > 10)
+	(up-compare-goal G-scout-unit != villager-class)
+	(up-compare-goal G-scout-unit > 0)
+	(military-population > 0)
+	(strategic-number sn-minimum-civilian-explorers == 0)
+;	(up-compare-goal G-scout-unit != horse)
+;	(up-compare-goal G-scout-unit != king)
+;	(up-compare-goal G-scout-unit != trade-cart)
+	=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military actionid-explore -1 -1)
+	(up-find-local c: -1 c: 1)
+	(up-filter-include -1 -1 -1 -1); in case the scout is ducking
+	(up-find-local g: G-scout-unit c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-id ID-myscout)
+	(up-get-object-data object-data-type G-scout-unit))
+(defrule
+	(game-time > 10)
+	(goal G-scout-unit villager-class)
+	=>
+	(up-full-reset-search)
+	(up-filter-include -1 actionid-explore -1 -1)
+	(up-find-local c: villager-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-id ID-myscout))
+(defrule
+	(game-time > 0)
+	(up-set-target-by-id g: ID-myscout)
+;	(up-timer-status T-1 != timer-running)
+	=>
+	(up-get-object-data object-data-idling G-scoutidle)
+	(up-get-point position-object P-scout-x))
+;	(up-send-flare P-scout-x))
+
+(defrule
+	(up-compare-goal G-scoutidle >= 1)
+	(or	(goal G-scouting GV-enemyfound)
+		(goal G-scouting GV-retardscouting))
+	=>
+;	(chat-to-player my-player-number "resetting scouts")
+	(up-reset-scouts))
+
+; == RETREAT POINT AND TOWN SIZE ==
+; town size: decrease when enemy castle close, or enemy tower close in feudal
+
+(defrule
+	(building-type-count castle <= 0)
+	=>
+	(up-copy-point P-retreat-x P-self-x))
+;	(up-modify-goal P-retreat-x c:- 1)
+;	(up-modify-goal P-retreat-y c:+ 1))
+(defrule
+	(building-type-count castle >= 1)
+	=>
+	(up-get-fact building-type-count castle G-temp1); castle count
+	(up-modify-goal G-temp2 g:= G-temp1)
+	(up-modify-goal G-temp2 c:+ 1); point divisor
+	(up-modify-goal P-retreat-x g:= P-self-x)
+	(up-modify-goal P-retreat-y g:= P-self-y)
+	(up-full-reset-search)
+;	(up-filter-status c: status-ready c: list-active); redundant
+	(up-find-local c: castle c: 240)
+	(up-modify-goal G-temp3 c:= 0)); loop counter
+(defrule
+	(building-type-count castle >= 1)
+	(up-compare-goal G-temp3 g:< G-temp1)
+	=>
+	(up-set-target-object search-local g: G-temp3)
+	(up-get-point position-object P-temp-x)
+	(up-modify-goal P-retreat-x g:+ P-temp-x)
+	(up-modify-goal P-retreat-y g:+ P-temp-y)
+	(up-modify-goal G-temp3 c:+ 1)
+	(up-jump-rule -1))
+(defrule
+	(building-type-count castle >= 1)
+	=>
+	(up-modify-goal P-retreat-x g:/ G-temp2)
+	(up-modify-goal P-retreat-y g:/ G-temp2)
+	(up-bound-point P-retreat-x P-retreat-x))
+
+; (defrule; debug
+; 	(building-type-count castle >= 1)
+; 	(up-timer-status T-10 == timer-disabled)
+; 	=>
+; 	(up-send-flare P-retreat-x))
+
+; retreat point behind tower?
+
+; == idle farm count ==
+(defrule
+	(true)
+	=>
+	(up-get-fact building-type-count farm G-temp1)
+	(up-get-fact unit-type-count villager-farmer G-temp2)
+	(up-modify-goal G-temp1 g:- G-temp2)
+	(up-modify-sn SN-idle-farm-count g:= G-temp1))
+
+; == reset stance ==
+(defrule
+	; (or	(players-building-count target-player > 0)
+	; 	(nand	(up-compare-goal G-scouting >= 2)
+	; 		(up-compare-goal G-scouting <= 7)))
+	(nand	(up-compare-goal G-boarsteal >= 3)
+		(up-compare-goal G-boarsteal <= 10))
+	=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-idling < 1)
+	(up-target-point P-self-x action-none -1 stance-aggressive))
+(defrule
+	(unit-type-count monastery-class > 0)
+;	(up-research-status c: ri-theocracy < research-complete)
+	=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-idling < 1)
+	(up-target-point P-self-x action-none -1 stance-stand-ground))
+; (defrule
+; 	(unit-type-count monastery-class > 0)
+; 	(up-research-status c: ri-theocracy >= research-complete)
+; 	=>
+; 	(up-full-reset-search)
+; 	(up-filter-include cmdid-monk -1 -1 -1)
+; 	(up-find-local c: -1 c: 240)
+; 	(up-remove-objects search-local object-data-idling < 1)
+; 	(up-target-point P-self-x action-none -1 stance-aggressive))
+
+; == reset builders ==
+(defrule
+      (unit-type-count villager-builder > 0)
+      =>
+      (up-full-reset-search)
+      (up-filter-include -1 -1 orderid-build -1)
+      (up-find-local c: villager-class c: 40)
+      (up-remove-objects search-local object-data-target-id > -1))
+(defrule
+      (unit-type-count villager-builder > 0)
+      (up-set-target-object search-local c: 0)
+      =>
+      ; (up-get-search-state G-local-total)
+      ; (up-chat-data-to-all "resetting %d builders" g: G-local-total)
+      (up-target-point P-self-x action-stop -1 -1))
+
+; =======================
+; ==== TIMER ACTIONS ====
+; =======================
+(defrule
+	(up-timer-status T-5 != timer-running)
+	=>
+	(up-delete-distant-farms s: sn-maximum-food-drop-distance))
+
+(defrule
+	(strategic-number sn-disable-villager-garrison != 0)
+	(up-timer-status T-duc-secondary != timer-running)
+	=>
+	(set-strategic-number sn-disable-villager-garrison 0))
+
+;(defrule
+;	(or	(goal G-scouting GV-enemyfound)
+;		(players-building-count target-player > 0))
+;	(up-timer-status T-5 != timer-running)
+;;	(up-timer-status T-forced-retreat != timer-running)
+;	(up-timer-status T-tsa-retreat != timer-running)
+;	(up-timer-status T-duc-attack != timer-running)
+;	(up-research-status c: ri-theocracy < research-complete)
+;;	(up-compare-goal G-retreating <= 0)
+;	(nand	(up-compare-goal G-boarsteal >= 3)
+;		(up-compare-goal G-boarsteal <= 10))
+;	=>
+;;	(chat-to-player my-player-number "RESET STANCE")
+;	(set-strategic-number sn-disable-defend-groups 0)
+;	(up-set-attack-stance -1 c: 0)	; reset unit stance
+;	(up-set-attack-stance monastery-class c: stance-stand-ground))
+;(defrule
+;	(or	(goal G-scouting GV-enemyfound)
+;		(players-building-count target-player > 0))
+;	(up-timer-status T-5 != timer-running)
+;;	(up-timer-status T-forced-retreat != timer-running)
+;	(up-timer-status T-tsa-retreat != timer-running)
+;	(up-timer-status T-duc-attack != timer-running)
+;	(up-research-status c: ri-theocracy >= research-complete)
+;;	(up-compare-goal G-retreating <= 0)
+;	(nand	(up-compare-goal G-boarsteal >= 3)
+;		(up-compare-goal G-boarsteal <= 10))
+;	=>
+;;	(chat-to-player my-player-number "RESET STANCE")
+;	(set-strategic-number sn-disable-defend-groups 0)
+;	(up-set-attack-stance -1 c: 0))	; reset unit stance
+
+
+(defrule
+	(up-timer-status T-60 == timer-disabled)
+	=>
+	(set-goal G-esc-state with-escrow); reset escrow
+	(set-goal G-escrowing 0)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage wood 0)
+	(set-escrow-percentage gold 0)
+	(set-escrow-percentage stone 0)
+	(up-release-escrow))
+
+
+; == REGROUP ==
+#load-if-defined UP-POCKET-POSITION
+(defrule
+	(goal G-position GV-pocket)
+	=>
+	(up-jump-rule 3))
+#end-if
+;-----------------------------------------------------------------------
+(defrule
+	(up-compare-goal G-attack <= 0)
+	(or	(town-under-attack)
+		(strategic-number SN-enemy-units-in-town >= 8))
+	=>
+	(set-goal G-all-in 1)
+	(up-jump-rule 2))
+	;-----------------------------------------------------------------------
+(defrule
+	(or	(goal G-scouting GV-enemyfound)
+		(military-population >= 8))
+	(up-timer-status T-10 == timer-disabled); T-30
+	(up-compare-goal G-attack <= 0)
+	(up-compare-goal G-under-attack != 1)
+	=>
+	(up-set-attack-stance -1 c: stance-stand-ground)
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-relic orderid-convert -1)
+	(up-find-local c: monastery-class c: 240)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-id g:== ID-myscout)
+	(up-target-point P-retreat-x action-move -1 stance-stand-ground))
+(defrule
+	(goal G-all-in 1)
+	(up-timer-status T-10 == timer-disabled)
+	=>
+	(set-goal G-all-in -1))
+	;-----------------------------------------------------------------------
+;-----------------------------------------------------------------------
+
+; == TARGET PLAYER ==
+(defrule
+	(up-timer-status T-30 == timer-disabled)
+	(game-time >= 10)
+	=>
+	(up-find-player enemy find-closest G-closest-enemy)
+;	(up-chat-data-to-all "closest enemy: %d" g: G-closest-enemy)
+	(up-modify-sn sn-target-player-number g:= G-closest-enemy))
+(defrule
+	(up-players-in-game enemy > 1)
+	(up-timer-status T-30 == timer-disabled)
+	(current-age >= castle-age)
+	(players-population target-player < 15)
+	(players-building-type-count target-player town-center == 0)
+	(game-time > 600)
+	=>
+	(up-find-next-player enemy find-closest G-closest-enemy)
+;	(up-chat-data-to-all "next closest enemy: %d" g: G-closest-enemy)
+	(up-modify-sn sn-target-player-number g:= G-closest-enemy))
+
+; ======================
+; ==== UPDATE GOALS ====
+; ======================
+(defrule; G-attack
+	(goal G-attack GV-tsa-duc)
+	(up-compare-goal G-tower-response != GV-duc-camps)
+; expand facts when adding more tsa+duc attacks with waypoints
+	=>
+	(set-goal G-attack GV-tsa))
+; == G-age ==
+(defrule
+	(up-compare-goal G-age < GV-upfeudal)
+	(up-research-status c: feudal-age == research-pending)
+	=>
+	(set-goal G-age GV-upfeudal)
+	(set-goal G-eco-balance GV-early-feudal)
+	(set-goal G-force-tc-idle 0)
+	(disable-timer T-clicked-up)
+	(enable-timer T-clicked-up TV-up-feudal)
+	(disable-self))
+(defrule
+	(up-compare-goal G-age < GV-feudal)
+	(current-age == feudal-age)
+	=>
+	(set-goal G-age GV-feudal)
+	(up-get-fact game-time 0 G-age-start-time)
+	(disable-self))
+(defrule
+	(up-compare-goal G-age < GV-upcastle)
+	(up-research-status c: castle-age == research-pending)
+	=>
+	(set-goal G-age GV-upcastle)
+	(set-goal G-escrowing 0)
+	(set-strategic-number sn-disable-builder-assistance 1)
+	(set-strategic-number sn-number-civilian-militia 0)
+	(set-goal G-eco-balance GV-early-castle)
+	(set-goal G-eco-research GV-feudal-techs)
+	(set-goal G-force-tc-idle 0)
+	(disable-timer T-clicked-up)
+	(enable-timer T-clicked-up TV-up-castle)
+	(disable-self))
+(defrule
+	(up-compare-goal G-age < GV-castle)
+	(current-age == castle-age)
+	=>
+	(set-goal G-age GV-castle)
+	(set-goal G-eco-balance 0)
+	(up-get-fact game-time 0 G-age-start-time)
+	(disable-timer T-w84ups)
+	(enable-timer T-w84ups TV-w84-castle-ups)
+	(set-strategic-number sn-maximum-stone-drop-distance 25)
+	(set-strategic-number sn-maximum-gold-drop-distance 25)
+	(disable-self))
+(defrule
+	(up-compare-goal G-age < GV-upimp)
+	(up-research-status c: imperial-age == research-pending)
+	=>
+	(set-goal G-age GV-upimp)
+	(set-goal G-escrowing 0)
+	(set-goal G-force-tc-idle 0)
+	(disable-timer T-clicked-up)
+	(enable-timer T-clicked-up TV-up-imp); escrow big researches after triggered
+	(disable-self))
+(defrule
+	(up-compare-goal G-age < GV-imp)
+	(current-age == imperial-age)
+	=>
+	(set-goal G-age GV-imp)
+	(up-get-fact game-time 0 G-age-start-time)
+	(disable-timer T-w84ups)
+	(enable-timer T-w84ups TV-w84-imp-ups)
+	(disable-self))
+; == G-attacking ==
+#load-if-defined UP-ALLY-IN-GAME
+(defrule
+	(up-compare-goal G-attacking != 0)
+	(goal G-attack -1)
+	=>
+	(set-goal G-attacking 0))
+(defrule
+	(up-compare-goal G-attacking != 1)
+	(up-compare-goal G-attack >= 0)
+	=>
+	(set-goal G-attacking 1))
+#end-if
+; == GOAL 11 - TOWN UNDER ATTACK ==
+(defrule
+	(goal G-under-attack 0)
+	(goal G-attack -1)
+	(town-under-attack)
+	(strategic-number SN-enemy-units-in-town >= 4)
+	(up-timer-status T-tsa-retreat != timer-running)
+	=>
+	(set-goal G-under-attack 1))
+(defrule
+	(goal G-under-attack 1)
+	(or	(not	(town-under-attack))
+		(up-compare-goal G-attack >= 0))
+	=>
+	(set-goal G-under-attack 0))
+
+; ==== UPDATE STRATEGY PARAMETERS ====
+(defrule
+	(up-compare-goal G-strat g:== G-previous-strat)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(up-jump-direct g: J-strat-parameters))
+;-----------------------------------------------------------------------
+; (defrule
+; 	(goal G-strat GV-grush)
+; 	(up-compare-goal J-strat-parameters > 0)
+; 	=>
+; 	(chat-to-player my-player-number "strat GRUSH")
+; 	(set-goal G-strat-rax 0)
+; 	(set-goal G-strat-range 0)
+; 	(set-goal G-strat-stable 0)
+; 	(set-goal G-strat-workshop 0)
+; 	(set-goal G-boom-priority 2)
+; 	(set-goal G-strat-bo GV-grush)
+; 	(set-goal G-strat-class1 warship-class)
+; 	(set-goal G-strat-class2 0)
+; 	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(or	(goal G-strat GV-cdrop)
+		(goal G-strat GV-cdropproper))
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat CASTLE DROP")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 UU-CLASS)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-civ-lategame)
+	(civ-selected turkish)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat TURKISH LATEGAME")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 1)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 archery-cannon-class)
+	(set-goal G-strat-class2 cavalry-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-civ-lategame)
+	(civ-selected saracen)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat SARACEN LATEGAME")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 cavalry-class)
+	(set-goal G-strat-class2 cavalry-class); because strong and expensive
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-mlp)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat MY LITTLE PONY")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 cavalry-class)
+	(set-goal G-strat-class2 cavalry-class); because strong and expensive
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-trashflood)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat TRASHFLOOD")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 archery-class)
+	(set-goal G-strat-class2 infantry-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-ca)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat CAV ARCHERS")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 cavalry-archer-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-krush)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat KRUSH")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 1)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 cavalry-class)
+	(set-goal G-strat-class2 cavalry-class); because strong and expensive
+	(up-jump-direct g: J-strat-parameters))
+
+(defrule
+	(goal G-strat GV-ele)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat ELEPHANTS")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 1)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 cavalry-class)
+	(set-goal G-strat-class2 cavalry-class); because strong and expensive
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-horsecock)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat HORSECOCK")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 1)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 archery-class)
+	(set-goal G-strat-class2 cavalry-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-siegehalbs)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat SIEGE+HALBS")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 1)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 siege-weapon-class); scorpion-class
+	(set-goal G-strat-class2 infantry-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-siegewoads)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat SIEGE+WOADS")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 1)
+	(set-goal G-boom-priority 3)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 siege-weapon-class); scorpion-class
+	(set-goal G-strat-class2 infantry-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-champflood)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat CHAMPFLOOD")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 3)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-trashwar)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat TRASH WAR")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 archery-class)
+	(set-goal G-strat-class2 infantry-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-longswords)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat LONGSWORDS")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-unique)
+	(civ-selected gothic)
+	(research-completed ri-anarchy)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat UNIQUE UNITS")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 UU-CLASS)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-unique)
+	(up-compare-const UU-RESOURCE == food)
+	(up-research-status c: ri-anarchy != research-complete)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat UNIQUE UNITS")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 UU-CLASS)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-unique)
+	(up-compare-const UU-RESOURCE == wood)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat UNIQUE UNITS")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 3)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 UU-CLASS)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-klewproper)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+;	(chat-to-player my-player-number "strat EAGLES"); let's not ruin the beautiful KLEW KLEW KLEW spam
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 infantry-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-klew)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat EAGLES")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 1)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-eagleflood)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat EAGLES")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 3)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-xbows)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat XBOWS")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 archery-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+; (defrule
+; 	(goal G-strat GV-smushboom)
+; 	(up-compare-goal J-strat-parameters > 0)
+; 	=>
+; 	(chat-to-player my-player-number "strat SMUSHBOOM")
+; 	(set-goal G-strat-rax 0)
+; 	(set-goal G-strat-range 0)
+; 	(set-goal G-strat-stable 0)
+; 	(set-goal G-strat-workshop 1)
+; 	(set-goal G-boom-priority 3)
+; 	(set-goal G-strat-bo GV-fast-castle)
+; 	(set-goal G-strat-class1 monastery-class)
+; 	(set-goal G-strat-class2 siege-weapon-class)
+; 	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-rangedflush)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat RANGED FLUSH")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-feudal-war)
+	(set-goal G-strat-class1 archery-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-vanguard)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat VANGUARD")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-feudal-war)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 archery-class)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-krushboom)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat KRUSHBOOM")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 1)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-slow-castle)
+	(set-goal G-strat-class1 cavalry-class)
+	(set-goal G-strat-class2 cavalry-class); ?
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-monks-only)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat MONKS ONLY")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 3)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 monastery-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-boom)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat BOOM")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 4)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 0)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-monkflood)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat MONKFLOOD")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 3)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 monastery-class)
+	(set-goal G-strat-class2 0))
+(defrule
+	(goal G-strat GV-skirmflush)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat SKIRM FLUSH")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-feudal-war)
+	(set-goal G-strat-class1 archery-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-ak47)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat AK-47")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 1)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-feudal-war)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-sling)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat SLING")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-feudal-war)
+	(set-goal G-strat-class1 0)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-thunderdome)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat THUNDERDOME")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-douche)
+	(set-goal G-strat-class1 villager-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-open-douche)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat DOUCHE")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-douche)
+	(set-goal G-strat-class1 villager-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-vill-rush)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat VILL RUSH")
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 0)
+	(set-goal G-strat-bo GV-vill-rush)
+	(set-goal G-strat-class1 villager-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+(defrule
+	(goal G-strat GV-firelancers)
+	(up-compare-goal J-strat-parameters > 0)
+	=>
+	(chat-to-player my-player-number "strat FIRE LANCERS")
+	(set-goal G-strat-rax 1)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-boom-priority 2)
+	(set-goal G-strat-bo GV-fast-castle)
+	(set-goal G-strat-class1 infantry-class)
+	(set-goal G-strat-class2 0)
+	(up-jump-direct g: J-strat-parameters))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-strat-parameters)
+	(disable-self))
+#load-if-defined GOTHIC-CIV
+(defrule
+	(goal G-strat-rax 0)
+;	(or	(goal G-strat GV-cdrop); they only have rax strats once anarchy is researched
+;		(goal G-strat GV-unique))
+	(research-completed ri-anarchy)
+	=>
+	(set-goal G-strat-rax 1))
+#end-if
+(defrule
+	(goal G-strat-workshop 0)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(set-goal G-strat-workshop 1))
+
+(defrule; when slung, care less about boom
+	(up-compare-goal G-strat g:!= G-previous-strat)
+	(goal G-sling 2)
+	=>
+	(up-modify-goal G-boom-priority c:- 1)
+	(up-modify-goal G-boom-priority c:max 1))
+
+(defrule; pockets prioritise boom
+	(up-compare-goal G-strat g:!= G-previous-strat)
+	(up-compare-goal G-boom-priority < 3)
+	(goal G-position GV-pocket)
+	=>
+	(up-modify-goal G-boom-priority c:+ 1)
+	(up-modify-goal G-boom-priority c:min 3))
+
+(defrule
+	(true)
+	=>
+	(up-modify-goal G-previous-strat g:= G-strat))

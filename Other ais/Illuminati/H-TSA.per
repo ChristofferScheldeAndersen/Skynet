@@ -1,0 +1,368 @@
+; =============
+; ==== TSA ====
+; =============
+(defrule
+	(true)
+	=>
+	(up-modify-goal G-temp9 g:= G-attack))
+(defrule
+	(goal G-coop-attack 1)
+	(goal G-attack -1)
+	=>
+	(set-goal G-attack GV-tsa))
+(defrule
+	(or	(up-timer-status T-tsa-retreat == timer-running)
+		(or	(up-timer-status T-forced-retreat == timer-running)
+			(goal G-coop-attack 1)))
+	(up-compare-goal J-tsa-switch-1 > 0)
+	=>
+	(up-jump-direct g: J-tsa-switch-1))
+;----------------------------------------------------------------------------------------------------------------------
+(defrule
+	(goal G-attack -1)
+	(strategic-number SN-superiority >= 130)
+	(military-population >= 5)
+	(nand	(and	(unit-type-count RAM == 0)
+			(unit-type-count trebuchet-set == 0))
+		(or	(or	(players-building-type-count target-player watch-tower > 1)
+				(players-building-type-count target-player donjon > 1))
+			(or	(players-building-type-count target-player castle > 0)
+				(players-building-type-count target-player krepost > 0))))
+	=>
+;	(set-goal G-attack-status-changed 1)
+	(set-goal G-attack GV-tsa))
+(defrule
+	(current-age == imperial-age)
+	(up-timer-status T-w84ups != timer-running)
+	(or	(population g:> G-189-pop)
+		(population > 200))
+	(goal G-attack -1)
+	=>
+;	(set-goal G-attack-status-changed 1)
+	(set-goal G-attack GV-tsa))
+; == DISABLE TSA ==
+(defrule
+	(current-age < imperial-age)
+	(or	(and	(military-population < 4)
+			(players-military-population target-player > 1))
+		(or	(strategic-number SN-superiority <= 85)
+			(or	(up-building-type-in-town c: watch-tower > 0)
+				(up-building-type-in-town c: donjon > 0))))
+	(strategic-number SN-superiority <= 105)
+	(up-compare-goal G-attack >= GV-tsa)
+	=>
+;	(set-goal G-attack-status-changed 1)
+	(set-goal G-attack -1))
+(defrule
+	(current-age == imperial-age)
+	(or	(and	(military-population < 4)
+			(players-military-population target-player > 1))
+		(strategic-number SN-superiority <= 85))
+	(strategic-number SN-superiority <= 105)
+	(nand	(or	(population g:> G-160-pop)
+			(population > 180))
+		(strategic-number SN-superiority > 70))
+	(population < 175)
+	(up-compare-goal G-attack >= GV-tsa)
+	=>
+;	(set-goal G-attack-status-changed 1)
+	(set-goal G-attack -1))
+
+; == TOWER RESPONSE ==
+(defrule
+	(current-age < imperial-age)
+	(up-compare-goal G-attack > 0)
+	(or	(up-building-type-in-town c: watch-tower >= 1)
+		(up-building-type-in-town c: donjon >= 1))
+	=>
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-full-reset-search)
+	(up-find-remote c: tower-class c: 1))
+(defrule
+	(current-age < imperial-age)
+	(up-compare-goal G-attack > 0)
+	(or	(up-building-type-in-town c: watch-tower == 1)
+		(up-building-type-in-town c: donjon == 1))
+	(or	(not	(up-set-target-object search-remote c: 0))
+		(and	(up-set-target-object search-remote c: 0)
+			(and	(up-object-data object-data-status != 2)
+				(up-object-data object-data-hitpoints < 900))))
+	(up-compare-goal J-tsa-switch-2 > 0)
+	=>
+;	(chat-to-player my-player-number "enemy tower still under construction")
+	(up-jump-direct g: J-tsa-switch-2))
+	;----------------------------------------------------------------------------------------------------------------------
+(defrule
+	(or	(or	(players-building-type-count target-player castle >= 1)
+			(players-building-type-count target-player krepost >= 1))
+		(or	(up-compare-goal G-attack <= 0)
+			(or	(current-age == imperial-age)
+				(and	(up-building-type-in-town c: watch-tower != 1)
+					(up-building-type-in-town c: donjon != 1)))))
+	(up-compare-goal J-tsa-switch-3 > 0)
+	=>
+	(up-jump-direct g: J-tsa-switch-3))
+		;----------------------------------------------------------------------------------------------------------------------
+(defrule; RAM OR INFANTRY - WRECK IT
+	(up-compare-goal G-tower-response != GV-wreck-it)
+	(unit-type-count RAM < 2)
+;	(or	(unit-type-count knight-line >= 6)
+		(or	(unit-type-count RAM >= 1)
+			(or	(unit-type-count CHAMP >= 6)
+				(and	(unit-type-count my-unique-unit-line >= 6)
+					(up-compare-const UU-CLASS == infantry-class))));)
+	(strategic-number SN-superiority > 140)
+	=>
+;	(chat-to-player my-player-number "wreck tower")
+	(set-goal G-tower-response GV-wreck-it))
+(defrule; EW/KNIGHTS - IGNORE IT
+	(up-compare-goal G-tower-response != GV-ignore-it)
+	(or	(unit-type-count eagle-warrior-line >= 7)
+		(unit-type-count knight-line >= 4))
+	(strategic-number SN-superiority > 140)
+	=>
+;	(chat-to-player my-player-number "ignore tower")
+	(set-goal G-tower-response GV-ignore-it))
+(defrule; RANGED UNITS - AVOID IT
+	(up-compare-goal G-tower-response <= GV-run-away)
+;	(unit-type-count archery-class >= 6)
+	(strategic-number SN-superiority > 125)
+	(military-population <= 20); no point doing it with huge army
+	=>
+;	(chat-to-player my-player-number "avoid tower, evaluate alternative targets")
+	(set-goal G-attack GV-tsa-duc)
+	(set-goal G-tower-response GV-duc-camps))
+		;----------------------------------------------------------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-tsa-switch-3)
+	(disable-self))
+(defrule; TOO MANY TOWERS - RUN AWAY
+	(current-age < imperial-age)
+	(up-compare-goal G-attack > 0)
+	(up-compare-goal G-tower-response != GV-run-away)
+	(unit-type-count RAM < 2)
+	(unit-type-count infantry-class < 16)
+	(or	(up-building-type-in-town c: watch-tower >= 2)
+		(up-building-type-in-town c: donjon >= 2))
+	=>
+;	(chat-to-player my-player-number "retreat from towers")
+	(set-goal G-tower-response GV-run-away))
+(defrule; NOT ENOUGH SUPERIORITY - RUN AWAY
+	(current-age < imperial-age)
+	(up-compare-goal G-attack > 0)
+	(up-compare-goal G-tower-response != GV-run-away)
+	(or	(up-building-type-in-town c: watch-tower >= 1)
+		(up-building-type-in-town c: donjon >= 1))
+	(unit-type-count RAM == 0)
+	(strategic-number SN-superiority < 135)
+	(or	(strategic-number SN-superiority < 120)
+		(up-compare-goal G-tower-response != GV-duc-camps))
+	=>
+;	(chat-to-player my-player-number "retreat from tower")
+	(set-goal G-tower-response GV-run-away))
+(defrule
+	(up-compare-goal G-tower-response > 0)
+	(up-compare-goal G-attack >= 0)
+	(or	(unit-type-count RAM >= 2)
+		(or	(and	(up-building-type-in-town c: watch-tower == 0)
+				(up-building-type-in-town c: donjon == 0))
+			(and	(current-age >= castle-age)
+				(or	(unit-type-count infantry-class >= 9)
+					(unit-type-count cavalry-class >= 7)))))
+	=>
+	(set-goal G-tower-response 0))
+	;----------------------------------------------------------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-tsa-switch-2)
+	(disable-self))
+	
+; == RETREAT FROM TOWER / CASTLE ==
+(defrule
+	(up-compare-goal G-attack > 0)
+	(goal G-tower-response GV-run-away)
+	(current-age < imperial-age)
+	(or	(up-building-type-in-town c: watch-tower > 0)
+		(up-building-type-in-town c: donjon > 0))
+	=>
+;	(set-goal G-retreating 2); forced retreat
+;	(set-goal G-attack-status-changed 1)
+	(set-goal G-attack -1))
+
+(defrule
+	(or	(players-building-type-count target-player castle > 0)
+		(players-building-type-count target-player krepost > 0))
+	(up-compare-goal G-attack > 0)
+	(unit-type-count RAM < 2)
+	(unit-type-count trebuchet-set < 2)
+;	(current-age < imperial-age)
+	(up-get-fact unit-type-count-total spearman-line G-temp1)
+	(or	(unit-type-count infantry-class < 30)
+		(unit-type-count infantry-class <= G-temp1))
+	(strategic-number SN-superiority < 150)
+	(population g:< G-184-pop)
+	(or	(population <= 180)
+		(population g:< G-160-pop))
+	=>
+	(up-full-reset-search)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(set-goal G-temp4 35877))
+(defrule
+	(goal G-temp4 35877)
+	(players-building-type-count target-player castle > 0)
+	(up-find-remote c: castle c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-hitpoints > 3200)
+	=>
+;	(set-goal G-retreating 2); forced retreat
+;	(set-goal G-attack-status-changed 1)
+	(set-goal G-attack -1))
+(defrule
+	(goal G-temp4 35877)
+	(players-building-type-count target-player krepost > 0)
+	(up-find-remote c: krepost c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-hitpoints > 1900)
+	=>
+;	(set-goal G-retreating 2); forced retreat
+;	(set-goal G-attack-status-changed 1)
+	(set-goal G-attack -1))
+;----------------------------------------------------------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-tsa-switch-1)
+	(disable-self))
+
+; == TSA STATUS CHANGED ==
+(defrule
+	(up-compare-goal G-attack g:!= G-temp9)
+	(up-compare-goal G-temp9 <= 0)
+	(up-compare-goal G-attack > 0)
+	=>
+	(chat-to-player my-player-number "TSA on")
+	(set-strategic-number sn-number-civilian-militia 0)
+	(set-strategic-number sn-object-repair-level 3)); disable siege repair
+;	(up-full-reset-search)
+;	(up-filter-include cmdid-military -1 -1 -1)
+;	(up-filter-exclude -1 actionid-attack orderid-explore -1)
+;	(up-find-local c: -1 c: 240)
+;	(up-target-point P-self-x action-stop -1 -1)
+(defrule
+	(up-compare-goal G-attack g:!= G-temp9)
+	(up-compare-goal G-temp9 <= 0)
+	(up-compare-goal G-attack == GV-tsa)
+	=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-attack orderid-explore -1)
+	(up-find-local c: -1 c: 240)
+;	(up-filter-include cmdid-monk -1 -1 -1)
+;	(up-find-local c: -1 c: 240)
+	(up-target-point P-self-x action-stop -1 -1))
+
+(defrule
+	(up-compare-goal G-attack g:!= G-temp9)
+	(up-compare-goal G-temp9 > 0)
+	(up-compare-goal G-attack <= 0)
+	=>
+	(chat-to-player my-player-number "TSA off")
+	(set-strategic-number sn-object-repair-level 16387); enable siege repair
+	(set-strategic-number sn-filter-under-attack 0)
+	(set-strategic-number sn-maximum-town-size 34)
+	(up-update-targets)
+;	(set-strategic-number sn-disable-defend-groups 1)
+	(set-strategic-number sn-enemy-sighted-response-distance 0))
+
+; copied from tick.per regroup
+(defrule
+	(up-compare-goal G-attack g:!= G-temp9)
+	(up-compare-goal G-temp9 > 0)
+	(up-compare-goal G-attack <= 0)
+	=>
+	(up-set-attack-stance -1 c: stance-stand-ground)
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-relic orderid-convert -1)
+	(up-find-local c: monastery-class c: 240)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: -1 c: 240)
+	(up-target-point P-retreat-x action-move -1 stance-stand-ground))
+
+; == TARGETING ==
+(defrule
+	(town-under-attack)
+	(strategic-number sn-enemy-sighted-response-distance != 75)
+	(up-compare-goal G-attack <= 0)
+	(up-timer-status T-tsa-retreat != timer-running)
+	=>
+	(set-strategic-number sn-enemy-sighted-response-distance 75))
+(defrule
+	(not	(town-under-attack))
+	(up-compare-goal G-attack <= 0)
+	(strategic-number sn-enemy-sighted-response-distance != 30)
+	=>
+	(set-strategic-number sn-enemy-sighted-response-distance 30))
+(defrule
+	(up-compare-goal G-attack > 0)
+	(strategic-number sn-enemy-sighted-response-distance != 255)
+	=>
+	(set-strategic-number sn-enemy-sighted-response-distance 255))
+
+; ===================
+; ==== TOWN SIZE ====
+; ===================
+(defrule
+	(up-compare-goal G-attack > 0)
+	(up-building-type-in-town c: barracks == 0)
+	(up-building-type-in-town c: archery-range == 0)
+	(up-building-type-in-town c: town-center == 0)
+	(or	(or	(current-age == imperial-age)
+			(or	(unit-type-count RAM >= 2)
+				(unit-type-count trebuchet-set >= 1)))
+		(and	(up-building-type-in-town c: lumber-camp == 0)
+			(and	(up-building-type-in-town c: mining-camp == 0)
+				(and	(up-building-type-in-town c: settlement == 0)
+					(up-building-type-in-town c: mule-cart == 0)))))
+	=>
+	(up-modify-sn sn-maximum-town-size s:+ 2)
+	(up-modify-sn sn-maximum-town-size s:+ SN-ts-increment))
+(defrule
+	(strategic-number sn-maximum-town-size < 24)
+	(up-compare-goal G-attack <= 0)
+	=>
+	(up-modify-sn sn-maximum-town-size s:+ SN-ts-increment))
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-maximum-town-size < 34)
+	(up-compare-goal G-attack <= 0)
+	=>
+	(up-modify-sn sn-maximum-town-size s:+ SN-ts-increment))
+(defrule
+	(current-age == imperial-age)
+	(strategic-number sn-maximum-town-size < 42)
+	(up-compare-goal G-attack <= 0)
+	=>
+	(up-modify-sn sn-maximum-town-size s:+ SN-ts-increment))
+
+(defrule
+	(or	(up-pending-placement c: barracks)
+		(or	(up-pending-placement c: archery-range)
+			(or	(up-pending-placement c: stable)
+				(or	(up-pending-placement c: siege-workshop)
+					(or	(up-pending-placement c: monastery)
+						(up-pending-placement c: university))))))
+	=>
+;	(set-goal G-temp4 7281927))
+;(defrule
+;	(goal G-temp4 7281927)
+;	=>
+	(up-modify-sn SN-ts-increment c:+ 1)
+	(up-jump-rule 1))
+(defrule
+	(true)
+	=>
+	(set-strategic-number SN-ts-increment 2))

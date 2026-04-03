@@ -1,0 +1,394 @@
+
+;ranged-group-3--------------------------------------------------
+(defrule
+	(up-group-size g: g-current-ranged-group > 0)
+=>
+	(set-goal g-math-7 0)
+	(set-goal check-goal 0)
+	(up-full-reset-search)
+	(up-set-group search-local g: g-current-ranged-group)
+	(up-remove-objects search-local object-data-next-attack != 0)
+	(up-remove-objects search-local object-data-group-flag == 6)
+	(up-clean-search search-local object-data-hitpoints search-order-asc)
+	(up-clean-search search-local object-data-attacker-count search-order-desc)
+	(up-reset-group c: 5)
+	(up-create-group 0 0 c: 5)
+)
+
+(defrule
+	(or	(up-group-size g: g-current-ranged-group > 7)
+		(goal g-archer-mode retreat-from-fort))
+	(up-group-size g: g-current-ranged-group > 0)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-attacker-count > 0)
+	(or	(up-compare-goal g-archer-mode != sidling-push)
+		(up-group-size g: g-current-ranged-group > 28))
+	(up-compare-goal g-archer-mode != g-enemy-vills-nearby)
+	(up-compare-goal g-archer-mode != p-march-x)
+	(up-compare-goal g-archer-mode != p-march-y)
+=>
+	(set-goal g-math-7 1)
+)
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(up-set-target-object search-local g: g-math-7)
+=>
+	(set-goal g-math-6 0)
+	(up-get-rule-id g-jump-direct-1)
+	(set-goal check-goal 1)
+	(up-get-object-data object-data-range g-math-1)
+	(up-get-object-data object-data-range g-full-max-range)
+	(up-get-object-data object-data-min-range g-full-min-range)
+	(up-get-object-data object-data-id g-math-5)
+	(up-get-object-data object-data-precise-x p-x-1)
+	(up-get-object-data object-data-precise-y p-y-1)
+	(up-get-point position-object p-x-2)
+	(up-modify-goal g-full-max-range c:* 100)
+	(up-modify-goal g-full-min-range c:* 100)
+;	(up-modify-goal g-full-max-range c:+ 10)
+	(up-modify-goal g-full-max-range g:* g-full-max-range)
+	(up-modify-goal g-full-min-range g:* g-full-min-range)
+	(up-modify-goal g-math-2 g:= g-math-1)
+	(up-modify-goal g-math-1 c:+ 3)
+	(up-modify-goal g-math-2 c:- 1)
+	(up-set-target-point p-x-2)
+	(up-filter-distance c: -1 c: g-math-1)
+	(set-strategic-number sn-focus-player-number 1)
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: all-units-class c: 50)
+
+)
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+=>
+;	(chat-to-player my-player-number "we remove objects")
+;	(up-set-precise-target-point p-x-1)
+;	(up-remove-objects search-remote object-data-to-precise g:< g-full-min-range)
+	(up-remove-objects search-remote object-data-pierce-armor >= 10)
+	(up-remove-objects search-remote object-data-class == wall-class)
+	(up-remove-objects search-remote object-data-class == gate-class)
+	(up-remove-objects search-remote object-data-class == building-class)
+	(up-remove-objects search-remote object-data-class == farm-class)
+	(up-remove-objects search-remote object-data-class == tower-class)
+;	(up-remove-objects search-remote object-data-to-precise g:> g-full-max-range)
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(up-clean-search search-remote object-data-hitpoints search-order-asc)
+)
+;(defrule
+;	(up-group-size c: 5 > 0)
+;	(goal check-goal 1)
+;	(up-set-target-object search-remote c: 0)
+;=>
+;	(set-goal check-goal 2)
+;	(set-goal g-math-6 1)
+;;	(up-get-object-data object-data-precise-x p-x-3)
+;	(up-get-object-data object-data-precise-y p-y-3)
+;	(up-get-object-data object-data-precise-move-x p-destination-x)
+;	(up-get-object-data object-data-precise-move-y p-destination-y)
+;	(up-get-object-data object-data-speed g-math-3)
+;	(up-modify-goal delta-x-1 g:= p-x-1)
+;	(up-modify-goal delta-x-1 g:max p-x-3)
+;	(up-modify-goal delta-x-2 g:= p-x-1)
+;	(up-modify-goal delta-x-2 g:min p-x-3)
+;	(up-modify-goal delta-y-1 g:= p-y-1)
+;	(up-modify-goal delta-y-1 g:max p-y-3)
+;	(up-modify-goal delta-y-2 g:= p-y-1)
+;	(up-modify-goal delta-y-2 g:min p-y-3)
+;	(up-modify-goal delta-x-1 g:- delta-x-2)
+;	(up-modify-goal delta-y-1 g:- delta-y-2)
+;	(up-modify-goal delta-x-1 g:* delta-x-1)
+;	(up-modify-goal delta-y-1 g:* delta-y-1)
+;	(up-modify-goal delta-x-1 g:+ delta-y-1)
+;)
+
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+	(up-set-target-object search-remote c: 0)
+=>
+
+    ; --- get target data ---
+	(up-get-object-data object-data-precise-x p-x-3)
+	(up-get-object-data object-data-precise-y p-y-3)
+	(up-get-object-data object-data-precise-move-x p-destination-x)
+	(up-get-object-data object-data-precise-move-y p-destination-y)
+	(up-get-object-data object-data-speed g-math-3)
+	(up-get-object-data object-data-range g-math-4)
+	(up-modify-goal g-math-4 c:* 100)
+	(up-modify-goal g-math-4 g:+ g-math-3)
+	(up-get-point-distance p-x-3 p-destination-x g-math-10)
+	(up-modify-goal g-math-10 c:max 190)
+	(up-copy-point p-x-4 p-x-3)
+ 	(up-copy-point p-x-5 p-x-3)
+	(up-cross-tiles p-x-4 p-x-1 g: g-math-10)
+	(up-modify-goal g-math-10 c:* -1)
+	(up-cross-tiles p-x-5 p-x-1 c: g-math-10)
+	(up-get-point-distance p-x-4 p-destination-x g-math-8)
+	(up-get-point-distance p-x-5 p-destination-x g-math-9)
+
+	(up-modify-goal g-math-3 c:/ 2)
+
+    ; --- compute movement vector ---
+	(up-modify-goal move-x g:= p-destination-x)
+	(up-modify-goal move-x g:- p-x-3)
+
+	(up-modify-goal move-y g:= p-destination-y)
+	(up-modify-goal move-y g:- p-y-3)
+
+    ; --- compute squared vector length ---
+	(up-modify-goal len2-x g:= move-x)
+	(up-modify-goal len2-x g:* move-x)
+
+	(up-modify-goal len2-y g:= move-y)
+	(up-modify-goal len2-y g:* move-y)
+
+	(up-modify-goal len2-x g:+ len2-y)   ; len2-x = L^2
+
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+	(up-set-target-object search-remote c: 0)
+=>
+
+    ; --- compute scaled movement numerator (integer-safe) ---
+	(up-modify-goal move-x g:* g-math-3)
+	(up-modify-goal move-x g:* g-math-3)  ; move-x * s^2
+
+	(up-modify-goal move-y g:* g-math-3)
+	(up-modify-goal move-y g:* g-math-3)  ; move-y * s^2
+
+    ; --- divide at the end to get scaled movement ---
+	(up-modify-goal move-x g:/ len2-x)
+	(up-modify-goal move-y g:/ len2-x)
+
+    ; --- compute next tick target position ---
+	(up-modify-goal next-x g:= p-x-3)
+	(up-modify-goal next-x g:+ move-x)
+
+	(up-modify-goal next-y g:= p-y-3)
+	(up-modify-goal next-y g:+ move-y)
+
+    ; --- compute squared distance to shooting unit ---
+	(up-modify-goal delta-x-1 g:= next-x)
+	(up-modify-goal delta-x-1 g:- p-x-1)
+	(up-modify-goal delta-x-1 g:* delta-x-1)
+
+	(up-modify-goal delta-y-1 g:= next-y)
+	(up-modify-goal delta-y-1 g:- p-y-1)
+	(up-modify-goal delta-y-1 g:* delta-y-1)
+	
+	(up-modify-goal delta-x-1 g:+ delta-y-1)   ; final squared distance
+	(set-goal check-goal 2)
+)
+
+;(defrule
+;	(up-compare-goal g-math-3 >= 40)
+;	(up-compare-goal delta-x-1 >= 50000)
+;	(up-research-status c: ri-ballistics != research-complete)
+;	(or	(up-object-data object-data-action == actionid-move)
+;		(up-point-distance p-destination-x p-x-3 g:> g-math-4))
+;	(or	(up-point-distance p-destination-x p-x-1 g:> g-math-8)
+;		(up-point-distance p-destination-x p-x-1 g:> g-math-9))
+;	(up-group-size c: 5 > 0)
+;	(goal check-goal 2)
+;=>
+;	(set-goal check-goal 1)
+;	(set-goal g-math-6 1)
+;	(up-remove-objects search-remote object-data-index == 0)
+;	(up-jump-rule -3)
+;)
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 2)
+	(or	(up-compare-goal delta-x-1 g:< g-full-min-range)
+		(up-compare-goal delta-x-1 g:> g-full-max-range))
+
+=>
+	(set-goal g-math-6 1)
+	(set-goal check-goal 1)
+	(up-remove-objects search-remote object-data-index == 0)
+	(up-jump-rule -3)
+)
+
+;(defrule
+;	(up-group-size c: 5 > 0)
+;	(goal check-goal 1)
+;	(goal g-math-6 0)
+;	(up-set-target-object search-local g: g-math-7)
+;	(up-object-data object-data-attacker-count > 0)
+;=>
+;	(set-goal g-math-6 1)
+;)
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+;	(goal g-math-6 0)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-reset-search 0 0 1 1)
+	(up-set-target-point p-x-2)
+	(up-filter-distance c: -1 c: g-math-1)
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+;	(goal g-math-6 0)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: all-units-class c: 40)
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+;	(goal g-math-6 0)
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+;	(goal g-math-6 0)
+=>
+	(up-set-precise-target-point p-x-1)
+;	(up-remove-objects search-remote object-data-to-precise g:< g-full-min-range)
+	(up-remove-objects search-remote object-data-class == wall-class)
+;	(up-remove-objects search-remote object-data-to-precise g:> g-full-max-range)
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(up-clean-search search-remote object-data-hitpoints search-order-asc)
+)
+(defrule
+	(goal g-math-6 1)
+=>
+	(up-remove-objects search-remote object-data-class == gate-class)
+	(up-remove-objects search-remote object-data-class == building-class)
+;	(up-remove-objects search-remote object-data-class == farm-class)
+	(up-remove-objects search-remote object-data-class == tower-class)
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+;	(goal g-math-6 0)
+	(up-set-target-object search-remote c: 0)
+=>
+
+	(up-get-object-data object-data-precise-x p-x-3)
+	(up-get-object-data object-data-precise-y p-y-3)
+	(up-get-object-data object-data-precise-move-x p-destination-x)
+	(up-get-object-data object-data-precise-move-y p-destination-y)
+	(up-get-object-data object-data-speed g-math-3)
+	(up-get-object-data object-data-range g-math-4)
+	(up-modify-goal g-math-4 c:* 100)
+	(up-modify-goal g-math-4 g:+ g-math-3)
+	(up-get-point-distance p-x-3 p-destination-x g-math-10)
+	(up-modify-goal g-math-10 c:max 260)
+	(up-copy-point p-x-4 p-x-3)
+ 	(up-copy-point p-x-5 p-x-3)
+	(up-cross-tiles p-x-4 p-x-1 g: g-math-10)
+	(up-modify-goal g-math-10 c:* -1)
+	(up-cross-tiles p-x-5 p-x-1 g: g-math-10)
+	(up-get-point-distance p-x-4 p-destination-x g-math-8)
+	(up-get-point-distance p-x-5 p-destination-x g-math-9)
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 1)
+;	(goal g-math-6 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-modify-goal delta-x-1 g:= p-x-1)
+	(up-modify-goal delta-x-1 g:max p-x-3)
+	(up-modify-goal delta-x-2 g:= p-x-1)
+	(up-modify-goal delta-x-2 g:min p-x-3)
+	(up-modify-goal delta-y-1 g:= p-y-1)
+	(up-modify-goal delta-y-1 g:max p-y-3)
+	(up-modify-goal delta-y-2 g:= p-y-1)
+	(up-modify-goal delta-y-2 g:min p-y-3)
+	(up-modify-goal delta-x-1 g:- delta-x-2)
+	(up-modify-goal delta-y-1 g:- delta-y-2)
+	(up-modify-goal delta-x-1 g:* delta-x-1)
+	(up-modify-goal delta-y-1 g:* delta-y-1)
+	(up-modify-goal delta-x-1 g:+ delta-y-1)
+;	(up-get-point-distance p-x-1 p-x-3 delta-x-1)
+	(set-goal check-goal 3)
+)
+
+;(defrule
+;	(up-compare-goal g-math-3 >= 80)
+;	(up-compare-goal delta-x-1 >= 100000)
+;	(up-research-status c: ri-ballistics != research-complete)
+;	(or	(up-object-data object-data-action == actionid-move)
+;		(up-point-distance p-destination-x p-x-3 g:> g-math-4))
+;	(or	(up-point-distance p-destination-x p-x-1 g:> g-math-8)
+;		(up-point-distance p-destination-x p-x-1 g:> g-math-9))
+;	(up-group-size c: 5 > 0)
+;	(goal check-goal 3)
+;=>
+;	(set-goal check-goal 1)
+;	(up-remove-objects search-remote object-data-index == 0)
+;	(up-jump-rule -3)
+;)
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(goal check-goal 3)
+	(or	(up-compare-goal delta-x-1 g:< g-full-min-range)
+		(up-compare-goal delta-x-1 g:> g-full-max-range))
+=>
+	(set-goal check-goal 1)
+	(up-remove-objects search-remote object-data-index == 0)
+	(up-jump-rule -3)
+)
+
+;(defrule
+;	(up-group-size c: 5 > 0)
+;	(goal g-math-6 1)
+;	(goal check-goal 2)
+;=>
+;	(chat-to-all "target acquired"))
+
+(defrule
+	(up-group-size c: 5 > 0)
+	(up-compare-goal check-goal >= 2)
+=>
+;	(chat-to-player my-player-number "Shoot now")
+	(up-remove-objects search-local object-data-id g:!= g-math-5)
+	(set-strategic-number sn-keystates 2)
+	(up-target-objects 1 action-default -1 stance-defensive)
+	(set-strategic-number sn-keystates 0)
+	(up-reset-group c: 6)
+	(up-create-group 0 0 c: 6)
+	(up-modify-group-flag 1 c: 6)
+)
+(defrule
+	(up-group-size c: 5 > 0)
+	(up-compare-goal check-goal > 0)
+=>
+	(set-goal check-goal 0)
+	(up-modify-goal g-math-7 c:+ 1)
+	(up-full-reset-search)
+	(up-set-group search-local c: 5)
+	(up-jump-direct g: g-jump-direct-1)
+)

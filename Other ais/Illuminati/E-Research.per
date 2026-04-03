@@ -1,0 +1,3288 @@
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(up-compare-goal J-research-per > 0)
+	=>
+	(up-jump-direct g: J-research-per))
+
+; ======================
+; ==== ECO RESEARCH ====
+; ======================
+(defrule
+	(can-research ri-loom)
+	(or	(and	(unit-type-count villager >= 20)
+			(or	(goal G-build-order GV-feudal-war)
+				(unit-type-count-total villager g:>= G-fc-vills)))
+		(or	(food-amount < 30); triggers immediately for chinese
+			(or	(housing-headroom <= 0); and mayans
+				(civ-selected gothic)))); and goths
+	=>
+	(research ri-loom))
+(defrule
+	(research-available ri-loom)
+	(unit-type-count-total villager >= 20)
+	(up-modify-goal G-temp1 g:= G-fc-vills)
+	(up-modify-goal G-temp1 c:- 1)
+	(or	(goal G-build-order GV-feudal-war)
+		(unit-type-count-total villager g:>= G-temp1))
+;	(or	(unit-type-count-total villager >= 15)
+;		(dropsite-min-distance live-boar >= 20))
+	=>
+	(set-strategic-number sn-enable-training-queue 0)
+	(disable-self))
+(defrule
+	(unit-type-count-total villager < 25)
+	(up-research-status c: ri-loom >= research-pending)
+	=>
+	(set-strategic-number sn-enable-training-queue 1)
+	(disable-self))
+
+; == AGE UP ==
+(defrule; feudal
+	(can-research feudal-age)
+	(or	(goal G-force-tc-idle 1)
+		(unit-type-count-total villager g:>= G-fc-vills))
+	(or	(goal G-force-tc-idle 1)
+		(or	(up-compare-goal G-build-order != GV-slow-castle)
+			(unit-type-count-total villager g:>= G-sc-vills)))
+	=>
+	(research feudal-age)
+	(chat-to-allies "up feudal"))
+(defrule; castle
+	(can-research-with-escrow castle-age)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research castle-age)
+	(chat-to-allies "up castle"))
+(defrule
+	(up-research-status c: castle-age < research-pending)
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(up-compare-goal G-build-order < GV-fish-castle)
+	(or	(building-type-count-total farm >= 16)
+		(food-amount > 400))
+	(or	(or	(strategic-number SN-raw-superiority >= 105)
+			(building-type-count TOWER >= 1))
+		(goal G-escrowing castle-age))
+	(or	(civilian-population >= 33)
+		(civilian-population g:>= G-desired-vills))
+	=>
+	(set-goal G-temp5 598710))
+(defrule
+	(goal G-temp5 598710)
+	=>
+	(set-goal G-escrowing castle-age)
+	(up-add-research-cost c: castle-age c: 1)
+	(up-modify-escrow food c:max 800)
+	(set-goal G-temp5 598712))
+(defrule
+	(goal G-temp5 598712)
+	(food-amount > 300)
+	=>
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(up-research-status c: castle-age < research-pending)
+	(goal G-age GV-feudal)
+	(up-compare-goal G-build-order >= GV-fish-castle)
+	=>
+	(set-goal G-escrowing castle-age)
+	(up-add-research-cost c: castle-age c: 1)
+	(up-modify-escrow food c:max 800)
+	(up-modify-escrow gold c:max 200))
+(defrule; imp
+	(can-research-with-escrow imperial-age)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research imperial-age)
+	(chat-to-allies "up imp"))
+#load-if-defined BYZANTINE-CIV
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(up-research-status c: ri-hand-cart >= research-pending)
+	(or	(civilian-population >= 80)
+		(population g:>= G-max-vills))
+	(or	(civilian-population >= 100)
+		(or	(strategic-number SN-superiority >= 90)
+			(population g:>= G-160-pop)))
+	(strategic-number SN-superiority >= 50)
+	=>
+	(set-goal G-escrowing imperial-age)
+	(up-add-research-cost c: imperial-age c: 1)
+	(up-modify-escrow food c:max 667)
+	(up-modify-escrow gold c:max 536))
+#else
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(up-research-status c: ri-hand-cart >= research-pending)
+	(or	(or	(civilian-population >= 90)
+			(and	(civ-selected bengalis)
+				(civilian-population >= 86)))
+		(population g:>= G-160-pop))
+	(or	(or	(civilian-population >= 105)
+			(and	(civ-selected bengalis)
+				(civilian-population >= 99)))
+		(or	(strategic-number SN-superiority >= 100)
+			(population g:>= G-170-pop)))
+	(strategic-number SN-superiority >= 60)
+	=>
+	(set-goal G-escrowing imperial-age)
+	(up-add-research-cost c: imperial-age c: 1)
+	(up-modify-escrow food c:max 1000)
+	(up-modify-escrow gold c:max 800))
+#end-if
+
+; == TC RESEARCH ==
+(defrule
+	(up-compare-goal G-force-tc-idle != 1)
+	(nand	(up-compare-goal G-build-order >= GV-fish-castle)
+		(goal G-age GV-feudal))
+	(or	(unit-type-count villager > 31)
+		(unit-type-count villager g:>= G-desired-vills))
+	(up-can-research G-esc-state c: ri-wheel-barrow)
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-wheel-barrow))
+(defrule
+	(up-research-status c: ri-wheel-barrow < research-pending)
+	(research-available ri-wheel-barrow)
+	(up-compare-goal G-force-tc-idle != 1)
+;	(nand	(goal G-build-order GV-fast-castle)
+;		(goal G-age GV-feudal))
+	(or	(unit-type-count villager > 32)
+		(unit-type-count villager g:>= G-desired-vills))
+	(or	(food-amount < 175)
+		(wood-amount < 50))
+	=>
+	(up-add-research-cost c: ri-wheel-barrow c: 1)
+	(up-modify-escrow food c:max 175)
+	(up-modify-escrow wood c:max 50))
+(defrule
+	(up-can-research G-esc-state c: ri-hand-cart)
+	(or	(unit-type-count villager > 50)
+		(unit-type-count villager g:>= G-desired-vills))
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-hand-cart))
+(defrule
+	(or	(unit-type-count villager > 50)
+		(unit-type-count villager g:>= G-desired-vills))
+	(up-research-status c: ri-hand-cart < research-pending)
+	(research-available ri-hand-cart)
+	(or	(and	(building-type-count-total town-center >= 2)
+			(strategic-number SN-superiority > 85))
+		(food-amount >= 200))
+	=>
+	(up-add-research-cost c: ri-hand-cart c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow wood c:max 200))
+(defrule
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(food-amount >= 125)
+	(building-type-count town-center >= 2)
+	(or	(unit-type-count villager >= 40)
+		(unit-type-count villager g:>= G-desired-vills))
+	(can-research ri-town-watch)
+	=>
+	(research ri-town-watch))
+(defrule
+	(up-research-status c: ri-hand-cart >= research-pending)
+	(up-research-status c: imperial-age >= research-pending)
+	(food-amount >= 400)
+	(gold-amount >= 300)
+	(building-type-count town-center >= 2)
+	(or	(unit-type-count villager >= 60)
+		(unit-type-count villager g:>= G-desired-vills))
+	(can-research ri-town-patrol)
+	=>
+	(research ri-town-patrol))
+
+; == FEUDAL ECO UPGRADES ==
+(defrule
+	(current-age == feudal-age)
+	(up-compare-goal G-build-order < GV-fish-castle)
+	(building-type-count-total archery-range > 1)
+	=>
+	(set-goal G-eco-research GV-feudal-techs)
+	(disable-self))
+(defrule
+	(up-compare-goal G-eco-research >= GV-feudal-techs)
+	(nand	(goal G-strat GV-cdrop)
+		(dropsite-min-distance stone > 3))
+	(unit-type-count villager-stone >= 1)
+	(or	(unit-type-count villager-stone >= 6)
+		(population g:> G-184-pop))
+	(can-research ri-stone-mining); has priority because of castle drop strats
+	=>
+	(research ri-stone-mining))
+(defrule
+	(up-compare-goal G-eco-research >= GV-feudal-techs)
+	(nand	(or	(goal G-strat GV-cdrop)
+			(goal G-strat GV-cdropproper))
+		(or	(dropsite-min-distance stone > 3)
+			(up-research-status c: ri-stone-mining < research-pending)))
+	(can-research ri-double-bit-axe)
+	=>
+	(research ri-double-bit-axe))
+(defrule
+	(up-compare-goal G-build-order < GV-fish-castle)
+	(can-research ri-double-bit-axe)
+	(or	(building-type-count-total archery-range > 0)
+		(and	(goal G-archers 0)
+			(goal G-skirms 0)))
+	=>
+	(research ri-double-bit-axe))
+(defrule
+	(goal G-tower-defence 1)
+	(up-can-research G-esc-state c: ri-double-bit-axe)
+	=>
+	(up-research G-esc-state c: ri-double-bit-axe))
+(defrule
+	(up-compare-goal G-eco-research >= GV-feudal-techs)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(unit-type-count villager-gold >= 1)
+	(or	(unit-type-count villager-gold >= 5)
+		(population g:> G-184-pop))
+	(can-research ri-gold-mining)
+	(nand	(or	(goal G-strat GV-cdrop)
+			(goal G-strat GV-cdropproper))
+		(dropsite-min-distance stone > 3))
+	=>
+	(research ri-gold-mining))
+(defrule
+	(up-compare-goal G-eco-research >= GV-feudal-techs)
+	(or	(up-research-status c: ri-gold-mining != research-available)
+		(building-type-count-total farm >= 7))
+	(can-research ri-horse-collar)
+	(nand	(goal G-strat GV-klewproper)
+		(building-type-count-total farm < 4))
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	=>
+	(research ri-horse-collar))
+(defrule
+	(up-compare-goal G-build-order < GV-fish-castle)
+	(or	(or	(building-type-count-total archery-range > 1)
+			(building-type-count-total blacksmith > 0))
+		(or	(goal G-strat GV-ak47)
+			(goal G-strat GV-trush)))
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(can-research ri-horse-collar)
+	=>
+	(research ri-horse-collar))
+
+; == CASTLE AGE ECO UPGRADES ==
+(defrule
+	(or	(or	(unit-type-count-total villager >= 40)
+			(population g:> G-184-pop))
+		(and	(goal G-strat GV-boom)
+			(stone-amount < 100)))
+	(current-age >= castle-age)
+	=>
+	(set-goal G-eco-research GV-castle-techs)
+	(disable-self))
+(defrule
+	(goal G-eco-research GV-castle-techs)
+	(up-can-research G-esc-state c: ri-bow-saw)
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-bow-saw))
+;(defrule
+;	(goal G-eco-research GV-castle-techs)
+;	(goal G-strat GV-boom)
+;	(up-research-status c: ri-bow-saw < research-pending)
+;	(research-available ri-bow-saw))
+;	=>
+;	(up-add-research-cost c: ri-bow-saw c: c: 1)
+;	(up-modify-escrow food c:max 150)
+;	(up-modify-escrow wood c:max 100))
+(defrule
+	(goal G-eco-research GV-castle-techs)
+	(unit-type-count villager-gold >= 4)
+	(or	(or	(unit-type-count villager-gold >= 9)
+			(population g:> G-184-pop))
+		(and	(up-research-status c: ri-bow-saw != research-available)
+			(up-research-status c: ri-heavy-plow != research-available)))
+	(can-research ri-gold-shaft-mining)
+	=>
+	(research ri-gold-shaft-mining))
+(defrule
+	(goal G-eco-research GV-castle-techs)
+	(building-type-count-total farm >= 11)
+	(up-can-research G-esc-state c: ri-heavy-plow)
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-heavy-plow))
+;(defrule
+;	(goal G-eco-research GV-castle-techs)
+;	(goal G-strat GV-boom)
+;	(up-research-status c: ri-heavy-plow < research-pending)
+;	(research-available ri-heavy-plow))
+;	=>
+;	(up-add-research-cost c: ri-heavy-plow c: c: 1)
+;	(up-modify-escrow food c:max 125)
+;	(up-modify-escrow wood c:max 125))
+(defrule
+	(goal G-eco-research GV-castle-techs)
+	(building-type-count-total farm >= 20)
+	(can-research ri-crop-rotation)
+	=>
+	(research ri-crop-rotation))
+
+; == MARKET RESEARCHES ==
+#load-if-defined UP-ALLY-IN-GAME
+(defrule
+	(goal G-trade 1)
+	(unit-type-count-total trade-cart >= 8)
+	(can-research ri-caravan)
+	=>
+	(research ri-caravan))
+; (defrule
+; 	(or	(and	(goal G-trade 1)
+; 			(unit-type-count-total trade-cart >= 3))
+; 		(and	(player-in-game any-ally)
+; 			(up-compare-goal G-age >= GV-upimp)))
+; 	(can-research ri-cartography)
+; 	=>
+; 	(research ri-cartography))
+(defrule
+	(can-research ri-coinage)
+	(current-age == imperial-age)
+	(population g:> G-189-pop)
+	(player-in-game any-ally)
+	=>
+	(research ri-coinage))
+(defrule
+	(can-research ri-banking)
+	(current-age == imperial-age)
+	(population g:>= G-189-pop)
+	(player-in-game any-ally)
+	=>
+	(research ri-banking))
+#end-if
+(defrule
+	(or	(population g:> G-184-pop)
+		(population > 184))
+	(can-research ri-guilds)
+	=>
+	(research ri-guilds))
+
+; ===========================
+; ==== MILITARY RESEARCH ====
+; ===========================
+; == castle upgrades ==
+(defrule
+	(up-compare-goal G-strat != GV-monks-only)
+	(can-research ri-conscription)
+	=>
+	(research ri-conscription))
+
+#load-if-defined AZTEC-CIV
+(defrule
+	(up-can-research G-esc-state c: ri-garland-wars)
+	(or	(or	(or	(goal G-eagles 1)
+				(goal G-champs 1))
+			(goal G-spears 1))
+		(goal G-condo 1))
+	(or	(unit-type-count-total infantry-class >= 14)
+		(population g:>= G-184-pop))
+	(nand	(goal G-skirms 1)
+		(up-research-status c: ri-atlatl < research-pending))
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-garland-wars))
+(defrule
+	(research-available ri-garland-wars)
+	(or	(unit-type-count-total infantry-class >= 18)
+		(population g:> G-184-pop))
+;	(up-compare-goal G-strat != GV-trashwar)
+	(or	(or	(or	(goal G-eagles 1)
+				(goal G-champs 1))
+			(goal G-spears 1))
+		(goal G-condo 1))
+	(nand	(goal G-skirms 1)
+		(up-research-status c: ri-atlatl < research-pending))
+	(building-type-count castle > 0)
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	=>
+	(up-add-research-cost c: ri-garland-wars c: 1)
+	(up-modify-escrow food c:max 450)
+	(up-modify-escrow gold c:max 750))
+
+(defrule
+	(up-can-research G-esc-state c: ri-atlatl)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 9)
+		(population g:>= G-184-pop))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(or	(up-research-status c: ri-bracer >= research-pending)
+		(current-age < imperial-age))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-atlatl))
+(defrule
+	(research-available ri-atlatl)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 11)
+		(population g:>= G-184-pop))
+	(building-type-count castle > 0)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(or	(up-research-status c: ri-bracer >= research-pending)
+		(current-age < imperial-age))
+	=>
+	(up-add-research-cost c: ri-atlatl c: 1)
+	(up-modify-escrow food c:max 400)
+	(up-modify-escrow gold c:max 350))
+
+(defrule
+	(goal G-uu 1)
+	(or	(unit-type-count-total jaguar-man-line >= 8)
+		(population g:>= G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-jaguar-man)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-jaguar-man))
+(defrule
+	(goal G-uu 1)
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total jaguar-man-line >= 11)
+		(population g:> G-184-pop))
+	(research-available ri-elite-jaguar-man)
+	=>
+	(up-add-research-cost c: ri-elite-jaguar-man c: 1)
+	(up-modify-escrow food c:max 1000)
+	(up-modify-escrow gold c:max 500))
+#end-if
+
+#load-if-defined BENGALIS-CIV
+; paiks
+
+(defrule
+	(up-can-research G-esc-state c: ri-mahayana)
+	(population g:> G-184-pop)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-mahayana))
+(defrule
+	(research-available ri-mahayana)
+	(population g:>= G-189-pop)
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-mahayana c: 1)
+	(up-modify-escrow wood c:max 800)
+	(up-modify-escrow gold c:max 650))
+#end-if
+
+; #load-if-defined BRITON-CIV
+; (defrule
+; 	(or	(goal G-archers 1)
+; 		(goal G-uu 1))
+; 	(or	(unit-type-count-total archer-line >= 18)
+; 		(or	(unit-type-count-total longbowman-line >= 16)
+; 			(population g:> G-184-pop)))
+; 	(up-research-status c: ri-bracer >= research-pending)
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(up-can-research G-esc-state c: ri-yeomen)
+; 	=>
+; 	(release-escrow wood)
+; 	(release-escrow gold)
+; 	(research ri-yeomen))
+; (defrule
+; 	(or	(goal G-archers 1)
+; 		(goal G-uu 1))
+; 	(or	(unit-type-count-total archer-line >= 20)
+; 		(or	(unit-type-count-total longbowman-line >= 18)
+; 			(population g:> G-184-pop)))
+; 	(up-research-status c: ri-bracer >= research-pending)
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(up-research-status c: ri-yeomen < research-pending)
+; 	(research-available ri-yeomen)
+; 	(building-type-count castle > 0)
+; 	=>
+; 	(up-add-research-cost c: ri-yeomen c: 1)
+; 	(up-modify-escrow wood c:max 750)
+; 	(up-modify-escrow gold c:max 450))
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(unit-type-count-total longbowman >= 10)
+; 		(population g:> G-184-pop))
+; 	(up-can-research G-esc-state c: ri-elite-longbowman)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-elite-longbowman))
+; (defrule
+; 	(goal G-uu 1)
+; 	(building-type-count castle > 0)
+; 	(unit-type-count-total longbowman >= 12)
+; 	(research-available ri-elite-longbowman)
+; 	=>
+; 	(up-add-research-cost c: ri-elite-longbowman c: 1)
+; 	(up-modify-escrow food c:max 850)
+; 	(up-modify-escrow gold c:max 850))
+; #end-if
+
+#load-if-defined BOHEMIANS-CIV
+; wagenburg tactics
+
+(defrule
+	(up-can-research G-esc-state c: ri-hussite-reforms)
+	(goal G-monks 1)
+	(population g:>= G-170-pop)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-hussite-reforms))
+(defrule
+	(research-available ri-hussite-reforms)
+	(up-research-status c: ri-hussite-reforms < research-pending)
+	(goal G-monks 1)
+	(population g:>= G-184-pop)
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-hussite-reforms c: 1)
+	(up-modify-escrow food c:max 500)
+	(up-modify-escrow gold c:max 450))
+#end-if
+
+#load-if-defined BURMESE-CIV
+; howdah
+
+(defrule
+	(up-can-research G-esc-state c: ri-manipur-cavalry)
+	(or	(goal G-scouts 1)
+		(goal G-knights 1))
+	(or	(unit-type-count-total cavalry-class >= 8)
+		(population g:>= G-184-pop))
+	(up-modify-goal G-temp1 g:= G-main-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-skirm-threat)
+	(up-modify-goal G-temp1 g:+ G-cav-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:+ G-heavy-arch-threat)
+	(up-compare-goal G-temp1 c:>= 20)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-manipur-cavalry))
+(defrule
+	(research-available ri-manipur-cavalry)
+	(or	(goal G-scouts 1)
+		(goal G-knights 1))
+	(or	(unit-type-count-total cavalry-class >= 10)
+		(population g:>= G-184-pop))
+	(building-type-count castle > 0)
+	(up-modify-goal G-temp1 g:= G-main-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-skirm-threat)
+	(up-modify-goal G-temp1 g:+ G-cav-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:+ G-heavy-arch-threat)
+	(up-compare-goal G-temp1 c:>= 32)
+	=>
+	(up-add-research-cost c: ri-manipur-cavalry c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 300))
+#end-if
+
+; #load-if-defined CELTIC-CIV
+; (defrule
+; 	(up-can-research G-esc-state c: ri-furor-celtica)
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(or	(up-research-status c: ri-heavy-scorpion >= research-pending)
+; 		(wood-amount < 700))
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-furor-celtica))
+; (defrule
+; 	(up-research-status c: ri-furor-celtica < research-pending)
+; 	(research-available ri-furor-celtica)
+; 	(building-type-count castle > 0)
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(or	(up-research-status c: ri-heavy-scorpion >= research-pending)
+; 		(and	(wood-amount < 400)
+; 			(food-amount > 450)))
+; 	(building-type-count-total siege-workshop >= 1)
+; 	=>
+; 	(up-add-research-cost c: ri-furor-celtica c: 1)
+; 	(up-modify-escrow food c:max 750)
+; 	(up-modify-escrow gold c:max 450))
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(unit-type-count-total woad-raider-line >= 8)
+; 		(population g:> G-184-pop))
+; 	(up-can-research G-esc-state c: ri-elite-woad-raider)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-elite-woad-raider))
+; (defrule
+; 	(goal G-uu 1)
+; 	(research-available ri-elite-woad-raider)
+; 	(building-type-count castle > 0)
+; 	(or	(unit-type-count-total woad-raider >= 10)
+; 		(population g:> G-184-pop))
+; 	=>
+; 	(up-add-research-cost c: ri-elite-woad-raider c: 1)
+; 	(up-modify-escrow food c:max 1000)
+; 	(up-modify-escrow gold c:max 800))
+; #end-if
+
+#load-if-defined CHINESE-CIV
+(defrule
+	(or	(goal G-mangonel 1)
+		(goal G-scorps 1))
+	(or	(or	(unit-type-count-total rocket-cart-line >= 5)
+			(or	(unit-type-count-total scorpion-class >= 7)
+				(and	(unit-type-count-total rocket-cart-line >= 3)
+					(unit-type-count-total scorpion-class >= 4))))
+		(population g:>= G-184-pop))
+	(up-can-research G-esc-state c: ri-rocketry)
+;	(up-compare-goal G-strat != GV-trashwar)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-rocketry))
+(defrule
+	(or	(goal G-mangonel 1)
+		(goal G-scorps 1))
+	(research-available ri-rocketry)
+	(building-type-count castle > 0)
+	(or	(or	(unit-type-count-total rocket-cart-line >= 5)
+			(unit-type-count-total scorpion-class >= 7))
+		(population g:> G-184-pop))
+;	(up-compare-goal G-strat != GV-trashwar)
+	=>
+	(up-add-research-cost c: ri-rocketry c: 1)
+	(up-modify-escrow food c:max 935)
+	(up-modify-escrow gold c:max 765))
+(defrule
+	(or	(goal G-uu 1)
+		(unit-type-count-total chu-ko-nu >= 18))
+	(or	(unit-type-count-total chu-ko-nu >= 14)
+		(population g:>= G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-chu-ko-nu)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-chu-ko-nu))
+(defrule
+	(research-available ri-elite-chu-ko-nu)
+	(or	(goal G-uu 1)
+		(unit-type-count-total chu-ko-nu >= 20))
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total chu-ko-nu >= 15)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-chu-ko-nu c: 1)
+	(up-modify-escrow food c:max 1105)
+	(up-modify-escrow gold c:max 1105))
+#end-if
+
+; #load-if-defined FRANKISH-CIV
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(unit-type-count-total throwing-axeman-line >= 14)
+; 		(population g:> G-184-pop))
+; 	(up-can-research G-esc-state c: ri-bearded-axe)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-bearded-axe))
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(unit-type-count-total throwing-axeman-line >= 15)
+; 		(population g:> G-184-pop))
+; 	(research-available ri-bearded-axe)
+; 	(building-type-count castle > 0)
+; 	=>
+; 	(up-add-research-cost c: ri-bearded-axe c: 1)
+; 	(up-modify-escrow food c:max 300)
+; 	(up-modify-escrow gold c:max 300))
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(unit-type-count-total throwing-axeman >= 12)
+; 		(population g:> G-184-pop))
+; 	(up-can-research G-esc-state c: ri-elite-throwing-axeman)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-elite-throwing-axeman))
+; (defrule
+; 	(goal G-uu 1)
+; 	(building-type-count castle > 0)
+; 	(or	(unit-type-count-total throwing-axeman >= 13)
+; 		(population g:> G-184-pop))
+; 	(research-available ri-elite-throwing-axeman)
+; 	=>
+; 	(up-add-research-cost c: ri-elite-throwing-axeman c: 1)
+; 	(up-modify-escrow food c:max 1000)
+; 	(up-modify-escrow gold c:max 750))
+; #end-if
+
+; #load-if-defined GOTHIC-CIV
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(strategic-number SN-raw-superiority >= 75)
+; 		(strategic-number SN-target-archery >= 20))
+; 	(building-type-count-total barracks > 0)
+; 	(up-can-research G-esc-state c: ri-anarchy)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-anarchy))
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(strategic-number SN-raw-superiority >= 85)
+; 		(strategic-number SN-target-archery >= 24))
+; 	(building-type-count-total barracks >= 2)
+; 	(building-type-count castle > 0)
+; 	(up-research-status c: ri-anarchy < research-pending)
+; 	(research-available ri-anarchy)
+; 	=>
+; 	(up-add-research-cost c: ri-anarchy c: 1)
+; 	(up-modify-escrow food c:max 450)
+; 	(up-modify-escrow gold c:max 250))
+; (defrule
+; 	(goal G-uu 1)
+; 	(or	(unit-type-count-total huskarl-set >= 8)
+; 		(population g:> G-184-pop))
+; 	(up-can-research G-esc-state c: ri-elite-huskarl)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-elite-huskarl))
+; (defrule
+; 	(goal G-uu 1)
+; 	(building-type-count castle > 0)
+; 	(or	(unit-type-count-total huskarl-set >= 13)
+; 		(population g:> G-184-pop))
+; 	(up-research-status c: ri-elite-huskarl < research-pending)
+; 	(research-available ri-elite-huskarl)
+; 	=>
+; 	(up-add-research-cost c: ri-elite-huskarl c: 1)
+; 	(up-modify-escrow food c:max 1200)
+; 	(up-modify-escrow gold c:max 550))
+; #end-if
+
+#load-if-defined INCAN-CIV
+(defrule
+	(goal G-uu 1)
+	(or	(unit-type-count-total kamayuk-line >= 8)
+		(population g:> G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-kamayuk)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-kamayuk))
+(defrule
+	(goal G-uu 1)
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total kamayuk-line >= 12)
+		(population g:> G-184-pop))
+	(up-research-status c: ri-elite-kamayuk < research-pending)
+	(research-available ri-elite-kamayuk)
+	=>
+	(up-add-research-cost c: ri-elite-kamayuk c: 1)
+	(up-modify-escrow food c:max 900)
+	(up-modify-escrow gold c:max 500))
+(defrule
+	(goal G-champs 1)
+	(or	(unit-type-count-total CHAMP >= 12)
+		(population g:>= G-184-pop))
+;	(up-compare-goal G-strat != GV-trashwar)
+	(up-can-research G-esc-state c: ri-fabric-shields)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-fabric-shields))
+(defrule
+	(goal G-champs 1)
+	(or	(unit-type-count-total CHAMP >= 13)
+		(population g:> G-184-pop))
+;	(up-compare-goal G-strat != GV-trashwar)
+	(research-available ri-fabric-shields)
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-fabric-shields c: 1)
+	(up-modify-escrow food c:max 600)
+	(up-modify-escrow gold c:max 600))
+(defrule
+	(up-can-research G-esc-state c: ri-andean-sling)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 12)
+		(population g:>= G-184-pop))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-andean-sling))
+(defrule
+	(research-available ri-andean-sling)
+	(building-type-count castle > 0)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 14)
+		(population g:> G-184-pop))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-add-research-cost c: ri-andean-sling c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 300))
+#end-if
+
+#load-if-defined INDIAN-CIV; hindustanis
+(defrule
+	(up-can-research G-esc-state c: ri-imperial-camel)
+	(or	(goal G-camels 1)
+		(unit-type-count-total heavy-camel >= 12))
+	(or	(unit-type-count-total heavy-camel >= 7)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-imperial-camel))
+(defrule
+	(research-available ri-imperial-camel)
+	(or	(goal G-camels 1)
+		(unit-type-count-total heavy-camel >= 14))
+	(or	(unit-type-count-total heavy-camel >= 8)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-imperial-camel c: 1)
+	(up-modify-escrow food c:max 1000)
+	(up-modify-escrow gold c:max 500))
+(defrule
+	(goal G-uu 1)
+	(up-can-research G-esc-state c: ri-elite-ghulam)
+	(or	(unit-type-count-total ghulam >= 9)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-ghulam))
+(defrule
+	(goal G-uu 1)
+	(research-available ri-elite-ghulam)
+	(building-type-count castle >= 1)
+	(or	(unit-type-count-total ghulam >= 11)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-ghulam c: 1)
+	(up-modify-escrow food c:max 950)
+	(up-modify-escrow gold c:max 575))
+(defrule
+	(up-can-research G-esc-state c: ri-grand-trunk-road)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-grand-trunk-road))
+(defrule
+	(building-type-count castle >= 1)
+	(research-available ri-grand-trunk-road)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-add-research-cost c: ri-grand-trunk-road c: 1)
+	(up-modify-escrow food c:max 250)
+	(up-modify-escrow wood c:max 200))
+(defrule
+	(goal G-hc 1)
+	(up-can-research G-esc-state c: ri-shatagni)
+	(or	(unit-type-count-total hand-cannoneer >= 9)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-shatagni))
+(defrule
+	(goal G-hc 1)
+	(research-available ri-shatagni)
+	(building-type-count castle >= 1)
+	(or	(unit-type-count-total hand-cannoneer >= 11)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-shatagni c: 1)
+	(up-modify-escrow food c:max 500)
+	(up-modify-escrow gold c:max 650))
+#end-if
+
+#load-if-defined JAPANESE-CIV
+(defrule
+	(goal G-treb 1)
+	(unit-type-count-total trebuchet-set >= 1)
+	(or	(population g:>= G-160-pop)
+		(population >= 160))
+	(or	(or	(population g:>= G-184-pop)
+			(population >= 184))
+		(strategic-number SN-superiority >= 100))
+	(up-can-research G-esc-state c: ri-kataparuto)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-kataparuto))
+(defrule
+	(goal G-treb 1)
+	(unit-type-count-total trebuchet-set >= 1)
+	(or	(population g:> G-160-pop)
+		(population > 160))
+	(or	(or	(population g:> G-184-pop)
+			(population > 184))
+		(strategic-number SN-superiority >= 110))
+	(up-research-status c: ri-kataparuto < research-pending)
+	(research-available ri-kataparuto)
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-kataparuto c: 1)
+	(up-modify-escrow wood c:max 550)
+	(up-modify-escrow gold c:max 300))
+(defrule
+	(goal G-uu 1)
+	(or	(unit-type-count-total samurai >= 10)
+		(population g:> G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-samurai)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-samurai))
+(defrule
+	(goal G-uu 1)
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total samurai >= 12)
+		(population g:> G-184-pop))
+	(up-research-status c: ri-elite-samurai < research-pending)
+	(research-available ri-elite-samurai)
+	=>
+	(up-add-research-cost c: ri-elite-samurai c: 1)
+	(up-modify-escrow food c:max 750)
+	(up-modify-escrow gold c:max 650))
+#end-if
+
+#load-if-defined JURCHENS-CIV
+(defrule
+	(up-can-research G-esc-state c: ri-thunderclap-bombs)
+	(up-research-status c: ri-heavy-rocket-cart >= research-pending)
+	(or	(unit-type-count-total rocket-cart >= 7)
+		(goal G-mangonel 1))
+	(or	(unit-type-count-total rocket-cart >= 6)
+		(population g:>= G-189-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-thunderclap-bombs))
+(defrule
+	(goal G-mangonel 1)
+	(research-available ri-thunderclap-bombs)
+	(building-type-count castle >= 1)
+	(up-research-status c: ri-heavy-rocket-cart >= research-pending)
+	(or	(unit-type-count-total rocket-cart >= 8)
+		(population g:> G-189-pop))
+	=>
+	(up-add-research-cost c: ri-thunderclap-bombs c: 1)
+	(up-modify-escrow food c:max 900)
+	(up-modify-escrow gold c:max 600))
+(defrule
+	(up-can-research G-esc-state c: ri-fortified-bastions)
+	(or	(or	(building-type-count-total castle >= 2)
+			(building-type-count-total watch-tower >= 4))
+		(population g:>= G-189-pop))
+	(or	(up-compare-flag G-age >= GV-upimp)
+		(population g:>= G-189-pop))
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-fortified-bastions))
+(defrule
+	(research-available ri-fortified-bastions)
+	(building-type-count castle >= 1)
+	(or	(or	(building-type-count-total castle >= 2)
+			(building-type-count-total watch-tower >= 4))
+		(population g:> G-189-pop))
+	(up-compare-flag G-age >= GV-upimp)
+	=>
+	(up-add-research-cost c: ri-fortified-bastions c: 1)
+	(up-modify-escrow food c:max 350)
+	(up-modify-escrow wood c:max 250))
+#end-if
+
+#load-if-defined KOREAN-CIV
+(defrule
+	(goal G-mangonel 1)
+	(or	(unit-type-count-total MANGO >= 7)
+		(population g:> G-184-pop))
+	(up-compare-goal G-strat != GV-trashwar)
+	(up-can-research G-esc-state c: ri-shinkichon)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-shinkichon))
+(defrule
+	(goal G-mangonel 1)
+	(research-available ri-shinkichon)
+	(or	(unit-type-count-total MANGO >= 8)
+		(population g:>= G-189-pop))
+	(up-compare-goal G-strat != GV-trashwar)
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-shinkichon c: 1)
+	(up-modify-escrow food c:max 1100)
+	(up-modify-escrow gold c:max 800))
+(defrule
+	(or	(goal G-uu 1)
+		(unit-type-count-total war-wagon >= 22))
+	(or	(unit-type-count-total war-wagon >= 9)
+		(or	(can-research ri-elite-war-wagon)
+			(population g:> G-184-pop)))
+	(up-can-research G-esc-state c: ri-elite-war-wagon)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-elite-war-wagon))
+(defrule
+	(research-available ri-elite-war-wagon)
+	(or	(goal G-uu 1)
+		(unit-type-count-total war-wagon >= 23))
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total war-wagon >= 10)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-war-wagon c: 1)
+	(up-modify-escrow wood c:max 1000)
+	(up-modify-escrow gold c:max 800))
+#end-if
+
+#load-if-defined LITHUANIAN-CIV
+(defrule
+	(up-can-research G-esc-state c: ri-tower-shields)
+	(or	(goal G-skirms 1)
+		(goal G-spears 1))
+	(or	(or	(unit-type-count-total skirmisher-line >= 9)
+			(unit-type-count-total spearman-line >= 7))
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-tower-shields))
+(defrule
+	(research-available ri-tower-shields)
+	(building-type-count castle > 0)
+	(or	(goal G-skirms 1)
+		(goal G-spears 1))
+	(or	(or	(unit-type-count-total skirmisher-line >= 10)
+			(unit-type-count-total spearman-line >= 8))
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-tower-shields c: 1)
+	(up-modify-escrow food c:max 500)
+	(up-modify-escrow gold c:max 200))
+#end-if
+
+#load-if-defined MALIAN-CIV
+(defrule
+	(goal G-uu 1)
+	(up-can-research G-esc-state c: ri-elite-gbeto)
+	(or	(unit-type-count-total gbeto >= 9)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-gbeto))
+(defrule
+	(goal G-uu 1)
+	(research-available ri-elite-gbeto)
+	(building-type-count castle >= 1)
+	(or	(unit-type-count-total gbeto >= 11)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-gbeto c: 1)
+	(up-modify-escrow food c:max 900)
+	(up-modify-escrow gold c:max 600))
+(defrule
+	(up-can-research G-esc-state c: ri-tigui)
+	(up-compare-goal G-age >= GV-upimp)
+	(building-type-count town-center >= 2)
+	(or	(building-type-count town-center >= 3)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-tigui))
+(defrule
+	(building-type-count castle >= 1)
+	(research-available ri-tigui)
+	(up-compare-goal G-age >= GV-upimp)
+	(building-type-count town-center >= 2)
+	(or	(building-type-count town-center >= 3)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-tigui c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow wood c:max 300))
+(defrule
+	(up-can-research G-esc-state c: ri-farimba)
+	(or	(or	(goal G-scouts 1)
+			(goal G-knights 1))
+		(goal G-camels 1))
+	(or	(unit-type-count-total cavalry-class >= 10)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-farimba))
+(defrule
+	(research-available ri-farimba)
+	(building-type-count castle > 0)
+	(or	(or	(goal G-scouts 1)
+			(goal G-knights 1))
+		(goal G-camels 1))
+	(or	(unit-type-count-total cavalry-class >= 12)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-farimba c: 1)
+	(up-modify-escrow food c:max 650)
+	(up-modify-escrow gold c:max 400))
+#end-if
+
+#load-if-defined MAPUCHE-CIV
+; also slingers and bolas
+(defrule
+	(up-can-research G-esc-state c: ri-malon)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 9)
+		(population g:>= G-184-pop))
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-malon))
+(defrule
+	(research-available ri-malon)
+	(building-type-count castle > 0)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 11)
+		(population g:> G-184-pop))
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-add-research-cost c: ri-malon c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 350))
+(defrule
+	(up-can-research G-esc-state c: ri-butalmapu)
+	(player-in-game any-ally)
+	(up-get-fact-sum any-ally building-type-count castle G-temp1)
+	(up-compare-goal G-temp1 >= 4)
+	(population g:>= G-184-pop)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-butalmapu))
+(defrule
+	(research-available ri-butalmapu)
+	(building-type-count castle > 0)
+	(player-in-game any-ally)
+	(up-get-fact-sum any-ally building-type-count castle G-temp1)
+	(up-compare-goal G-temp1 >= 5)
+	(population g:> G-184-pop)
+	=>
+	(up-add-research-cost c: ri-butalmapu c: 1)
+	(up-modify-escrow food c:max 500)
+	(up-modify-escrow gold c:max 450))
+#end-if
+
+#load-if-defined MAYAN-CIV
+(defrule
+	(goal G-eagles 1)
+	(or	(unit-type-count-total eagle-warrior-line >= 8)
+		(population g:> G-184-pop))
+	(up-compare-goal G-strat != GV-trashwar)
+	(up-can-research G-esc-state c: ri-el-dorado)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-el-dorado))
+(defrule
+	(goal G-eagles 1)
+	(or	(unit-type-count-total eagle-warrior-line >= 10)
+		(population g:> G-184-pop))
+	(up-compare-goal G-strat != GV-trashwar)
+	(research-available ri-el-dorado)
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-el-dorado c: 1)
+	(up-modify-escrow food c:max 750)
+	(up-modify-escrow gold c:max 450))
+(defrule
+	(up-can-research G-esc-state c: ri-hulche-javelineers)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 12)
+		(population g:>= G-184-pop))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-hulche-javelineers))
+(defrule
+	(research-available ri-hulche-javelineers)
+	(building-type-count castle > 0)
+	(goal G-skirms 1)
+	(or	(unit-type-count-total skirmisher-line >= 14)
+		(population g:> G-184-pop))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-add-research-cost c: ri-hulche-javelineers c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 300))
+(defrule
+	(goal G-uu 1)
+	(or	(unit-type-count-total plumed-archer-line >= 10)
+		(population g:> G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-plumed-archer)
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-elite-plumed-archer))
+(defrule
+	(goal G-uu 1)
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total plumed-archer-line >= 12)
+		(population g:> G-184-pop))
+	(research-available ri-elite-plumed-archer)
+	=>
+	(up-add-research-cost c: ri-elite-plumed-archer c: 1)
+	(up-modify-escrow food c:max 700)
+	(up-modify-escrow wood c:max 1000))
+#end-if
+
+#load-if-defined MUISCA-CIV
+; huaracas when slingers
+(defrule
+	(up-can-research G-esc-state c: ri-herbalism)
+	(or	(goal G-archers 1)
+		(goal G-champs 1))
+	(or	(or	(unit-type-count-total CHAMP >= 8)
+			(unit-type-count-total archer-line >= 11))
+		(population g:>= G-170-pop))
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-herbalism))
+(defrule
+	(research-available ri-herbalism)
+	(building-type-count castle > 0)
+	(or	(goal G-archers 1)
+		(goal G-champs 1))
+	(or	(or	(unit-type-count-total CHAMP >= 10)
+			(unit-type-count-total archer-line >= 12))
+		(population g:> G-170-pop))
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-add-research-cost c: ri-herbalism c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 350))
+(defrule
+	(goal G-uu 1)
+	(or	(unit-type-count-total guecha-warrior-line >= 9)
+		(population g:>= G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-guecha-warrior)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-elite-guecha-warrior))
+(defrule
+	(goal G-uu 1)
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total guecha-warrior-line >= 10)
+		(population g:> G-184-pop))
+	(research-available ri-elite-guecha-warrior)
+	=>
+	(up-add-research-cost c: ri-elite-guecha-warrior c: 1)
+	(up-modify-escrow wood c:max 750)
+	(up-modify-escrow gold c:max 600))
+#end-if
+
+; #load-if-defined MONGOL-CIV
+; (defrule
+; 	(goal G-ram 1)
+; 	(or	(unit-type-count-total battering-ram-line >= 5)
+; 		(population g:> G-184-pop))
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(up-can-research G-esc-state c: ri-drill)
+; 	=>
+; 	(release-escrow wood)
+; 	(release-escrow gold)
+; 	(research ri-drill))
+; (defrule
+; 	(goal G-ram 1)
+; 	(research-available ri-drill)
+; 	(or	(unit-type-count-total battering-ram-line >= 6)
+; 		(population g:> G-184-pop))
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(building-type-count castle > 0)
+; 	=>
+; 	(up-add-research-cost c: ri-drill c: 1)
+; 	(up-modify-escrow wood c:max 500)
+; 	(up-modify-escrow gold c:max 450))
+; (defrule
+; 	(or	(goal G-uu 1)
+; 		(unit-type-count-total mangudai >= 23))
+; 	(building-type-count castle > 0)
+; 	(or	(unit-type-count-total mangudai >= 14)
+; 		(population g:> G-184-pop))
+; 	(up-can-research G-esc-state c: ri-elite-mangudai)
+; 	=>
+; 	(release-escrow wood)
+; 	(release-escrow gold)
+; 	(research ri-elite-mangudai))
+; (defrule
+; 	(research-available ri-elite-mangudai)
+; 	(or	(goal G-uu 1)
+; 		(unit-type-count-total mangudai >= 24))
+; 	(building-type-count castle > 0)
+; 	(or	(unit-type-count-total mangudai >= 15)
+; 		(population g:> G-184-pop))
+; 	=>
+; 	(up-add-research-cost c: ri-elite-mangudai c: 1)
+; 	(up-modify-escrow food c:max 1100)
+; 	(up-modify-escrow gold c:max 675))
+; #end-if
+
+#load-if-defined SARACEN-CIV
+(defrule
+	(up-can-research G-esc-state c: ri-bimaristan)
+	(up-compare-goal G-age >= GV-upimp)
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 10))
+	(or	(unit-type-count-total monastery-class >= 7)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-bimaristan))
+(defrule
+	(research-available ri-bimaristan)
+	(building-type-count castle >= 1)
+	(up-compare-goal G-age >= GV-upimp)
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 12))
+	(or	(unit-type-count-total monastery-class >= 8)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-bimaristan c: 1)
+	(up-modify-escrow wood c:max 300)
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(or	(goal G-mangonel 1)
+		(goal G-treb 1))
+	(up-can-research G-esc-state c: ri-counterweights)
+	(or	(or	(unit-type-count-total mangonel-line >= 4)
+			(unit-type-count-total trebuchet-set >= 5))
+		(population g:>= G-184-pop))
+;	(up-compare-goal G-strat != GV-trashwar)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-counterweights))
+(defrule
+	(or	(goal G-mangonel 1)
+		(goal G-treb 1))
+	(research-available ri-counterweights)
+	(building-type-count castle > 0)
+	(or	(or	(unit-type-count-total mangonel-line >= 5)
+			(unit-type-count-total trebuchet-set >= 6))
+		(population g:>= G-184-pop))
+;	(up-compare-goal G-strat != GV-trashwar)
+	=>
+	(up-add-research-cost c: ri-counterweights c: 1)
+	(up-modify-escrow food c:max 650)
+	(up-modify-escrow gold c:max 500))
+#end-if
+
+#load-if-defined SLAVIC-CIV
+(defrule
+	(up-can-research G-esc-state c: ri-druzhina)
+	(or	(goal G-spears 1)
+		(or	(goal G-champs 1)
+			(goal G-condo 1)))
+	(or	(unit-type-count-total infantry-class >= 16)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-druzhina))
+(defrule
+	(research-available ri-druzhina)
+	(building-type-count castle > 0)
+	(or	(goal G-spears 1)
+		(or	(goal G-champs 1)
+			(goal G-condo 1)))
+	(or	(unit-type-count-total infantry-class >= 18)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-druzhina c: 1)
+	(up-modify-escrow food c:max 900)
+	(up-modify-escrow gold c:max 500))
+#end-if
+
+#load-if-defined SPANISH-CIV
+(defrule
+	(up-can-research G-esc-state c: ri-inquisition)
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 10))
+	(or	(goal G-missionaries 1)
+		(or	(unit-type-count-total monastery-class >= 7)
+			(population g:>= G-184-pop)))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-inquisition))
+(defrule
+	(research-available ri-inquisition)
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 12))
+	(building-type-count castle >= 1)
+	(or	(goal G-missionaries 1)
+		(or	(unit-type-count-total monastery-class >= 8)
+			(population g:>= G-184-pop)))
+	=>
+	(up-add-research-cost c: ri-inquisition c: 1)
+	(up-modify-escrow food c:max 100)
+	(up-modify-escrow gold c:max 300))
+(defrule
+	(up-can-research G-esc-state c: ri-supremacy)
+	(up-modify-goal G-temp1 g:= G-med-pop)
+	(up-modify-goal G-temp1 c:min 75)
+	(civilian-population g:>= G-temp1)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-supremacy))
+(defrule
+	(research-available ri-supremacy)
+	(civilian-population g:> G-med-pop); 100
+	(building-type-count castle >= 1)
+	=>
+	(up-add-research-cost c: ri-supremacy c: 1)
+	(up-modify-escrow food c:max 400)
+	(up-modify-escrow gold c:max 250))
+(defrule
+	(or	(goal G-uu 1)
+		(unit-type-count-total conquistador >= 18))
+	(or	(unit-type-count-total conquistador >= 7)
+		(or	(can-research ri-elite-conquistador)
+			(population g:>= G-184-pop)))
+	(up-can-research G-esc-state c: ri-elite-conquistador)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-conquistador))
+(defrule
+	(research-available ri-elite-conquistador)
+	(or	(goal G-uu 1)
+		(unit-type-count-total conquistador >= 19))
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total conquistador >= 8)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-conquistador c: 1)
+	(up-modify-escrow food c:max 900)
+	(up-modify-escrow gold c:max 600))
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+(defrule
+	(up-can-research G-esc-state c: ri-ironclad)
+	(up-compare-goal G-age >= GV-upimp)
+	(or	(goal G-mangonel 1)
+		(or	(goal G-ram 1)
+			(or	(goal G-scorps 1)
+				(or	(goal G-treb 1)
+					(goal G-bbc 1)))))
+	(or	(unit-type-count-total siege-weapon-class >= 5)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-ironclad))
+(defrule
+	(research-available ri-ironclad)
+	(up-compare-goal G-age >= GV-upimp)
+	(building-type-count castle >= 1)
+	(or	(goal G-mangonel 1)
+		(or	(goal G-ram 1)
+			(or	(goal G-scorps 1)
+				(or	(goal G-treb 1)
+					(goal G-bbc 1)))))
+	(or	(unit-type-count-total siege-weapon-class >= 6)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-ironclad c: 1)
+	(up-modify-escrow wood c:max 400)
+	(up-modify-escrow gold c:max 350))
+(defrule
+	(building-type-count-total castle >= 3)
+	(up-compare-goal G-free-food >= 600)
+	(up-can-research G-esc-state c: ri-crenellations)
+	=>
+	(release-escrow stone)
+	(research ri-crenellations))
+(defrule
+	(research-available ri-crenellations)
+	(building-type-count-total castle >= 3)
+	(up-compare-goal G-free-food >= 600)
+	=>
+	(up-add-research-cost c: ri-crenellations c: 1)
+	(up-modify-escrow stone c:max 400))
+(defrule
+	(goal G-uu 1)
+	(or	(unit-type-count-total teutonic-knight >= 8)
+		(population g:> G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-teutonic-knight)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-teutonic-knight))
+(defrule
+	(goal G-uu 1)
+	(research-available ri-elite-teutonic-knight)
+	(or	(unit-type-count-total teutonic-knight >= 9)
+		(population g:> G-184-pop))
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-elite-teutonic-knight c: 1)
+	(up-modify-escrow food c:max 950)
+	(up-modify-escrow gold c:max 500))
+#end-if
+
+#load-if-defined TUPI-CIV
+; also for slingers
+(defrule
+	(up-can-research G-esc-state c: ri-caciques)
+	(goal G-champs 1)
+	(or	(unit-type-count-total CHAMP >= 9)
+		(population g:>= G-170-pop))
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-caciques))
+(defrule
+	(research-available ri-caciques)
+	(building-type-count castle > 0)
+	(goal G-champs 1)
+	(or	(unit-type-count-total CHAMP >= 11)
+		(population g:> G-170-pop))
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-add-research-cost c: ri-caciques c: 1)
+	(up-modify-escrow food c:max 400)
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(up-can-research G-esc-state c: ri-curare)
+	(or	(goal G-archers 1)
+		(goal G-uu 1))
+	(or	(or	(unit-type-count-total my-unique-unit-line >= 18)
+			(unit-type-count-total archer-line >= 13))
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-curare))
+(defrule
+	(research-available ri-curare)
+	(building-type-count castle > 0)
+	(or	(goal G-archers 1)
+		(goal G-uu 1))
+	(or	(or	(unit-type-count-total my-unique-unit-line >= 20)
+			(unit-type-count-total archer-line >= 14))
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-curare c: 1)
+	(up-modify-escrow food c:max 650)
+	(up-modify-escrow gold c:max 600))
+#end-if
+
+; #load-if-defined TURKISH-CIV
+; (defrule
+; 	(or	(goal G-bbc 1)
+; 		(goal G-bbt 1))
+; 	(or	(unit-type-count-total bombard-cannon >= 4)
+; 		(building-type-count-total bombard-tower >= 4))
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	(up-can-research G-esc-state c: ri-artillery)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-artillery))
+; (defrule
+; 	(research-available ri-artillery)
+; 	(or	(goal G-bbc 1)
+; 		(goal G-bbt 1))
+; 	(or	(unit-type-count-total bombard-cannon >= 5)
+; 		(building-type-count-total bombard-tower >= 5))
+; 	(up-compare-goal G-strat != GV-trashwar)
+; 	=>
+; 	(up-add-research-cost c: ri-artillery c: 1)
+; 	(up-modify-escrow food c:max 600)
+; 	(up-modify-escrow gold c:max 650))
+; (defrule
+; 	(or	(goal G-uu 1)
+; 		(unit-type-count-total janissary >= 20))
+; 	(or	(unit-type-count-total janissary >= 11)
+; 		(population g:> G-184-pop))
+; 	(up-can-research G-esc-state c: ri-elite-janissary)
+; 	=>
+; 	(release-escrow food)
+; 	(release-escrow gold)
+; 	(research ri-elite-janissary))
+; (defrule
+; 	(research-available ri-elite-janissary)
+; 	(or	(goal G-uu 1)
+; 		(unit-type-count-total janissary >= 23))
+; 	(building-type-count castle > 0)
+; 	(or	(unit-type-count-total janissary >= 13)
+; 		(population g:> G-184-pop))
+; 	=>
+; 	(up-add-research-cost c: ri-elite-janissary c: 1)
+; 	(up-modify-escrow food c:max 850)
+; 	(up-modify-escrow gold c:max 750))
+; #end-if
+
+#load-if-defined VIETNAMESE-CIV
+(defrule
+	(or	(goal G-uu 1)
+		(unit-type-count-total rattan-archer >= 23))
+	(or	(unit-type-count-total rattan-archer >= 14)
+		(population g:> G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-rattan-archer)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-rattan-archer))
+(defrule
+	(research-available ri-elite-rattan-archer)
+	(or	(goal G-uu 1)
+		(unit-type-count-total rattan-archer >= 25))
+	(building-type-count castle > 0)
+	(or	(unit-type-count-total rattan-archer >= 15)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-rattan-archer c: 1)
+	(up-modify-escrow food c:max 1000)
+	(up-modify-escrow gold c:max 750))
+
+(defrule
+	(can-research ri-paper-money)
+	(population g:>= G-170-pop)
+	=>
+	(research ri-paper-money))
+(defrule
+	(population g:> G-184-pop)
+	(up-can-research G-esc-state c: ri-paper-money)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-paper-money))
+(defrule
+	(research-available ri-paper-money)
+	(population g:>= G-189-pop)
+	(building-type-count castle > 0)
+	=>
+	(up-add-research-cost c: ri-paper-money c: 1)
+	(up-modify-escrow food c:max 550)
+	(up-modify-escrow wood c:max 200))
+#end-if
+
+; == archer upgrades ==
+(defrule
+	(or	(goal G-archers 1)
+		(or	(goal G-skirms 1)
+			(or	(goal G-ca 1)
+				(and	(goal G-uu 1)
+					(or	(up-compare-const UU-CLASS == archery-class)
+						(up-compare-const UU-CLASS == cavalry-archer-class))))))
+	=>
+	(set-goal G-temp8 12345)); archer attack ups
+(defrule
+	(or	(goal G-temp8 12345)
+		(or	(goal G-hc 1)
+			(and	(goal G-uu 1)
+				(or	(up-compare-const UU-CLASS == archery-cannon-class)
+					(up-compare-const UU-CLASS == cavalry-cannon-class)))))
+	=>
+	(set-goal G-temp9 12345)); archer armour ups
+(defrule
+	(or	(and	(goal G-temp8 12345)
+			(up-compare-goal G-age >= GV-upcastle))
+		(unit-type-count-total archery-class >= 4))
+	(up-can-research G-esc-state c: ri-fletching)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-fletching))
+(defrule
+	(research-available ri-fletching)
+	(building-type-count-total blacksmith > 0)
+	(or	(and	(goal G-temp8 12345)
+			(up-compare-goal G-age >= GV-upcastle))
+		(unit-type-count-total archery-class >= 5))
+	=>
+	(up-add-research-cost c: ri-fletching c: 1)
+	(up-modify-escrow food c:max 100)
+	(up-modify-escrow gold c:max 50))
+(defrule
+	(or	(goal G-strat GV-xbows)
+		(goal G-archers 1))
+;	(unit-type-count-total archer >= 6)
+	(up-compare-goal G-age >= GV-upcastle)
+	(up-compare-goal G-age <= GV-castle)
+	(or	(up-research-status c: ri-crossbow < research-pending)
+		(up-research-status c: ri-bodkin-arrow < research-pending))
+	(timer-triggered T-clicked-up)
+	=>
+	(set-goal G-escrowing ri-crossbow)
+	(set-goal G-esc-state without-escrow)
+	(up-modify-escrow food c:max 375)
+	(up-modify-escrow gold c:max 200)
+	(up-add-research-cost c: ri-crossbow c: 1)
+	(up-add-research-cost c: ri-bodkin-arrow c: 1))
+(defrule
+	(goal G-escrowing ri-crossbow)
+	(goal G-esc-state without-escrow)
+	(or	(and	(up-research-status c: ri-crossbow >= research-pending)
+			(up-research-status c: ri-bodkin-arrow >= research-pending))
+		(and	(unit-type-count-total archer < 9)
+			(goal G-archers 0)))
+	=>
+	(set-goal G-escrowing 0)
+	(set-goal G-esc-state with-escrow))
+(defrule
+	(or	(goal G-archers 1)
+		(unit-type-count archer >= 9))
+	(or	(unit-type-count-total archer >= 4)
+		(population g:> G-184-pop))
+	(up-can-research G-zero c: ri-crossbow)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-crossbow))
+(defrule
+	(or	(goal G-archers 1)
+		(unit-type-count archer >= 11))
+	(or	(unit-type-count-total archer >= 5)
+		(population g:> G-184-pop))
+	(research-available ri-crossbow)
+	=>
+	(up-add-research-cost c: ri-crossbow c: 1)
+	(up-modify-escrow food c:max 175)
+	(up-modify-escrow gold c:max 100))
+(defrule
+	(or	(goal G-temp8 12345)
+		(or	(unit-type-count-total archery-class >= 11)
+			(unit-type-count-total cavalry-archer-class >= 8)))
+	(or	(unit-type-count-total archery-class >= 5)
+		(or	(unit-type-count-total cavalry-archer-class >= 4)
+			(population g:> G-184-pop)))
+	(up-can-research G-zero c: ri-bodkin-arrow)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-bodkin-arrow))
+(defrule
+	(research-available ri-bodkin-arrow)
+	(or	(goal G-temp8 12345)
+		(or	(unit-type-count-total archery-class >= 14)
+			(unit-type-count-total cavalry-archer-class >= 10)))
+	(or	(unit-type-count-total archery-class >= 5)
+		(or	(unit-type-count-total cavalry-archer-class >= 4)
+			(population g:> G-184-pop)))
+	=>
+	(up-add-research-cost c: ri-bodkin-arrow c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 100))
+(defrule
+	(or	(goal G-temp8 12345)
+		(or	(unit-type-count-total archery-class >= 12)
+			(unit-type-count-total cavalry-archer-class >= 9)))
+	(or	(unit-type-count-total archery-class >= 7)
+		(or	(unit-type-count-total cavalry-archer-class >= 6)
+			(population g:> G-184-pop)))
+	(up-can-research G-esc-state c: ri-bracer)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-bracer))
+(defrule
+	(research-available ri-bracer)
+	(or	(goal G-temp8 12345)
+		(or	(unit-type-count-total archery-class >= 15)
+			(unit-type-count-total cavalry-archer-class >= 11)))
+	(or	(unit-type-count-total archery-class >= 8)
+		(or	(unit-type-count-total cavalry-archer-class >= 6)
+			(population g:> G-184-pop)))
+	=>
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(goal G-temp9 12345)
+	(can-research-with-escrow ri-padded-archer-armor)
+	(up-research-status c: ri-fletching >= research-pending)
+	(or	(unit-type-count-total archery-class >= 5)
+		(or	(unit-type-count-total cavalry-archer-class >= 4)
+			(or	(unit-type-count-total archery-cannon-class >= 4)
+				(or	(unit-type-count-total cavalry-cannon-class >= 4)
+					(population g:> G-184-pop)))))
+	=>
+	(up-research G-zero c: ri-padded-archer-armor))
+(defrule
+	(goal G-temp9 12345)
+	(can-research ri-leather-archer-armor)
+	(or	(unit-type-count-total archery-class >= 7)
+		(or	(unit-type-count-total cavalry-archer-class >= 6)
+			(or	(unit-type-count-total archery-cannon-class >= 6)
+				(or	(unit-type-count-total cavalry-cannon-class >= 6)
+					(population g:> G-184-pop)))))
+	=>
+	(research ri-leather-archer-armor))
+(defrule
+	(goal G-temp9 12345)
+	(can-research ri-ring-archer-armor)
+	(or	(unit-type-count-total archery-class >= 9)
+		(or	(unit-type-count-total cavalry-archer-class >= 8)
+			(or	(unit-type-count-total archery-cannon-class >= 8)
+				(or	(unit-type-count-total cavalry-cannon-class >= 8)
+					(population g:> G-184-pop)))))
+	=>
+	(research ri-ring-archer-armor))
+(defrule
+	(or	(unit-type-count-total crossbowman >= 10)
+		(and	(goal G-archers 1)
+			(population g:> G-184-pop)))
+	(up-can-research G-esc-state c: ri-arbalest)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-arbalest))
+(defrule
+	(building-type-count-total archery-range > 0)
+	(or	(unit-type-count-total crossbowman >= 12)
+		(population g:> G-184-pop))
+	(or	(goal G-archers 1)
+		(unit-type-count-total crossbowman >= 18))
+	(research-available ri-arbalest)
+	=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-modify-escrow food c:max 450)
+	(up-modify-escrow gold c:max 350))
+(defrule
+	(or	(unit-type-count-total cavalry-archer >= 15)
+		(population g:> G-184-pop))
+	(or	(goal G-ca 1)
+		(unit-type-count-total cavalry-archer >= 30))
+	(up-can-research G-esc-state c: ri-heavy-cavalry-archer)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-heavy-cavalry-archer))
+(defrule
+	(research-available ri-heavy-cavalry-archer)
+	(building-type-count-total archery-range > 0)
+	(or	(unit-type-count-total cavalry-archer >= 16)
+		(population g:> G-184-pop))
+	(or	(goal G-ca 1)
+		(unit-type-count-total cavalry-archer >= 32))
+	=>
+	(up-add-research-cost c: ri-heavy-cavalry-archer c: 1)
+	(up-modify-escrow food c:max 900)
+	(up-modify-escrow gold c:max 500))
+(defrule
+	(goal G-temp8 12345)
+	(or	(unit-type-count-total archery-class >= 18)
+		(or	(unit-type-count-total cavalry-archer-class >= 8)
+			(population g:> G-184-pop)))
+	(up-can-research G-esc-state c: ri-thumb-ring)
+	(building-type-count-total archery-range > 0)
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-thumb-ring))
+(defrule
+	(research-available ri-thumb-ring)
+	(building-type-count-total archery-range > 0)
+	(goal G-temp8 12345)
+	(or	(unit-type-count villager-food >= 30)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total cavalry-archer-class >= 9)
+		(or	(unit-type-count-total archery-class >= 20)
+			(population g:> G-184-pop)))
+	=>
+	(up-add-research-cost c: ri-thumb-ring c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow wood c:max 250))
+
+
+(defrule
+	(or	(goal G-strat GV-trashwar)
+		(or	(unit-type-count-total skirmisher-line >= 7)
+			(and	(population g:> G-184-pop)
+				(goal G-skirms 1))))
+	(up-can-research G-esc-state c: ri-elite-skirmisher)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-elite-skirmisher))
+(defrule
+	(or	(unit-type-count-total skirmisher-line >= 6)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total skirmisher-line >= 9)
+		(goal G-skirms 1))
+	(research-available ri-elite-skirmisher)
+	=>
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-modify-escrow wood c:max 230)
+	(up-modify-escrow gold c:max 130))
+(defrule
+	(research-available ri-imperial-skirmisher)
+	(or	(goal G-strat GV-trashwar)
+		(or	(unit-type-count-total skirmisher-line >= 8)
+			(and	(population g:> G-184-pop)
+				(goal G-skirms 1))))
+	(up-can-research G-esc-state c: ri-imperial-skirmisher)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-imperial-skirmisher))
+(defrule
+	(research-available ri-imperial-skirmisher)
+	(or	(unit-type-count-total skirmisher-line >= 8)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total skirmisher-line >= 10)
+		(goal G-skirms 1))
+	=>
+	(up-add-research-cost c: ri-imperial-skirmisher c: 1)
+	(up-modify-escrow wood c:max 300)
+	(up-modify-escrow gold c:max 300))
+
+(defrule
+	(or	(goal G-ca 1)
+		(and	(goal G-uu 1)
+			(up-compare-const UU-CLASS == cavalry-archer-class)))
+	(or	(unit-type-count-total cavalry-archer-class >= 18)
+		(population g:> G-184-pop))
+	(up-can-research G-esc-state c: ri-parthian-tactics)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-parthian-tactics))
+(defrule
+	(research-available ri-parthian-tactics)
+	(or	(goal G-ca 1)
+		(and	(goal G-uu 1)
+			(up-compare-const UU-CLASS == cavalry-archer-class)))
+	(or	(unit-type-count-total cavalry-archer-class >= 20)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-parthian-tactics c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 250))
+(defrule
+	(or	(goal G-temp8 12345)
+		(or	(unit-type-count-total archery-class >= 16)
+			(unit-type-count-total cavalry-archer-class >= 14)))
+	(or	(unit-type-count-total archery-class >= 10)
+		(or	(unit-type-count-total cavalry-archer-class >= 9)
+			(population g:> G-184-pop)))
+	(up-can-research G-esc-state c: ri-ballistics)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-ballistics))
+(defrule
+	(research-available ri-ballistics)
+	(building-type-count university > 0)
+	(or	(goal G-temp8 12345)
+		(or	(unit-type-count-total archery-class >= 18)
+			(unit-type-count-total cavalry-archer-class >= 16)))
+	(or	(unit-type-count-total archery-class >= 12)
+		(or	(unit-type-count-total cavalry-archer-class >= 11)
+			(population g:> G-184-pop)))
+	=>
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-modify-escrow wood c:max 300)
+	(up-modify-escrow gold c:max 175))
+(defrule
+	(or	(goal G-temp8 12345)
+		(goal G-scorps 1))
+	(or	(unit-type-count-total archery-class >= 11)
+		(or	(unit-type-count-total cavalry-archer-class >= 8)
+			(or	(unit-type-count-total scorpion-class >= 7)
+				(population g:> G-184-pop))))
+	(up-can-research G-esc-state c: ri-chemistry)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-chemistry))
+(defrule
+	(research-available ri-chemistry)
+	(building-type-count university > 0)
+	(up-research-status c: ri-bracer != research-available)
+	(or	(goal G-temp8 12345)
+		(goal G-scorps 1))
+	(or	(unit-type-count-total archery-class >= 12)
+		(or	(unit-type-count-total cavalry-archer-class >= 9)
+			(or	(unit-type-count-total scorpion-class >= 8)
+				(population g:> G-184-pop))))
+	=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(or	(and	(goal G-strat GV-mlp); for HC
+			(goal G-trade 1))
+		(goal G-hc 1))
+	(up-can-research G-esc-state c: ri-chemistry)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-chemistry))
+(defrule
+	(or	(and	(goal G-strat GV-mlp)
+			(goal G-trade 1))
+		(goal G-hc 1))
+	(research-available ri-chemistry)
+	=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 200))
+; == infantry upgrades ==
+(defrule
+	(or	(goal G-firelancers 1)
+		(or	(goal G-condo 1)
+			(or	(goal G-champs 1)
+				(or	(goal G-spears 1)
+					(or	(goal G-eagles 1)
+						(and	(goal G-uu 1)
+							(up-compare-const UU-CLASS == infantry-class)))))))
+	=>
+	(set-goal G-temp9 3761223))
+(defrule
+	(up-can-research G-esc-state c: ri-scale-mail)
+	(or	(unit-type-count-total infantry-class >= 2)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total infantry-class >= 5)
+		(goal G-temp9 3761223))
+	=>
+	(release-escrow food)
+	(research ri-scale-mail))
+(defrule
+	(research-available ri-scale-mail)
+	(or	(unit-type-count-total infantry-class >= 2)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total infantry-class >= 5)
+		(goal G-temp9 3761223))
+	(building-type-count-total blacksmith > 0)
+	=>
+	(up-add-research-cost c: ri-scale-mail c: 1)
+	(up-modify-escrow food c:max 100))
+(defrule
+	(up-can-research G-esc-state c: ri-chain-mail)
+	(or	(unit-type-count-total infantry-class >= 3)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total infantry-class >= 6)
+		(goal G-temp9 3761223))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-chain-mail))
+(defrule
+	(research-available ri-chain-mail)
+	(or	(unit-type-count-total infantry-class >= 3)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total infantry-class >= 7)
+		(goal G-temp9 3761223))
+	=>
+	(up-add-research-cost c: ri-chain-mail c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 100))
+(defrule
+	(up-can-research G-esc-state c: ri-plate-mail)
+	(or	(unit-type-count-total infantry-class >= 3)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total infantry-class >= 8)
+		(goal G-temp9 3761223))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-plate-mail))
+(defrule
+	(research-available ri-plate-mail)
+	(or	(unit-type-count-total infantry-class >= 4)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total infantry-class >= 10)
+		(goal G-temp9 3761223))
+	=>
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 150))
+(defrule
+	(can-research ri-gambesons)
+	(or	(goal G-champs 1)
+		(goal G-firelancers 1))
+	(or	(or	(unit-type-count-total CHAMP >= 7)
+			(unit-type-count-total fire-lancer-line >= 6))
+		(population g:>= G-184-pop))
+	=>
+	(research ri-gambesons))
+(defrule
+	(can-research ri-squires)
+	(or	(unit-type-count-total infantry-class >= 5)
+		(and	(goal G-temp9 3761223)
+			(population g:> G-184-pop)))
+	(or	(unit-type-count-total infantry-class >= 12)
+		(goal G-temp9 3761223))
+	=>
+	(research ri-squires))
+(defrule
+	(can-research ri-arson)
+	(or	(and	(unit-type-count-total infantry-class >= 12)
+			(up-compare-goal G-attack > 0))
+		(and	(goal G-temp9 3761223)
+			(population g:> G-184-pop)))
+	(up-compare-goal G-free-food > 150)
+	=>
+	(research ri-arson))
+(defrule
+	(goal G-eagles 1)
+	(up-can-research G-esc-state c: ri-eagle-warrior)
+	(or	(unit-type-count-total eagle-warrior >= 6)
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-eagle-warrior))
+(defrule
+	(goal G-eagles 1)
+	(up-research-status c: ri-eagle-warrior < research-pending)
+	(building-type-count barracks > 0)
+	(unit-type-count-total eagle-warrior >= 4)
+	(or	(unit-type-count-total eagle-warrior >= 8)
+		(population g:> G-184-pop))
+	(up-compare-goal G-age >= GV-upcastle)
+	(up-timer-status T-clicked-up == timer-triggered)
+	=>
+	(up-add-research-cost c: ri-eagle-warrior c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(goal G-eagles 1)
+	(up-can-research G-esc-state c: ri-elite-eagle-warrior)
+	(or	(unit-type-count-total eagle-warrior >= 10)
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-eagle-warrior))
+(defrule
+	(goal G-eagles 1)
+	(up-research-status c: ri-elite-eagle-warrior < research-pending)
+	(building-type-count barracks > 0)
+	(unit-type-count-total eagle-warrior >= 4)
+	(or	(unit-type-count-total eagle-warrior >= 10)
+		(population g:> G-184-pop))
+	(up-compare-goal G-age >= GV-upimp)
+	(up-timer-status T-clicked-up == timer-triggered)
+	=>
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(up-modify-escrow food c:max 800)
+	(up-modify-escrow gold c:max 500))
+(defrule
+	(goal G-champs 1)
+	(up-can-research G-esc-state c: ri-man-at-arms)
+	(or	(unit-type-count-total militiaman >= 3)
+		(up-compare-goal G-age >= GV-upcastle))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-man-at-arms))
+(defrule
+	(or	(unit-type-count-total militiaman >= 3)
+		(and	(goal G-champs 1)
+			(up-compare-goal G-age >= GV-upcastle)))
+	(research-available ri-man-at-arms)
+	=>
+	(up-add-research-cost c: ri-man-at-arms c: 1)
+	(up-modify-escrow food c:max 100)
+	(up-modify-escrow gold c:max 40))
+(defrule
+	(unit-type-count man-at-arms >= 3)
+	(or	(goal G-champs 1)
+		(unit-type-count man-at-arms >= 10))
+	(or	(unit-type-count man-at-arms >= 4)
+		(or	(up-compare-goal G-age >= GV-upimp)
+			(population g:> G-184-pop)))
+	(can-research-with-escrow ri-long-swordsman)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-long-swordsman))
+(defrule
+	(research-available ri-long-swordsman)
+	(unit-type-count man-at-arms >= 3)
+	(or	(goal G-champs 1)
+		(unit-type-count man-at-arms >= 10))
+	(or	(unit-type-count man-at-arms >= 4)
+		(or	(up-compare-goal G-age >= GV-upimp)
+			(population g:> G-184-pop)))
+	=>
+	(up-add-research-cost c: ri-long-swordsman c: 1)
+	(up-modify-escrow food c:max 150)
+	(up-modify-escrow gold c:max 65))
+(defrule
+	(goal G-champs 1)
+	(up-can-research G-esc-state c: ri-two-handed-swordsman)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-two-handed-swordsman))
+(defrule
+	(goal G-champs 1)
+	(research-available ri-two-handed-swordsman)
+	(unit-type-count-total militiaman-line >= 3)
+	(or	(unit-type-count-total militiaman-line >= 6)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-two-handed-swordsman c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 100))
+(defrule
+	(goal G-champs 1)
+	(up-can-research G-esc-state c: ri-champion)
+	(unit-type-count-total militiaman-line >= 4)
+	(or	(unit-type-count-total militiaman-line >= 5)
+		(goal G-strat GV-trashwar))
+	(or	(unit-type-count-total militiaman-line >= 9)
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-champion))
+(defrule
+	(goal G-champs 1)
+	(research-available ri-champion)
+	(unit-type-count-total militiaman-line >= 5)
+	(or	(unit-type-count-total militiaman-line >= 7)
+		(goal G-strat GV-trashwar))
+	(or	(unit-type-count-total militiaman-line >= 11)
+		(population g:> G-184-pop))
+	(up-research-status c: ri-champion < research-pending)
+	=>
+	(up-add-research-cost c: ri-champion c: 1)
+	(up-modify-escrow food c:max 650)
+	(up-modify-escrow gold c:max 350))
+
+(defrule
+	(goal G-champs 1)
+	(up-can-research G-esc-state c: ri-champi-runner)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-champi-runner))
+(defrule
+	(goal G-champs 1)
+	(research-available ri-champi-runner)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(up-add-research-cost c: ri-champi-runner c: 1)
+	(up-modify-escrow food c:max 120)
+	(up-modify-escrow gold c:max 60))
+(defrule
+	(goal G-champs 1)
+	(up-can-research G-esc-state c: ri-champi-warrior)
+	(or	(unit-type-count-total champi-line >= 4)
+		(or	(up-compare-goal G-age >= GV-upimp)
+			(population g:>= G-184-pop)))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-champi-warrior))
+(defrule
+	(goal G-champs 1)
+	(research-available ri-champi-warrior)
+	(or	(unit-type-count-total champi-line >= 4)
+		(or	(up-compare-goal G-age >= GV-upimp)
+			(population g:> G-184-pop)))
+	=>
+	(up-add-research-cost c: ri-champi-warrior c: 1)
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 175))
+(defrule
+	(goal G-champs 1)
+	(up-can-research G-esc-state c: ri-elite-champi-warrior)
+	(or	(unit-type-count-total champi-line >= 8)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-champi-warrior))
+(defrule
+	(goal G-champs 1)
+	(research-available ri-elite-champi-warrior)
+	(or	(unit-type-count-total champi-line >= 9)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-champi-warrior c: 1)
+	(up-modify-escrow food c:max 650)
+	(up-modify-escrow gold c:max 450))
+
+(defrule
+	(goal G-firelancers 1)
+	(unit-type-count-total fire-lancer-line >= 5)
+	(or	(unit-type-count-total fire-lancer-line >= 9)
+		(population g:>= G-184-pop))
+	(up-can-research G-esc-state c: ri-elite-fire-lancer)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-fire-lancer))
+(defrule
+	(goal G-firelancers 1)
+	(unit-type-count-total fire-lancer-line >= 6)
+	(or	(unit-type-count-total fire-lancer-line >= 10)
+		(population g:> G-184-pop))
+	(research-available ri-elite-fire-lancer)
+	=>
+	(up-add-research-cost c: ri-elite-fire-lancer c: 1)
+	(up-modify-escrow food c:max 650)
+	(up-modify-escrow gold c:max 400))
+
+(defrule
+	(can-research-with-escrow ri-pikeman)
+	(or	(unit-type-count-total spearman >= 5)
+		(and	(population g:> G-184-pop)
+			(goal G-spears 1)))
+	=>
+	(set-goal G-esc-state with-escrow)
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-pikeman))
+(defrule
+	(or	(goal G-spears 1)
+		(unit-type-count-total spearman >= 7))
+	(or	(unit-type-count-total spearman >= 4)
+		(population g:> G-184-pop))
+	(research-available ri-pikeman)
+	=>
+	(up-add-research-cost c: ri-pikeman c: 1)
+	(up-modify-escrow food c:max 160)
+	(up-modify-escrow gold c:max 90))
+(defrule
+	(up-research-status c: ri-pikeman < research-pending)
+	(timer-triggered T-clicked-up)
+	(goal G-strat GV-siegehalbs)
+	=>
+	(set-goal G-esc-state without-escrow)
+	(up-add-research-cost c: ri-pikeman c: 1)
+	(up-modify-escrow food c:max 160)
+	(up-modify-escrow gold c:max 90))
+(defrule
+	(up-can-research G-esc-state c: ri-halberdier)
+	(or	(unit-type-count-total pikeman >= 8)
+		(and	(population g:> G-184-pop)
+			(goal G-spears 1)))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-halberdier))
+(defrule
+	(goal G-spears 1)
+	(unit-type-count-total pikeman >= 4)
+	(or	(unit-type-count-total pikeman >= 9)
+		(population g:> G-184-pop))
+	(research-available ri-halberdier)
+	=>
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 600))
+
+; == cavalry upgrades ==
+(defrule
+	(or	(goal G-scouts 1)
+		(or	(goal G-camels 1)
+			(or	(goal G-knights 1)
+				(or	(goal G-elephants 1)
+					(or	(goal G-missionaries 1)
+						(or	(and	(goal G-uu 1)
+								(up-compare-const UU-CLASS == cavalry-class))
+							(and	(and	(up-compare-const RAM == armored-elephant-line)
+									(unit-type-count-total armored-elephant-line >= 4))
+								(goal G-ram 1))))))))
+	=>
+	(set-goal G-temp9 23456))
+
+(defrule
+	(up-can-research G-esc-state c: ri-bloodlines)
+	(or	(unit-type-count-total cavalry-class >= 5)
+		(or	(unit-type-count-total cavalry-archer-class >= 7)
+			(or	(unit-type-count-total cavalry-cannon-class >= 7)
+				(or	(unit-type-count-total missionary >= 5)
+					(and	(population g:> G-184-pop)
+						(goal G-temp9 23456))))))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-bloodlines))
+(defrule
+	(research-available ri-bloodlines)
+	(building-type-count stable > 0)
+	(or	(unit-type-count-total cavalry-class >= 6)
+		(or	(unit-type-count-total cavalry-archer-class >= 8)
+			(or	(unit-type-count-total cavalry-cannon-class >= 8)
+				(or	(unit-type-count-total missionary >= 6)
+					(and	(population g:> G-184-pop)
+						(goal G-temp9 23456))))))
+	=>
+	(up-add-research-cost c: ri-bloodlines c: 1)
+	(up-modify-escrow food c:max 150)
+	(up-modify-escrow gold c:max 100))
+(defrule
+	(or	(population g:>= G-189-pop)
+		(or	(unit-type-count-total cavalry-class >= 6)
+			(or	(unit-type-count-total cavalry-archer-class >= 8)
+				(or	(unit-type-count-total missionary >= 7)
+					(unit-type-count-total cavalry-cannon-class >= 8)))))
+	(or	(goal G-temp9 23456)
+		(or	(unit-type-count-total cavalry-class >= 10)
+			(or	(unit-type-count-total cavalry-archer-class >= 12)
+				(or	(unit-type-count-total missionary >= 11)
+					(unit-type-count-total cavalry-cannon-class >= 12)))))
+	(or	(up-research-status c: imperial-age >= research-pending)
+		(or	(food-amount > 1200)
+			(unit-type-count-total cavalry-class >= 20)))
+	(can-research ri-husbandry)
+	=>
+	(research ri-husbandry))
+(defrule
+	(or	(goal G-temp9 23456)
+		(unit-type-count-total cavalry-class >= 5))
+	(or	(or	(unit-type-count-total cavalry-class >= 2)
+			(unit-type-count-total missionary >= 2))
+		(or	(unit-type-count-total scout-cavalry-class >= 2)
+			(goal G-knights 1)))
+	(nand	(goal G-strat GV-horsecock)
+		(unit-type-count-total knight-line == 0))
+	(up-can-research G-esc-state c: ri-scale-barding)
+	=>
+	(release-escrow food)
+	(research ri-scale-barding))
+(defrule
+	(research-available ri-scale-barding)
+	(building-type-count-total blacksmith > 0)
+	(or	(goal G-temp9 23456)
+		(unit-type-count-total cavalry-class >= 6))
+	(or	(or	(unit-type-count-total cavalry-class >= 3)
+			(unit-type-count-total missionary >= 3))
+		(unit-type-count-total scout-cavalry-class >= 3))
+	=>
+	(up-add-research-cost c: ri-scale-barding c: 1)
+	(up-modify-escrow food c:max 150))
+(defrule
+	(up-can-research G-esc-state c: ri-chain-barding)
+	(or	(goal G-temp9 23456)
+		(unit-type-count-total cavalry-class >= 9))
+	(or	(or	(unit-type-count-total cavalry-class >= 4)
+			(unit-type-count-total missionary >= 5))
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-chain-barding))
+(defrule
+	(research-available ri-chain-barding)
+	(or	(goal G-temp9 23456)
+		(unit-type-count-total cavalry-class >= 10))
+	(or	(or	(unit-type-count-total cavalry-class >= 5)
+			(unit-type-count-total missionary >= 6))
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-chain-barding c: 1)
+	(up-modify-escrow food c:max 250)
+	(up-modify-escrow gold c:max 150))
+(defrule
+	(up-can-research G-esc-state c: ri-plate-barding)
+	(or	(goal G-temp9 23456)
+		(unit-type-count-total cavalry-class >= 11))
+	(or	(or	(unit-type-count-total cavalry-class >= 7)
+			(unit-type-count-total missionary >= 8))
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-plate-barding))
+(defrule
+	(research-available ri-plate-barding)
+	(or	(goal G-temp9 23456)
+		(unit-type-count-total cavalry-class >= 13))
+	(or	(or	(unit-type-count-total cavalry-class >= 8)
+			(unit-type-count-total missionary >= 9))
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-modify-escrow food c:max 350)
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(up-can-research G-esc-state c: ri-heavy-camel)
+	(or	(goal G-camels 1)
+		(unit-type-count-total camel >= 10))
+	(or	(unit-type-count-total camel >= 5)
+		(population g:>= G-170-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-heavy-camel))
+(defrule
+	(research-available ri-heavy-camel)
+	(or	(goal G-camels 1)
+		(unit-type-count-total camel >= 13))
+	(or	(unit-type-count-total camel >= 6)
+		(population g:> G-170-pop))
+	=>
+	(up-add-research-cost c: ri-heavy-camel c: 1)
+	(up-modify-escrow food c:max 325)
+	(up-modify-escrow gold c:max 360))
+(defrule
+	(up-can-research G-esc-state c: ri-cavalier)
+	(or	(goal G-knights 1)
+		(unit-type-count-total knight >= 11))
+	(or	(unit-type-count-total knight >= 6)
+		(population g:>= G-170-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-cavalier))
+(defrule
+	(research-available ri-cavalier)
+	(or	(goal G-knights 1)
+		(unit-type-count-total knight >= 13))
+	(or	(unit-type-count-total knight >= 7)
+		(population g:> G-170-pop))
+	=>
+	(up-add-research-cost c: ri-cavalier c: 1)
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 300))
+(defrule
+	(goal G-knights 1)
+	(unit-type-count-total cavalier >= 8)
+	(or	(unit-type-count-total cavalier >= 12)
+		(population g:>= G-170-pop))
+	(up-can-research G-esc-state c: ri-paladin)
+	(population g:> G-160-pop)
+	(or	(population g:>= G-170-pop)
+		(strategic-number SN-superiority >= 80))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-paladin))
+(defrule
+	(research-available ri-paladin)
+	(goal G-knights 1)
+	(unit-type-count-total cavalier >= 9)
+	(or	(unit-type-count-total cavalier >= 13)
+		(population g:> G-170-pop))
+	(population g:> G-160-pop)
+	(or	(population g:> G-170-pop)
+		(strategic-number SN-superiority >= 92))
+	=>
+	(up-add-research-cost c: ri-paladin c: 1)
+	(up-modify-escrow food c:max 1300)
+	(up-modify-escrow gold c:max 750))
+(defrule
+	(up-can-research G-esc-state c: ri-elite-battle-elephant)
+	(or	(goal G-elephants 1)
+		(unit-type-count-total battle-elephant >= 12))
+	(or	(unit-type-count-total battle-elephant >= 7)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-elite-battle-elephant))
+(defrule
+	(research-available ri-elite-battle-elephant)
+	(or	(goal G-elephants 1)
+		(unit-type-count-total battle-elephant >= 14))
+	(or	(unit-type-count-total battle-elephant >= 8)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-elite-battle-elephant c: 1)
+	(up-modify-escrow food c:max 1100)
+	(up-modify-escrow gold c:max 700))
+(defrule
+	(or	(goal G-scouts 1)
+		(unit-type-count-total scout-cavalry >= 5))
+	(unit-type-count-total scout-cavalry >= 3)
+	(up-can-research G-esc-state c: ri-light-cavalry)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-light-cavalry))
+(defrule
+	(research-available ri-light-cavalry)
+	(or	(goal G-scouts 1)
+		(unit-type-count-total scout-cavalry >= 6))
+	(unit-type-count-total scout-cavalry >= 4)
+	=>
+	(up-add-research-cost c: ri-light-cavalry c: 1)
+	(up-modify-escrow food c:max 150)
+	(up-modify-escrow gold c:max 50))
+
+(defrule
+	(nor	(civ-selected poles)
+		(civ-selected lithuanians))
+	(up-can-research G-esc-state c: ri-hussar)
+	(or	(goal G-scouts 1)
+		(unit-type-count-total light-cavalry >= 14))
+	(unit-type-count-total light-cavalry >= 5)
+	(or	(unit-type-count-total light-cavalry >= 7)
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-hussar))
+(defrule
+	(nor	(civ-selected poles)
+		(civ-selected lithuanians))
+	(research-available ri-hussar)
+	(or	(goal G-scouts 1)
+		(unit-type-count-total light-cavalry >= 16))
+	(unit-type-count-total light-cavalry >= 6)
+	(or	(unit-type-count-total light-cavalry >= 9)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-hussar c: 1)
+	(up-modify-escrow food c:max 500)
+	(up-modify-escrow gold c:max 600))
+
+(defrule
+	(or	(civ-selected poles)
+		(civ-selected lithuanians))
+	(up-can-research G-esc-state c: ri-winged-hussar)
+	(or	(goal G-scouts 1)
+		(unit-type-count-total light-cavalry >= 14))
+	(unit-type-count-total light-cavalry >= 5)
+	(or	(unit-type-count-total light-cavalry >= 7)
+		(population g:> G-184-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-winged-hussar))
+(defrule
+	(or	(civ-selected poles)
+		(civ-selected lithuanians))
+	(research-available ri-winged-hussar)
+	(or	(goal G-scouts 1)
+		(unit-type-count-total light-cavalry >= 16))
+	(unit-type-count-total light-cavalry >= 6)
+	(or	(unit-type-count-total light-cavalry >= 9)
+		(population g:> G-184-pop))
+	=>
+	(up-add-research-cost c: ri-winged-hussar c: 1)
+	(up-modify-escrow food c:max 600)
+	(up-modify-escrow gold c:max 800))
+
+
+
+; == melee upgrades ==
+(defrule
+	(goal G-temp9 3761223)
+	=>
+	(set-goal G-temp9 23456)); both inf and cav now
+(defrule
+	(can-research ri-forging)
+	(or	(unit-type-count-total infantry-class >= 7)
+		(or	(unit-type-count-total cavalry-class >= 5)
+			(goal G-temp9 23456)))
+	(or	(or	(unit-type-count-total infantry-class >= 4)
+			(or	(unit-type-count-total cavalry-class >= 3)
+				(goal G-strat GV-trashwar)))
+		(population g:> G-189-pop))
+	=>
+	(research ri-forging))
+(defrule
+	(up-can-research G-esc-state c: ri-iron-casting)
+	(or	(or	(unit-type-count-total infantry-class >= 9)
+			(unit-type-count-total cavalry-class >= 7))
+		(population g:> G-189-pop))
+	(or	(unit-type-count-total infantry-class >= 13)
+		(or	(unit-type-count-total cavalry-class >= 10)
+			(goal G-temp9 23456)))
+	(or	(up-research-status c: ri-chain-barding != research-available)
+		(up-research-status c: ri-chain-mail != research-available))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-iron-casting))
+(defrule
+	(research-available ri-iron-casting)
+	(or	(or	(unit-type-count-total infantry-class >= 10)
+			(unit-type-count-total cavalry-class >= 8))
+		(population g:> G-189-pop))
+	(or	(unit-type-count-total infantry-class >= 14)
+		(or	(unit-type-count-total cavalry-class >= 11)
+			(goal G-temp9 23456)))
+	(or	(up-research-status c: ri-chain-barding != research-available)
+		(up-research-status c: ri-chain-mail != research-available))
+	=>
+	(up-add-research-cost c: ri-iron-casting c: 1)
+	(up-modify-escrow food c:max 220)
+	(up-modify-escrow gold c:max 120))
+(defrule
+	(up-can-research G-esc-state c: ri-blast-furnace)
+	(or	(or	(unit-type-count-total infantry-class >= 9)
+			(unit-type-count-total cavalry-class >= 7))
+		(population g:> G-189-pop))
+	(or	(unit-type-count-total infantry-class >= 13)
+		(or	(unit-type-count-total cavalry-class >= 10)
+			(goal G-temp9 23456)))
+	(or	(up-research-status c: ri-plate-barding != research-available)
+		(up-research-status c: ri-plate-mail != research-available))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-blast-furnace))
+(defrule
+	(research-available ri-blast-furnace)
+	(or	(or	(unit-type-count-total infantry-class >= 10)
+			(unit-type-count-total cavalry-class >= 8))
+		(population g:> G-189-pop))
+	(or	(unit-type-count-total infantry-class >= 14)
+		(or	(unit-type-count-total cavalry-class >= 11)
+			(goal G-temp9 23456)))
+	(or	(up-research-status c: ri-plate-barding != research-available)
+		(up-research-status c: ri-plate-mail != research-available))
+	=>
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-modify-escrow food c:max 275)
+	(up-modify-escrow gold c:max 225))
+
+; == siege upgrades ==
+
+; for michi cut
+(defrule
+	(up-compare-goal G-michi-cut >= 1)
+	(up-compare-goal G-michi-cut <= 3)
+	(up-can-research G-zero c: ri-onager)
+	(unit-type-count-total mangonel >= 2)
+	=>
+	(set-goal G-esc-state with-escrow)
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-onager))
+(defrule
+	(up-compare-goal G-michi-cut >= 1)
+	(up-compare-goal G-michi-cut <= 3)
+	(research-available ri-onager)
+	(unit-type-count-total mangonel >= 2)
+	=>
+	(set-goal G-esc-state without-escrow)
+	(up-add-research-cost c: ri-onager c: 1)
+	(up-modify-escrow food c:max 800)
+	(up-modify-escrow gold c:max 500))
+(defrule
+	(up-compare-goal G-michi-cut >= 1)
+	(up-compare-goal G-michi-cut <= 3)
+	(up-can-research G-zero c: ri-heavy-rocket-cart)
+	(unit-type-count-total rocket-cart >= 2)
+	=>
+	(set-goal G-esc-state with-escrow)
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-heavy-rocket-cart))
+(defrule
+	(up-compare-goal G-michi-cut >= 1)
+	(up-compare-goal G-michi-cut <= 3)
+	(research-available ri-heavy-rocket-cart)
+	(unit-type-count-total rocket-cart >= 2)
+	=>
+	(set-goal G-esc-state without-escrow)
+	(up-add-research-cost c: ri-heavy-rocket-cart c: 1)
+	(up-modify-escrow wood c:max 800)
+	(up-modify-escrow gold c:max 600))
+
+(defrule
+	(up-compare-const RAM == battering-ram-line)
+	(up-can-research G-esc-state c: ri-capped-ram)
+	(or	(unit-type-count-total capped-ram >= 4)
+		(goal G-ram 1))
+;	(unit-type-count-total battering-ram >= 2)
+	(or	(can-research ri-capped-ram)
+		(or	(strategic-number SN-superiority >= 95)
+			(or	(population g:>= G-170-pop)
+				(population > 180))))
+	=>
+	(release-escrow food)
+	(research ri-capped-ram))
+(defrule
+	(up-compare-const RAM == battering-ram-line)
+	(research-available ri-capped-ram)
+	(or	(unit-type-count-total capped-ram >= 5)
+		(goal G-ram 1))
+	(unit-type-count-total battering-ram-line >= 2)
+	(or	(strategic-number SN-superiority >= 95)
+		(or	(population g:>= G-170-pop)
+			(population >= 180)))
+	=>
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-modify-escrow food c:max 300))
+
+(defrule
+	(up-compare-const RAM == battering-ram-line)
+	(up-can-research G-esc-state c: ri-siege-ram)
+	(or	(unit-type-count-total capped-ram >= 4)
+		(goal G-ram 1))
+	(or	(unit-type-count-total capped-ram >= 4)
+		(can-research ri-siege-ram))
+	(or	(can-research ri-siege-ram)
+		(or	(strategic-number SN-superiority >= 100)
+			(or	(population g:> G-184-pop)
+				(population > 184))))
+	=>
+	(release-escrow food)
+	(research ri-siege-ram))
+(defrule
+	(up-compare-const RAM == battering-ram-line)
+	(research-available ri-siege-ram)
+	(or	(unit-type-count-total capped-ram >= 5)
+		(goal G-ram 1))
+	(unit-type-count-total capped-ram >= 5)
+	(or	(strategic-number SN-superiority >= 100)
+		(or	(population g:> G-184-pop)
+			(population > 184)))
+	=>
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-modify-escrow food c:max 1000))
+
+(defrule
+	(up-compare-const RAM == armored-elephant-line)
+	(up-can-research G-esc-state c: ri-siege-elephant)
+	(or	(unit-type-count-total armored-elephant >= 4)
+		(goal G-ram 1))
+	(or	(unit-type-count-total armored-elephant >= 4)
+		(can-research ri-siege-elephant))
+	(or	(can-research ri-siege-elephant)
+		(or	(strategic-number SN-superiority >= 100)
+			(or	(population g:> G-170-pop)
+				(population > 180))))
+	=>
+	(release-escrow food)
+	(research ri-siege-elephant))
+(defrule
+	(up-compare-const RAM == armored-elephant-line)
+	(research-available ri-siege-elephant)
+	(or	(unit-type-count-total armored-elephant >= 5)
+		(goal G-ram 1))
+	(unit-type-count-total armored-elephant >= 5)
+	(or	(strategic-number SN-superiority >= 100)
+		(or	(population g:> G-170-pop)
+			(population > 180)))
+	=>
+	(up-add-research-cost c: ri-siege-elephant c: 1)
+	(up-modify-escrow food c:max 850))
+
+(defrule
+	(up-can-research G-esc-state c: ri-siege-engineers)
+	(or	(unit-type-count-total siege-weapon-class >= 6)
+		(or	(goal G-mangonel 1)
+			(or	(goal G-scorps 1)
+				(goal G-bbc 1))))
+	(or	(unit-type-count-total siege-weapon-class >= 4)
+		(population g:>= G-184-pop))
+	(or	(unit-type-count-total siege-weapon-class >= 7)
+		(nand	(goal G-scorps 1)
+			(up-research-status c: ri-heavy-scorpion == research-available)))
+	(or	(unit-type-count-total siege-weapon-class >= 6)
+		(nand	(goal G-mangonel 1)
+			(or	(up-research-status c: ri-onager == research-available)
+				(up-research-status c: ri-heavy-rocket-cart == research-available))))
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(up-research G-esc-state c: ri-siege-engineers))
+(defrule
+	(research-available ri-siege-engineers)
+	(building-type-count-total university > 0)
+	(or	(unit-type-count-total siege-weapon-class >= 7)
+		(or	(goal G-mangonel 1)
+			(or	(goal G-scorps 1)
+				(goal G-bbc 1))))
+	(or	(unit-type-count-total siege-weapon-class >= 4)
+		(population g:> G-184-pop))
+	(or	(unit-type-count-total siege-weapon-class >= 8)
+		(nand	(goal G-scorps 1)
+			(up-research-status c: ri-heavy-scorpion == research-available)))
+	(or	(unit-type-count-total siege-weapon-class >= 7)
+		(nand	(goal G-mangonel 1)
+			(or	(up-research-status c: ri-onager == research-available)
+				(up-research-status c: ri-heavy-rocket-cart == research-available))))
+	=>
+	(up-add-research-cost c: ri-siege-engineers c: 1)
+	(up-modify-escrow food c:max 500)
+	(up-modify-escrow wood c:max 600))
+
+(defrule
+	(up-can-research G-esc-state c: ri-heavy-scorpion)
+	(goal G-scorps 1)
+	(unit-type-count-total scorpion >= 8)
+	=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-heavy-scorpion))
+(defrule
+	(or	(research-available ri-heavy-scorpion)
+		(timer-triggered T-clicked-up))
+	(up-compare-goal G-age >= GV-upimp)
+	(up-research-status c: ri-heavy-scorpion < research-pending)
+	(goal G-scorps 1)
+	(unit-type-count-total scorpion >= 8)
+	=>
+	(up-add-research-cost c: ri-heavy-scorpion c: 1)
+	(up-modify-escrow food c:max 800)
+	(up-modify-escrow wood c:max 750))
+
+(defrule
+	(up-can-research G-esc-state c: ri-heavy-rocket-cart)
+	(or	(unit-type-count-total rocket-cart >= 5)
+		(goal G-mangonel 1))
+	(or	(unit-type-count-total rocket-cart >= 4)
+		(population g:>= G-184-pop))
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research ri-heavy-rocket-cart))
+(defrule
+	(or	(unit-type-count-total rocket-cart >= 6)
+		(goal G-mangonel 1))
+	(or	(unit-type-count-total rocket-cart >= 4)
+		(population g:> G-184-pop))
+	(research-available ri-heavy-rocket-cart)
+	=>
+	(up-add-research-cost c: ri-heavy-rocket-cart c: 1)
+	(up-modify-escrow wood c:max 800)
+	(up-modify-escrow gold c:max 600))
+
+(defrule
+	(up-can-research G-esc-state c: ri-onager)
+	(or	(unit-type-count-total mangonel >= 4)
+		(goal G-mangonel 1))
+	(or	(unit-type-count-total mangonel >= 3)
+		(population g:>= G-189-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-onager))
+(defrule
+	(or	(unit-type-count-total mangonel >= 5)
+		(goal G-mangonel 1))
+	(or	(unit-type-count-total mangonel >= 4)
+		(population g:>= G-189-pop))
+	(research-available ri-onager)
+	=>
+	(up-add-research-cost c: ri-onager c: 1)
+	(up-modify-escrow food c:max 800)
+	(up-modify-escrow gold c:max 500))
+(defrule
+	(up-can-research G-esc-state c: ri-siege-onager)
+	(or	(unit-type-count-total onager >= 6)
+		(goal G-mangonel 1))
+	(or	(unit-type-count-total mangonel >= 5)
+		(population g:>= G-189-pop))
+	(goal G-trade 1)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-siege-onager))
+(defrule
+	(or	(unit-type-count-total onager >= 8)
+		(goal G-mangonel 1))
+	(or	(unit-type-count-total mangonel >= 6)
+		(population g:>= G-189-pop))
+	(research-available ri-siege-onager)
+	(goal G-trade 1)
+	=>
+	(up-add-research-cost c: ri-siege-onager c: 1)
+	(up-modify-escrow food c:max 1450)
+	(up-modify-escrow gold c:max 1000))
+
+; == monk upgrades ==
+; ri-herbal-medicine
+; ri-faith
+
+(defrule
+	(up-can-research G-esc-state c: ri-redemption)
+	(goal G-monks 1)
+	(or	(or	(unit-type-count-total monastery-class >= 11)
+			(and	(or	(up-compare-goal G-field-gun-threat >= 6)
+					(or	(up-compare-goal G-siege-threat >= 3)
+						(up-compare-goal G-cannon-threat >= 3)))
+				(or	(population g:> G-189-pop)
+					(unit-type-count-total monastery-class >= 7))))
+		(and	(or	(up-compare-goal G-field-gun-threat >= 10)
+				(or	(up-compare-goal G-siege-threat >= 5)
+					(up-compare-goal G-cannon-threat >= 5)))
+			(unit-type-count-total monastery-class >= 4)))
+	=>
+	(release-escrow gold)
+	(research ri-redemption))
+(defrule
+	(research-available ri-redemption)
+	(goal G-monks 1)
+	(or	(or	(unit-type-count-total monastery-class >= 12)
+			(and	(or	(up-compare-goal G-field-gun-threat >= 7)
+					(or	(up-compare-goal G-siege-threat >= 4)
+						(up-compare-goal G-cannon-threat >= 4)))
+				(or	(population g:> G-189-pop)
+					(unit-type-count-total monastery-class >= 8))))
+		(and	(or	(up-compare-goal G-field-gun-threat >= 12)
+				(or	(up-compare-goal G-siege-threat >= 6)
+					(up-compare-goal G-cannon-threat >= 6)))
+			(unit-type-count-total monastery-class >= 6)))
+	=>
+	(up-add-research-cost c: ri-redemption c: 1)
+	(up-modify-escrow gold c:max 475))
+
+#load-if-defined BOHEMIANS-CIV
+(defrule
+	(can-research-with-escrow ri-fervor)
+	(or	(population g:>= G-184-pop)
+		(or	(unit-type-count-total monastery-class >= 2)
+			(goal G-monks 0)))
+	=>
+	(release-escrow gold)
+	(research ri-fervor))
+(defrule
+	(research-available ri-fervor)
+	(building-type-count monastery > 0)
+	(or	(population g:> G-184-pop)
+		(or	(unit-type-count-total monastery-class >= 3)
+			(goal G-monks 0)))
+	=>
+	(up-add-research-cost c: ri-fervor c: 1)
+	(up-modify-escrow gold c:max 140))
+
+(defrule
+	(can-research-with-escrow ri-sanctity)
+	(or	(population g:>= G-184-pop)
+		(or	(unit-type-count-total monastery-class >= 3)
+			(and	(goal G-monks 0)
+				(or	(civilian-population >= 60)
+					(strategic-number SN-superiority < 80)))))
+	=>
+	(release-escrow gold)
+	(research ri-sanctity))
+(defrule
+	(research-available ri-sanctity)
+	(building-type-count monastery > 0)
+	(or	(population g:> G-184-pop)
+		(or	(unit-type-count-total monastery-class >= 4)
+			(and	(goal G-monks 0)
+				(or	(civilian-population > 60)
+					(strategic-number SN-superiority < 75)))))
+	=>
+	(up-add-research-cost c: ri-sanctity c: 1)
+	(up-modify-escrow gold c:max 175))
+#else
+(defrule
+	(up-can-research G-esc-state c: ri-fervor)
+	(or	(unit-type-count-total monastery-class >= 7)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 12))
+	=>
+	(release-escrow gold)
+	(research ri-fervor))
+(defrule
+	(research-available ri-fervor)
+	(or	(unit-type-count-total monastery-class >= 8)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 13))
+	=>
+	(up-add-research-cost c: ri-fervor c: 1)
+	(up-modify-escrow gold c:max 140))
+
+(defrule
+	(up-can-research G-esc-state c: ri-sanctity)
+	(or	(unit-type-count-total monastery-class >= 3)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 7))
+	=>
+	(release-escrow gold)
+	(research ri-sanctity))
+(defrule
+	(research-available ri-sanctity)
+	(or	(unit-type-count-total monastery-class >= 4)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 8))
+	=>
+	(up-add-research-cost c: ri-sanctity c: 1)
+	(up-modify-escrow gold c:max 175))
+#end-if
+
+(defrule
+	(up-can-research G-esc-state c: ri-atonement)
+	(up-compare-goal G-monk-threat >= 5)
+	(or	(up-compare-goal G-monk-threat >= 10)
+		(and	(goal G-monks 1)
+			(population g:>= G-189-pop)))
+	(or	(unit-type-count-total monastery-class >= 6)
+		(population g:>= G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 8))
+	=>
+	(release-escrow gold)
+	(research ri-atonement))
+(defrule
+	(research-available ri-atonement)
+	(up-compare-goal G-monk-threat >= 5)
+	(or	(up-compare-goal G-monk-threat >= 12)
+		(and	(goal G-monks 1)
+			(population g:> G-189-pop)))
+	(or	(unit-type-count-total monastery-class >= 7)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 9))
+	=>
+	(up-add-research-cost c: ri-atonement c: 1)
+	(up-modify-escrow gold c:max 325))
+
+(defrule
+	(up-can-research G-esc-state c: ri-devotion)
+	(or	(up-compare-goal G-monk-threat >= 15)
+		(and	(civ-selected aztec)
+			(and	(goal G-monks 1)
+				(population g:>= G-189-pop))))
+	(or	(or	(strategic-number SN-superiority < 140)
+			(up-compare-goal G-monk-threat >= 30))
+		(population g:>= G-189-pop))
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-devotion))
+(defrule
+	(research-available ri-devotion)
+	(building-type-count monastery > 0)
+	(up-compare-goal G-monk-threat >= 18)
+	(or	(or	(strategic-number SN-superiority < 135)
+			(up-compare-goal G-monk-threat >= 35))
+		(population g:> G-189-pop))
+	=>
+	(up-add-research-cost c: ri-devotion c: 1)
+	(up-modify-escrow food c:max 100)
+	(up-modify-escrow gold c:max 200))
+
+(defrule
+	(up-can-research G-esc-state c: ri-heresy)
+	(up-compare-goal G-monk-threat >= 27)
+	(up-modify-goal G-temp1 g:= G-total-threat)
+	(up-modify-goal G-temp1 c:* 100)
+	(up-modify-goal G-temp1 g:/ G-monk-threat)
+	(or	(or	(up-compare-goal G-temp1 < 200); more than half the threat is monks
+			(up-compare-goal G-monk-threat >= 60))
+		(population g:>= G-189-pop))
+	=>
+	(release-escrow gold)
+	(research ri-heresy))
+(defrule
+	(research-available ri-heresy)
+	(building-type-count monastery > 0)
+	(up-compare-goal G-monk-threat >= 30)
+	(up-modify-goal G-temp1 g:= G-total-threat)
+	(up-modify-goal G-temp1 c:* 100)
+	(up-modify-goal G-temp1 g:/ G-monk-threat)
+	(or	(or	(up-compare-goal G-temp1 < 200)
+			(up-compare-goal G-monk-threat >= 66))
+		(population g:> G-189-pop))
+	=>
+	(up-add-research-cost c: ri-heresy c: 1)
+	(up-modify-escrow gold c:max 1000))
+
+(defrule
+	(up-can-research G-esc-state c: ri-block-printing)
+	(up-research-status c: ri-theocracy != research-available)
+	(or	(unit-type-count-total monastery-class >= 3)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 7))
+	=>
+	(release-escrow gold)
+	(research ri-block-printing))
+(defrule
+	(research-available ri-block-printing)
+	(up-research-status c: ri-theocracy != research-available)
+	(or	(unit-type-count-total monastery-class >= 4)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 8))
+	=>
+	(up-add-research-cost c: ri-block-printing c: 1)
+	(up-modify-escrow gold c:max 200))
+(defrule
+	(up-can-research G-esc-state c: ri-illumination)
+	(up-research-status c: ri-theocracy != research-available)
+	(up-research-status c: ri-block-printing != research-available)
+	(or	(unit-type-count-total monastery-class >= 6)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 11))
+	=>
+	(release-escrow gold)
+	(research ri-illumination))
+(defrule
+	(research-available ri-illumination)
+	(up-research-status c: ri-theocracy != research-available)
+	(up-research-status c: ri-block-printing != research-available)
+	(or	(unit-type-count-total monastery-class >= 7)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 12))
+	=>
+	(up-add-research-cost c: ri-illumination c: 1)
+	(up-modify-escrow gold c:max 120))
+(defrule
+	(up-can-research G-esc-state c: ri-theocracy)
+	(or	(unit-type-count-total monastery-class >= 4)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 7))
+	=>
+	(release-escrow gold)
+	(research ri-theocracy))
+(defrule
+	(research-available ri-theocracy)
+	(or	(unit-type-count-total monastery-class >= 5)
+		(population g:> G-189-pop))
+	(or	(goal G-monks 1)
+		(unit-type-count-total monastery-class >= 9))
+	=>
+	(up-add-research-cost c: ri-theocracy c: 1)
+	(up-modify-escrow gold c:max 200))
+
+
+
+; ==== END ====
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-research-per)
+	(disable-self))

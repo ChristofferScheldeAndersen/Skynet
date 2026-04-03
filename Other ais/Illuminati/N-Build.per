@@ -1,0 +1,2139 @@
+; == REBUILD ==
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(can-build-with-escrow town-center)
+	=>
+	(set-goal G-temp1 0)
+	(set-goal G-temp2 0)
+	(set-goal G-temp3 1)
+	(set-strategic-number sn-focus-player-number 1))
+(defrule;~~new player~~
+	(up-compare-goal G-rebuild >= 2)
+	(can-build-with-escrow town-center)
+	(player-in-game focus-player)
+	(stance-toward focus-player ally)
+	(strategic-number sn-focus-player-number c:!= my-player-number)
+	(up-get-focus-fact population 0 G-temp2)
+	(up-compare-goal G-temp2 g:> G-temp1)
+	=>
+	(up-modify-goal G-temp1 g:= G-temp2)
+	(up-modify-goal G-temp3 s:= sn-focus-player-number))
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(can-build-with-escrow town-center)
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2));~~~~next player
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(can-build-with-escrow town-center)
+	=>
+	(up-modify-sn sn-focus-player-number g:= G-temp3)
+	(up-full-reset-search)
+	(up-find-remote c: building-class c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object P-placement-x)
+	(up-get-point position-enemy P-temp-x)
+	(up-lerp-tiles P-placement-x P-temp-x c: -20))
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(can-build-with-escrow town-center)
+	(up-pending-objects c: town-center == 0)
+	=>
+	(chat-to-player my-player-number "new tc")
+	(up-set-target-point P-placement-x)
+	(set-strategic-number sn-placement-zone-size 30)
+	(set-strategic-number sn-placement-fail-delta -1)
+	(release-escrow wood)
+	(release-escrow stone)
+	(up-build place-point 0 c: town-center)
+	(set-strategic-number sn-percent-building-cancellation 0)
+;	(up-delete-objects c: town-center c: 32767)
+	(set-goal G-rebuild 3))
+
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(not	(can-build-with-escrow town-center))
+	=>
+	(up-add-object-cost c: town-center c: 5))
+
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(up-compare-goal J-build-per > 0)
+	=>
+	(up-jump-direct g: J-build-per))
+
+; ================
+; ==== HOUSES ====
+; ================
+#load-if-not-defined HUN-CIV
+(defrule
+	(up-pending-objects c: house == 0)
+	(housing-headroom < 2)
+	(population-headroom > 3)
+	(unit-type-count villager <= 5)
+	(can-build house)
+	(building-type-count town-center >= 1)
+	=>
+	(build house))
+(defrule
+	(up-compare-goal G-saving-wood != 1)
+	(up-pending-objects c: house < 2)
+	(or	(up-pending-objects c: house == 0)
+		(housing-headroom < 0))
+	(housing-headroom < 4)
+	(population-headroom > 0)
+	(can-build house)
+	(nand	(building-type-count-total house >= 3)
+		(and	(goal G-strat GV-klewproper)
+			(up-compare-goal G-age < GV-upcastle)))
+	(building-type-count town-center >= 1)
+	=>
+	(build house))
+(defrule; limited when saving wood for build order items
+	(goal G-saving-wood 1)
+	(up-pending-objects c: house < 2)
+	(or	(up-pending-objects c: house == 0)
+		(housing-headroom < 0))
+	(housing-headroom < 3)
+	(or	(housing-headroom < 1)
+		(goal G-build-order GV-feudal-war))
+	(population-headroom > 0)
+	(can-build house)
+	=>
+	(set-goal G-temp8 17151311))
+(defrule
+	(goal G-temp8 17151311)
+	(nand	(building-type-count-total house >= 3)
+		(and	(goal G-strat GV-klewproper)
+			(up-compare-goal G-age < GV-upcastle)))
+	(building-type-count-total town-center >= 1)
+	=>
+	(build house))
+(defrule
+	(up-pending-objects c: house < 2)
+	(or	(up-pending-objects c: house < 1)
+		(population > 60))
+	(or	(current-age >= castle-age)
+		(or	(building-type-count-total archery-range >= 2)
+			(building-type-count-total barracks >= 2)))
+	(housing-headroom < 8)
+	(population-headroom > 0)
+	(can-build house)
+	(building-type-count town-center >= 1)
+	=>
+	(build house))
+(defrule
+	(up-pending-objects c: house < 2)
+	(current-age >= castle-age)
+	(population > 100)
+	(housing-headroom < 12)
+	(population-headroom > 0)
+	(can-build house)
+	(building-type-count town-center >= 1)
+	=>
+	(build house))
+#end-if
+; =======================
+; ==== ECO BUILDINGS ====
+; =======================
+; ==== TOWN CENTRES ====
+(defrule
+	(goal G-strat GV-boom)
+	(up-compare-goal G-desiredtcs < 4)
+	(nand	(goal G-maptype GV-land-open)
+		(or	(civ-selected mayan)
+			(or	(civ-selected aztec)
+				(civ-selected incan))))
+	=>
+	(up-modify-goal G-desiredtcs c:+ 1)
+	(disable-self))
+(defrule
+	(up-compare-goal G-start-boom < 1)
+	(current-age >= castle-age)
+	(nand	(goal G-strat-class1 monastery-class)
+		(building-type-count-total monastery < 2))
+	(nand	(goal G-strat-rax 1)
+		(building-type-count-total barracks < 2))
+	(nand	(goal G-strat-range 1)
+		(building-type-count-total archery-range < 2))
+	(nand	(goal G-strat-stable 1)
+		(building-type-count-total stable < 1)); needs another or here when we want 2 stables asap
+	(nand	(goal G-strat-workshop 1)
+		(building-type-count-total siege-workshop < 2))
+	=>
+	(set-goal G-start-boom 1)
+	(disable-self))
+
+(defrule
+	(current-age >= castle-age)
+	(up-compare-goal G-boom-priority >= 1); 2
+	(building-type-count-total town-center g:< G-desiredtcs)
+	=>
+	(up-add-object-cost c: town-center c: 2))
+(defrule
+	(goal G-start-boom 1)
+	(can-build town-center)	
+	(building-type-count-total town-center g:< G-desiredtcs)
+	(or	(nand	(building-type-count-total castle < 1)
+			(or	(goal G-strat GV-unique)
+				(or	(goal G-strat GV-cdrop)
+					(goal G-strat GV-cdropproper))))
+		(stone-amount >= 750))
+	(not	(up-pending-placement c: town-center))
+	=>
+	(set-goal G-temp5 64546))
+(defrule
+	(goal G-start-boom 1)
+	(up-compare-goal G-boom-priority >= 2); 3
+	(up-can-build G-zero c: town-center)	
+	(building-type-count-total town-center g:< G-desiredtcs)
+	(or	(nand	(building-type-count-total castle < 1)
+			(or	(goal G-strat GV-unique)
+				(or	(goal G-strat GV-cdrop)
+					(goal G-strat GV-cdropproper))))
+		(stone-amount >= 750))
+	(not	(up-pending-placement c: town-center))
+	=>
+	(release-escrow wood)
+	(set-goal G-temp5 64546))
+(defrule
+	(goal G-start-boom 1)
+	(up-compare-goal G-boom-priority >= 3)
+	(building-type-count-total town-center g:< G-desiredtcs)
+	(or	(nand	(building-type-count-total castle < 1)
+			(or	(goal G-strat GV-unique)
+				(or	(goal G-strat GV-cdrop)
+					(goal G-strat GV-cdropproper))))
+		(stone-amount >= 750))
+	(stone-amount >= 100)
+	(not	(goal G-temp5 64546))
+	(not	(up-pending-placement c: town-center))
+	=>
+	(up-modify-escrow wood c:max 275))
+(defrule
+	(goal G-temp5 64546)
+	(or	(building-type-count-total town-center >= 3); 4th tc on wood
+		(and	(cc-players-unit-type-count 0 gold-mine g:<= G-min-gaia-gold)
+			(cc-players-unit-type-count 0 stone-mine g:<= G-min-gaia-stone)))
+	=>
+	(set-goal G-temp5 0)
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(build town-center))
+
+; - TC placement -
+(defrule
+	(goal G-temp5 64546)
+	=>
+	(set-goal G-temp1 0); current camp/tc
+	(set-goal G-temp2 570); indirect goal to store id
+	(up-get-point position-enemy P-x)
+	(up-modify-goal P-x g:+ P-team-opposite-x)
+	(up-modify-goal P-y g:+ P-team-opposite-y)
+	(up-modify-goal P-x c:/ 2)
+	(up-modify-goal P-y c:/ 2)
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 10)
+	(up-find-local c: MINING-CAMP c: 80)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: town-center-foundation c: 3)
+	(up-find-status-local c: MINING-CAMP c: 1)
+	(up-get-search-state G-local-total)
+	(up-set-target-point P-self-x)
+	(up-filter-include -1 -1 -1 on-mainland)
+	(up-filter-distance c: -1 s: sn-camp-max-distance)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: gold c: 200)
+	(up-find-resource c: stone c: 100)
+	(up-remove-objects search-remote object-data-carry < 250))
+(defrule; excluded by previous attempts
+	(goal G-temp5 64546)
+	=>
+	(up-remove-objects search-remote object-data-id g:= 570)
+	(up-remove-objects search-remote object-data-id g:= 571)
+	(up-remove-objects search-remote object-data-id g:= 572)
+	(up-remove-objects search-remote object-data-id g:= 573)
+	(up-remove-objects search-remote object-data-id g:= 574)
+	(up-remove-objects search-remote object-data-id g:= 575)
+	(up-remove-objects search-remote object-data-id g:= 576)
+	(up-remove-objects search-remote object-data-id g:= 577)
+	(up-remove-objects search-remote object-data-id g:= 578)
+	(up-remove-objects search-remote object-data-id g:= 579)
+	(up-remove-objects search-remote object-data-id g:= 580)
+	(up-remove-objects search-remote object-data-id g:= 581)
+	(up-remove-objects search-remote object-data-id g:= 582)
+	(up-remove-objects search-remote object-data-id g:= 583)
+	(up-remove-objects search-remote object-data-id g:= 584)
+	(up-remove-objects search-remote object-data-id g:= 585)
+	(up-remove-objects search-remote object-data-id g:= 586)
+	(up-remove-objects search-remote object-data-id g:= 587)
+	(up-remove-objects search-remote object-data-id g:= 588)
+	(up-remove-objects search-remote object-data-id g:= 589)
+	(up-remove-objects search-remote object-data-id g:= 590)
+	(up-remove-objects search-remote object-data-id g:= 591)
+	(up-remove-objects search-remote object-data-id g:= 592)
+	(up-remove-objects search-remote object-data-id g:= 593)
+	(up-remove-objects search-remote object-data-id g:= 594)
+	(up-remove-objects search-remote object-data-id g:= 595)
+	(up-remove-objects search-remote object-data-id g:= 596)
+	(up-remove-objects search-remote object-data-id g:= 597)
+	(up-remove-objects search-remote object-data-id g:= 598)
+	(up-remove-objects search-remote object-data-id g:= 599))
+(defrule
+	(goal G-temp5 64546)
+	(up-compare-goal G-temp1 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp1)
+	(or	(up-object-data object-data-type == town-center)
+		(up-object-data object-data-type == town-center-foundation))
+	=>
+	(up-get-point position-object P-temp-x)
+	(up-set-target-point P-temp-x)
+	(up-remove-objects search-remote object-data-distance c:< 10); ?
+	(up-modify-goal G-temp1 c:+ 1)
+	(up-jump-rule -1))
+(defrule
+	(goal G-temp5 64546)
+	(up-compare-goal G-temp1 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp1)
+	(up-object-data object-data-type == MINING-CAMP)
+	=>
+	(up-get-point position-object P-temp-x)
+	(up-set-target-point P-temp-x)
+	(up-remove-objects search-remote object-data-distance c:< 4); ?
+	(up-modify-goal G-temp1 c:+ 1)
+	(up-jump-rule -2))
+(defrule
+	(goal G-temp5 64546)
+	=>
+	(set-goal G-temp5 64547)
+	(up-set-target-point P-x)
+	(up-clean-search search-remote object-data-distance search-order-desc))
+(defrule
+	(goal G-temp5 64547)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(set-goal G-temp1 64548)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(up-get-point position-object P-placement-x)
+	(up-set-target-point P-placement-x)
+	(set-strategic-number sn-placement-zone-size 2)
+	(set-strategic-number sn-placement-fail-delta 0)
+	; (chat-to-all "building TC here")
+	; (up-send-flare P-placement-x)
+	(up-build place-point 0 c: town-center)
+	(up-jump-rule 1))
+(defrule; failsafe
+	(goal G-temp5 64547)
+	=>
+	; (chat-local-to-self "TC placement failsafe: build it on wood")
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(build town-center))
+
+(defrule
+	(goal G-temp5 64548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-get-indirect-goal g: G-temp2 G-temp3))
+(defrule
+	(goal G-temp5 64548)
+	(up-compare-goal G-temp2 <= 599)
+	(up-compare-goal G-temp3 != -1)
+	=>
+	(up-modify-goal G-temp2 c:+ 1)
+	(up-jump-rule -2))
+(defrule; save id to exclude
+	(goal G-temp5 64548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-id G-temp4)
+	(up-set-indirect-goal g: G-temp2 g:= G-temp4)
+	(up-modify-goal G-temp2 c:+ 1))
+(defrule; and the previous ID
+	(goal G-temp5 64548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-modify-goal G-temp4 c:- 1))
+(defrule
+	(goal G-temp5 64548)
+	(up-compare-goal G-temp2 <= 599)
+	(up-compare-goal G-temp4 g:!= 570)
+	(up-compare-goal G-temp4 g:!= 571)
+	(up-compare-goal G-temp4 g:!= 572)
+	(up-compare-goal G-temp4 g:!= 573)
+	(up-compare-goal G-temp4 g:!= 574)
+	(up-compare-goal G-temp4 g:!= 575)
+	(up-compare-goal G-temp4 g:!= 576)
+	(up-compare-goal G-temp4 g:!= 577)
+	(up-compare-goal G-temp4 g:!= 578)
+	(up-compare-goal G-temp4 g:!= 579)
+	(up-compare-goal G-temp4 g:!= 580)
+	(up-compare-goal G-temp4 g:!= 581)
+	(up-compare-goal G-temp4 g:!= 582)
+	(up-compare-goal G-temp4 g:!= 583)
+	(up-compare-goal G-temp4 g:!= 584)
+	(up-compare-goal G-temp4 g:!= 585)
+	(up-compare-goal G-temp4 g:!= 586)
+	(up-compare-goal G-temp4 g:!= 587)
+	(up-compare-goal G-temp4 g:!= 588)
+	(up-compare-goal G-temp4 g:!= 589)
+	(up-compare-goal G-temp4 g:!= 590)
+	(up-compare-goal G-temp4 g:!= 591)
+	(up-compare-goal G-temp4 g:!= 592)
+	(up-compare-goal G-temp4 g:!= 593)
+	(up-compare-goal G-temp4 g:!= 594)
+	(up-compare-goal G-temp4 g:!= 595)
+	(up-compare-goal G-temp4 g:!= 596)
+	(up-compare-goal G-temp4 g:!= 597)
+	=>
+	(up-set-indirect-goal g: G-temp2 g:= G-temp4)
+	(up-modify-goal G-temp2 c:+ 1))
+(defrule; and the next ID
+	(goal G-temp5 64548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-modify-goal G-temp4 c:+ 2))
+(defrule
+	(goal G-temp5 64548)
+	(up-compare-goal G-temp2 <= 599)
+	(up-compare-goal G-temp4 g:!= 570)
+	(up-compare-goal G-temp4 g:!= 571)
+	(up-compare-goal G-temp4 g:!= 572)
+	(up-compare-goal G-temp4 g:!= 573)
+	(up-compare-goal G-temp4 g:!= 574)
+	(up-compare-goal G-temp4 g:!= 575)
+	(up-compare-goal G-temp4 g:!= 576)
+	(up-compare-goal G-temp4 g:!= 577)
+	(up-compare-goal G-temp4 g:!= 578)
+	(up-compare-goal G-temp4 g:!= 579)
+	(up-compare-goal G-temp4 g:!= 580)
+	(up-compare-goal G-temp4 g:!= 581)
+	(up-compare-goal G-temp4 g:!= 582)
+	(up-compare-goal G-temp4 g:!= 583)
+	(up-compare-goal G-temp4 g:!= 584)
+	(up-compare-goal G-temp4 g:!= 585)
+	(up-compare-goal G-temp4 g:!= 586)
+	(up-compare-goal G-temp4 g:!= 587)
+	(up-compare-goal G-temp4 g:!= 588)
+	(up-compare-goal G-temp4 g:!= 589)
+	(up-compare-goal G-temp4 g:!= 590)
+	(up-compare-goal G-temp4 g:!= 591)
+	(up-compare-goal G-temp4 g:!= 592)
+	(up-compare-goal G-temp4 g:!= 593)
+	(up-compare-goal G-temp4 g:!= 594)
+	(up-compare-goal G-temp4 g:!= 595)
+	(up-compare-goal G-temp4 g:!= 596)
+	(up-compare-goal G-temp4 g:!= 597)
+	=>
+	(up-set-indirect-goal g: G-temp2 g:= G-temp4))
+
+; ==== DROP SITES ====
+(defrule; 2nd lumber camp for double range feudal
+	(or	(goal G-build-order GV-feudal-war)
+		(goal G-build-order GV-grush))
+	(up-compare-goal G-age >= GV-upfeudal)
+	(can-build LUMBER-CAMP)
+	(or	(or	(building-type-count-total archery-range >= 2)
+			(building-type-count-total stable >= 1))
+		(and	(building-type-count-total blacksmith >= 1)
+			(goal G-champs 1)))
+	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total settlement < 3)
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-preferred-settlement-placement 3)
+	(build LUMBER-CAMP)
+	(disable-self))
+(defrule; 2nd lumber camp up castle
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total settlement < 3)
+	(can-build LUMBER-CAMP)
+	(nand	(goal G-strat GV-klewproper)
+		(building-type-count-total barracks < 2))
+	(nand	(or	(goal G-strat GV-cdrop)
+			(goal G-strat GV-cdropproper))
+		(or	(dropsite-min-distance stone > 3)
+			(up-research-status c: ri-stone-mining < research-pending)))
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-preferred-settlement-placement 3)
+	(build LUMBER-CAMP)
+	(disable-self))
+
+(defrule
+	(or	(unit-type-count 219 > 1); dead lumberjacks
+		(unit-type-count 228 > 1))
+	(can-build LUMBER-CAMP)
+	(building-type-count-total LUMBER-CAMP < 3)
+	(building-type-count-total LUMBER-CAMP >= 1)
+	(current-age >= feudal-age)
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-preferred-settlement-placement 3)
+	(build LUMBER-CAMP))
+(defrule
+	(dropsite-min-distance wood > 2)
+	(or	(dropsite-min-distance wood > 3)
+		(and	(building-type-count-total town-center >= 3)
+			(wood-amount > 200)))
+	(or	(or	(up-pending-objects c: LUMBER-CAMP == 0)
+			(wood-amount > 280))
+		(dropsite-min-distance wood > 4))
+	(up-pending-objects c: LUMBER-CAMP <= 1)
+	(can-build LUMBER-CAMP)
+	(current-age >= feudal-age)
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-preferred-settlement-placement 3)
+	(build LUMBER-CAMP))
+(defrule
+	(current-age == castle-age)
+	(or	(and	(and	(building-type-count-total lumber-camp < 3)
+				(building-type-count-total settlement < 5))
+			(unit-type-count villager-wood >= 16))
+		(or	(and	(and	(building-type-count-total lumber-camp < 2)
+					(building-type-count-total settlement < 4))
+				(unit-type-count villager-wood >= 11))
+			(and	(and	(building-type-count-total lumber-camp < 4)
+					(building-type-count-total settlement < 6))
+				(unit-type-count villager-wood >= 21))))
+	(can-build LUMBER-CAMP)
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-preferred-settlement-placement 3)
+	(build LUMBER-CAMP))
+
+
+; == mining camps ==
+(defrule
+	(cc-players-unit-type-count 0 gold-mine g:< G-min-gaia-gold)
+	(cc-players-unit-type-count 0 stone-mine g:< G-min-gaia-stone)
+	(up-compare-goal J-mining-camp > 0)
+	=>
+	(up-jump-direct g: J-mining-camp))
+
+; - first gold -
+(defrule
+	(resource-found gold)
+	(or	(or	(building-type-count-total lumber-camp >= 2)
+			(building-type-count-total settlement >= 2))
+		(up-compare-goal G-build-order != GV-feudal-war))
+	(building-type-count-total mining-camp == 0)
+	(building-type-count-total settlement < 3)
+	(or	(goal G-eco-balance GV-early-feudal)
+		(goal G-age GV-upfeudal))
+	(up-compare-goal G-strat != GV-klewproper)
+	=>
+	(set-goal G-saving-wood 1))
+(defrule
+	(building-type-count-total mining-camp < 2)
+	(building-type-count-total settlement < 4)
+	(up-compare-goal G-age >= GV-upfeudal)
+	(strategic-number sn-gold-gatherer-percentage > 0)
+	(or	(building-type-count-total barracks > 0)
+		(up-compare-goal G-build-order != GV-feudal-war))
+	(can-build MINING-CAMP)
+;	(resource-found gold)
+	(dropsite-min-distance gold < 255)
+	(dropsite-min-distance gold > 4)
+	(up-compare-goal G-strat != GV-klewproper)
+	=>
+;	(chat-to-player my-player-number "first gold mine")
+	(set-goal G-saving-wood 1)
+	(set-goal G-temp7 185436))
+
+(defrule; ~~~~ back gold mine
+	(goal G-temp7 185436)
+	=>
+	(up-get-point position-enemy P-temp-x)
+;	(set-strategic-number sn-focus-player-number 0)
+	(up-full-reset-search)
+	(up-set-target-point P-self-x)
+	(up-filter-distance c: -1 s: sn-camp-max-distance)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: gold c: 240)
+	(up-set-target-point P-temp-x)
+	(up-clean-search search-remote object-data-distance search-order-desc))
+(defrule
+	(goal G-temp7 185436)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(up-get-point position-object P-placement-x)
+	(up-lerp-tiles P-placement-x P-temp-x c: 1)
+	(set-strategic-number sn-placement-zone-size 2)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-set-target-point P-placement-x)
+;	(up-send-flare P-placement-x)
+	(up-build place-point 0 c: MINING-CAMP)
+	(up-jump-rule 2))
+	;-----------------------------------------------------------
+(defrule
+	(goal G-temp7 185436)
+	(strategic-number sn-camp-max-distance g:< G-mapsize)
+	=>
+	(up-modify-sn sn-camp-max-distance c:+ 3)
+	(up-jump-rule -3)); ~~~~
+(defrule; failsafe
+	(goal G-temp7 185436)
+	=>
+	(up-get-fact dropsite-min-distance gold G-temp1)
+	(up-modify-sn sn-camp-max-distance g:max G-temp1)
+	(up-modify-sn sn-camp-max-distance c:+ 5)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build MINING-CAMP))
+	;-----------------------------------------------------------
+
+; - first stone -
+(defrule; ~~~~
+	(strategic-number sn-stone-gatherer-percentage >= 4)
+	(resource-found stone)
+	(dropsite-min-distance stone < 255)
+	(dropsite-min-distance stone > 4)
+	(or	(up-pending-objects c: MINING-CAMP == 0)
+		(and	(building-type-count-total mining-camp < 2)
+			(building-type-count-total settlement < 4)))
+	(can-build MINING-CAMP)
+	=>
+	(up-get-point position-enemy P-temp-x)
+;	(set-strategic-number sn-focus-player-number 0)
+	(up-full-reset-search)
+	(up-set-target-point P-self-x)
+	(up-filter-distance c: -1 s: sn-camp-max-distance)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: stone c: 240)
+	(up-set-target-point P-temp-x)
+	(up-clean-search search-remote object-data-distance search-order-desc)
+	(set-goal G-temp5 154545))
+(defrule
+	(goal G-temp5 154545)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(up-get-point position-object P-placement-x)
+	(up-lerp-tiles P-placement-x P-temp-x c: 1)
+	(up-set-target-point P-placement-x)
+	(set-strategic-number sn-placement-zone-size 2)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-build place-point 0 c: MINING-CAMP)
+	(up-jump-rule 2))
+	;-----------------------------------------------------------
+(defrule
+	(goal G-temp5 154545)
+	(strategic-number sn-camp-max-distance g:< G-mapsize)
+	=>
+	(up-modify-sn sn-camp-max-distance c:+ 3)
+	(up-jump-rule -3)); ~~~~
+(defrule; failsafe
+	(goal G-temp5 154545)
+	=>
+ 	(up-get-fact dropsite-min-distance stone G-temp1)
+ 	(up-modify-sn sn-camp-max-distance g:max G-temp1)
+	(up-modify-sn sn-camp-max-distance c:+ 5)
+ 	(set-strategic-number sn-stone-dropsite-distance 5)
+ 	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build MINING-CAMP))
+	;-----------------------------------------------------------
+
+; - mining camp conditions -
+(defrule
+	(up-pending-objects c: MINING-CAMP < 2)
+	(current-age >= feudal-age)
+;	(resource-found gold)
+	(can-build MINING-CAMP)
+	(or	(and	(dropsite-min-distance gold > 3)
+			(unit-type-count villager-gold >= 6))
+		(and	(dropsite-min-distance stone > 4)
+			(unit-type-count villager-stone >= 4)))
+	(or	(building-type-count-total blacksmith > 0)
+		(or	(goal G-build-order GV-feudal-war)
+			(current-age >= castle-age)))
+	=>
+	(set-goal G-temp5 54546))
+(defrule 
+	(up-pending-objects c: MINING-CAMP < 1)
+	(current-age >= feudal-age)
+;	(resource-found gold)
+	(can-build MINING-CAMP)
+	(or	(building-type-count-total barracks >= 2)
+		(or	(building-type-count-total monastery >= 2)
+			(building-type-count-total archery-range >= 2)))
+	(building-type-count-total mining-camp < 2)
+	(building-type-count-total settlement < 4)
+	(unit-type-count villager-gold >= 10)
+	=>
+	(set-goal G-temp5 54546))
+(defrule
+	(up-pending-objects c: MINING-CAMP < 1)
+	(current-age >= feudal-age)
+;	(resource-found gold)
+	(can-build MINING-CAMP)
+	(building-type-count-total mining-camp < 3)
+	(building-type-count-total settlement < 5)
+	(unit-type-count villager-gold >= 16)
+	=>
+	(set-goal G-temp5 54546))
+(defrule
+	(up-pending-objects c: MINING-CAMP < 1)
+	(current-age >= feudal-age)
+;	(resource-found gold)
+	(can-build MINING-CAMP)
+	(building-type-count-total mining-camp < 4)
+	(building-type-count-total settlement < 6)
+	(unit-type-count villager-gold >= 22)
+	=>
+	(set-goal G-temp5 54546))
+
+; - mining camp placement -
+(defrule; clear excluded ids if list is full
+	(goal G-temp5 54546)
+	(up-compare-goal 599 != -1)
+	=>
+	(set-goal 570 -1)
+	(set-goal 571 -1)
+	(set-goal 572 -1)
+	(set-goal 573 -1)
+	(set-goal 574 -1)
+	(set-goal 575 -1)
+	(set-goal 576 -1)
+	(set-goal 577 -1)
+	(set-goal 578 -1)
+	(set-goal 579 -1)
+	(set-goal 580 -1)
+	(set-goal 581 -1)
+	(set-goal 582 -1)
+	(set-goal 583 -1)
+	(set-goal 584 -1)
+	(set-goal 585 -1)
+	(set-goal 586 -1)
+	(set-goal 587 -1)
+	(set-goal 588 -1)
+	(set-goal 589 -1)
+	(set-goal 590 -1)
+	(set-goal 591 -1)
+	(set-goal 592 -1)
+	(set-goal 593 -1)
+	(set-goal 594 -1)
+	(set-goal 595 -1)
+	(set-goal 596 -1)
+	(set-goal 597 -1)
+	(set-goal 598 -1)
+	(set-goal 599 -1))
+(defrule
+	(goal G-temp5 54546)
+	=>
+	(set-goal G-temp1 0); current camp/tc
+	(set-goal G-temp2 570); indirect goal
+	(up-get-point position-enemy P-x)
+	(up-modify-goal P-x g:+ P-team-opposite-x)
+	(up-modify-goal P-y g:+ P-team-opposite-y)
+	(up-modify-goal P-x c:/ 2)
+	(up-modify-goal P-y c:/ 2)
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 10)
+	(up-find-local c: MINING-CAMP c: 80)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: town-center-foundation c: 3)
+	(up-find-status-local c: MINING-CAMP c: 1)
+	(up-get-search-state G-local-total)
+	(up-set-target-point P-self-x)
+	(up-filter-include -1 -1 -1 on-mainland)
+	(up-filter-distance c: -1 s: sn-camp-max-distance)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: gold c: 200)
+	(up-find-resource c: stone c: 100)
+	(up-remove-objects search-remote object-data-carry < 150))
+(defrule; excluded by previous attempts
+	(goal G-temp5 54546)
+	=>
+	(up-remove-objects search-remote object-data-id g:= 570)
+	(up-remove-objects search-remote object-data-id g:= 571)
+	(up-remove-objects search-remote object-data-id g:= 572)
+	(up-remove-objects search-remote object-data-id g:= 573)
+	(up-remove-objects search-remote object-data-id g:= 574)
+	(up-remove-objects search-remote object-data-id g:= 575)
+	(up-remove-objects search-remote object-data-id g:= 576)
+	(up-remove-objects search-remote object-data-id g:= 577)
+	(up-remove-objects search-remote object-data-id g:= 578)
+	(up-remove-objects search-remote object-data-id g:= 579)
+	(up-remove-objects search-remote object-data-id g:= 580)
+	(up-remove-objects search-remote object-data-id g:= 581)
+	(up-remove-objects search-remote object-data-id g:= 582)
+	(up-remove-objects search-remote object-data-id g:= 583)
+	(up-remove-objects search-remote object-data-id g:= 584)
+	(up-remove-objects search-remote object-data-id g:= 585)
+	(up-remove-objects search-remote object-data-id g:= 586)
+	(up-remove-objects search-remote object-data-id g:= 587)
+	(up-remove-objects search-remote object-data-id g:= 588)
+	(up-remove-objects search-remote object-data-id g:= 589)
+	(up-remove-objects search-remote object-data-id g:= 590)
+	(up-remove-objects search-remote object-data-id g:= 591)
+	(up-remove-objects search-remote object-data-id g:= 592)
+	(up-remove-objects search-remote object-data-id g:= 593)
+	(up-remove-objects search-remote object-data-id g:= 594)
+	(up-remove-objects search-remote object-data-id g:= 595)
+	(up-remove-objects search-remote object-data-id g:= 596)
+	(up-remove-objects search-remote object-data-id g:= 597)
+	(up-remove-objects search-remote object-data-id g:= 598)
+	(up-remove-objects search-remote object-data-id g:= 599))
+(defrule
+	(goal G-temp5 54546)
+	(up-compare-goal G-temp1 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp1)
+	=>
+	(up-get-point position-object P-temp-x)
+	(up-set-target-point P-temp-x)
+	(up-remove-objects search-remote object-data-distance c:< 7); ?
+	(up-modify-goal G-temp1 c:+ 1)
+	(up-jump-rule -1))
+(defrule
+	(goal G-temp5 54546)
+	=>
+	(set-goal G-temp5 54547)
+	(up-set-target-point P-x)
+	(up-clean-search search-remote object-data-distance search-order-desc))
+(defrule
+	(goal G-temp5 54547)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(set-goal G-temp1 54548)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(up-get-point position-object P-placement-x)
+	(up-set-target-point P-placement-x)
+	(set-strategic-number sn-placement-zone-size 2)
+	(set-strategic-number sn-placement-fail-delta 0)
+	; (chat-to-all "building mining camp here")
+	; (up-send-flare P-placement-x)
+	(up-build place-point 0 c: MINING-CAMP)
+	(up-jump-rule 5))
+	;-----------------------------------------------------------
+; - failsafe -
+(defrule
+	(goal G-temp5 54547)
+	(strategic-number SN-superiority >= 90)
+	(or	(civilian-population c:> 80)
+		(civilian-population g:>= G-desired-vills))
+	=>
+	(set-goal G-temp5 545555)
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 10)
+	(up-find-local c: MINING-CAMP c: 80)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: town-center-foundation c: 3)
+	(up-find-status-local c: MINING-CAMP c: 1)
+	(up-get-search-state G-local-total)
+	(up-set-target-point P-self-x)
+	(up-filter-include -1 -1 -1 on-mainland)
+	(up-filter-distance c: -1 s: sn-camp-max-distance)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: gold c: 200)
+	(up-find-resource c: stone c: 100)
+	(up-remove-objects search-remote object-data-carry < 150))
+(defrule
+	(goal G-temp5 545555)
+	(up-compare-goal G-temp1 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp1)
+	=>
+	(up-get-point position-object P-temp-x)
+	(up-set-target-point P-temp-x)
+	(up-remove-objects search-remote object-data-distance c:< 7); ?
+	(up-modify-goal G-temp1 c:+ 1)
+	(up-jump-rule -1))
+(defrule
+	(goal G-temp5 545555)
+	=>
+	(up-get-search-state G-local-total))
+(defrule; next rule is just barely too long
+	(goal G-temp5 545555)
+	(up-compare-goal G-remote-total >= 10); ?
+	=>
+;	(chat-to-all "mining camp failsafe: clear excluded ids"))
+	(do-nothing))
+(defrule; clear excluded ids
+	(goal G-temp5 545555)
+	(up-compare-goal G-remote-total >= 10); ?
+	=>
+	(set-goal 570 -1)
+	(set-goal 571 -1)
+	(set-goal 572 -1)
+	(set-goal 573 -1)
+	(set-goal 574 -1)
+	(set-goal 575 -1)
+	(set-goal 576 -1)
+	(set-goal 577 -1)
+	(set-goal 578 -1)
+	(set-goal 579 -1)
+	(set-goal 580 -1)
+	(set-goal 581 -1)
+	(set-goal 582 -1)
+	(set-goal 583 -1)
+	(set-goal 584 -1)
+	(set-goal 585 -1)
+	(set-goal 586 -1)
+	(set-goal 587 -1)
+	(set-goal 588 -1)
+	(set-goal 589 -1)
+	(set-goal 590 -1)
+	(set-goal 591 -1)
+	(set-goal 592 -1)
+	(set-goal 593 -1)
+	(set-goal 594 -1)
+	(set-goal 595 -1)
+	(set-goal 596 -1)
+	(set-goal 597 -1)
+	(set-goal 598 -1)
+	(set-goal 599 -1))
+	;-----------------------------------------------------------
+; - exclude ids -
+(defrule
+	(goal G-temp5 54548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-get-indirect-goal g: G-temp2 G-temp3))
+(defrule
+	(goal G-temp5 54548)
+	(up-compare-goal G-temp2 <= 599)
+	(up-compare-goal G-temp3 != -1)
+	=>
+	(up-modify-goal G-temp2 c:+ 1)
+	(up-jump-rule -2))
+(defrule; save id to exclude
+	(goal G-temp5 54548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-id G-temp4)
+	(up-set-indirect-goal g: G-temp2 g:= G-temp4)
+	(up-modify-goal G-temp2 c:+ 1))
+(defrule; and the previous ID
+	(goal G-temp5 54548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-modify-goal G-temp4 c:- 1))
+(defrule
+	(goal G-temp5 54548)
+	(up-compare-goal G-temp2 <= 599)
+	(up-compare-goal G-temp4 g:!= 570)
+	(up-compare-goal G-temp4 g:!= 571)
+	(up-compare-goal G-temp4 g:!= 572)
+	(up-compare-goal G-temp4 g:!= 573)
+	(up-compare-goal G-temp4 g:!= 574)
+	(up-compare-goal G-temp4 g:!= 575)
+	(up-compare-goal G-temp4 g:!= 576)
+	(up-compare-goal G-temp4 g:!= 577)
+	(up-compare-goal G-temp4 g:!= 578)
+	(up-compare-goal G-temp4 g:!= 579)
+	(up-compare-goal G-temp4 g:!= 580)
+	(up-compare-goal G-temp4 g:!= 581)
+	(up-compare-goal G-temp4 g:!= 582)
+	(up-compare-goal G-temp4 g:!= 583)
+	(up-compare-goal G-temp4 g:!= 584)
+	(up-compare-goal G-temp4 g:!= 585)
+	(up-compare-goal G-temp4 g:!= 586)
+	(up-compare-goal G-temp4 g:!= 587)
+	(up-compare-goal G-temp4 g:!= 588)
+	(up-compare-goal G-temp4 g:!= 589)
+	(up-compare-goal G-temp4 g:!= 590)
+	(up-compare-goal G-temp4 g:!= 591)
+	(up-compare-goal G-temp4 g:!= 592)
+	(up-compare-goal G-temp4 g:!= 593)
+	(up-compare-goal G-temp4 g:!= 594)
+	(up-compare-goal G-temp4 g:!= 595)
+	(up-compare-goal G-temp4 g:!= 596)
+	(up-compare-goal G-temp4 g:!= 597)
+	=>
+	(up-set-indirect-goal g: G-temp2 g:= G-temp4)
+	(up-modify-goal G-temp2 c:+ 1))
+(defrule; and the next ID
+	(goal G-temp5 54548)
+	(up-compare-goal G-temp2 <= 599)
+	=>
+	(up-modify-goal G-temp4 c:+ 2))
+(defrule
+	(goal G-temp5 54548)
+	(up-compare-goal G-temp2 <= 599)
+	(up-compare-goal G-temp4 g:!= 570)
+	(up-compare-goal G-temp4 g:!= 571)
+	(up-compare-goal G-temp4 g:!= 572)
+	(up-compare-goal G-temp4 g:!= 573)
+	(up-compare-goal G-temp4 g:!= 574)
+	(up-compare-goal G-temp4 g:!= 575)
+	(up-compare-goal G-temp4 g:!= 576)
+	(up-compare-goal G-temp4 g:!= 577)
+	(up-compare-goal G-temp4 g:!= 578)
+	(up-compare-goal G-temp4 g:!= 579)
+	(up-compare-goal G-temp4 g:!= 580)
+	(up-compare-goal G-temp4 g:!= 581)
+	(up-compare-goal G-temp4 g:!= 582)
+	(up-compare-goal G-temp4 g:!= 583)
+	(up-compare-goal G-temp4 g:!= 584)
+	(up-compare-goal G-temp4 g:!= 585)
+	(up-compare-goal G-temp4 g:!= 586)
+	(up-compare-goal G-temp4 g:!= 587)
+	(up-compare-goal G-temp4 g:!= 588)
+	(up-compare-goal G-temp4 g:!= 589)
+	(up-compare-goal G-temp4 g:!= 590)
+	(up-compare-goal G-temp4 g:!= 591)
+	(up-compare-goal G-temp4 g:!= 592)
+	(up-compare-goal G-temp4 g:!= 593)
+	(up-compare-goal G-temp4 g:!= 594)
+	(up-compare-goal G-temp4 g:!= 595)
+	(up-compare-goal G-temp4 g:!= 596)
+	(up-compare-goal G-temp4 g:!= 597)
+	=>
+	(up-set-indirect-goal g: G-temp2 g:= G-temp4))
+
+
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-mining-camp)
+	(disable-self))
+
+; == gathering site distance ==
+(defrule
+	(up-compare-goal G-camp-max-distance < 20)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(building-type-count-total town-center >= 1)
+	=>
+	(set-goal G-camp-max-distance 20))
+
+(defrule
+	(or	(game-time >= 1200); 20min
+		(current-age >= castle-age))
+	=>
+	(set-goal G-camp-max-distance CAMP-DIST-MIDGAME); 30 unless gold rush
+	(disable-self))
+(defrule
+	(game-time >= 1500); 25min
+	=>
+	(up-modify-goal G-camp-max-distance c:+ 2)
+	(disable-self))
+(defrule
+	(game-time g:>= G-camp-distance-time); 30min unless nomad/ln
+	(up-timer-status T-60 != timer-running)
+	=>
+	(up-modify-goal G-camp-max-distance c:+ 2))
+
+(defrule
+	(strategic-number sn-camp-max-distance g:!= G-camp-max-distance)
+;	(not	(up-pending-placement c: town-center))
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(building-type-count-total town-center >= 1)
+	=>
+	(up-modify-sn sn-camp-max-distance g:= G-camp-max-distance))
+
+; ==== FARMING ====
+(defrule; variable dark age farm number
+	(current-age == dark-age)
+	=>
+	(set-goal G-temp1 FC-FARMS)
+	(up-modify-goal G-temp1 g:- G-deers-lured))
+#load-if-defined AZTEC-CIV
+(defrule
+	(current-age == dark-age)
+	=>
+	(up-modify-goal G-temp1 c:- 1))
+#end-if
+(defrule; dark age farms
+	(up-pending-objects c: farm < 2)
+	(goal G-age 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(or	(building-type-count-total farm g:< G-temp1)
+		(and	(idle-farm-count == 0)
+			(unit-type-count villager-forager >= 5)))
+	(up-compare-goal G-saving-wood <= 0)
+	(up-compare-goal G-strat != GV-klewproper)
+	(up-compare-goal G-strat != GV-trush)
+	; (nand	(map-type yucatan)
+	; 	(and	(civ-selected mongol)
+	; 		(goal G-strat GV-krush)))
+	=>
+	(set-goal G-temp4 168193))
+(defrule
+	(goal G-temp4 168193)
+	(can-build farm)
+	(nand	(building-type-count-total farm >= 4)
+		(goal G-build-order GV-feudal-war))
+	(nand	(building-type-count-total farm >= 5)
+		(and	(building-type-count-total lumber-camp < 2)
+			(building-type-count-total settlement < 3)))
+	=>
+	(build farm))
+(defrule; farms for fc build
+	(current-age == dark-age)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(or	(goal G-build-order GV-fast-castle)
+		(goal G-build-order GV-slow-castle))
+	(up-pending-objects c: farm == 0)
+	(building-type-count-total farm g:< G-temp1)
+	(can-build farm)
+	(up-compare-goal G-strat != GV-klewproper)
+	; (nand	(map-type yucatan)
+	; 	(and	(civ-selected mongol)
+	; 		(goal G-strat GV-krush)))
+	=>
+	(set-goal G-temp4 168194))
+(defrule
+	(goal G-temp4 168194)
+	(nand	(building-type-count-total farm >= 5)
+		(and	(building-type-count-total lumber-camp < 2)
+			(building-type-count-total settlement < 3)))
+	=>
+	(build farm))
+(defrule; dark age no food
+	(current-age == dark-age)
+	(unit-type-count villager-shepherd == 0)
+	(unit-type-count villager-forager == 0)
+	(unit-type-count villager-hunter == 0)
+	(building-type-count town-center >= 1)
+	(game-time s:> SN-emergency-mill-time)
+	(idle-farm-count == 0)
+	(up-pending-objects c: farm < 2)
+	(can-build farm)
+	=>
+	(build farm))
+(defrule; feudal age farms
+	(goal G-build-order GV-feudal-war)
+	(current-age == feudal-age)
+	(up-pending-objects c: farm < 2)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(building-type-count-total archery-range >= 2)
+	(or	(building-type-count-total blacksmith > 0)
+		(building-type-count-total farm < 8))
+	(or	(building-type-count-total lumber-camp >= 2)
+		(building-type-count-total settlement >= 3))
+	(idle-farm-count < 2)
+	(or	(idle-farm-count == 0)
+		(unit-type-count villager-forager >= 5))
+	(can-build farm)
+	=>
+	(build farm))
+(defrule; feudal age farms
+	(current-age == feudal-age)
+	(up-pending-objects c: farm < 2)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(building-type-count-total blacksmith > 0)
+	(or	(building-type-count-total farm < 12)
+		(or	(building-type-count-total lumber-camp >= 1)
+			(building-type-count-total settlement >= 2)))
+	(idle-farm-count == 0)
+	(can-build farm)
+	(up-compare-goal G-strat != GV-klewproper)
+	(or	(up-compare-goal G-strat != GV-krush)
+		(building-type-count-total stable >= 2))
+	=>
+	(build farm))
+(defrule
+	(current-age >= castle-age)
+	=>
+	(up-get-player-fact my-player-number building-type-count town-center G-temp1)
+	(up-modify-goal G-temp1 c:max 2))
+(defrule; castle and imp farming
+	(current-age >= castle-age)
+	(up-pending-objects c: farm g:< G-temp1)
+	(idle-farm-count < 2)
+	(nand	(goal G-strat GV-klewproper)
+		(building-type-count-total barracks < 2))
+	(can-build farm)
+	=>
+	(build farm))
+
+(defrule; failsafe
+	(idle-farm-count == 0)
+	(up-pending-objects c: farm == 0)
+	(up-compare-goal G-free-wood > 375)
+	(nand	(goal G-age GV-upcastle)
+		(up-compare-goal G-free-wood < 900))
+	(can-build farm)
+	=>
+	(build farm))
+
+; ========================
+; ==== MISC BUILDINGS ====
+; ========================
+(defrule
+	(building-type-count-total university == 0)
+	(or	(building-type-count-total town-center >= 2)
+		(stone-amount < 100))
+	(can-build university)
+	(or	(unit-type-count-total archery-class > 12)
+		(unit-type-count-total cavalry-archer-class > 10))
+	(or	(wood-amount > 275)
+		(building-type-count-total town-center >= 3))
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build university))
+(defrule
+	(building-type-count-total university == 0)
+	(or	(building-type-count-total town-center >= 2)
+		(stone-amount < 100))
+	(can-build university)
+	(or	(up-compare-goal G-age >= GV-upimp)
+		(goal G-escrowing imperial-age))
+	(or	(wood-amount > 275)
+		(building-type-count-total town-center >= 3))
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build university))
+(defrule
+	(goal G-hc 1)
+	(building-type-count-total university == 0)
+	(up-research-status c: ri-chemistry < research-pending)
+	(can-build university)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build university))
+
+; ============================
+; ==== MILITARY BUILDINGS ====
+; ============================
+; == barracks ==
+(defrule
+	(or	(goal G-champs 1)
+		(or	(goal G-firelancers 1)
+			(or	(goal G-spears 1)
+				(goal G-condo 1))))
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total barracks < 4)
+	(or	(building-type-count-total barracks < 1)
+		(and	(or	(civilian-population >= 55)
+				(civilian-population >= G-desired-vills))
+			(building-type-count-total town-center g:>= G-desiredtcs)))
+	(or	(building-type-count-total barracks < 2)
+		(up-compare-goal G-age >= GV-upimp))
+	(or	(building-type-count-total barracks < 3)
+		(civilian-population >= G-desired-vills))
+	=>
+	(set-goal G-temp7 8833375))
+(defrule
+	(goal G-temp7 8833375)
+	(nand	(or	(or	(goal G-ram 1)
+				(goal G-scorps 1))
+			(goal G-mangonel 1))
+		(building-type-count-total siege-workshop == 0))
+	(building-type-count-total town-center >= 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build barracks))
+
+(defrule
+	(goal G-strat-rax 1)
+	(goal G-strat-workshop 0)
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total barracks < 5)
+	(or	(building-type-count-total barracks < 2)
+		(and	(or	(civilian-population >= 55)
+				(civilian-population >= G-desired-vills))
+			(building-type-count-total town-center g:>= G-desiredtcs)))
+	(or	(building-type-count-total barracks < 3)
+		(up-compare-goal G-age >= GV-upimp))
+	(or	(building-type-count-total barracks < 4)
+		(civilian-population >= G-desired-vills))
+	(nand	(or	(or	(goal G-ram 1)
+				(goal G-scorps 1))
+			(goal G-mangonel 1))
+		(building-type-count-total siege-workshop == 0))
+	(building-type-count-total town-center >= 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build barracks))
+
+(defrule
+	(building-type-count-total barracks == 0)
+	(up-can-build G-zero c: barracks)
+	(current-age >= castle-age)
+	(or	(building-type-count-total town-center g:>= G-desiredtcs)
+		(or	(up-compare-goal G-age >= GV-upimp)
+			(goal G-escrowing imperial-age)))
+	(nand	(or	(goal G-strat GV-boom)
+			(or	(goal G-strat GV-monks-only)
+				(goal G-strat GV-monkflood)))
+		(up-compare-goal G-escrowing != imperial-age))
+	=>
+	(release-escrow wood)
+	(set-strategic-number sn-maximum-town-size 10)
+	(build barracks))
+(defrule
+	(current-age >= castle-age)
+	(building-type-count-total barracks == 0)
+	(or	(building-type-count-total town-center g:>= G-desiredtcs)
+		(or	(up-compare-goal G-age >= GV-upimp)
+			(goal G-escrowing imperial-age)))
+	(nand	(or	(goal G-strat GV-monks-only)
+			(goal G-strat GV-monkflood))
+		(up-compare-goal G-escrowing != imperial-age))
+	(not	(goal G-strat GV-boom))
+	=>
+	(up-modify-escrow wood c:max 175)
+	(up-add-object-cost c: barracks c: 1))
+
+(defrule
+	(building-type-count-total barracks == 0)
+	(up-can-build G-zero c: barracks)
+	(current-age >= castle-age)
+	(or	(goal G-archers 1)
+		(or	(goal G-skirms 1)
+			(or	(goal G-ca 1)
+				(or	(goal G-hc 1)
+					(or	(goal G-knights 1)
+						(goal G-camels 1))))))
+	(nor	(can-build stable); sicilians and khmer
+		(can-build archery-range))
+	=>
+	(release-escrow wood)
+	(set-strategic-number sn-maximum-town-size 10)
+	(build barracks))
+(defrule
+	(building-type-count-total barracks == 0)
+	(current-age >= castle-age)
+	(nor	(can-build stable); sicilians and khmer
+		(can-build archery-range))
+	(not	(goal G-strat GV-boom))
+	=>
+	(up-modify-escrow wood c:max 175)
+	(up-add-object-cost c: barracks c: 1))
+
+(defrule
+	(goal G-eagles 1)
+	(building-type-count-total barracks < 2)
+	(can-build barracks)
+	(building-type-count-total town-center >= 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	=>
+	(set-strategic-number sn-maximum-town-size 8)
+	(build barracks))
+(defrule
+	(goal G-eagles 1)
+	(building-type-count-total barracks < 3)
+	(nand	(goal G-archers 1)
+		(building-type-count-total archery-range < 2))
+	(nand	(goal G-ram 1)
+		(building-type-count-total siege-workshop == 0))
+	(up-compare-goal G-s-eagles != 1)
+	(can-build barracks)
+	(building-type-count-total town-center >= 1)
+	(or	(and	(building-type-count-total town-center >= 3)
+			(building-type-count-total monastery >= 1))
+		(up-compare-goal G-boom-priority < 2))
+	(nand	(goal G-strat GV-klewproper)
+		(up-research-status c: ri-chain-mail < research-pending))
+	=>
+	(set-strategic-number sn-maximum-town-size 8)
+	(build barracks))
+(defrule
+	(or	(goal G-strat GV-eagleflood)
+		(or	(and	(goal G-strat GV-unique)
+				(civ-selected gothic))
+			(goal G-strat GV-champflood)))
+	(up-compare-goal G-age >= GV-upimp)
+	(building-type-count-total barracks < 6)
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 16)
+	(build barracks))
+
+#load-if-defined GOTHIC-CIV
+(defrule
+	(up-compare-goal G-age >= GV-upimp)
+	(or	(goal G-strat GV-unique)
+		(goal G-strat GV-champflood))
+	(up-research-status c: ri-perfusion < research-pending)
+	(building-type-count-total barracks < 10)
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 16)
+	(build barracks))
+(defrule
+	(goal G-uu 1)
+	(building-type-count castle > 0)
+	(or	(and	(goal G-spears 1)
+			(building-type-count-total barracks < 3))
+		(building-type-count-total barracks < 2))
+	(or	(building-type-count-total town-center >= 3)
+		(and	(strategic-number SN-raw-superiority < 75)
+			(can-train huskarl-set)))
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 14)
+	(build barracks))
+(defrule
+	(up-compare-goal G-age >= GV-upcastle)
+	(or	(goal G-champs 1)
+		(and	(goal G-uu 1)
+			(up-research-status c: ri-anarchy >= research-pending)))
+	(building-type-count-total barracks < 3)
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 14)
+	(build barracks))
+#end-if
+
+(defrule
+	(or	(up-compare-goal G-strat-stable > 0)
+		(up-compare-goal G-strat-range > 0))
+	(nor	(can-build stable); sicilians and khmer
+		(can-build archery-range))
+	(building-type-count-total barracks == 0)
+	(building-type-count-total town-center >= 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 6)
+	(up-assign-builders c: barracks c: 2)
+	(build barracks))
+
+;(defrule; just to build range to research thumb ringy thingy - not worth it
+;	(current-age >= castle-age)
+;	(goal G-strat GV-unique)
+;	(up-compare-const UU-CLASS == archery-class)
+;	(building-type-count-total barracks == 0)
+;	(wood-amount > 350)
+;	(can-build barracks)
+;	=>
+;	(set-strategic-number sn-maximum-town-size 10)
+;	(build barracks))
+
+; == archery range ==
+(defrule
+	(or	(goal G-archers 1)
+		(or	(goal G-ca 1)
+			(or	(goal G-skirms 1)
+				(goal G-hc 1))))
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total archery-range < 4)
+	(or	(building-type-count-total archery-range < 1)
+		(and	(or	(civilian-population >= 55)
+				(civilian-population >= G-desired-vills))
+			(building-type-count-total town-center g:>= G-desiredtcs)))
+	(or	(building-type-count-total archery-range < 2)
+		(up-compare-goal G-age >= GV-upimp))
+	(or	(building-type-count-total archery-range < 3)
+		(civilian-population >= G-desired-vills))
+	=>
+	(set-goal G-temp7 8833376))
+(defrule
+	(goal G-temp7 8833376)
+	(nand	(or	(or	(goal G-ram 1)
+				(goal G-scorps 1))
+			(goal G-mangonel 1))
+		(building-type-count-total siege-workshop == 0))
+	(building-type-count-total town-center >= 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(can-build archery-range)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build archery-range))
+
+(defrule
+	(goal G-strat-range 1)
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total archery-range < 5)
+	(or	(building-type-count-total archery-range < 2)
+		(and	(or	(civilian-population >= 55)
+				(civilian-population >= G-desired-vills))
+			(building-type-count-total town-center g:>= G-desiredtcs)))
+	(or	(building-type-count-total archery-range < 3)
+		(up-compare-goal G-age >= GV-upimp))
+	(or	(building-type-count-total archery-range < 4)
+		(civilian-population >= G-desired-vills))
+	(nand	(or	(or	(goal G-ram 1)
+				(goal G-scorps 1))
+			(goal G-mangonel 1))
+		(building-type-count-total siege-workshop == 0))
+	(building-type-count-total town-center >= 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(can-build archery-range)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build archery-range))
+
+
+(defrule
+	(up-compare-goal G-age >= GV-upimp)
+	(or	(goal G-archers 1)
+		(or	(goal G-skirms 1)
+			(or	(goal G-ca 1)
+				(goal G-hc 1))))
+	(building-type-count-total archery-range < 4)
+	(can-build archery-range)
+	=>
+	(set-strategic-number sn-maximum-town-size 10)
+	(build archery-range))
+(defrule; just to research thumb ring
+	(or	(goal G-strat GV-unique)
+		(goal G-uu 1))
+	(building-type-count-total archery-range == 0)
+	(current-age >= castle-age)
+	(or	(up-compare-const UU-CLASS == archery-class)
+		(up-compare-const UU-CLASS == cavalry-archer-class))
+	(wood-amount > 350)
+	(can-build archery-range)
+	=>
+	(set-strategic-number sn-maximum-town-size 10)
+	(build archery-range))
+
+; == stables ==
+(defrule
+	(or	(goal G-knights 1)
+		(or	(goal G-scouts 1)
+			(or	(goal G-camels 1)
+				(goal G-elephants 1))))
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total stable < 4)
+	(or	(building-type-count-total stable < 1)
+		(and	(or	(civilian-population >= 55)
+				(civilian-population >= G-desired-vills))
+			(building-type-count-total town-center g:>= G-desiredtcs)))
+	(or	(building-type-count-total stable < 2)
+		(up-compare-goal G-age >= GV-upimp))
+	(or	(building-type-count-total stable < 3)
+		(civilian-population >= G-desired-vills))
+	=>
+	(set-goal G-temp7 8833377))
+(defrule
+	(goal G-temp7 8833377)
+	(nand	(or	(or	(goal G-ram 1)
+				(goal G-scorps 1))
+			(goal G-mangonel 1))
+		(building-type-count-total siege-workshop == 0))
+	(building-type-count-total town-center >= 1)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(can-build stable)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build stable))
+
+(defrule
+	(or	(or	(goal G-strat GV-krush)
+			(goal G-strat GV-mlp))
+		(goal G-scouts 1))
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total stable < 5)
+	(or	(building-type-count-total stable < 2)
+		(and	(or	(civilian-population >= 55)
+				(civilian-population >= G-desired-vills))
+			(building-type-count-total town-center g:>= G-desiredtcs)))
+	(or	(building-type-count-total stable < 3)
+		(up-compare-goal G-age >= GV-upimp))
+	(or	(building-type-count-total stable < 4)
+		(civilian-population >= G-desired-vills))
+	(nand	(or	(or	(goal G-ram 1)
+				(goal G-scorps 1))
+			(goal G-mangonel 1))
+		(building-type-count-total siege-workshop == 0))
+	(building-type-count-total town-center >= 1)
+	=>
+	(set-goal G-temp8 2770475))
+(defrule
+	(goal G-temp8 2770475)
+	(or	(building-type-count-total lumber-camp >= 1)
+		(building-type-count-total settlement >= 2))
+	(can-build stable)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build stable))
+
+;(defrule
+;	(goal G-strat GV-mlp)
+;	(building-type-count-total stable < 4)
+;	(can-build stable)
+;	=>
+;	(set-strategic-number sn-maximum-town-size 16)
+;	(build stable))
+(defrule
+	(goal G-strat GV-mlp)
+	(building-type-count-total stable < 4)
+	(up-can-build G-zero c: stable)
+	=>
+	(release-escrow wood)
+	(set-strategic-number sn-maximum-town-size 14)
+	(build stable))
+(defrule
+	(goal G-strat GV-mlp)
+	(building-type-count-total stable < 4)
+	=>
+	(up-modify-escrow wood c:max 175)
+	(up-get-fact building-type-count-total stable G-temp1)
+	(set-goal G-temp2 4)
+	(up-modify-goal G-temp2 g:- G-temp1)
+	(up-add-object-cost c: stable g: G-temp2))
+(defrule; just to research bloodlines
+	(or	(goal G-missionaries 1)
+		(or 	(goal G-ca 1)
+			(and	(goal G-uu 1)
+				(or	(or	(up-compare-const UU-CLASS == cavalry-class)
+						(up-compare-const UU-CLASS == cavalry-cannon-class))
+					(up-compare-const UU-CLASS == cavalry-archer-class)))))
+	(building-type-count-total stable == 0)
+	(building-type-count-total town-center g:>= G-desiredtcs)
+	(or	(goal G-missionaries 1)
+		(or	(building-type-count-total archery-range >= 2)
+			(building-type-count-total castle >= 1)))
+	(can-build stable)
+	=>
+	(set-strategic-number sn-maximum-town-size 12)
+	(build stable))
+
+; == siege workshop ==
+(defrule
+	(building-type-count-total siege-workshop < 1)
+	(or	(and	(goal G-escrowing imperial-age)
+			(building-type-count-total town-center >= 3))
+		(or	(or	(or	(goal G-mangonel 1)
+					(goal G-ram 1))
+				(goal G-bbc 1))
+			(goal G-scorps 1)))
+	(up-can-build G-zero c: siege-workshop)
+	=>
+	(release-escrow wood)
+	(set-goal G-temp5 676719))
+(defrule
+	(can-build siege-workshop)
+	(building-type-count-total siege-workshop < 2)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+;	(release-escrow wood)
+	(set-goal G-temp5 676719))
+(defrule
+	(goal G-strat-workshop 1)
+	(goal G-scorps 1)
+	(can-build siege-workshop)
+	(building-type-count-total siege-workshop < 3)
+	(or	(building-type-count-total siege-workshop < 2)
+		(up-compare-goal G-age >= GV-upimp))
+	(or	(building-type-count-total siege-workshop < 1)
+		(building-type-count town-center >= 3))
+	=>
+	(set-goal G-temp5 676719))
+(defrule
+	(current-age == castle-age)
+	(can-build siege-workshop)
+	(building-type-count-total siege-workshop < 1)
+	(or	(wood-amount > 300)
+		(building-type-count-total town-center > 2))
+	(current-age-time > 600); 10 min
+	=>
+	(set-goal G-temp5 676719))
+; #load-if-defined CELTIC-CIV
+; (defrule
+; 	(up-can-build G-zero c: siege-workshop)
+; 	(building-type-count-total siege-workshop == 0)
+; 	(up-compare-goal G-strat != GV-krushboom)
+; 	(up-compare-goal G-strat != GV-boom)
+; 	=>
+; 	(release-escrow wood)
+; 	(set-goal G-temp5 676719))
+; #end-if
+; #load-if-defined SLAVIC-CIV
+; (defrule
+; 	(up-can-build G-zero c: siege-workshop)
+; 	(building-type-count-total siege-workshop == 0)
+; 	(up-compare-goal G-strat != GV-krushboom)
+; 	(up-compare-goal G-strat != GV-boom)
+; 	=>
+; 	(release-escrow wood)
+; 	(set-goal G-temp5 676719))
+; #end-if
+
+(defrule
+	(goal G-temp5 676719)
+	(up-compare-goal G-under-attack < 1)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-placement-data my-player-number -1 c: 3)
+	(up-build place-control 0 c: siege-workshop)
+	(up-jump-rule 1))
+(defrule
+	(goal G-temp5 676719)
+	=>
+	(set-strategic-number sn-placement-zone-size 6)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-set-placement-data my-player-number -1 c: -8)
+	(up-build place-control 0 c: siege-workshop))
+
+; == monastery ==
+(defrule
+	(or	(building-type-count-total monastery < 1)
+		(and	(building-type-count-total monastery < 2)
+			(building-type-count-total siege-workshop > 0)))
+	(goal G-monks 1)
+	(can-build monastery)
+	=>
+	(set-strategic-number sn-maximum-town-size 6)
+	(build monastery))
+(defrule
+	(building-type-count-total monastery < 3)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total siege-workshop > 0)
+	(goal G-monks 1)
+	(can-build monastery)
+	=>
+	(set-strategic-number sn-maximum-town-size 6)
+	(build monastery))
+(defrule
+	(goal G-strat GV-monks-only)
+	(building-type-count-total monastery < 6)
+	(or	(building-type-count-total monastery < 4)
+		(up-research-status c: imperial-age >= research-pending))
+	(or	(building-type-count-total town-center > 2)
+		(building-type-count-total monastery < 3))
+	(can-build monastery)
+	=>
+	(set-strategic-number sn-maximum-town-size 6)
+	(build monastery))
+(defrule
+	(goal G-strat GV-monkflood)
+	(building-type-count-total monastery < 5)
+	(or	(building-type-count-total monastery < 4)
+		(up-research-status c: imperial-age >= research-pending))
+	(or	(building-type-count-total town-center > 2)
+		(building-type-count-total monastery < 3))
+	(can-build monastery)
+	=>
+	(set-strategic-number sn-maximum-town-size 6)
+	(build monastery))
+(defrule
+	(building-type-count-total monastery < 1)
+	(or	(building-type-count-total town-center > 2)
+		(game-time > 1500)); 25min
+	(can-build monastery)
+	(nand	(building-type-count-total siege-workshop == 0)
+		(or	(goal G-ram 1)
+			(goal G-mangonel 1)))
+	(or	(building-type-count-total town-center >= 2)
+		(stone-amount < 100))
+	=>
+	(set-strategic-number sn-maximum-town-size 8)
+	(build monastery))
+(defrule
+	(goal G-maptype GV-land-walled)
+	(building-type-count-total monastery < 1)
+	(cc-players-unit-type-count 0 relic >= 3)
+	(or	(cc-players-unit-type-count 0 relic >= 5)
+		(up-compare-const ALLYCOUNT < 2))
+	(building-type-count-total town-center >= 2)
+	(or	(building-type-count-total town-center >= 3)
+		(or	(stone-amount < 100)
+			(up-compare-goal G-strat != GV-boom)))
+	(can-build monastery)
+	=>
+	(set-strategic-number sn-maximum-town-size 8)
+	(build monastery))
+
+; ==== LATEGAME EXTRA BUILDINGS ====
+(defrule
+	(current-age >= imperial-age)
+	(up-compare-goal G-free-wood >= 200)
+	(or	(up-compare-goal G-free-food >= 500)
+		(or	(up-compare-goal G-free-wood >= 500)
+			(up-compare-goal G-free-gold >= 500)))
+	=>
+	(set-goal G-temp5 676720))
+
+; rax
+(defrule
+	(goal G-temp5 676720)
+	(up-compare-goal G-under-attack < 1)
+	(or	(goal G-champs 1)
+		(or	(goal G-spears 1)
+			(or	(goal G-eagles 1)
+				(or	(goal G-condo 1)
+					(goal G-firelancers 1)))))
+	(building-type-count-total barracks < 6)
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-placement-data my-player-number -1 c: 16)
+	(up-build place-control 0 c: barracks)
+	(up-jump-rule 1))
+(defrule
+	(goal G-temp5 676720)
+	(or	(goal G-champs 1)
+		(or	(goal G-spears 1)
+			(or	(goal G-eagles 1)
+				(or	(goal G-condo 1)
+					(goal G-firelancers 1)))))
+	(building-type-count-total barracks < 6)
+	(can-build barracks)
+	=>
+	(set-strategic-number sn-maximum-town-size 16)
+	(build barracks))
+
+; range
+(defrule
+	(goal G-temp5 676720)
+	(up-compare-goal G-under-attack < 1)
+	(or	(goal G-archers 1)
+		(or	(goal G-skirms 1)
+			(or	(goal G-ca 1)
+				(goal G-hc 1))))
+	(building-type-count-total archery-range < 5)
+	(can-build archery-range)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-placement-data my-player-number -1 c: 16)
+	(up-build place-control 0 c: archery-range)
+	(up-jump-rule 1))
+(defrule
+	(goal G-temp5 676720)
+	(or	(goal G-archers 1)
+		(or	(goal G-skirms 1)
+			(or	(goal G-ca 1)
+				(goal G-hc 1))))
+	(building-type-count-total archery-range < 5)
+	(can-build archery-range)
+	=>
+	(set-strategic-number sn-maximum-town-size 16)
+	(build archery-range))
+
+; stables
+(defrule
+	(goal G-temp5 676720)
+	(up-compare-goal G-under-attack < 1)
+	(or	(goal G-scouts 1)
+		(or	(goal G-knights 1)
+			(or	(goal G-camels 1)
+				(goal G-elephants 1))))
+	(building-type-count-total stable < 5)
+	(can-build stable)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-placement-data my-player-number -1 c: 16)
+	(up-build place-control 0 c: stable)
+	(up-jump-rule 1))
+(defrule
+	(goal G-temp5 676720)
+	(or	(goal G-scouts 1)
+		(or	(goal G-knights 1)
+			(or	(goal G-camels 1)
+				(goal G-elephants 1))))
+	(building-type-count-total stable < 5)
+	(can-build stable)
+	=>
+	(set-strategic-number sn-maximum-town-size 16)
+	(build stable))
+
+; siegeworks
+(defrule
+	(goal G-temp5 676720)
+	(up-compare-goal G-under-attack < 1)
+	(or	(or	(goal G-ram 1)
+			(goal G-mangonel 1))
+		(goal G-scorps 1))
+	(or	(building-type-count-total siege-workshop < 3)
+		(goal G-scorps 1))
+	(building-type-count-total siege-workshop < 4)
+	(can-build siege-workshop)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-placement-data my-player-number -1 c: 16)
+	(up-build place-control 0 c: siege-workshop)
+	(up-jump-rule 1))
+(defrule
+	(goal G-temp5 676720)
+	(or	(or	(goal G-ram 1)
+			(goal G-mangonel 1))
+		(goal G-scorps 1))
+	(or	(building-type-count-total siege-workshop < 3)
+		(goal G-scorps 1))
+	(building-type-count-total siege-workshop < 4)
+	(can-build siege-workshop)
+	=>
+	(set-strategic-number sn-maximum-town-size 16)
+	(build siege-workshop))
+
+; =============================
+; ==== DEFENSIVE BUILDINGS ====
+; =============================
+; ==== DEFENSIVE TOWER ====
+; == FC tower ==
+(defrule
+	(up-compare-goal G-age <= GV-upcastle)
+	(goal G-maptype GV-land-open)
+	(or	(goal G-position GV-flank)
+		(and	(goal G-starting-tcs 0)
+			(up-compare-const ALLYCOUNT == 0)))
+	(building-type-count-total tower-class == 0)
+	(up-compare-goal G-build-order >= GV-fast-castle)
+;	(up-timer-status T-clicked-up != timer-triggered); at latest 60s before reaching castle
+	(players-military-population target-player >= 3)
+;	(not	(town-under-attack))
+	(or	(can-build watch-tower)
+		(can-build donjon))
+	=>
+	(set-goal G-temp8 237694))
+
+#load-if-defined UP-ALLY-IN-GAME
+#load-if-defined FORTIFIED-CLEARING-MAP
+(defrule
+	(goal G-position GV-flank)
+	(building-type-count-total tower-class < 1)
+	(up-compare-goal G-age <= GV-upcastle)
+	(up-compare-goal G-build-order >= GV-fast-castle)
+	(players-military-population target-player >= 3)
+	(or	(can-build watch-tower)
+		(can-build donjon))
+	; (wall-completed-percentage 2 < 100)
+	; (wall-completed-percentage 1 < 100)
+	=>
+	(up-copy-point P-placement-x P-self-x)
+	(up-get-point position-flank P-temp-x)
+	(up-get-point position-center P-x)
+	(up-modify-goal G-temp2 c:= PLAYERCOUNT)
+	(up-modify-goal G-temp2 c:* 2)
+	(up-modify-goal G-temp1 c:= 16)
+	(up-modify-goal G-temp1 g:- G-temp2)
+	(up-modify-goal G-temp1 c:+ 10)
+	(up-modify-goal G-temp3 c:= -19)
+	(up-modify-goal G-temp3 c:+ PLAYERCOUNT)
+	(up-lerp-tiles P-placement-x P-temp-x g: G-temp1); 10 4v4, 14 3v3, 18 2v2
+	(up-lerp-tiles P-placement-x P-x g: G-temp3); -11 4v4, -13 3v3, -15 2v2
+	(up-modify-goal G-tower-count c:+ 1)
+;	(up-chat-data-to-player my-player-number "building tower # %d" g: G-tower-count)
+;	(up-send-flare P-placement-x)
+	(up-set-target-point P-placement-x)
+	(set-strategic-number sn-placement-zone-size 1)
+	(set-strategic-number sn-placement-fail-delta 0); -1
+	(up-build place-point 0 c: TOWER))
+#end-if #end-if
+
+; == feudal war tower ==
+(defrule
+	(building-type-count-total tower-class == 0)
+	(goal G-build-order GV-feudal-war)
+	(up-compare-goal G-age <= GV-upcastle)
+	(up-timer-status T-clicked-up != timer-triggered)
+	(strategic-number SN-raw-superiority < TOWER-THRESHOLD)
+	(players-military-population target-player >= 5)
+	(or	(players-military-population target-player >= 7)
+		(and	(military-population < 3)
+			(and	(players-unit-type-count target-player militiaman-line < 1)
+				(players-unit-type-count target-player champi-line < 2))))
+;	(not	(town-under-attack))
+	(or	(can-build watch-tower)
+		(can-build donjon))
+	=>
+	(set-goal G-temp8 237694))
+
+; == more towers ==
+(defrule
+	(goal G-tower-defence 1)
+	(up-compare-goal G-age <= GV-upcastle)
+;	(up-timer-status T-clicked-up != timer-triggered); at latest 60s before reaching castle
+	(or	(up-compare-goal G-tower-count < 6)
+		(building-type-count-total tower-class < 6))
+	(or	(can-build watch-tower)
+		(can-build donjon))
+	=>
+	(set-goal G-temp8 237694))
+
+; == DETERMINE TOWER POSITION ==
+(defrule
+	(or	(not (goal G-temp8 237694))
+		(or	(up-pending-placement c: watch-tower)
+			(up-pending-placement c: donjon)))
+	(up-compare-goal J-tower > 0)
+	=>
+	(up-jump-direct g: J-tower))
+;-----------------------------------------------------------------------
+(defrule
+	(up-compare-goal J-tower > 0)
+	=>
+	(set-goal G-temp0 0); # of current dropsite checked
+;	(set-goal G-temp1 -1); ID of ditto
+	(set-goal G-temp2 -1); distance from position-enemy of ditto
+;	(set-goal G-temp3 -1); ID of most fwd dropsite
+	(set-goal G-temp4 255); distance from position-enemy of ditto
+	(set-goal P-placement-x -1); tower coords of ditto
+	(set-goal P-placement-y -1)
+	(up-get-point position-enemy P-temp-x)
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 8)
+	(up-find-local c: mining-camp c: 8)
+	(up-find-local c: lumber-camp c: 8)
+	(up-find-local c: mill c: 8)
+;	(up-find-local c: mule-cart c: 8)
+	(up-find-local c: settlement c: 12)
+	(up-get-search-state G-local-total))
+;	(up-chat-data-to-player my-player-number "dropsites found: %d" g: G-local-total))
+(defrule;~~~~new dropsite
+	(up-compare-goal J-tower > 0)
+	(up-compare-goal G-temp0 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp0)
+	=>
+;	(up-get-object-data object-data-id G-temp1)
+	(up-get-point position-object P-object-x)
+	(up-get-point-distance P-object-x P-temp-x G-temp2))
+(defrule; if TC
+	(up-compare-goal J-tower > 0)
+	(up-compare-goal G-temp0 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp0)
+	(up-object-data object-data-type == town-center)
+	=>
+;	(up-chat-data-to-player my-player-number "checking TC #%d" g: G-temp0)
+	(up-lerp-tiles P-object-x P-temp-x c: 9)
+	(up-set-target-point P-object-x)
+	(up-reset-search 0 0 1 1)
+	(up-filter-distance c: 0 c: 4)
+	(up-find-remote c: tower-class c: 1)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-remote c: tower-class c: 1)
+	(up-filter-status c: status-ready c: list-active)
+	(up-jump-rule 1))
+(defrule; else
+	(up-compare-goal J-tower > 0)
+	(up-compare-goal G-temp0 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp0)
+	=>
+;	(up-chat-data-to-player my-player-number "checking dropsite #%d" g: G-temp0)
+	(up-lerp-tiles P-object-x P-temp-x c: 2)
+	(up-set-target-point P-object-x)
+	(up-reset-search 0 0 1 1)
+	(up-filter-distance c: 0 c: 3)
+	(up-find-remote c: tower-class c: 1)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-remote c: tower-class c: 1)
+	(up-filter-status c: status-ready c: list-active))
+(defrule
+	(up-compare-goal J-tower > 0)
+	(up-compare-goal G-temp0 g:< G-local-total)
+	(up-set-target-object search-local g: G-temp0)
+	(not (up-set-target-object search-remote c: 0))
+	(up-compare-goal G-temp2 g:< G-temp4)
+	=>
+;	(chat-to-player my-player-number "more fwd")
+;	(up-modify-goal G-temp3 g:= G-temp1)
+	(up-modify-goal G-temp4 g:= G-temp2)
+	(up-copy-point P-placement-x P-object-x))
+(defrule
+	(up-compare-goal J-tower > 0)
+	(up-compare-goal G-temp0 g:< G-local-total)
+	=>
+	(up-modify-goal G-temp0 c:+ 1))
+(defrule
+	(up-compare-goal J-tower > 0)
+	(up-compare-goal G-temp0 g:< G-local-total)
+	=>
+	(up-jump-rule -6)); next dropsite~~~~
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-tower)
+	(disable-self))
+; == BUILD THE TOWER ==
+(defrule
+	(up-compare-goal J-tower > 0)
+	(goal G-temp8 237694)
+	(or	(can-build watch-tower)
+		(can-build donjon))
+	=>
+	(up-modify-goal G-tower-count c:+ 1)
+;	(up-chat-data-to-player my-player-number "building tower # %d" g: G-tower-count)
+;	(up-send-flare P-placement-x)
+	(up-set-target-point P-placement-x)
+	(set-strategic-number sn-placement-zone-size 1)
+	(set-strategic-number sn-placement-fail-delta 0); -1
+	(up-build place-point 0 c: TOWER))
+
+; ==== CASTLE ====
+(defrule
+	(or	(goal G-strat GV-cdrop)
+		(goal G-strat GV-cdropproper))
+	(building-type-count-total castle == 0)
+	=>
+	(up-add-object-cost c: castle c: 1))
+#load-if-defined GOLD-RUSH-MAP
+(defrule; gold rush castle
+	(can-build castle)
+;	(or	(not	(town-under-attack))
+;		(or	(goal G-strat GV-cdrop)
+;			(goal G-strat GV-cdropproper)))
+	=>
+	(up-modify-goal G-temp1 g:= G-mapsize)
+	(up-modify-goal G-temp1 c:/ 12)
+	(up-get-point position-center P-placement-x)
+	(up-lerp-tiles P-placement-x P-self-x g: G-temp1)
+	(up-get-point position-enemy P-temp-x)
+	(up-get-fact building-type-count castle G-temp2)
+	(up-modify-goal G-temp2 c:* 6)
+	(up-lerp-tiles P-placement-x P-temp-x g: G-temp2)
+	(up-set-target-point P-placement-x)
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-build place-point 0 c: castle))
+#else
+(defrule
+	(can-build castle)
+	(or	(or	(nand	(town-under-attack)
+				(strategic-number sn-maximum-town-size <= 40))
+			(strategic-number SN-raw-superiority >= 70))
+		(or	(goal G-strat GV-cdrop)
+			(goal G-strat GV-cdropproper)))
+	=>
+	(set-goal G-temp7 916642))
+(defrule
+	(goal G-temp7 916642)
+	=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-copy-point P-placement-x P-self-x)
+	(up-get-point position-enemy P-temp-x)
+	(up-lerp-tiles P-placement-x P-temp-x c: 12)
+	(up-set-target-point P-placement-x)
+	(up-build place-point 0 c: castle)
+	(up-jump-rule 1))
+(defrule
+	(can-build castle)
+	=>
+	(set-strategic-number sn-placement-zone-size 10)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-copy-point P-placement-x P-self-x)
+	(up-get-point position-center P-temp-x)
+	(up-lerp-tiles P-placement-x P-temp-x c: 5)
+	(up-set-target-point P-placement-x)
+	(up-build place-point 0 c: castle))
+#end-if
+
+; =====================
+; ==== END OF TICK ====
+; =====================
+
+
+
+
+
+
+
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-build-per)
+	(disable-self))

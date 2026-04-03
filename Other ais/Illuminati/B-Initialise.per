@@ -1,0 +1,3143 @@
+; =========================
+; ==== MATCH CONSTANTS ====
+; =========================
+; == CIVS ==
+; #load-if-defined ARMENIANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP mule-cart)
+; (defconst MINING-CAMP mule-cart)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV )
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined AZTEC-CIV
+(defconst FC-VILLS 25)
+(defconst SC-VILLS 27)
+(defconst MIN-MANGOS 2); number of mangos that get escrowed vs mass archers
+(defconst UU-CLASS infantry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2); training time multiplier. higher = faster training
+(defconst UU-TYPE MAIN-INF); archetype
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2); 0 nah, 1 potentially useful, 2 great in its own right
+(defconst UUCIV-IMP 2); 0-2
+(defconst ARCHERCIV 1); 0 never, 1 good castle bad imp, 2 good castle+imp, 3 insane
+(defconst SKIRMCIV 2); 0-3
+(defconst CACIV 0); 0-3
+(defconst HCCIV 0); imp only, 0-3
+(defconst CHAMPCIV 2); imp only, 0-3
+(defconst PIKECIV 1); 0-3
+(defconst EAGLECIV 2); 0-3
+(defconst FIRELANCERCIV 0); 0 never, 1 good castle bad imp, 2 good castle+imp, 3 insane
+(defconst CAMELCIV 0); 0-3
+(defconst KNIGHTCIV-CASTLE 0); 0-2
+(defconst KNIGHTCIV-IMP 0); 0-2
+(defconst SCOUTCIV 0); 0-3, 0 if missing 3 techs
+(defconst ELECIV 0); 0-3
+(defconst MONKCIV-CASTLE 3); 0-3
+(defconst MONKCIV-IMP 3); 0-3
+(defconst SCORPCIV 0); imp only, 0-3
+(defconst RAMCIV 2); imp only, 0-3
+(defconst MANGOCIV 2); imp only, 0-3
+(defconst BBCCIV 0); imp only, 0-3
+(defconst TOWERCIV 1); 0-4
+(defconst BBTCIV 0); 0-3
+(defconst SLINGERCIV 0)
+
+(defconst DESIREDVILLS 124)
+(defconst MAXVILLS 129)
+(defconst FC-FARMS 9)
+(defconst CASTLEUPIDLEFOOD 690)
+#else #load-if-defined SLAVIC-CIV
+(defconst DESIREDVILLS 124)
+(defconst MAXVILLS 129)
+(defconst FC-FARMS 9)
+(defconst CASTLEUPIDLEFOOD 690)
+#else #load-if-defined KOREAN-CIV
+(defconst DESIREDVILLS 140)
+(defconst MAXVILLS 150)
+(defconst FC-FARMS 10)
+(defconst CASTLEUPIDLEFOOD 700)
+#else
+(defconst FC-FARMS 10)
+(defconst DESIREDVILLS 124)
+(defconst MAXVILLS 129)
+#load-if-defined ITALIAN-CIV
+(defconst CASTLEUPIDLEFOOD 600)
+#else
+(defconst CASTLEUPIDLEFOOD 700)
+#end-if #end-if #end-if #end-if
+
+#load-if-defined BENGALIS-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-archer-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 3)
+(defconst UU-TYPE CAV-ARCH)
+(defconst RAM armored-elephant-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 0)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 1)
+(defconst PIKECIV 1)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 3)
+(defconst MONKCIV-CASTLE 3)
+(defconst MONKCIV-IMP 3)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 2)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined BERBERS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS cavalry-archer-class)
+; (defconst UU-RESOURCE wood)
+; (defconst UU-TT-MULTIPLIER 2)
+; (defconst UU-TYPE CAV-ARCH)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 2)
+; (defconst CACIV 1)
+; (defconst HCCIV 2)
+; (defconst CHAMPCIV 2)
+; (defconst PIKECIV 1)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 3)
+; (defconst KNIGHTCIV-CASTLE 3)
+; (defconst KNIGHTCIV-IMP 3)
+; (defconst SCOUTCIV 3)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1); 0? cav is so good, why bother
+; (defconst MONKCIV-IMP 0); 1
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 1)
+; (defconst MANGOCIV 1)
+; (defconst BBCCIV 2)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined BRITON-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS archery-class)
+; (defconst UU-RESOURCE wood)
+; (defconst UU-TT-MULTIPLIER 2)
+; (defconst UU-TYPE MAIN-ARCH)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 1)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 3)
+; (defconst SKIRMCIV 2)
+; (defconst CACIV 0)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 2)
+; (defconst PIKECIV 2)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 1)
+; (defconst KNIGHTCIV-IMP 1)
+; (defconst SCOUTCIV 0)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 1)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 1)
+; (defconst MANGOCIV 1)
+; (defconst BBCCIV 0)
+; (defconst TOWERCIV 2)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined BOHEMIANS-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS siege-weapon-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 1)
+(defconst UU-TYPE FIELD-GUN)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 0)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 1)
+(defconst PIKECIV 3)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 1)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 3)
+(defconst MONKCIV-IMP 3)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 3); better vills, free stone mining
+(defconst BBTCIV 2)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined BULGARIANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined BURGUNDIANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined BURMESE-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-cannon-class); functionally similar - only get ballistics on top
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE CAV-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 0)
+(defconst ARCHERCIV 1)
+(defconst SKIRMCIV 1)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 1)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 3)
+(defconst MONKCIV-CASTLE 3)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+(defconst FC-VILLS 27)
+(defconst SC-VILLS 29)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE SPESHUL)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 3)
+(defconst CACIV 0)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 1); 2
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 2)
+(defconst KNIGHTCIV-CASTLE 1)
+(defconst KNIGHTCIV-IMP 0); 1
+(defconst SCOUTCIV 1)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 0)
+(defconst BBCCIV 1)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 1)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined CELTIC-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 27)
+; (defconst MIN-MANGOS 3)
+; (defconst UU-CLASS infantry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 4)
+; (defconst UU-TYPE MAIN-INF)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 1)
+; (defconst CACIV 0)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 2)
+; (defconst PIKECIV 2)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 1)
+; (defconst KNIGHTCIV-IMP 0)
+; (defconst SCOUTCIV 0)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 3)
+; (defconst MANGOCIV 2)
+; (defconst BBCCIV 0)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined CHINESE-CIV
+(defconst FC-VILLS 27)
+(defconst SC-VILLS 29)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS archery-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE MAIN-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO rocket-cart-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 2)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 1)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 2)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 1)
+(defconst SCOUTCIV 1)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 1)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 2)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 2)
+(defconst BBTCIV 2)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined CUMANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined DRAVIDIANS-CIV
+; (defconst FC-VILLS 24)
+; (defconst SC-VILLS 26)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS infantry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 4)
+; (defconst UU-TYPE MAIN-INF)
+; (defconst RAM armored-elephant-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 1)
+; (defconst UUCIV-IMP 1)
+; (defconst ARCHERCIV 2)
+; (defconst SKIRMCIV 3)
+; (defconst CACIV 0)
+; (defconst HCCIV 2)
+; (defconst CHAMPCIV 3)
+; (defconst PIKECIV 3)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 0)
+; (defconst KNIGHTCIV-IMP 0)
+; (defconst SCOUTCIV 1)
+; (defconst ELECIV 1)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 1)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 3)
+; (defconst BBCCIV 2)
+; (defconst TOWERCIV 2)
+; (defconst BBTCIV 2)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined ETHIOPIAN-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS infantry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 4)
+; (defconst UU-TYPE MAIN-INF)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 0)
+; (defconst UUCIV-IMP 0)
+; (defconst ARCHERCIV 2)
+; (defconst SKIRMCIV 2)
+; (defconst CACIV 0)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 1)
+; (defconst PIKECIV 2)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 1)
+; (defconst KNIGHTCIV-CASTLE 1)
+; (defconst KNIGHTCIV-IMP 0)
+; (defconst SCOUTCIV 1)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 2)
+; (defconst BBCCIV 2)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined FRANKISH-CIV
+; (defconst FC-VILLS 27)
+; (defconst SC-VILLS 29)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS infantry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 2)
+; (defconst UU-TYPE RANGED-INF)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 1)
+; (defconst CACIV 0)
+; (defconst HCCIV 1)
+; (defconst CHAMPCIV 2)
+; (defconst PIKECIV 2)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 3)
+; (defconst SCOUTCIV 1)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 1)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 1)
+; (defconst MANGOCIV 1)
+; (defconst BBCCIV 2)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined GEORGIANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP mule-cart)
+; (defconst MINING-CAMP mule-cart)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV 4); svan towers
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined GOTHIC-CIV
+; (defconst FC-VILLS 27)
+; (defconst SC-VILLS 29)
+; (defconst MIN-MANGOS 2); 1
+; (defconst UU-CLASS infantry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 3)
+; (defconst UU-TYPE TANK-INF)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 1)
+; (defconst CACIV 1)
+; (defconst HCCIV 2)
+; (defconst CHAMPCIV 3)
+; (defconst PIKECIV 3)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 0)
+; (defconst SCOUTCIV 1)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 0)
+; (defconst RAMCIV 1)
+; (defconst MANGOCIV 0)
+; (defconst BBCCIV 1)
+; (defconst TOWERCIV 0)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+
+(defconst BOARKILLVILLS 6)
+(defconst BOARKILLDIST 6)
+#else
+(defconst BOARKILLVILLS 6)
+(defconst BOARKILLDIST 6)
+#end-if
+
+; #load-if-defined GURJARAS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM armored-elephant-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined HUN-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 27)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS cavalry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 3)
+; (defconst UU-TYPE MAIN-CAV)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 1)
+; (defconst UUCIV-IMP 1)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 1)
+; (defconst CACIV 3)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 0)
+; (defconst PIKECIV 1)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 2)
+; (defconst SCOUTCIV 2)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 0)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 0)
+; (defconst BBCCIV 0)
+; (defconst TOWERCIV 0)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined INCAN-CIV
+(defconst FC-VILLS 25)
+(defconst SC-VILLS 27)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS infantry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 4)
+(defconst UU-TYPE PIKE)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP champi-line)
+(defconst LUMBER-CAMP settlement)
+(defconst MINING-CAMP settlement)
+(defconst MILL settlement)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 1)
+(defconst MONKCIV-IMP 1)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 3); stronger vills, lower stone cost
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 2)
+#end-if
+
+#load-if-defined INDIAN-CIV; hindustanis
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS infantry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 4)
+(defconst UU-TYPE TANK-INF)
+(defconst RAM armored-elephant-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 2)
+(defconst ARCHERCIV 1)
+(defconst SKIRMCIV 2)
+(defconst CACIV 2)
+(defconst HCCIV 3)
+(defconst CHAMPCIV 1)
+(defconst PIKECIV 1)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 3)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 1)
+(defconst MONKCIV-IMP 1)
+(defconst SCORPCIV 1)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined ITALIAN-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS archery-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 3)
+(defconst UU-TYPE MAIN-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 1)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 1)
+(defconst PIKECIV 1)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 1)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 2)
+(defconst BBTCIV 2)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined JAPANESE-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS infantry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 4)
+(defconst UU-TYPE MAIN-INF)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 2)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 2)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 3)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 1)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 4); yasama
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined JURCHENS-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE MAIN-CAV)
+(defconst RAM battering-ram-line)
+(defconst MANGO rocket-cart-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 1)
+(defconst SKIRMCIV 2)
+(defconst CACIV 2)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 0)
+(defconst PIKECIV 1)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 1)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 3)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 1)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 2)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 2)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined KHITANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO rocket-cart-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 2)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined KHMER-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 0); lul
+; (defconst UU-CLASS cavalry-cannon-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 2)
+; (defconst UU-TYPE FIELD-GUN)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 1)
+; (defconst CACIV 0)
+; (defconst HCCIV 2)
+; (defconst CHAMPCIV 0)
+; (defconst PIKECIV 1)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 2)
+; (defconst SCOUTCIV 2)
+; (defconst ELECIV 2)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 3)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 1)
+; (defconst BBCCIV 2)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined KOREAN-CIV
+(defconst FC-VILLS 27)
+(defconst SC-VILLS 29)
+(defconst MIN-MANGOS 3)
+(defconst UU-CLASS cavalry-archer-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE HEAVY-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO rocket-cart-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 2)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 3)
+(defconst CACIV 2)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 1)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 3)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 1)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 1)
+(defconst MONKCIV-IMP 1)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 2)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 4); free upgrades, extra range with UT
+(defconst BBTCIV 2)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined LITHUANIANS-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE MAIN-CAV)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1); 2
+(defconst UUCIV-IMP 2)
+(defconst ARCHERCIV 1)
+(defconst SKIRMCIV 2)
+(defconst CACIV 2)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 0)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 2)
+(defconst SCOUTCIV 3)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 1)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 2)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined MAGYAR-CIV
+; (defconst FC-VILLS 27)
+; (defconst SC-VILLS 29)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS cavalry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 3)
+; (defconst UU-TYPE MAIN-CAV)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 1)
+; (defconst UUCIV-IMP 1)
+; (defconst ARCHERCIV 2)
+; (defconst SKIRMCIV 2)
+; (defconst CACIV 2)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 1); 0
+; (defconst PIKECIV 1)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 2)
+; (defconst SCOUTCIV 3)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 1)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 1)
+; (defconst MANGOCIV 1)
+; (defconst BBCCIV 0)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined MALAY-CIV
+(defconst FC-VILLS 30)
+(defconst SC-VILLS 31)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS infantry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 5)
+(defconst UU-TYPE MAIN-INF)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 1)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 3)
+(defconst MONKCIV-CASTLE 2); 1
+(defconst MONKCIV-IMP 1)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 1)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined MALIAN-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS infantry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE RANGED-INF)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 1)
+(defconst SKIRMCIV 1)
+(defconst CACIV 1)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 3)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 2)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 1)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 0); 1
+(defconst BBCCIV 1)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined MAPUCHE-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 3)
+(defconst UU-TYPE MAIN-CAV)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP champi-line)
+(defconst LUMBER-CAMP settlement)
+(defconst MINING-CAMP settlement)
+(defconst MILL settlement)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 0)
+(defconst ARCHERCIV 1)
+(defconst SKIRMCIV 1)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 1)
+(defconst MONKCIV-IMP 0)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 0)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 1)
+#end-if
+
+#load-if-defined MAYAN-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS archery-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 3)
+(defconst UU-TYPE MAIN-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 0)
+(defconst UUCIV-IMP 0)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 1)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 2)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 1)
+(defconst MONKCIV-IMP 1); 0
+(defconst SCORPCIV 0)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 0)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined MONGOL-CIV
+; (defconst FC-VILLS 26)
+; ; #load-if-defined YUCATAN-MAP (defconst SC-VILLS 24) #else
+; (defconst SC-VILLS 28) ; #end-if
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS cavalry-archer-class)
+; (defconst UU-RESOURCE wood)
+; (defconst UU-TT-MULTIPLIER 2)
+; (defconst UU-TYPE CAV-ARCH)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 2)
+; (defconst SKIRMCIV 2)
+; (defconst CACIV 2)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 2)
+; (defconst PIKECIV 1)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 1)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 1)
+; (defconst SCOUTCIV 2)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 0)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 3); 2
+; (defconst MANGOCIV 2)
+; (defconst BBCCIV 0)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined MUISCA-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS archery-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 3)
+(defconst UU-TYPE SKIRM)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP champi-line)
+(defconst LUMBER-CAMP settlement)
+(defconst MINING-CAMP settlement)
+(defconst MILL settlement)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 1)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 3)
+(defconst MONKCIV-IMP 3)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 2)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined PERSIAN-CIV
+; (defconst FC-VILLS 27)
+; (defconst SC-VILLS 29)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS cavalry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 1)
+; (defconst UU-TYPE ELE-CAV)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 0)
+; (defconst UUCIV-IMP 0)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 1)
+; (defconst CACIV 1)
+; (defconst HCCIV 2)
+; (defconst CHAMPCIV 0)
+; (defconst PIKECIV 2)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 2)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 2)
+; (defconst SCOUTCIV 2)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 0)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 0)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 0)
+; (defconst BBCCIV 1)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined POLES-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined PORTUGUESE-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS siege-weapon-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE FIELD-GUN)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 1)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 3)
+(defconst KNIGHTCIV-IMP 1)
+(defconst SCOUTCIV 1)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 3)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 2)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined ROMANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined SARACEN-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE CAMEL-CAV)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 0)
+(defconst UUCIV-IMP 0)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 2)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 1)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 3)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 2)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+
+(defconst MARKET-THRESHOLD-POS 250)
+(defconst MARKET-THRESHOLD-NEG -250)
+#else
+(defconst MARKET-THRESHOLD-POS 450)
+(defconst MARKET-THRESHOLD-NEG -450)
+#end-if
+
+#load-if-defined SICILIANS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS infantry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 4)
+; (defconst UU-TYPE TANK-INF)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 1)
+; (defconst CACIV 0)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 1)
+; (defconst PIKECIV 2)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 2)
+; (defconst SCOUTCIV 2)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 1)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 2)
+; (defconst BBCCIV 0)
+; (defconst TOWERCIV 4); no vills needed
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+
+(defconst TOWER donjon)
+#else
+(defconst TOWER watch-tower)
+#end-if
+
+; #load-if-defined SHU-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined SLAVIC-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 3)
+(defconst UU-CLASS cavalry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE MAIN-CAV)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 0)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 0)
+(defconst SKIRMCIV 1)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 1)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 3)
+(defconst MANGOCIV 3)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined SPANISH-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS cavalry-cannon-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 2)
+(defconst UU-TYPE CAV-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 2)
+(defconst ARCHERCIV 0)
+(defconst SKIRMCIV 1)
+(defconst CACIV 2)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 2)
+(defconst SCOUTCIV 2)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 0)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 3); because supremacy
+(defconst BBTCIV 3)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined TATARS-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined TEUTONIC-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS infantry-class)
+(defconst UU-RESOURCE food)
+(defconst UU-TT-MULTIPLIER 3); 4
+(defconst UU-TYPE MAIN-INF)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 1)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 0)
+(defconst SKIRMCIV 1)
+(defconst CACIV 0)
+(defconst HCCIV 2)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 2)
+(defconst SCOUTCIV 1)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 2)
+(defconst MONKCIV-IMP 2)
+(defconst SCORPCIV 2)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 2)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 3); free techs, extra garrison
+(defconst BBTCIV 2)
+(defconst SLINGERCIV 0)
+#end-if
+
+#load-if-defined TUPI-CIV
+(defconst FC-VILLS 26)
+(defconst SC-VILLS 28)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS archery-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 3)
+(defconst UU-TYPE MAIN-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP champi-line)
+(defconst LUMBER-CAMP settlement)
+(defconst MINING-CAMP settlement)
+(defconst MILL settlement)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 1)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 0)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 2)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 0)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 0)
+(defconst KNIGHTCIV-IMP 0)
+(defconst SCOUTCIV 0)
+(defconst ELECIV 0)
+(defconst MONKCIV-CASTLE 1)
+(defconst MONKCIV-IMP 0)
+(defconst SCORPCIV 1)
+(defconst RAMCIV 2)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 0)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 0)
+(defconst SLINGERCIV 2)
+#end-if
+
+; #load-if-defined TURKISH-CIV
+; (defconst FC-VILLS 27)
+; (defconst SC-VILLS 29)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS archery-cannon-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 2)
+; (defconst UU-TYPE CANNONEER)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 2)
+; (defconst UUCIV-IMP 2)
+; (defconst ARCHERCIV 1)
+; (defconst SKIRMCIV 0)
+; (defconst CACIV 2)
+; (defconst HCCIV 3)
+; (defconst CHAMPCIV 2)
+; (defconst PIKECIV 0)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 2)
+; (defconst KNIGHTCIV-CASTLE 2)
+; (defconst KNIGHTCIV-IMP 1)
+; (defconst SCOUTCIV 3); 2
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 2)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 0)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 0)
+; (defconst BBCCIV 2)
+; (defconst TOWERCIV 2)
+; (defconst BBTCIV 3)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined VIETNAMESE-CIV
+(defconst FC-VILLS 27)
+(defconst SC-VILLS 29)
+(defconst MIN-MANGOS 2)
+(defconst UU-CLASS archery-class)
+(defconst UU-RESOURCE wood)
+(defconst UU-TT-MULTIPLIER 3)
+(defconst UU-TYPE MAIN-ARCH)
+(defconst RAM battering-ram-line)
+(defconst MANGO mangonel-line)
+(defconst CHAMP militiaman-line)
+(defconst LUMBER-CAMP lumber-camp)
+(defconst MINING-CAMP mining-camp)
+(defconst MILL mill)
+
+(defconst UUCIV-CASTLE 2)
+(defconst UUCIV-IMP 2)
+(defconst ARCHERCIV 2)
+(defconst SKIRMCIV 2)
+(defconst CACIV 1)
+(defconst HCCIV 0)
+(defconst CHAMPCIV 1)
+(defconst PIKECIV 2)
+(defconst EAGLECIV 0)
+(defconst FIRELANCERCIV 3)
+(defconst CAMELCIV 0)
+(defconst KNIGHTCIV-CASTLE 2)
+(defconst KNIGHTCIV-IMP 1)
+(defconst SCOUTCIV 1)
+(defconst ELECIV 2)
+(defconst MONKCIV-CASTLE 1)
+(defconst MONKCIV-IMP 1)
+(defconst SCORPCIV 0)
+(defconst RAMCIV 1)
+(defconst MANGOCIV 1)
+(defconst BBCCIV 2)
+(defconst TOWERCIV 1)
+(defconst BBTCIV 1)
+(defconst SLINGERCIV 0)
+#end-if
+
+; #load-if-defined VIKING-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS infantry-class)
+; (defconst UU-RESOURCE food)
+; (defconst UU-TT-MULTIPLIER 3)
+; (defconst UU-TYPE MAIN-INF)
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE 0)
+; (defconst UUCIV-IMP 0)
+; (defconst ARCHERCIV 2)
+; (defconst SKIRMCIV 2)
+; (defconst CACIV 0)
+; (defconst HCCIV 0)
+; (defconst CHAMPCIV 3)
+; (defconst PIKECIV 1)
+; (defconst EAGLECIV 0)
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV 0)
+; (defconst KNIGHTCIV-CASTLE 1)
+; (defconst KNIGHTCIV-IMP 0)
+; (defconst SCOUTCIV 0)
+; (defconst ELECIV 0)
+; (defconst MONKCIV-CASTLE 0)
+; (defconst MONKCIV-IMP 0)
+; (defconst SCORPCIV 2)
+; (defconst RAMCIV 2)
+; (defconst MANGOCIV 1)
+; (defconst BBCCIV 0)
+; (defconst TOWERCIV 1)
+; (defconst BBTCIV 0)
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined WEI-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+; #load-if-defined WU-CIV
+; (defconst FC-VILLS 26)
+; (defconst SC-VILLS 28)
+; (defconst MIN-MANGOS 2)
+; (defconst UU-CLASS -class)
+; (defconst UU-RESOURCE )
+; (defconst UU-TT-MULTIPLIER )
+; (defconst UU-TYPE )
+; (defconst RAM battering-ram-line)
+; (defconst MANGO mangonel-line)
+; (defconst CHAMP militiaman-line)
+; (defconst LUMBER-CAMP lumber-camp)
+; (defconst MINING-CAMP mining-camp)
+; (defconst MILL mill)
+
+; (defconst UUCIV-CASTLE )
+; (defconst UUCIV-IMP )
+; (defconst ARCHERCIV )
+; (defconst SKIRMCIV )
+; (defconst CACIV )
+; (defconst HCCIV )
+; (defconst CHAMPCIV )
+; (defconst PIKECIV )
+; (defconst EAGLECIV )
+; (defconst FIRELANCERCIV 0)
+; (defconst CAMELCIV )
+; (defconst KNIGHTCIV-CASTLE )
+; (defconst KNIGHTCIV-IMP )
+; (defconst SCOUTCIV )
+; (defconst ELECIV )
+; (defconst MONKCIV-CASTLE )
+; (defconst MONKCIV-IMP )
+; (defconst SCORPCIV )
+; (defconst RAMCIV )
+; (defconst MANGOCIV )
+; (defconst BBCCIV )
+; (defconst TOWERCIV )
+; (defconst BBTCIV )
+; (defconst SLINGERCIV 0)
+; #end-if
+
+#load-if-defined MAYAN-CIV (defconst REMAININGBOAR 125) #else
+#load-if-defined MONGOL-CIV (defconst REMAININGBOAR 200) #else
+#load-if-defined GOTHIC-CIV (defconst REMAININGBOAR 115) #else
+(defconst REMAININGBOAR 150) #end-if #end-if #end-if
+
+; == TEAM CIVS ==
+; #load-if-defined UP-SPANISH-CIV-ALLY
+; (defconst DESIRED-TRADE-DIVISOR 4)
+; #else
+; #load-if-defined SPANISH-CIV
+; (defconst DESIRED-TRADE-DIVISOR 4)
+; #else
+(defconst DESIRED-TRADE-DIVISOR 3)
+; #end-if #end-if
+
+; == GAME TYPE ==
+(defconst GAMETYPE-Xv1 1)
+(defconst GAMETYPE-1v1 2)
+(defconst GAMETYPE-FFA 3)
+(defconst GAMETYPE-TG 4)
+(defconst GAMETYPE-1vX 5)
+
+#load-if-defined UP-2-PLAYER-GAME
+	(defconst GAMETYPE GAMETYPE-1v1)
+	(defconst TOWER-THRESHOLD 78); superiority below which feudal tower is built
+#else
+	(defconst TOWER-THRESHOLD 90)
+	#load-if-defined UP-ALLY-IN-GAME
+		#load-if-defined UP-MULTIPLE-ENEMIES
+			#load-if-defined UP-TEAM-DISADVANTAGE
+				(defconst GAMETYPE GAMETYPE-FFA)
+			#else
+				(defconst GAMETYPE GAMETYPE-TG)
+			#end-if
+		#else
+			(defconst GAMETYPE GAMETYPE-Xv1)
+		#end-if
+	#else
+		#load-if-defined UP-TEAM-DISADVANTAGE
+			(defconst GAMETYPE GAMETYPE-1vX)
+		#else
+			(defconst GAMETYPE GAMETYPE-FFA)
+		#end-if
+	#end-if
+#end-if
+
+#load-if-defined UP-2-PLAYER-GAME
+(defconst PLAYERCOUNT 2)
+#end-if
+#load-if-defined UP-3-PLAYER-GAME
+(defconst PLAYERCOUNT 3)
+#end-if
+#load-if-defined UP-4-PLAYER-GAME
+(defconst PLAYERCOUNT 4)
+#end-if
+#load-if-defined UP-5-PLAYER-GAME
+(defconst PLAYERCOUNT 5)
+#end-if
+#load-if-defined UP-6-PLAYER-GAME
+(defconst PLAYERCOUNT 6)
+#end-if
+#load-if-defined UP-7-PLAYER-GAME
+(defconst PLAYERCOUNT 7)
+#end-if
+#load-if-defined UP-8-PLAYER-GAME
+(defconst PLAYERCOUNT 8)
+#end-if
+
+#load-if-defined UP-1-PLAYER-TEAM
+(defconst ALLYCOUNT 0)
+#end-if
+#load-if-defined UP-2-PLAYER-TEAM
+(defconst ALLYCOUNT 1)
+#end-if
+#load-if-defined UP-3-PLAYER-TEAM
+(defconst ALLYCOUNT 2)
+#end-if
+#load-if-defined UP-4-PLAYER-TEAM
+(defconst ALLYCOUNT 3)
+#end-if
+#load-if-defined UP-5-PLAYER-TEAM
+(defconst ALLYCOUNT 4)
+#end-if
+#load-if-defined UP-6-PLAYER-TEAM
+(defconst ALLYCOUNT 5)
+#end-if
+#load-if-defined UP-7-PLAYER-TEAM
+(defconst ALLYCOUNT 6)
+#end-if
+#load-if-defined UP-8-PLAYER-TEAM
+(defconst ALLYCOUNT 7)
+#end-if
+
+; == POSITION ==
+#load-if-defined UP-POCKET-POSITION
+(defconst POSITION GV-pocket)
+#else
+(defconst POSITION GV-flank)
+#end-if
+
+; == MAP SIZE ==
+#load-if-defined TINY-MAP; 120x120
+(defconst SCOUTTIMER 260); send scout to position-target every x seconds
+(defconst FISHFACE 35)
+(defconst HALF-A-FISHFACE 18)
+#end-if
+#load-if-defined SMALL-MAP; 144x144
+(defconst SCOUTTIMER 280)
+(defconst FISHFACE 50)
+(defconst HALF-A-FISHFACE 25)
+#end-if
+#load-if-defined MEDIUM-MAP; 168x168
+(defconst SCOUTTIMER 300)
+(defconst FISHFACE 60)
+(defconst HALF-A-FISHFACE 30)
+#end-if
+#load-if-defined NORMAL-MAP; 200x200
+(defconst SCOUTTIMER 330)
+(defconst FISHFACE 90)
+(defconst HALF-A-FISHFACE 56)
+#end-if
+#load-if-defined LARGE-MAP; 220x220
+(defconst SCOUTTIMER 360)
+(defconst FISHFACE 120)
+(defconst HALF-A-FISHFACE 60)
+#end-if
+#load-if-defined GIANT-MAP; 240x240
+(defconst SCOUTTIMER 390)
+(defconst FISHFACE 150)
+(defconst HALF-A-FISHFACE 75)
+#end-if
+
+; == MAP TYPE ==
+#load-if-defined GOLD-RUSH-MAP
+#load-if-defined TINY-MAP
+(defconst CAMP-DIST-MIDGAME 40)
+#end-if
+#load-if-defined SMALL-MAP
+(defconst CAMP-DIST-MIDGAME 42)
+#end-if
+#load-if-defined MEDIUM-MAP
+(defconst CAMP-DIST-MIDGAME 50)
+#end-if
+#load-if-defined NORMAL-MAP
+(defconst CAMP-DIST-MIDGAME 64)
+#end-if
+#load-if-defined LARGE-MAP
+(defconst CAMP-DIST-MIDGAME 72)
+#end-if
+#load-if-defined GIANT-MAP
+(defconst CAMP-DIST-MIDGAME 80)
+#end-if
+#else
+(defconst CAMP-DIST-MIDGAME 30)
+#end-if
+
+; == CHAT STRINGS ==
+#load-if-defined UP-HUMAN-IN-GAME
+#load-if-defined UP-HUMAN-ENEMY
+(defconst CHAT-RESIGN "ggwp")
+#else
+(defconst CHAT-RESIGN "CRITICAL BUG")
+#end-if
+#else; no human
+#load-if-defined UP-2-PLAYER-GAME
+(defconst CHAT-RESIGN "g")
+#else
+(defconst CHAT-RESIGN "CRITICAL BUG")
+#end-if
+#end-if
+
+; ==============================
+; ==== UNSUPPORTED SETTINGS ====
+; ==============================
+; == RESIGN ==
+#load-if-not-defined DARK-AGE-START
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I can only play Dark Age start.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+#load-if-not-defined IMPERIAL-AGE-END
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I cannot play settings that cap the maximum age.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+#load-if-not-defined VICTORY-STANDARD #load-if-not-defined VICTORY-CONQUEST
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I can only play Conquest Victory.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if #end-if
+#load-if-defined ALL-TECHS-ENABLED
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "I don't play All Techs.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+#load-if-defined DEATH-MATCH
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I don't play this Game Mode.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+#load-if-defined REGICIDE
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I don't play this Game Mode.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+#load-if-defined WONDER-RACE
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I don't play this Game Mode.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+#load-if-defined DEFEND-WONDER
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I don't play this Game Mode.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+#load-if-defined KING-OF-THE-HILL
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 10)
+	=>
+	(chat-to-all "Sorry, I don't play this Game Mode.")
+	(disable-self))
+(defrule
+	(game-time >= 15)
+	=>
+	(resign))
+#end-if
+
+; == NOTE ==
+; #load-if-not-defined TEAM-TOGETHER #load-if-defined UP-ALLY-IN-GAME #load-if-defined UP-MULTIPLE-ENEMIES
+; (defrule
+; 	(goal G-alpha-illu 1)
+; 	(game-time > 25)
+; 	=>
+; 	(chat-to-all "Note: You've disabled the 'Teams Together' option.")
+; 	(chat-to-all "Optimal performance is not guaranteed under these settings.")
+; 	(disable-self))
+; #end-if #end-if #end-if
+; #load-if-not-defined TEAMS-LOCKED #load-if-not-defined UP-2-PLAYER-GAME
+; (defrule
+; 	(goal G-alpha-illu 1)
+; 	(game-time >= 25)
+; 	=>
+; 	(chat-to-all "Note: I don't do diplomacy.")
+; 	(disable-self))
+; #end-if #end-if
+#load-if-not-defined LOW-RESOURCES-START
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 25)
+	=>
+	(chat-to-all "Note: I am optimised for Standard/Low Resources start.")
+;	(chat-to-all "Other settings may cause performance issues.")
+	(disable-self))
+#end-if
+
+; ===================
+; ==== SET GOALS ====
+; ===================
+; == DETERMINE MAP TYPE ==
+(defrule
+	(true)
+	=>
+	(set-goal G-maptype GV-land-open)
+	(disable-self))
+(defrule
+	(game-time < 29)
+	(building-type-count wall-class >= 8)
+	=>
+	(chat-to-player my-player-number "walled map")
+	(set-goal G-maptype GV-land-walled)
+	(disable-self))
+(defrule
+	(goal G-age 1)
+	(game-time >= 10)
+	(game-time < 29)
+	(or 	(cc-players-unit-type-count 0 ocean-fish-class > FISHFACE)
+		(or	(cc-players-unit-type-count 0 shore-fish-class > FISHFACE)
+			(and	(cc-players-unit-type-count 0 ocean-fish-class > HALF-A-FISHFACE)
+				(cc-players-unit-type-count 0 shore-fish-class > HALF-A-FISHFACE))))
+	=>
+;	(set-goal G-maptype GV-water-mixed)
+	(chat-to-player my-player-number "water map")
+;	(resign)
+	(disable-self))
+
+#load-if-defined UP-MICHI-STYLE
+(defrule
+	(game-time < 29)
+	=>
+	(chat-to-player my-player-number "michi map")
+	(set-goal G-maptype GV-land-michi)
+	(disable-self))
+(defrule
+	(game-time < 29)
+	(goal G-maptype GV-land-michi)
+	(nor	(civ-selected hun)
+		(civ-selected turkish)); no onager civs
+	=>
+	(set-goal G-michi-cut 1)
+	(disable-self))
+#end-if
+
+; == ENABLE DOCKING ==
+;(defrule
+;	(up-compare-goal G-maptype >= GV-water-walled); all water maps
+;	(up-compare-goal G-docking <= 0)
+;	(up-compare-goal G-starting-tcs <= 1)
+;	=>
+;	(set-goal G-docking 1))
+
+; == SET MATCH-SPECIFIC VARIABLES ==
+(defrule
+	(true)
+	=>
+	(up-get-point position-self P-self-x)
+	(up-get-point position-map-size P-x)
+	(up-modify-goal G-mapsize g:= P-x)
+	(set-goal G-position POSITION)
+	(set-goal G-fc-vills FC-VILLS)
+	(up-modify-goal G-fc-vills c:+ 1); too lazy to change it per civ
+	(set-goal G-sc-vills SC-VILLS)
+	(set-goal G-enemy-players PLAYERCOUNT)
+	(up-modify-goal G-enemy-players c:- ALLYCOUNT)
+	(up-modify-goal G-enemy-players c:- 1)
+	(set-goal G-gametype GAMETYPE)
+	(disable-self))
+(defrule; 2v2v2 detection (fu esty)
+	(game-time < 12)
+	(up-compare-goal G-gametype == GAMETYPE-TG)
+	=>
+	(set-goal G-temp1 ALLYCOUNT)
+	(up-modify-goal G-temp1 c:+ 1))
+(defrule
+	(game-time < 12)
+	(up-compare-goal G-gametype == GAMETYPE-TG)
+	(up-compare-goal G-enemy-players g:> G-temp1)
+	=>
+	(set-goal G-gametype GAMETYPE-FFA)
+	(chat-to-all "team FFA detected")
+	(disable-self))
+(defrule
+	(true)
+	=>
+	(up-get-fact population-cap 0 G-temp1)
+	(up-modify-goal G-desired-vills g:= G-temp1)
+	(up-modify-goal G-desired-vills c:* DESIREDVILLS)
+	(up-modify-goal G-desired-vills c:/ 200)
+	(up-modify-goal G-desired-vills c:max 18)
+	(up-modify-goal G-desired-vills c:min 160); 250
+	(up-modify-goal G-max-vills g:= G-temp1)
+	(up-modify-goal G-max-vills c:* MAXVILLS)
+	(up-modify-goal G-max-vills c:/ 200)
+	(up-modify-goal G-max-vills c:max 18)
+	(up-modify-goal G-desired-trade g:= G-desired-vills)
+	(up-modify-goal G-trade-vills g:= G-max-vills)
+	(up-modify-goal G-desired-trade c:/ DESIRED-TRADE-DIVISOR)
+	(up-modify-goal G-trade-vills g:- G-desired-trade)
+	(disable-self))
+(defrule
+	(true)
+	=>
+	(up-get-point position-self P-self-precise-x)
+	(up-modify-goal P-self-precise-x c:* 100)
+	(up-modify-goal P-self-precise-y c:* 100)
+	(up-modify-goal G-stopgap-pop g:= G-temp1)
+	(up-modify-goal G-stopgap-pop c:/ 15)
+	(up-modify-goal G-stopgap-pop c:max 5)
+	(up-modify-goal G-low-pop g:= G-temp1)
+	(up-modify-goal G-low-pop c:/ 4)
+	(up-modify-goal G-low-pop c:min 60)
+	(up-modify-goal G-med-pop g:= G-temp1)
+	(up-modify-goal G-med-pop c:/ 2)
+	(up-modify-goal G-med-pop c:min 120)
+	(disable-self))
+(defrule
+	(true)
+	=>
+	(up-modify-goal G-160-pop g:= G-temp1)
+	(up-modify-goal G-160-pop c:%/ 125)
+	(up-modify-goal G-160-pop c:min 200); increase these when increasing max vills
+	(up-modify-goal G-170-pop g:= G-temp1)
+	(up-modify-goal G-170-pop c:%/ 118)
+	(up-modify-goal G-170-pop c:min 240)
+	(up-modify-goal G-184-pop g:= G-temp1)
+	(up-modify-goal G-184-pop c:%/ 109)
+	(up-modify-goal G-184-pop c:min 280)
+	(up-modify-goal G-189-pop g:= G-temp1)
+	(up-modify-goal G-189-pop c:%/ 106)
+	(up-modify-goal G-189-pop c:min 300)
+	(disable-self))
+(defrule
+	(true)
+	=>
+	(set-goal G-desiredtcs 3)
+	(disable-self))
+(defrule
+	(population-cap <= 120)
+	=>
+	(set-goal G-desiredtcs 2)
+	(disable-self))
+(defrule
+	(population-cap <= 60)
+	=>
+	(set-goal G-desiredtcs 1)
+	(disable-self))
+
+(defrule; number of starting TCs
+	(true)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 240)
+	(up-get-search-state G-local-total)
+	(up-modify-goal G-starting-tcs g:= G-local-total)
+	(set-goal G-camp-distance-time 1800)
+	(set-strategic-number SN-emergency-mill-time 45)
+	(disable-self))
+
+(defrule; once nomad/ln TC is built
+	(goal G-starting-tcs 0)
+	(building-type-count town-center > 0)
+	=>
+	(up-get-fact game-time 0 G-temp1)
+	(up-modify-sn sn-home-exploration-time g:= G-temp1)
+	(up-modify-sn sn-home-exploration-time c:+ 420)
+	(up-modify-goal G-camp-distance-time g:+ G-temp1)
+	(up-modify-goal G-camp-distance-time c:- 180)
+	(up-modify-sn SN-emergency-mill-time g:+ G-temp1)
+	(up-modify-sn SN-emergency-mill-time c:- 5)
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object P-self-x)
+	(up-send-flare P-self-x)
+	(chat-to-allies "my TC")
+	(disable-self))
+
+(defrule; map explored?
+	(game-time > 0)
+	=>
+	(up-get-fact resource-amount amount-exploration G-map-explored)
+	(disable-self))
+
+(defrule; fc vills
+	(current-age == dark-age)
+	(goal G-maptype GV-land-open)
+	(goal G-position GV-flank)
+	(up-compare-goal G-starting-tcs > 0)
+	=>
+	(up-modify-goal G-fc-vills c:- 1)
+	(up-modify-goal G-sc-vills c:- 1)
+	(disable-self))
+(defrule
+	(current-age == dark-age)
+	(up-compare-goal G-deers-lured >= 1)
+	=>
+	(up-modify-goal G-fc-vills c:- 1)
+	(up-modify-goal G-sc-vills c:- 1)
+	(disable-self))
+(defrule
+	(current-age == dark-age)
+	(up-compare-goal G-deers-lured >= 3)
+	=>
+	(up-modify-goal G-fc-vills c:- 1)
+	(up-modify-goal G-sc-vills c:- 1)
+	(disable-self))
+
+(defrule; min gaia gold/stone
+	(true)
+	=>
+	(up-modify-goal G-min-gaia-gold c:= 4)
+	(up-modify-goal G-min-gaia-stone c:= 2)
+	(up-modify-goal G-min-gaia-gold c:* PLAYERCOUNT)
+	(up-modify-goal G-min-gaia-stone c:* PLAYERCOUNT)
+	(up-modify-goal G-min-gaia-gold c:+ 2)
+	(up-modify-goal G-min-gaia-stone c:+ 1)
+	(disable-self))
+#load-if-defined RIVERS-MAP
+(defrule; min gaia gold/stone
+	(true)
+	=>
+	(up-modify-goal G-min-gaia-gold c:+ 8)
+	(disable-self))
+#end-if
+
+; == nomad flank ==
+#load-if-defined UP-POCKET-POSITION
+(defrule
+	(goal G-starting-tcs 0)
+	(goal G-age GV-dark)
+	(goal G-position GV-pocket)
+	(building-type-count town-center >= 1)
+	(up-compare-goal P-self-x > 0)
+	=>
+	(up-get-point position-enemy P-temp-x)
+	(up-get-point-distance P-self-x P-temp-x G-temp1))
+(defrule
+	(goal G-starting-tcs 0)
+	(goal G-age GV-dark)
+	(goal G-position GV-pocket)
+	(building-type-count town-center >= 1)
+	(up-compare-goal P-self-x > 0)
+	(up-compare-goal G-temp1 < 40)
+	=>
+	(set-goal G-position GV-flank)
+	(disable-self))
+(defrule
+	(goal G-starting-tcs 0)
+	(goal G-age GV-dark)
+	(up-compare-const ALLYCOUNT == 0)
+	(or	(players-civ any-enemy hun)
+		(players-civ any-enemy vietnamese))
+	=>
+	(set-goal G-position GV-flank)
+	(disable-self))
+#end-if
+
+; == closest map corners, team centre and opposite ==
+(defrule
+	(game-time >= 20)
+	(players-building-type-count every-ally town-center >= 1)
+	(up-compare-goal P-self-x > 0)
+	=>
+	(up-modify-goal G-temp1 g:= G-mapsize); G-temp1 = half map
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp3 g:= G-mapsize); G-temp3 = map size -3
+	(up-modify-goal G-temp3 c:- 3)
+	(set-goal G-temp2 927263)
+;	(chat-to-all "NOW")
+	(disable-self))
+
+#load-if-defined UP-ALLY-IN-GAME
+(defrule
+	(goal G-temp2 927263)
+	=>
+	(set-goal P-temp-x 0)
+	(set-goal P-temp-y 0)
+	(set-goal G-temp4 0)
+	(set-strategic-number sn-focus-player-number 1))
+(defrule; ~~new player~~
+	(goal G-temp2 927263)
+	(stance-toward focus-player ally)
+	=>
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 1)
+	(up-find-remote c: town-center-foundation c: 1))
+(defrule
+	(goal G-temp2 927263)
+	(stance-toward focus-player ally)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-modify-goal G-temp4 c:+ 1)
+	(up-get-point position-object P-object-x)
+	(up-modify-goal P-temp-x g:+ P-object-x)
+	(up-modify-goal P-temp-y g:+ P-object-y))
+(defrule
+	(goal G-temp2 927263)
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3));~~~~next player
+(defrule
+	(goal G-temp2 927263)
+	=>
+	(up-modify-goal P-temp-x g:/ G-temp4)
+	(up-modify-goal P-temp-y g:/ G-temp4)
+	(up-copy-point P-team-centre-x P-temp-x))
+#else; solo
+(defrule
+	(goal G-temp2 927263)
+	=>
+	(up-copy-point P-team-centre-x P-self-x)
+	(up-copy-point P-temp-x P-self-x))
+#end-if
+(defrule
+	(goal G-temp2 927263)
+	(goal G-michi-cut 1)
+	=>
+	(up-copy-point P-cut-x P-team-centre-x)
+	(disable-self))
+
+(defrule
+	(goal G-temp2 927263)
+	=>
+	(up-modify-goal P-team-opposite-x g:= G-mapsize)
+	(up-modify-goal P-team-opposite-y g:= G-mapsize)
+	(up-modify-goal P-team-opposite-x c:- 1)
+	(up-modify-goal P-team-opposite-y c:- 1)
+	(up-modify-goal P-team-opposite-x g:- P-team-centre-x)
+	(up-modify-goal P-team-opposite-y g:- P-team-centre-y)
+	(up-modify-goal G-temp5 g:= P-temp-x)
+	(up-modify-goal G-temp5 g:+ P-temp-y))
+
+(defrule; 1
+	(goal G-temp2 927263)
+	(up-compare-goal P-temp-y g:<= G-temp1)
+	(up-compare-goal P-temp-y g:<= P-temp-x)
+	(up-compare-goal G-temp5 g:<= G-mapsize)
+	=>
+;	(chat-to-all "case 1")
+	(up-modify-goal P-my-one-corner-x c:= 3)
+	(up-modify-goal P-my-one-corner-y c:= 3)
+	(up-modify-goal P-my-two-corner-x g:= G-temp3)
+	(up-modify-goal P-my-two-corner-y c:= 3))
+(defrule; 2
+	(goal G-temp2 927263)
+	(up-compare-goal P-temp-y g:>= G-temp1)
+	(up-compare-goal P-temp-y g:>= P-temp-x)
+	(up-compare-goal G-temp5 g:>= G-mapsize)
+	=>
+;	(chat-to-all "case 2")
+	(up-modify-goal P-my-one-corner-x c:= 3)
+	(up-modify-goal P-my-one-corner-y g:= G-temp3)
+	(up-modify-goal P-my-two-corner-x g:= G-temp3)
+	(up-modify-goal P-my-two-corner-y g:= G-temp3))
+(defrule; 3
+	(goal G-temp2 927263)
+	(up-compare-goal P-temp-x g:<= G-temp1)
+	(up-compare-goal P-temp-x g:<= P-temp-y)
+	(up-compare-goal G-temp5 g:<= G-mapsize)
+	=>
+;	(chat-to-all "case 3")
+	(up-modify-goal P-my-one-corner-x c:= 3)
+	(up-modify-goal P-my-one-corner-y c:= 3)
+	(up-modify-goal P-my-two-corner-x c:= 3)
+	(up-modify-goal P-my-two-corner-y g:= G-temp3))
+(defrule; 4
+	(goal G-temp2 927263)
+	(up-compare-goal P-temp-x g:>= G-temp1)
+	(up-compare-goal P-temp-x g:>= P-temp-y)
+	(up-compare-goal G-temp5 g:>= G-mapsize)
+	=>
+;	(chat-to-all "case 4")
+	(up-modify-goal P-my-one-corner-x g:= G-temp3)
+	(up-modify-goal P-my-one-corner-y c:= 3)
+	(up-modify-goal P-my-two-corner-x g:= G-temp3)
+	(up-modify-goal P-my-two-corner-y g:= G-temp3))
+
+; (defrule
+; 	(goal G-temp2 927263)
+; 	=>
+; ;	(up-send-flare P-temp-x)
+; 	(up-send-flare P-team-centre-x))
+; ;	(up-send-flare P-my-one-corner-x)
+; ;	(up-send-flare P-my-two-corner-x))
+
+; == GET SCOUT TYPE AND ID ==
+(defrule
+	(true)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: eagle-warrior-line c: 1)
+	(up-find-local c: scout-cavalry-line c: 1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 1)
+;	(up-filter-include -1 -1 -1 -1)
+;	(up-find-local c: horse c: 1)
+;	(up-find-local c: king-class c: 1)
+;	(up-find-local c: trade-cart-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-type G-scout-unit)
+;	(up-chat-data-to-self "scout type: %d" g: G-scout-unit)
+	(disable-self))
+(defrule
+	(game-time < 10)
+	(up-compare-goal G-scout-unit > 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local g: G-scout-unit c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-id ID-myscout)
+	(disable-self))
+(defrule; multiple scouts
+	(game-time < 12)
+	(up-compare-goal G-scout-unit > 0)
+	(up-compare-goal G-scout-unit != villager-class)
+	=>
+	(up-full-reset-search)
+	(up-find-local g: G-scout-unit c: 240)
+	(up-get-search-state G-local-total)
+	(up-modify-goal G-starting-scouts g:= G-local-total)
+	(disable-self))
+(defrule
+	(goal ID-myscout 0)
+	=>
+	(set-goal ID-myscout -1)
+	(set-goal G-scout-unit -1))
+
+; == SET GENERAL GOALS ==
+(defrule
+	(true)
+	=>
+	(set-goal G-identity Illuminati)
+	(set-goal G-esc-state with-escrow)
+	(set-goal G-enemy-strategy 0)
+	(set-goal G-trushed 0)
+	(set-goal G-strat 0)
+	(set-goal G-zero 0)
+	(set-goal G-sheep-count 0)
+	(set-goal G-sheep-total 0)
+	(set-goal G-escrowing 0)
+	(set-goal G-deers-lured 0)
+	(set-goal G-age 1)
+	(set-goal G-scoutidle 0)
+	(disable-self))
+(defrule
+	(true)
+	=>
+	(set-goal G-shit-found 0)
+	(set-goal G-strat-rax 0)
+	(set-goal G-strat-range 0)
+	(set-goal G-strat-stable 0)
+	(set-goal G-strat-workshop 0)
+	(set-goal G-food-adj 0)
+	(set-goal G-wood-adj 0)
+	(set-goal G-gold-adj 0)
+	(set-goal G-under-attack 0)
+	(up-setup-cost-data 1 G-cost-food)
+	(set-goal G-age-start-time 0)
+	(set-goal G-tower-count 0)
+	(disable-self))
+
+; == DETERMINE ALPHA ILLU ==
+#load-if-defined UP-ALLY-IN-GAME
+(defrule
+	(goal G-alpha-illu -1)
+	=>
+	(set-strategic-number sn-focus-player-number 1))
+(defrule
+	(goal G-alpha-illu -1)
+	(strategic-number sn-focus-player-number <= PLAYERCOUNT)
+	(stance-toward focus-player ally)
+	(up-allied-goal focus-player G-identity == Illuminati)
+	(up-allied-goal focus-player G-alpha-illu == 1)
+	=>
+	(set-goal G-alpha-illu 0))
+(defrule
+	(goal G-alpha-illu -1)
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2))
+(defrule
+	(goal G-alpha-illu -1)
+	=>
+	(set-goal G-alpha-illu 1))
+#else
+(defrule
+	(true)
+	=>
+	(set-goal G-alpha-illu 1)
+	(disable-self))
+#end-if
+
+; ===============================
+; ==== SET STRATEGIC NUMBERS ====
+; ===============================
+(defrule
+	(strategic-number sn-cap-civilian-builders != 100)
+	=>
+	(set-strategic-number sn-cap-civilian-builders 100)
+	(set-strategic-number sn-percent-civilian-builders 100); ??
+	(set-strategic-number sn-percent-civilian-gatherers 100); ??
+	(set-strategic-number sn-percent-building-cancellation 25)
+	(set-strategic-number sn-camp-max-distance 13)
+	(set-strategic-number sn-initial-exploration-required 0)
+	(set-strategic-number sn-food-dropsite-distance -1)
+	(set-strategic-number sn-wood-dropsite-distance -1)
+	(set-strategic-number sn-stone-dropsite-distance 25)
+	(set-strategic-number sn-gold-dropsite-distance 5)
+	(set-strategic-number sn-maximum-food-drop-distance 15)
+	(set-strategic-number sn-maximum-wood-drop-distance 15)
+	(set-strategic-number sn-maximum-stone-drop-distance 8)
+	(set-strategic-number sn-maximum-gold-drop-distance 8)
+	(set-strategic-number sn-maximum-hunt-drop-distance 6)
+	(set-strategic-number sn-maximum-fish-boat-drop-distance 20)
+	(set-strategic-number sn-preferred-settlement-placement 6))
+(defrule
+	(strategic-number sn-enable-patrol-attack != 1)
+	=>
+	(set-strategic-number sn-enable-patrol-attack 1)
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 3)
+	(set-strategic-number sn-mill-max-distance 15)
+	(set-strategic-number sn-gold-defend-priority 1)
+	(set-strategic-number sn-stone-defend-priority 0)
+	(set-strategic-number sn-forage-defend-priority 0)
+	(set-strategic-number sn-relic-defend-priority 0)
+	(set-strategic-number sn-town-defend-priority 0)
+	(set-strategic-number sn-enemy-sighted-response-distance 30)
+	(set-strategic-number sn-gather-idle-soldiers-at-center 0)
+	(set-strategic-number sn-number-civilian-militia 7)
+	(set-strategic-number sn-allow-civilian-defense 3)
+	(set-strategic-number sn-allow-civilian-offense 2))
+(defrule
+	(strategic-number sn-local-targeting-mode != 1)
+	=>
+	(set-strategic-number sn-local-targeting-mode 1)
+	(set-strategic-number sn-enable-new-building-system 1)
+	(set-strategic-number sn-target-evaluation-siege-weapon 80)
+	(set-strategic-number sn-livestock-to-town-center 1)
+	(set-strategic-number sn-number-build-attempts-before-skip 1); default is 25 jfc
+	(set-strategic-number sn-enable-training-queue 1)
+	(set-strategic-number sn-home-exploration-time 420); 7 minutes
+	(set-strategic-number sn-maximum-gaia-attack-response 1)
+	(set-strategic-number sn-enable-boar-hunting 1)
+	(set-strategic-number sn-minimum-number-hunters 5)
+	(set-strategic-number sn-minimum-boar-lure-group-size 1337)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 0)
+	(set-strategic-number sn-do-not-scale-for-difficulty-level 1)
+	(set-difficulty-parameter ability-to-dodge-missiles 0)
+	(set-difficulty-parameter ability-to-maintain-distance 0))
+(defrule
+	(strategic-number sn-disable-tower-priority != 1)
+	=>
+	(set-strategic-number sn-disable-tower-priority 1)
+	(set-strategic-number sn-target-player-number -1)
+	(set-strategic-number sn-disable-builder-assistance 1)
+	(set-strategic-number sn-percent-enemy-sighted-response 100)
+	(set-strategic-number sn-attack-intelligence 1)
+	(set-strategic-number sn-intelligent-gathering 1)
+	(set-strategic-number sn-minimum-water-body-size-for-dock 800)
+	(up-modify-sn sn-preferred-trade-distance g:= G-mapsize)
+	(up-modify-sn sn-preferred-trade-distance c:- 5)
+	(up-modify-sn sn-zero-priority-distance g:= G-mapsize)
+	(set-strategic-number sn-coop-share-information 1)
+	(set-strategic-number sn-retask-gather-amount 0)
+	(set-strategic-number sn-target-point-adjustment 5)
+	(set-strategic-number SN-ts-increment 2)
+	(set-strategic-number sn-allow-serjeant-building 1)
+	(set-strategic-number sn-wild-animal-exploration 1)
+	(set-strategic-number sn-disable-trade-evasion 1))
+
+(defrule
+	(true)
+	=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(up-modify-sn sn-total-number-explorers g:= G-starting-scouts)
+	(up-modify-sn sn-number-explore-groups g:= G-starting-scouts)
+	(disable-self))
+
+#load-if-not-defined REVEAL-NORMAL
+(defrule
+	(true)
+	=>
+	(set-strategic-number sn-unexplored-construction 1)
+	(disable-self))
+#end-if
+
+
+; ; == ENABLE BOAR STEAL ==
+; (defrule
+; 	(goal G-maptype GV-land-open)
+; 	(goal G-scout-unit eagle-warrior)
+; 	=>
+; 	(set-strategic-number sn-home-exploration-time 390); default 420
+; 	(set-goal G-boarsteal 1)
+; 	(disable-self))
+; (defrule
+; 	(goal G-maptype GV-land-open)
+; 	(goal G-scout-unit scout-cavalry)
+; 	(or	(civ-selected mongol)
+; 		(players-civ any-ally mongol))
+; 	=>
+; 	(set-strategic-number sn-home-exploration-time 340); default 420
+; 	(set-goal G-boarsteal 1)
+; 	(disable-self))

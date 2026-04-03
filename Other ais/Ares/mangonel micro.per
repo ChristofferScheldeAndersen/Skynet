@@ -1,0 +1,290 @@
+
+;------------------------------MANGONEL MICRO-------------------------------------
+
+(defrule
+	(goal g-second-turn 0)
+	(or	(unit-type-count mangonel-line > 0)
+	(or	(unit-type-count bombard-cannon > 0)
+		(unit-type-count rocket-cart-line > 0)))
+=>
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-move -1 -1)
+	(up-find-local c: mangonel-line c: 20)
+	(up-find-local c: bombard-cannon c: 20)
+	(up-find-local c: rocket-cart-line c: 20)
+	(up-remove-objects search-local object-data-action == actionid-evade)
+	(up-remove-objects search-local object-data-action == actionid-retreat)
+	(up-remove-objects search-local object-data-action == actionid-runaway)
+	(up-target-point p-backline-x action-patrol -1 stance-no-attack)
+)
+
+
+(defrule
+	(true)
+=>
+	(set-goal check-goal 0)
+	(set-goal g-current-list-number 0)
+	(set-goal g-math-2 0)
+	(set-goal g-math-3 0)
+	(set-goal g-math-4 0)
+	(set-goal g-math-5 0)
+	(set-goal g-math-6 0)
+	(set-goal g-math-7 0)
+	(set-goal g-math-8 0);attack delay x1000
+	(set-goal g-math-9 0);target speed
+	(up-full-reset-search)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+
+
+(defrule
+	(or	(up-find-local c: mangonel-line c: 20)
+	(or	(up-find-local c: bombard-cannon c: 20)
+		(up-find-local c: rocket-cart-line c: 20)))
+=>
+	(up-remove-objects search-local object-data-next-attack != 0)
+	(up-create-group 0 0 c: temp-group-1)
+	(up-get-rule-id g-jump-direct-1)
+	(up-modify-goal g-jump-direct-1 c:+ 1)
+	(set-goal check-goal 1))
+
+(defrule
+	(goal check-goal 1)
+	(up-set-target-object search-local g: g-current-list-number)
+=>
+	(generate-random-number 5)
+	(set-goal check-goal 2)
+	(set-goal g-math-2 0);enemies in blast radius
+	(set-goal g-math-3 0);distance to target
+	(set-goal g-math-4 0);target index #
+	(set-goal g-math-7 0);saved target id
+	(set-goal mango-projectile-speed 400)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-get-object-data object-data-id g-current-unit-id)
+	(up-get-object-data object-data-range g-mango-range)
+	(up-get-object-data object-data-min-range g-math-1)
+	(up-get-object-data object-data-attack-delay g-math-8)
+	(up-get-object-data object-data-next-attack g-math-12)
+	(up-get-point position-object p-current-mango-point-x)
+	(up-modify-goal g-math-8 g:+ g-math-12)
+	(up-modify-goal g-mango-range c:+ 2)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-set-target-point p-current-mango-point-x)
+	(up-filter-distance g: g-math-1 g: g-mango-range)
+;	(up-filter-exclude -1 -1 -1 farm-class)
+	(up-get-object-data object-data-precise-x p-current-mango-point-x)
+	(up-get-object-data object-data-precise-y p-current-mango-point-y)
+)
+(defrule
+	(goal check-goal 2)
+	(up-object-data object-data-type == mangonel)
+=>
+	(set-goal mango-projectile-speed 350))
+(defrule
+	(stance-toward focus-player enemy)
+	(up-compare-goal check-goal >= 2)
+	(or	(up-find-remote c: siege-weapon-class c: 20)
+		(up-find-remote c: scorpion-class c: 15))
+=>
+	(set-goal check-goal 3)
+)
+
+(defrule
+	(up-compare-goal check-goal >= 2)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 2)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(stance-toward focus-player enemy)
+	(up-compare-goal check-goal >= 2)
+	(up-find-remote c: -1 c: 50)
+=>
+	(set-goal check-goal 3)
+)
+
+(defrule
+	(up-compare-goal check-goal >= 2)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2))
+
+(defrule
+	(goal check-goal 3)
+=>
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-create-group 0 0 c: temp-enemy-group)
+)
+(defrule
+	(goal check-goal 3)
+	(up-set-target-object search-remote g: g-math-4)
+=>
+	(up-get-object-data object-data-id g-math-6)
+	(up-get-point position-object p-x-2)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-set-target-point p-x-2)
+	(up-filter-distance c: -1 c: 1)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-find-local c: -1 c: 20)
+	(set-goal check-goal 4))
+
+(defrule
+	(goal check-goal 4)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: -1 c: 20))
+
+(defrule
+	(goal check-goal 4)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2))
+(defrule
+	(goal check-goal 4)
+=>
+	(up-get-search-state lt)
+	(up-modify-goal rt g:- lt)
+)
+
+(defrule
+	(goal check-goal 4)
+	(up-compare-goal rt g:> g-math-2)
+=>
+	(up-modify-goal g-math-7 g:= g-math-6)
+	(up-modify-goal g-math-2 g:= rt))
+
+(defrule
+	(goal check-goal 4)
+=>
+	(set-goal check-goal 3)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-full-reset-search)
+	(up-set-group search-remote c: temp-enemy-group)
+	(up-jump-rule -6)
+)
+
+(defrule
+	(up-compare-goal g-math-2 > 0)
+	(up-compare-goal check-goal >= 3)
+	(up-set-target-by-id g: g-math-7)
+=>
+	(up-get-object-data object-data-reload-time g-projectile-release-delay)
+	(up-get-object-data object-data-attack-delay g-math-12)
+	(up-get-object-data object-data-precise-x p-x-1)
+	(up-get-object-data object-data-precise-y p-y-1)
+	(up-get-object-data object-data-range g-math-5)
+	(up-get-object-data object-data-speed g-math-9)
+	(up-get-object-data object-data-precise-move-x p-x-2)
+	(up-get-object-data object-data-precise-move-y p-y-2)
+	(up-get-point-distance p-x-1 p-current-mango-point-x g-math-3);distance x100
+	(up-copy-point p-x-3 p-x-1)
+
+	(up-modify-goal g-math-10 g:= g-math-9)
+	(up-modify-goal g-math-10 g:* g-math-3)
+	(up-modify-goal g-math-10 g:/ mango-projectile-speed)
+
+	(up-modify-goal g-math-11 g:= g-math-9)
+	(up-modify-goal g-math-11 g:* g-math-8)
+	(up-modify-goal g-math-11 c:/ 1000)
+
+	(up-get-point-distance p-x-1 p-x-2 temporary-goal);distance between destination and current location of target
+	(up-modify-goal g-math-10 g:+ g-math-11)
+	(up-lerp-tiles p-x-1 p-x-2 g: g-math-10)
+
+	(up-modify-goal g-math-5 c:* 100)
+	(up-modify-goal g-mango-range c:- 2)
+	(up-modify-goal g-mango-range c:* 100)
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 c:max 250)
+	(up-modify-goal g-projectile-release-delay g:- g-math-12)
+	(up-modify-goal g-math-5 g:+ g-math-9)
+)
+(defrule
+	(up-compare-goal g-math-2 > 0)
+	(up-compare-goal check-goal >= 3)
+	(up-set-target-by-id g: g-math-7)
+	(up-compare-goal p-x-2 g:== p-x-3)
+	(up-compare-goal p-y-2 g:== p-y-3)
+=>
+	(up-jump-rule 2)
+)
+(defrule
+	(up-compare-goal g-math-2 > 0)
+	(up-compare-goal check-goal >= 3)
+	(up-set-target-by-id g: g-math-7)
+	(up-point-distance p-x-1 p-x-2 g:>= temporary-goal)
+=>
+	(up-copy-point p-x-1 p-x-2)
+)
+
+(defrule
+	(random-number != 4)
+	(up-compare-goal g-math-2 > 0)
+	(up-compare-goal g-math-2 < 9)
+	(up-compare-goal g-math-9 >= 80)
+	(up-compare-goal check-goal >= 3)
+	(up-set-target-by-id g: g-math-7)
+	(or	(up-point-distance p-x-2 p-x-3 g:>= g-math-5)
+		(up-object-data object-data-action == actionid-move))
+	(or	(up-point-distance p-x-1 p-current-mango-point-x g:<= g-mango-range)
+		(up-point-distance p-x-1 p-current-mango-point-x g:<= g-math-3))
+	(or	(up-point-distance p-x-1 p-current-mango-point-x g:>= g-math-1)
+		(up-point-distance p-x-1 p-current-mango-point-x g:>= g-math-3))
+=>
+;	(chat-to-all "attack ground")
+	(up-full-reset-search)
+	(up-add-object-by-id search-local g: g-current-unit-id)
+	(set-strategic-number sn-target-point-adjustment 6)	;set to enable precise targetting
+	(up-bound-precise-point p-x-1 1 c: 80)
+	(up-target-point p-x-1 action-ground -1 stance-defensive)
+	(set-strategic-number sn-target-point-adjustment 5)	;reset
+
+	(up-full-reset-search)
+	(up-set-group search-local c: temp-group-1)
+	(up-modify-goal g-current-list-number c:+ 1)
+	(set-goal check-goal 1)
+	(up-jump-direct g: g-jump-direct-1)
+)
+(defrule
+	(up-compare-goal g-math-2 > 0)
+	(up-compare-goal check-goal >= 3)
+	(up-set-target-by-id g: g-math-7)
+=>
+;	(chat-to-all "attack target")
+	(up-full-reset-search)
+	(up-add-object-by-id search-local g: g-current-unit-id)
+	(up-target-objects 1 action-default -1 stance-defensive)
+)
+
+;attack ground attacks need to be cancelled so this won't work
+;(defrule
+;	(goal check-goal 2)
+;=>
+;	(up-full-reset-search)
+;	(up-add-object-by-id search-local g: g-current-unit-id)
+;	(up-target-point p-march-x action-move -1 stance-no-attack)
+;)
+
+
+(defrule
+	(up-compare-goal check-goal >= 2)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local c: temp-group-1)
+	(up-modify-goal g-current-list-number c:+ 1)
+	(set-goal check-goal 1)
+	(up-jump-direct g: g-jump-direct-1)
+)
+;---------------------------------------------End Mangonel Micro--------------------------------------------

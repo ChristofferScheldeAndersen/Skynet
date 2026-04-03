@@ -1,0 +1,1682 @@
+#load-if-defined INCAN-CIV
+(defconst civ-mill settlement)
+(defconst x-mill-1 0)
+(defconst y-mill-1 3)
+(defconst x-mill-2 0)
+(defconst y-mill-2 -3)
+(defconst x-mill-3 3)
+(defconst y-mill-3 0)
+(defconst x-mill-4 -3)
+(defconst y-mill-4 0)
+(defconst x-mill-5 -3)
+(defconst y-mill-5 -3)
+(defconst x-mill-6 -3)
+(defconst y-mill-6 3)
+(defconst x-mill-7 3)
+(defconst y-mill-7 -3)
+(defconst x-mill-8 3)
+(defconst y-mill-8 3)
+#end-if
+#load-if-not-defined INCAN-CIV
+(defconst civ-mill mill)
+
+(defconst x-mill-1 0);4
+(defconst y-mill-1 2)
+
+(defconst x-mill-2 2);5
+(defconst y-mill-2 -1)
+
+(defconst x-mill-3 -3);9
+(defconst y-mill-3 0)
+
+(defconst x-mill-4 -1);10
+(defconst y-mill-4 -3)
+
+(defconst x-mill-5 3);13
+(defconst y-mill-5 2)
+
+(defconst x-mill-6 -3);18
+(defconst y-mill-6 3)
+
+(defconst x-mill-7 2);20
+(defconst y-mill-7 -4)
+
+(defconst x-mill-8 -4);25
+(defconst y-mill-8 -3)
+#end-if
+(defrule
+	(unit-type-count fishing-ship g:< n-fishboats)
+=>
+	(up-modify-flag f-map-type c:- fv-fish-map)
+	(disable-self)
+)
+(defrule
+	(true)
+=>
+	(set-goal check-goal 0)
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(up-get-fact unit-type-count fishing-ship n-fishboats)
+	(up-get-fact unit-type-count villager g-farms-required)
+	(up-modify-goal g-farms-required s:* sn-food-gatherer-percentage)
+	(up-modify-goal g-farms-required c:/ 100)
+	(up-get-fact building-type-count-total town-center g-math-1)
+	(up-get-fact building-type-count-total mill g-math-2)
+	(up-modify-goal g-math-1 g:+ g-math-2)
+	(up-modify-goal g-math-1 c:* 8)
+	(up-modify-goal g-math-2 g:= g-math-1)
+	(up-modify-goal g-math-2 c:- 8)
+	(up-modify-goal n-docks g:= n-fishboats)
+	(up-modify-goal n-docks c:/ 8)
+)
+(defrule
+	(timer-triggered t-29-sec)
+=>
+	(set-strategic-number sn-camp-max-distance 300)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-gold-dropsite-distance 3)
+	(set-strategic-number sn-stone-dropsite-distance 3)
+	(set-strategic-number sn-wood-dropsite-distance 3))
+
+(defrule
+	(goal g-second-turn 0)
+	(building-type-count town-center > 0)
+=>
+	(set-strategic-number sn-town-center-placement mining-camp))
+
+;-------------------------------building controls
+
+
+
+(defrule
+	(goal g-escrow town-center)
+	(up-can-build g-with-escrow g: g-escrow)
+=>
+	(up-modify-goal g-build g:= g-escrow)
+	(up-build place-normal g-with-escrow g: g-escrow))
+
+(defrule
+	(up-pending-objects c: town-center < 2)
+	(up-gaia-type-count-total c: wood > 19)
+	(building-type-count-total town-center < 5)
+	(can-build town-center-foundation)
+	(goal g-build no)
+=>
+	(set-goal g-build town-center-foundation))
+(defrule
+	(goal g-build no)
+	(up-pending-objects c: house < 2)
+	(building-type-count town-center > 0)
+	(or	(up-pending-objects c: house < 1)
+		(game-time < 5))
+	(or	(housing-headroom < 4)
+	(or	(up-research-status g: g-rushing-age >= research-pending)
+		(and	(unit-type-count fishing-ship > 0)
+			(building-type-count dock > 0))))
+	(or	(housing-headroom < 10)
+		(building-type-count town-center > 1))
+	(housing-headroom < 15)
+	(population-headroom > 0)
+	(can-build-with-escrow house)
+=>
+	(set-goal g-build house))
+
+(defrule
+	(goal g-build no)
+	(up-can-build 0 c: dock)
+	(building-type-count town-center > 0)
+	(or	(building-type-count-total dock == 0)
+		(building-type-count-total dock g:< n-docks))
+	(or	(up-compare-flag f-map-type == fv-fish-map)
+		(unit-type-count fishing-ship >= 10))
+	(dropsite-min-distance wood < 5)
+	(or	(building-type-count-total lumber-camp > 0)
+		(building-type-count-total settlement > 0))
+=>
+	(set-goal g-build dock))
+
+(defrule
+	(can-build settlement)
+	(goal g-build no)
+	(up-pending-objects c: settlement < 1)
+	(building-type-count town-center > 0)
+	(unit-type-count villager-forager > 0)
+	(building-type-count settlement > 0)
+	(or	(sheep-and-forage-too-far)
+		(building-type-count settlement == 1))
+=>
+	(up-assign-builders c: settlement c: 2)
+	(set-strategic-number sn-town-center-placement mill)
+	(set-strategic-number sn-preferred-settlement-placement 6)
+	(set-goal g-build settlement))
+(defrule
+	(can-build mill)
+	(goal g-build no)
+;	(game-time >= 46)
+	(up-pending-objects c: mill < 1)
+	(building-type-count town-center > 0)
+	(building-type-count-total mill == 0)
+	(or	(unit-type-count-total villager-forager > 0)
+	(or	(and	(game-time > 90)
+			(sheep-and-forage-too-far))
+		(and	(building-type-count lumber-camp > 0)
+			(or	(up-compare-flag f-map-type != fv-fish-map)
+				(building-type-count dock > 0)))))
+=>
+	(set-strategic-number sn-town-center-placement mill)
+	(set-strategic-number sn-preferred-mill-placement 0)
+	(set-goal g-build mill)) 
+
+(defrule
+	(can-build mill)
+	(goal g-build no)
+	(game-time >= 31)
+	(sheep-and-forage-too-far)
+	(building-type-count town-center > 0)
+	(building-type-count-total mill == 0)
+	(up-pending-objects c: mill < 1)
+	(resource-found food)
+=>
+	(set-goal check-goal 0)
+	(set-strategic-number sn-town-center-placement mill)
+	(set-strategic-number sn-preferred-mill-placement 0)
+	(set-goal g-build mill))
+(defrule
+	(or	(research-available castle-age)
+		(building-type-count town-center > 3))
+	(goal g-build no)
+	(can-build mill)
+	(building-type-count town-center > 0)
+	(up-compare-goal g-math-1 g:< g-farms-required)
+	(building-type-count farm g:> g-math-2)
+=>
+	(set-strategic-number sn-town-center-placement mill)
+	(set-strategic-number sn-dropsite-separation-distance 9)
+	(set-strategic-number sn-preferred-mill-placement 0)
+	(up-modify-sn sn-mill-max-distance s:max sn-maximum-town-size)
+	(up-modify-sn sn-mill-max-distance c:min 35)
+	(set-goal g-build mill))
+
+
+;(defrule
+;	(can-build mill)
+;	(goal g-build no)
+;	(sheep-and-forage-too-far)
+;	(up-timer-status t-mill == timer-disabled)
+;;	(up-gaia-type-count c: FORAGE >= 4)
+;	(building-type-count mill > 0)
+;	(up-pending-objects c: mill == 0)
+;	(building-type-count-total mill < 5)
+;	(unit-type-count villager-forager > 0)
+;=>
+;	(chat-to-player my-player-number "is there more than one forage on this map?")
+;	(enable-timer t-mill 13))
+;
+;(defrule
+;	(timer-triggered t-mill)
+;	(goal g-build no)
+;	(sheep-and-forage-too-far)
+;	(building-type-count mill > 0)
+;	(up-pending-objects c: mill == 0)
+;	(building-type-count-total mill < 5)
+;	(unit-type-count villager-forager > 0)
+;	(can-build mill)
+;=>
+;	(chat-to-player my-player-number "there is more then one forage on this map")
+;	(set-strategic-number sn-preferred-mill-placement 0)
+;	(set-goal g-build mill)(disable-timer t-mill))
+
+;(defrule
+;	(timer-triggered t-mill)
+;	(unit-type-count forager1 == 0)
+;	(unit-type-count forager2 == 0)
+;=>
+;	(chat-to-player my-player-number "No extre forage on this map")
+;	(disable-timer t-mill))
+
+(defrule
+	(or	(goal g-build mill)
+		(goal g-build settlement))
+	(wood-amount < 150)
+	(up-compare-flag f-map-type == fv-fish-map)
+	(building-type-count-total dock == 0)
+=>
+	(set-goal g-build no))
+
+(defrule
+	(goal g-build no)
+	(or	(up-compare-goal g-attack > maybe)
+		(building-type-count-total bombard-tower < 3))
+	(building-type-count-total castle > 3)
+	(building-type-count-total town-center > 0)
+	(up-pending-objects c: bombard-tower < 2)
+	(can-build bombard-tower)
+=>
+	(set-goal g-build bombard-tower))
+
+(defrule
+	(goal g-build no)
+	(building-type-count town-center > 0)
+	(up-pending-objects c: castle < 2)
+	(can-build castle)
+=>
+	(set-goal g-build castle))
+
+(defrule
+	(goal g-build no)
+	(can-build blacksmith)
+	(building-type-count-total town-center > 0)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(building-type-count-total archery-range g:>= g-number-ranges)
+	(building-type-count-total stable g:>= g-number-stables)
+	(building-type-count-total blacksmith == 0)
+	(up-pending-objects c: blacksmith < 1)
+=>
+	(set-goal g-build blacksmith))
+
+(defrule
+	(can-build settlement)
+	(goal g-build no)
+	(up-pending-objects c: settlement < 1)
+	(building-type-count town-center > 0)
+	(building-type-count-total settlement < 60)
+	(or	(dropsite-min-distance wood > 3)
+		(and	(building-type-count-total settlement == 0)
+			(unit-type-count villager-wood > 2)))
+	(strategic-number sn-wood-gatherer-percentage > 0)
+=>
+	(up-assign-builders c: settlement c: 0)
+;	(chat-to-all "build wood settlement")
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-dropsite-separation-distance 5)
+	(set-strategic-number sn-preferred-settlement-placement 3)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-goal g-build settlement))
+
+(defrule
+	(up-pending-objects c: lumber-camp < 1)
+	(building-type-count-total lumber-camp < 50)
+	(or	(dropsite-min-distance wood > 3)
+		(and	(building-type-count-total lumber-camp == 0)
+			(unit-type-count villager-wood > 1)))
+	(strategic-number sn-wood-gatherer-percentage > 0)
+;	(nand	(sheep-and-forage-too-far)
+;		(building-type-count mill == 0))
+	(cc-players-unit-type-count 0 trees-class >= 20)
+	(goal g-build no)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-wood-dropsite-distance 3)
+	(set-strategic-number sn-dropsite-separation-distance 5)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-goal g-build lumber-camp))
+
+(defrule
+	(up-pending-objects c: lumber-camp < 1)
+	(building-type-count-total lumber-camp == 1)
+	(building-type-count barracks > 0)
+	(building-type-count mining-camp > 0)
+	(building-type-count mill > 0)
+	(cc-players-unit-type-count 0 trees-class >= 20)
+	(goal g-build no)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-wood-dropsite-distance 3)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-goal g-build lumber-camp))
+
+;idea from Promi
+(defrule
+	(goal g-build no)
+	(up-pending-objects c: lumber-camp < 1)
+	(up-timer-status t-upwood != timer-running)
+	(resource-found wood)
+	(unit-type-count villager-wood >= 22)
+	(game-time >= 2060)
+	(dropsite-min-distance wood > 2)
+	(dropsite-min-distance wood < 255); 128?
+	(building-type-count-total lumber-camp < 59)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-wood-dropsite-distance 3)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 5)
+	(set-goal g-build lumber-camp)
+	(enable-timer t-upwood 380))
+
+
+
+
+(defrule
+	(can-build settlement)
+	(goal g-build no)
+	(up-pending-objects c: settlement < 1)
+	(building-type-count town-center > 0)
+	(building-type-count-total settlement < 60)
+	(dropsite-min-distance gold > 3)
+	(dropsite-min-distance gold < 100)
+	(strategic-number sn-gold-gatherer-percentage > 0)
+=>
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(up-assign-builders c: settlement c: 0)
+	(set-strategic-number sn-gold-dropsite-distance 3)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(set-strategic-number sn-preferred-settlement-placement 4)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-goal g-build settlement))
+
+(defrule
+	(goal g-build no)
+	(can-build mining-camp)
+	(up-pending-objects c: mining-camp < 1)
+	(building-type-count-total mining-camp < 3)
+	(building-type-count-total town-center > 0)
+	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total archery-range g:>= g-number-ranges)
+	(building-type-count-total stable g:>= g-number-stables)
+	(building-type-count-total barracks g:>= g-number-barracks)
+	(unit-type-count-total villager > 20)
+	(strategic-number sn-gold-gatherer-percentage > 0)
+	(dropsite-min-distance gold < 100)
+=>
+	(set-goal check-goal 0)
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-goal g-build mining-camp))
+
+(defrule
+	(goal g-build no)
+	(can-build mining-camp)
+	(up-pending-objects c: mining-camp < 1)
+	(building-type-count-total mining-camp < 23)
+	(building-type-count-total town-center > 0)
+	(unit-type-count-total villager > 20)
+	(strategic-number sn-gold-gatherer-percentage > 0)
+	(or	(dropsite-min-distance gold > 4)
+		(building-type-count-total mining-camp == 0))
+	(dropsite-min-distance gold < 100)
+=>
+	(set-goal check-goal 0)
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(set-strategic-number sn-gold-dropsite-distance 3)
+	(set-strategic-number sn-stone-dropsite-distance 200)
+	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-goal g-build mining-camp))
+
+(defrule
+	(goal g-enemy-flusher yes)
+	(or	(building-type-count-total watch-tower == 0)
+	(or	(strategic-number sn-military-superiority < -4)
+		(up-compare-goal g-attack > yes)))
+	(current-age == feudal-age)
+	(goal g-build no)
+	(can-build watch-tower)
+=>
+	(set-goal g-build watch-tower))
+
+
+(defrule
+	(can-build settlement)
+	(goal g-build no)
+	(up-pending-objects c: settlement < 1)
+	(building-type-count town-center > 0)
+	(building-type-count-total settlement < 60)
+	(dropsite-min-distance stone > 3)
+	(dropsite-min-distance stone < 100)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+=>
+	(up-assign-builders c: settlement c: 0)
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(set-strategic-number sn-stone-dropsite-distance 3)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(set-strategic-number sn-preferred-settlement-placement 5)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-goal g-build settlement))
+
+(defrule
+	(goal g-build no)
+	(can-build mining-camp)
+	(up-pending-objects c: mining-camp < 1)
+	(building-type-count-total mining-camp < 23)
+	(building-type-count-total town-center > 0)
+	(unit-type-count-total villager > 20)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+	(dropsite-min-distance stone > 4)
+	(dropsite-min-distance stone < 100)
+=>
+	(set-goal check-goal 0)
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(set-strategic-number sn-stone-dropsite-distance 3)
+	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-gold-dropsite-distance 200)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-goal g-build mining-camp))
+
+
+(defrule
+	(goal g-build no)
+	(can-build monastery)
+	(up-pending-objects c: monastery < 2)
+	(building-type-count-total town-center > 0)
+	(building-type-count-total farm > 0)
+	(dropsite-min-distance wood < 5)
+	(building-type-count-total monastery g:< g-number-monasteries)
+=>
+	(set-goal g-build monastery))
+
+(defrule
+	(up-pending-objects c: university < 1)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total university == 0)
+	(goal g-build no)
+	(can-build university)
+=>
+	(set-goal g-build university))
+
+(defrule
+	(up-pending-objects c: market < 1)
+	(or	(building-type-count-total university > 0)
+		(up-compare-goal g-wood-available >= 400))
+	(up-research-status c: castle-age != research-pending)
+	(building-type-count-total market == 0)
+	(can-build market)
+	(goal g-build no)
+=>
+	(set-goal g-build market))
+
+
+
+(defrule
+	(goal g-build no)
+	(can-build archery-range)
+	(unit-type-count villager > 19)
+	(up-pending-objects c: archery-range < 1)
+	(building-type-count-total town-center > 0)
+	(or	(and	(building-type-count-total mill > 0)
+			(building-type-count-total lumber-camp > 0))
+		(building-type-count-total settlement > 0))
+	(building-type-count-total archery-range g:< g-number-ranges)
+=>
+	(set-goal g-build archery-range))
+
+(defrule
+	(goal g-build no)
+	(can-build stable)
+	(unit-type-count villager > 19)
+	(up-pending-objects c: stable < 1)
+	(building-type-count-total town-center > 0)
+	(or	(and	(building-type-count-total mill > 0)
+				(building-type-count-total lumber-camp > 0))
+		(building-type-count-total settlement > 0))
+	(building-type-count-total stable g:< g-number-stables)
+=>
+	(set-goal g-build stable))
+
+(defrule
+	(goal g-build no)
+	(can-build barracks)
+	(unit-type-count villager > 19)
+	(up-pending-objects c: barracks < 1)
+	(building-type-count-total town-center > 0)
+	(or	(and	(building-type-count-total mill > 0)
+				(building-type-count-total lumber-camp > 0))
+		(building-type-count-total settlement > 0))
+	(building-type-count-total barracks g:< g-number-barracks)
+=>
+	(set-goal g-build barracks))
+
+(defrule
+	(goal g-build no)
+	(can-build siege-workshop)
+	(unit-type-count villager > 19)
+	(up-pending-objects c: siege-workshop < 1)
+	(building-type-count-total monastery g:>= g-number-monasteries)
+	(building-type-count-total town-center g:>= g-number-town-centers)
+	(building-type-count-total farm > 0)
+	(dropsite-min-distance wood < 5)
+	(building-type-count-total siege-workshop g:< g-number-siege-workshops)
+=>
+	(set-goal g-build siege-workshop))
+
+(defrule
+	(goal g-build no)
+	(up-can-build 0 c: farm)
+	(wood-amount > 200)
+	(or	(research-available feudal-age)
+		(wood-amount > 400))
+	(building-type-count town-center > 0)
+	(or	(building-type-count-total lumber-camp > 0)
+		(building-type-count-total settlement > 0))
+	(dropsite-min-distance wood < 6)
+	(or	(idle-farm-count < 1)
+		(building-type-count-total farm < 3))
+	(or	(unit-type-count villager g:< g-dark-vills-2)
+		(building-type-count-total barracks > 0))
+=>
+	(set-goal g-build farm)
+)
+(defrule
+	(goal g-build no)
+	(up-can-build 0 c: farm)
+	(building-type-count-total barracks g:>= g-number-barracks)
+	(building-type-count-total archery-range g:>= g-number-ranges)
+	(building-type-count-total stable g:>= g-number-stables)
+	(building-type-count-total monastery g:>= g-number-monasteries)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count town-center > 0)
+	(or	(dropsite-min-distance wood < 6)
+		(strategic-number sn-food-wood-comparison > 100))
+	(or	(building-type-count-total farm g:< g-farms-required)
+		(idle-farm-count < 3))
+	(or	(building-type-count town-center g:>= g-number-town-centers)
+		(strategic-number sn-food-wood-comparison > 0))
+	(or	(dropsite-min-distance gold < 6)
+	(or	(strategic-number sn-gold-gatherer-percentage == 0)
+		(wood-amount > 300)))
+=>
+	(set-goal g-build farm)
+)
+
+(defrule
+	(goal g-build farm)
+	(or	(strategic-number sn-food-wood-comparison < -160)
+		(up-compare-flag f-map-type == fv-fish-map))
+	(wood-amount < 135)
+=>
+	(set-goal g-build no))
+
+(defrule
+	(goal g-build farm)
+	(or	(building-type-count-total farm < 23)
+		(up-pending-objects c: farm > 1))
+	(or	(up-pending-objects c: farm > 0)
+		(and	(sheep-and-forage-too-far)
+			(unit-type-count villager-forager > 0)))
+=>
+	(set-goal g-build no))
+
+
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal check-goal 0)
+	(set-goal g-math-1 10)
+	(set-goal g-math-2 0)
+	(set-goal g-math-3 0))
+;-------------------------------------mill-max distance
+(defrule
+	(or	(goal g-build mill)
+	(or	(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 6))
+		(and	(goal g-build town-center-foundation)
+			(strategic-number sn-town-center-placement == mill))))
+	(strategic-number sn-preferred-mill-placement == 0)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: forage-bush-class c: 240)
+	(up-remove-objects search-remote object-data-tasks-count > 2)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(set-goal check-goal 1)
+)
+(defrule
+	(goal check-goal 1)
+	(or	(goal g-build mill)
+	(or	(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 6))
+		(and	(goal g-build town-center-foundation)
+			(strategic-number sn-town-center-placement == mill))))
+	(strategic-number sn-preferred-mill-placement == 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal check-goal 0)
+	(up-get-point position-object p-x-1)
+	(up-get-point-distance p-x-1 p-self-x g-math-1)
+	(up-modify-goal g-math-1 c:+ 4)
+	(up-modify-sn sn-mill-max-distance g:max g-math-1)
+	(up-modify-sn sn-mill-max-distance c:min 35)
+)
+
+;---------------------------------Lumber camp distance
+#load-if-defined OLD-CODE
+(defrule
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+=>
+;	(chat-to-all "lumber camp placement")
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: 5 g: g-math-1)
+	(up-filter-status c: status-resource c: list-active)
+	(set-goal check-goal 1))
+(defrule
+	(goal check-goal 1)
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+	(up-find-resource c: wood c: 240)
+	(up-set-target-object search-remote g: g-math-2)
+=>
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: -1 s: sn-dropsite-separation-distance)
+	(set-goal check-goal 2))
+(defrule
+	(goal check-goal 1)
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+	(up-compare-goal g-math-1 < 250);not optimal
+=>
+	(set-goal g-math-3 0)
+	(up-modify-goal g-math-1 c:+ 1);steps we increase sn-lumber-camp-max-distance
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal check-goal 0)
+	(up-jump-rule -3))
+
+
+(defrule
+	(goal check-goal 2)
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+	(or	(up-find-local c: lumber-camp c: 1)
+	(or	(up-find-local c: town-center c: 1)
+		(up-find-local c: settlement c: 1)))
+=>
+	(up-modify-goal g-math-2 c:+ 2)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal check-goal 0)
+	(up-jump-rule -4))
+(defrule
+	(goal check-goal 2)
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+	(up-compare-goal g-math-3 < 19); minimum number of trees 
+=>
+	(up-modify-goal g-math-3 c:+ 1)
+	(up-modify-goal g-math-2 c:+ 2)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal check-goal 0)
+	(up-jump-rule -5))
+
+(defrule
+	(up-compare-goal check-goal >= 1)
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+
+=>
+	(up-modify-sn sn-lumber-camp-max-distance g:max g-math-2)
+	(up-modify-sn sn-lumber-camp-max-distance c:+ 2)
+	(up-chat-data-to-player my-player-number "Lumber distance: %d" s: sn-lumber-camp-max-distance)
+)
+#end-if
+;-------------------------------------lumber-camp distance
+
+(defrule
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-goal check-goal 300)
+	(set-goal g-math-1 0)
+)
+(defrule
+	(goal check-goal 300)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-filter-status c: status-ready c: list-active)
+	(up-find-resource c: wood c: 240)
+	(up-remove-objects search-remote object-data-tasks-count > 0)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+)
+(defrule
+	(goal check-goal 300)
+	(or	(goal g-build lumber-camp)
+	(or	(and	(strategic-number sn-town-center-placement == lumber-camp)
+			(goal g-build town-center-foundation))
+		(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 3))))
+	(up-set-target-object search-remote g: g-math-1)
+=>
+	(up-get-point position-object p-x-1)
+	(up-full-reset-search)
+	(up-set-target-point p-x-1)
+	(up-filter-status c: status-ready c: list-active)
+	(up-filter-distance c: -1 c: 1)
+	(up-find-resource c: wood c: 10)
+	(up-get-search-state lt)
+	(set-goal check-goal 301)
+)
+(defrule
+	(goal check-goal 301)
+	(up-compare-goal rt < 4)
+=>
+	(up-modify-goal g-math-1 c:+ 1)
+	(set-goal check-goal 300)
+	(up-jump-rule -3)
+)
+(defrule
+	(goal check-goal 301)
+=>
+	(up-get-point-distance p-x-1 p-self-x g-math-2)
+	(up-modify-sn sn-lumber-camp-max-distance g:max g-math-2)
+	(up-modify-sn sn-lumber-camp-max-distance c:+ 2)
+	(up-chat-data-to-self "correct lumber correction: %d" s: sn-lumber-camp-max-distance)
+)
+(defrule
+	(goal check-goal 300)
+=>
+	(up-modify-sn sn-lumber-camp-max-distance c:+ 4)
+	(chat-to-player my-player-number "lumber camp calculation failed")
+)
+;-------------------------------------mining-camp distance
+(defrule
+	(or	(goal g-build mining-camp)
+	(or	(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 4))
+		(and	(goal g-build town-center-foundation)
+			(strategic-number sn-town-center-placement == mining-camp))))
+	(strategic-number sn-gold-dropsite-distance < 5)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: gold c: 240)
+	(up-remove-objects search-remote object-data-tasks-count > 1)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-goal check-goal 100)
+)
+(defrule
+	(goal check-goal 100)
+	(or	(goal g-build mining-camp)
+	(or	(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 4))
+		(and	(goal g-build town-center-foundation)
+			(strategic-number sn-town-center-placement == mining-camp))))
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal check-goal 0)
+	(up-get-point position-object p-x-1)
+	(up-get-point-distance p-x-1 p-self-x g-math-1)
+	(up-modify-goal g-math-1 c:+ 4)
+	(up-modify-sn sn-mining-camp-max-distance g:max g-math-1)
+)
+;-----------------------stone
+(defrule
+	(or	(goal g-build mining-camp)
+	(or	(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 5))
+		(and	(goal g-build town-center)
+			(strategic-number sn-town-center-placement == mining-camp))))
+	(strategic-number sn-stone-dropsite-distance < 5)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: stone c: 240)
+	(up-remove-objects search-remote object-data-tasks-count > 1)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-goal check-goal 100)
+)
+(defrule
+	(goal check-goal 100)
+	(or	(goal g-build mining-camp)
+	(or	(and	(goal g-build settlement)
+			(strategic-number sn-preferred-settlement-placement == 5))
+		(and	(goal g-build town-center)
+			(strategic-number sn-town-center-placement == mining-camp))))
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-point position-object p-x-1)
+	(up-get-point-distance p-x-1 p-self-x g-math-1)
+	(up-modify-goal g-math-1 c:+ 4)
+	(up-modify-sn sn-mining-camp-max-distance g:max g-math-1)
+)
+
+
+;Building rules
+(defrule
+	(goal g-build town-center-foundation)
+	(up-can-build g-with-escrow c: town-center-foundation)
+=>
+	(up-build place-normal g-with-escrow c: town-center))
+(defrule
+	(goal g-build dock)
+	(up-can-build 0 c: dock)
+=>
+	(up-build place-normal 0 c: dock))
+
+(defrule
+	(goal g-build house)
+	(up-can-build g-with-escrow c: house)
+	(up-pending-objects c: house > 0)
+=>
+	(up-build place-normal g-with-escrow c: house))
+(defrule
+	(goal g-build house)
+	(up-can-build g-with-escrow c: house)
+	(up-pending-objects c: house == 0)
+=>
+	(up-set-placement-data my-player-number 904 c: 0);904: villager ID
+	(up-build place-control g-with-escrow c: house))
+
+(defrule
+	(goal g-build mill)
+	(can-build mill)
+=>
+	(build mill))
+(defrule
+	(can-build settlement)
+	(goal g-build settlement)
+=>
+	(build settlement))
+(defrule
+	(goal g-build monastery)
+	(can-build monastery)
+=>
+	(build monastery))
+(defrule
+	(up-compare-goal g-attack > maybe)
+	(goal g-build bombard-tower)
+	(can-build bombard-tower)
+=>
+	(build-forward bombard-tower))
+(defrule
+	(goal g-build bombard-tower)
+	(can-build bombard-tower)
+=>
+	(build bombard-tower))
+(defrule
+	(goal g-build castle)
+	(building-type-count-total castle > 2)
+	(up-compare-goal g-attack > maybe)
+	(can-build castle)
+=>
+	(build-forward castle))
+(defrule
+	(building-type-count-total castle < 2)
+	(goal g-build castle)
+	(can-build castle)
+=>
+	(up-set-placement-data target-player -1 c: 11)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(set-strategic-number sn-placement-to-center 0)
+	(set-strategic-number sn-placement-zone-size 6)
+	(up-build place-control 0 c: castle))
+(defrule
+	(goal g-build castle)
+	(can-build castle)
+=>
+	(build castle))
+(defrule
+	(goal g-build siege-workshop)
+	(can-build siege-workshop)
+=>
+	(build siege-workshop))
+
+(defrule
+	(up-compare-goal g-attack > yes)
+	(goal g-build watch-tower)
+	(can-build watch-tower)
+=>
+	(build-forward watch-tower))
+
+(defrule
+	(goal g-build watch-tower)
+	(can-build watch-tower)
+=>
+	(up-set-placement-data my-player-number 904 c: 1)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(set-strategic-number sn-placement-to-center 0)
+	(set-strategic-number sn-placement-zone-size 6)
+	(up-build place-control 0 c: watch-tower))
+;(defrule
+;	(goal g-build watch-tower)
+;	(building-type-count watch-tower > 0)
+;=>
+;	(up-set-target-point p-enemy-x)
+;	(up-full-reset-search)
+;	(up-find-local c: mining-camp c: 4)
+;	(up-find-local c: lumber-camp c: 5)
+;	(up-find-local c: mill c: 5)
+;	(up-clean-search 
+;)
+
+;(defrule
+;	(goal g-build watch-tower)
+;	(can-build watch-tower)
+;=>
+;	(build watch-tower))
+(defrule
+	(goal g-build lumber-camp)
+	(can-build lumber-camp)
+=>
+	(build lumber-camp))
+(defrule
+	(goal g-build mining-camp)
+	(can-build mining-camp)
+=>
+	(build mining-camp))
+(defrule
+	(goal g-build blacksmith)
+	(unit-type-count lumberjack1 > 0)
+	(can-build blacksmith)
+=>
+	(up-set-placement-data my-player-number lumberjack1 c: 0)
+	(up-build place-control 0 c: blacksmith)
+	(up-jump-rule 2))
+(defrule
+	(goal g-build blacksmith)
+	(unit-type-count lumberjack2 > 0)
+	(can-build blacksmith)
+=>
+	(up-set-placement-data my-player-number lumberjack2 c: 0)
+	(up-build place-control 0 c: blacksmith)
+	(up-jump-rule 1))
+
+(defrule
+	(goal g-build blacksmith)
+	(can-build blacksmith)
+=>
+	(build blacksmith))
+
+(defrule
+	(goal g-build archery-range)
+	(can-build archery-range)
+=>
+	(build archery-range))
+(defrule
+	(goal g-build stable)
+	(can-build stable)
+=>
+	(build stable))
+(defrule
+	(goal g-build barracks)
+	(can-build barracks)
+=>
+	(build barracks))
+
+(defrule
+	(true)
+=>
+	(set-goal g-math-1 1)
+	(set-goal check-goal 0))
+(defrule
+	(true)
+=>
+	(up-reset-filters)
+	(up-reset-search 1 1 1 1)
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: farm c: 100)
+	(up-remove-objects search-local object-data-under-attack == 1)
+	(up-remove-objects search-local object-data-tasks-count > 0)
+	(set-goal check-goal 1))
+(defrule
+	(goal check-goal 1)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-build -1 -1)
+	(set-goal check-goal 2))
+
+(defrule
+	(up-find-local c: villager-class c: 100)
+	(goal check-goal 2)
+=>
+	(up-remove-objects search-local object-data-type == 212);female builder
+	(up-remove-objects search-local object-data-type == 118);male builder
+	(up-remove-objects search-local object-data-type == farmer1)
+	(up-remove-objects search-local object-data-type == farmer2)
+	(up-remove-objects search-local object-data-target == farm-class)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-remove-objects search-local object-data-attacker-count >= 1)
+	(set-goal check-goal 3))
+
+(defrule
+	(goal check-goal 3)
+=>
+;	(chat-to-player my-player-number "Build farm")
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index > 0)
+	(up-target-objects 1 action-default -1 -1))
+;---------------------------------------------------------------------------
+;farm placement
+
+;goals
+;g-math-1: index of food dropsites
+;g-math-2: type of dropsite
+
+(defrule
+	(true)
+=>
+	(set-goal g-math-1 0)
+	(set-goal g-math-4 0)
+	(set-goal check-goal 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+)
+
+(defrule
+	(goal g-build farm)
+=>
+	(up-find-local c: town-center c: 50)
+	(up-find-local c: civ-mill c: 50)
+	(up-set-target-point p-self-x)
+	(up-remove-objects search-local object-data-under-attack == 1)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(set-goal check-goal 1)
+)
+
+(defrule
+	(goal check-goal 1)
+	(up-set-target-object search-local g: g-math-1)
+=>
+	(set-goal g-math-4 0)
+	(up-get-rule-id g-jump-direct-1)
+	(set-goal check-goal 2)
+	(up-get-point position-object p-x-1)
+	(up-copy-point p-x-2 p-x-1)
+	(up-get-object-data object-data-type g-math-2))
+
+(defrule
+	(goal check-goal 2)
+	(up-can-build-line p-x-1 p-x-1 c: farm)
+=>
+	(set-goal check-goal 3)
+	(up-build-line p-x-1 p-x-1 c: farm)
+;	(up-chat-data-to-all "Distance from tc: %d" g: g-math-4)
+)
+
+;MILL 8 Positions around mill
+
+;Position 1: x, y + 2
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 1)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-1)
+	(up-modify-goal p-y-1 c:+ y-mill-1)
+	(up-jump-rule -2))
+;Position 2: x + 3, y + 2
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 2)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-2)
+	(up-modify-goal p-y-1 c:+ y-mill-2)
+	(up-jump-rule -3))
+
+;Position 3: x + 2, y - 1
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 3)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-3)
+	(up-modify-goal p-y-1 c:+ y-mill-3)
+	(up-jump-rule -4))
+
+;Position 4: x + 2, y - 4
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 4)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-4)
+	(up-modify-goal p-y-1 c:+ y-mill-4)
+	(up-jump-rule -5))
+
+
+;Position 5: x - 1, y - 3
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 5)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-5)
+	(up-modify-goal p-y-1 c:+ y-mill-5)
+	(up-jump-rule -6))
+
+;Position 6: x - 3,  y
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 6)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-6)
+	(up-modify-goal p-y-1 c:+ y-mill-6)
+	(up-jump-rule -7))
+
+;Position 7: x - 4, y - 3
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 7)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-7)
+	(up-modify-goal p-y-1 c:+ y-mill-7)
+	(up-jump-rule -8))
+
+
+;position 8: x - 3, y + 3
+
+(defrule
+	(goal g-math-2 civ-mill)
+	(up-compare-goal g-math-4 < 8)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ x-mill-8)
+	(up-modify-goal p-y-1 c:+ y-mill-8)
+	(up-jump-rule -9))
+
+
+
+;TOWN CENTER, 8 positions around town center
+
+
+
+
+
+;position 1: x + 3, y (Works)
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 1)
+	(goal check-goal 2)
+=>
+;	(chat-to-player my-player-number "first farm placement check")
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 3)
+	(up-modify-goal p-y-1 c:+ 0)
+	(up-jump-rule -10))
+;position 2: x - 1, y + 3 (Works)
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 2)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -1)
+	(up-modify-goal p-y-1 c:+ 3)
+	(up-jump-rule -11))
+
+;position 3: x + 2, y + 3 (Works)
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 3)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 2)
+	(up-modify-goal p-y-1 c:+ 3)
+	(up-jump-rule -12))
+
+;position 4: x + 3, y - 3 (Works)
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 4)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 3)
+	(up-modify-goal p-y-1 c:+ -3)
+	(up-jump-rule -13))
+
+
+;position 5: x - 4, y - 1 (Works)
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 5)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -4)
+	(up-modify-goal p-y-1 c:+ -1)
+	(up-jump-rule -14))
+
+
+;position 6: x, y - 4 (Works)
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 6)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 0)
+	(up-modify-goal p-y-1 c:+ -4)
+	(up-jump-rule -15))
+
+;position 7: x - 4, y + 2 (Works)
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 7)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -4)
+	(up-modify-goal p-y-1 c:+ 2)
+	(up-jump-rule -16))
+
+
+;position 8: x - 3, y - 4 (Works)
+
+(defrule
+	(goal g-math-2 town-center)
+	(up-compare-goal g-math-4 < 8)
+	(goal check-goal 2)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-4 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -3)
+	(up-modify-goal p-y-1 c:+ -4)
+	(up-jump-rule -17))
+
+
+(defrule
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 1)
+	(up-modify-goal g-math-1 c:+ 1)
+	(up-jump-direct g: g-jump-direct-1)
+)
+(defrule
+	(up-compare-goal check-goal != 3)
+	(goal g-build farm)
+	(can-build farm)
+=>
+	(chat-to-player my-player-number "normal farm placement")
+	(build farm))
+
+(defrule
+	(goal g-build market)
+	(can-build market)
+=>
+	(set-strategic-number sn-placement-to-center 1)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(set-strategic-number sn-placement-zone-size 40)
+	(up-set-placement-data my-player-number -1 c: -120)
+	(up-build place-control 0 c: market))
+
+
+(defrule
+	(goal g-build university)
+	(can-build university)
+=>
+	(build university))
+
+;-------------------------------------FISH TRAPS-------------------------------------
+
+(defrule
+;	(goal g-fifth-turn 1)
+	(unit-type-count fishing-ship > 0)
+	(goal g-build no)
+=>
+	(up-full-reset-search)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-filter-exclude -1 actionid-gather orderid-build -1)
+)
+
+(defrule
+;	(goal g-fifth-turn 1)
+	(unit-type-count fishing-ship > 0)
+	(goal g-build no)
+	(up-find-local c: fishing-ship c: 1)
+=>
+	(set-goal g-build fish-trap)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-map-zone-id g-math-1)
+	(up-get-object-data object-data-id g-current-unit-id)
+;	(up-chat-data-to-player my-player-number "zone id %d" g: g-math-1)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 40)
+	(up-filter-status c: status-gather c: list-inactive)
+	(up-find-resource c: ocean-fish-class c: 30)
+	(up-find-resource c: shore-fish-class c: 10)
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-filter-status c: status-ready c: list-active)
+	(up-find-status-remote c: fish-trap c: 40)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-remote c: fish-trap c: 40)
+	(up-remove-objects search-remote object-data-tasks-count > 0)
+	(up-remove-objects search-remote object-data-under-attack == 1)
+	(up-remove-objects search-remote object-data-map-zone-id g:!= g-math-1)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+)
+
+(defrule
+	(goal g-build fish-trap)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal g-build no)
+	(chat-to-player my-player-number "found fish or trap")
+	(set-strategic-number sn-keystates 2)
+	(up-target-objects 1 action-default -1 -1)
+	(set-strategic-number sn-keystates 0)
+)
+(defrule
+	(goal g-build fish-trap)
+	(unit-type-count fishing-ship > 4)
+=>
+	(up-modify-flag f-map-type c:- fv-fish-map)
+	(disable-self)
+)
+(defrule
+	(goal g-build fish-trap)
+	(research-completed ri-crop-rotation)
+	(population > 190)
+=>
+	(up-target-point p-self-x action-delete -1 -1)
+	(set-goal g-build no)
+)
+(defrule
+	(goal g-build fish-trap)
+	(can-afford-building fish-trap)
+	(building-available fish-trap)
+	(building-type-count dock > 0)
+	(building-type-count town-center > 0)
+	(or	(strategic-number sn-food-wood-comparison >= -250)
+		(wood-amount >= 300))
+=>
+	(set-goal check-goal -1)
+	(set-goal g-math-1 0)
+	(up-reset-search 1 1 1 1)
+	(up-set-target-point p-x-1)
+	(up-filter-status c: status-ready c: list-active)
+	(up-find-status-local c: dock c: 10)
+	(up-remove-objects search-local object-data-under-attack == 1)
+	(up-remove-objects search-remote object-data-map-zone-id g:!= g-math-1)
+	(up-clean-search search-local object-data-full-distance search-order-asc)
+)
+(defrule
+	(goal g-build fish-trap)
+	(goal check-goal -1)
+	(up-set-target-object search-local g: g-math-1)
+=>
+	(set-goal check-goal 1)
+	(set-goal g-math-2 0)
+	(up-get-rule-id g-jump-direct-1)
+	(up-get-rule-id g-jump-direct-2)
+	(up-modify-goal g-jump-direct-2 c:+ 1)
+	(up-get-point position-object p-x-1)
+	(up-copy-point p-x-2 p-x-1))
+
+(defrule
+	(goal check-goal 1)
+	(goal g-build fish-trap)
+	(up-can-build-line p-x-1 p-x-1 c: fish-trap)
+=>
+	(set-goal check-goal 2)
+	(set-goal g-build no)
+	(up-build-line p-x-1 p-x-1 c: fish-trap)
+)
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 1)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 0)
+	(up-modify-goal p-y-1 c:+ 3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 2)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 0)
+	(up-modify-goal p-y-1 c:+ -3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 3)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -3)
+	(up-modify-goal p-y-1 c:+ 0)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 4)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 3)
+	(up-modify-goal p-y-1 c:+ 0)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 5)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -3)
+	(up-modify-goal p-y-1 c:+ -1)
+	(up-jump-direct g: g-jump-direct-2))
+
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 6)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -3)
+	(up-modify-goal p-y-1 c:+ 1)
+	(up-jump-direct g: g-jump-direct-2))
+
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 7)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -1)
+	(up-modify-goal p-y-1 c:+ -3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 8)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -1)
+	(up-modify-goal p-y-1 c:+ 3)
+	(up-jump-direct g: g-jump-direct-2))
+
+
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 9)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 1)
+	(up-modify-goal p-y-1 c:+ -3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 10)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 1)
+	(up-modify-goal p-y-1 c:+ 3)
+	(up-jump-direct g: g-jump-direct-2))
+
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 11)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 3)
+	(up-modify-goal p-y-1 c:+ -1)
+	(up-jump-direct g: g-jump-direct-2))
+
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 12)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 3)
+	(up-modify-goal p-y-1 c:+ 1)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 13)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 3)
+	(up-modify-goal p-y-1 c:+ 3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 14)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -3)
+	(up-modify-goal p-y-1 c:+ -3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 15)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ 3)
+	(up-modify-goal p-y-1 c:+ -3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal g-build fish-trap)
+	(up-compare-goal g-math-2 < 16)
+	(goal check-goal 1)
+=>
+	(up-copy-point p-x-1 p-x-2)
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-modify-goal p-x-1 c:+ -3)
+	(up-modify-goal p-y-1 c:+ 3)
+	(up-jump-direct g: g-jump-direct-2))
+(defrule
+	(goal check-goal 1)
+	(goal g-build fish-trap)
+=>
+	(set-goal check-goal 0)
+	(up-modify-goal g-math-1 c:+ 1)
+	(up-jump-direct g: g-jump-direct-1)
+)
+(defrule
+	(goal g-build fish-trap)
+	(population > 190)
+=>
+	(up-full-reset-search)
+	(chat-to-player my-player-number "delete excess fishing ship")
+	(up-add-object-by-id search-local g: g-current-unit-id)
+	(up-target-point p-self-x action-delete -1 -1)
+)
+
+(defrule
+	(goal g-build settlement)
+	(strategic-number sn-preferred-settlement-placement == 3)
+=>
+	(up-modify-sn sn-camp-max-distance s:= sn-lumber-camp-max-distance))
+
+(defrule
+	(goal g-build settlement)
+	(strategic-number sn-preferred-settlement-placement >= 4)
+	(strategic-number sn-preferred-settlement-placement <= 5)
+=>
+	(up-modify-sn sn-camp-max-distance s:= sn-mining-camp-max-distance))
+
+(defrule
+	(goal g-build settlement)
+	(strategic-number sn-preferred-settlement-placement == 6)
+=>
+	(up-modify-sn sn-camp-max-distance s:= sn-mill-max-distance))
+(defrule
+	(building-type-count-total town-center == 0)
+=>
+	(set-strategic-number sn-lumber-camp-max-distance 0))

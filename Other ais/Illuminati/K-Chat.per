@@ -1,0 +1,522 @@
+; ==== GENERAL ====
+#load-if-not-defined UP-2-PLAYER-GAME
+(defrule
+	(goal G-alpha-illu 1)
+	(player-resigned any-enemy)
+	(game-time > 10)
+	=>
+	(chat-to-all "17gg")
+	(disable-self))
+#end-if
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 8100); 2:15:00
+	=>
+	(chat-to-all "gg gb no re i go eat")
+	(disable-self))
+
+#load-if-not-defined UP-MULTIPLE-ENEMIES
+(defrule
+	(goal G-boarsteal GV-attack-boar)
+	=>
+	(chat-to-all "Don't mind if I do!")
+	(up-send-flare P-scout-x)
+	(disable-self))
+#end-if
+(defrule
+	(up-compare-goal G-heretic > 0)
+	(goal G-monks 1)
+	=>
+	(chat-to-all "HERETIC!")
+	(disable-self))
+(defrule
+	(goal G-alpha-illu 1)
+	(up-research-status c: ri-illumination == research-complete)
+	=>
+	(chat-to-all "Illumination research complete.")
+	(disable-self))
+
+
+; == TAUNT 123 ==
+(defrule
+	(or	(taunt-detected any-ally 123)
+		(taunt-detected any-enemy 123))
+	=>
+	(acknowledge-taunt this-any-ally 123)
+	(acknowledge-taunt this-any-enemy 123)
+	(chat-to-all "confirmed."))
+
+; ==== INTERACT WITH OTHER AIS ====
+
+
+; ==== 250 -- CHAT STRATEGY ====
+#load-if-defined UP-2-PLAYER-GAME
+(defrule
+	(nor	(taunt-detected any-computer-enemy 250)
+		(taunt-detected my-player-number 250))
+	(up-compare-goal J-250 > 0)
+	=>
+	(up-jump-direct g: J-250))
+#else
+(defrule
+	(nor	(taunt-detected any-ally 250)
+		(taunt-detected my-player-number 250))
+	(up-compare-goal J-250 > 0)
+	=>
+	(up-jump-direct g: J-250))
+#end-if
+;------------------------------------------------------------------------
+(defrule
+	(goal G-strat GV-grush)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Grush")
+	(chat-to-player my-player-number "current strategy: Grush")
+	(chat-to-allies "current strategy: Grush"))
+(defrule
+	(goal G-strat GV-civ-lategame)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Civ-specific Lategame")
+	(chat-to-player my-player-number "current strategy: Civ-specific Lategame")
+	(chat-to-allies "current strategy: Civ-specific Lategame"))
+(defrule
+	(goal G-strat GV-mlp)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: My Little Pony")
+	(chat-to-player my-player-number "current strategy: My Little Pony")
+	(chat-to-allies "current strategy: My Little Pony"))
+(defrule
+	(goal G-strat GV-trashflood)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Trashflood")
+	(chat-to-player my-player-number "current strategy: Trashflood")
+	(chat-to-allies "current strategy: Trashflood"))
+(defrule
+	(goal G-strat GV-rangedflush)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Ranged Flush")
+	(chat-to-player my-player-number "current strategy: Ranged Flush")
+	(chat-to-allies "current strategy: Ranged Flush"))
+(defrule
+	(goal G-strat GV-vanguard)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: M@A Flush")
+	(chat-to-player my-player-number "current strategy: M@A Flush")
+	(chat-to-allies "current strategy: M@A Flush"))
+(defrule
+	(goal G-strat GV-ca)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Cav Archers")
+	(chat-to-player my-player-number "current strategy: Cav Archers")
+	(chat-to-allies "current strategy: Cav Archers"))
+(defrule
+	(goal G-strat GV-krush)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Krush")
+	(chat-to-player my-player-number "current strategy: Krush")
+	(chat-to-allies "current strategy: Krush"))
+(defrule
+	(goal G-strat GV-ele)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Elephants")
+	(chat-to-player my-player-number "current strategy: Elephants")
+	(chat-to-allies "current strategy: Elephants"))
+(defrule
+	(goal G-strat GV-horsecock)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Horsecock")
+	(chat-to-player my-player-number "current strategy: Horsecock")
+	(chat-to-allies "current strategy: Horsecock"))
+(defrule
+	(up-compare-goal G-strat < 1)
+;	(up-compare-goal G-build-order < 1)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy? I haven't decided yet.")
+	(chat-to-player my-player-number "current strategy? I haven't decided yet.")
+	(chat-to-allies "current strategy? I haven't decided yet."))
+(defrule
+	(goal G-strat GV-xbows)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Mass Xbows")
+	(chat-to-player my-player-number "current strategy: Mass Xbows")
+	(chat-to-allies "current strategy: Mass Xbows"))
+(defrule
+	(goal G-strat GV-klew)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Eagle Rush")
+	(chat-to-player my-player-number "current strategy: Eagle Rush")
+	(chat-to-allies "current strategy: Eagle Rush"))
+; (defrule
+; 	(goal G-strat GV-smushboom)
+; 	(or	(taunt-detected any-ally 250)
+; 		(or	(taunt-detected my-player-number 250)
+; 			(and	(taunt-detected any-computer-enemy 250)
+; 				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+; 	=>
+; 	(acknowledge-taunt every-ally 250)
+; 	(acknowledge-taunt every-enemy 250)
+; 	(acknowledge-taunt my-player-number 250)
+; 	(chat-to-player this-any-computer-enemy "current strategy: Smush")
+; 	(chat-to-player my-player-number "current strategy: Smush")
+; 	(chat-to-allies "current strategy: Smush"))
+(defrule
+	(goal G-strat GV-boom)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Boom")
+	(chat-to-player my-player-number "current strategy: Boom")
+	(chat-to-allies "current strategy: Boom."))
+(defrule
+	(goal G-strat GV-monks-only)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Monks only!")
+	(chat-to-player my-player-number "current strategy: Monks only!")
+	(chat-to-allies "current strategy: Monks only!"))
+(defrule
+	(goal G-strat GV-eagleflood)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Eagle Flood")
+	(chat-to-player my-player-number "current strategy: Eagle Flood")
+	(chat-to-allies "current strategy: Eagle Flood"))
+(defrule
+	(goal G-strat GV-trashwar)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Trash War")
+	(chat-to-player my-player-number "current strategy: Trash War")
+	(chat-to-allies "current strategy: Trash War"))
+(defrule
+	(goal G-strat GV-klewproper)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: KLEW!")
+	(chat-to-player my-player-number "current strategy: KLEW!")
+	(chat-to-allies "current strategy: KLEW!"))
+(defrule
+	(or	(goal G-strat GV-cdrop)
+		(goal G-strat GV-cdropproper))
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Castle Drop")
+	(chat-to-player my-player-number "current strategy: Castle Drop")
+	(chat-to-allies "current strategy: Castle Drop"))
+(defrule
+	(goal G-strat GV-unique)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Unique units")
+	(chat-to-player my-player-number "current strategy: Unique units")
+	(chat-to-allies "current strategy: Unique units"))
+(defrule
+	(or	(goal G-strat GV-longswords)
+		(goal G-strat GV-champflood))
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Champflood")
+	(chat-to-player my-player-number "current strategy: Champflood")
+	(chat-to-allies "current strategy: Champflood"))
+(defrule
+	(goal G-strat GV-krushboom)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Krushboom")
+	(chat-to-player my-player-number "current strategy: Krushboom")
+	(chat-to-allies "current strategy: Krushboom"))
+(defrule
+	(goal G-strat GV-siegehalbs)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Siege + Halbs")
+	(chat-to-player my-player-number "current strategy: Siege + Halbs")
+	(chat-to-allies "current strategy: Siege + Halbs"))
+(defrule
+	(goal G-strat GV-siegewoads)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Siege + Woads")
+	(chat-to-player my-player-number "current strategy: Siege + Woads")
+	(chat-to-allies "current strategy: Siege + Woads"))
+(defrule
+	(goal G-strat GV-monkflood)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: Monkflood!")
+	(chat-to-player my-player-number "current strategy: Monkflood!")
+	(chat-to-allies "current strategy: Monkflood!"))
+(defrule
+	(goal G-strat GV-ak47)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: AK-47")
+	(chat-to-player my-player-number "current strategy: AK-47")
+	(chat-to-allies "current strategy: AK-47"))
+(defrule
+	(goal G-strat GV-skirmflush)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: skirm flush")
+	(chat-to-player my-player-number "current strategy: skirm flush")
+	(chat-to-allies "current strategy: skirm flush"))
+(defrule
+	(goal G-strat GV-thunderdome)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: thunderdome")
+	(chat-to-player my-player-number "current strategy: thunderdome")
+	(chat-to-allies "current strategy: thunderdome"))
+(defrule
+	(goal G-strat GV-open-douche)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: douche")
+	(chat-to-player my-player-number "current strategy: douche")
+	(chat-to-allies "current strategy: douche"))
+(defrule
+	(goal G-strat GV-vill-rush)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: vill rush")
+	(chat-to-player my-player-number "current strategy: vill rush")
+	(chat-to-allies "current strategy: vill rush"))
+(defrule
+	(goal G-strat GV-sling)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: sling")
+	(chat-to-player my-player-number "current strategy: sling")
+	(chat-to-allies "current strategy: sling"))
+(defrule
+	(goal G-strat GV-firelancers)
+	(or	(taunt-detected any-ally 250)
+		(or	(taunt-detected my-player-number 250)
+			(and	(taunt-detected any-computer-enemy 250)
+				(up-compare-goal G-gametype == GAMETYPE-1v1))))
+	=>
+	(acknowledge-taunt every-ally 250)
+	(acknowledge-taunt every-enemy 250)
+	(acknowledge-taunt my-player-number 250)
+	(chat-to-player this-any-computer-enemy "current strategy: F1re lancers")
+	(chat-to-player my-player-number "current strategy: F1re lancers")
+	(chat-to-allies "current strategy: F1re lancers"))
+;------------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-250)
+	(disable-self))
+; ==== FORCED STRATEGY ====
+; #load-if-defined UP-2-PLAYER-GAME
+; (defrule
+; 	(or	(taunt-detected any-enemy 120)
+; 		(taunt-detected my-player-number 120))
+; 	(goal G-age 1)
+; 	(up-compare-goal G-eco-balance != GV-early-feudal)
+; 	(up-compare-goal G-force-tc-idle != 1)
+; 	=>
+; 	(acknowledge-taunt this-any-enemy 120)
+; 	(acknowledge-taunt my-player-number 120)
+; 	(chat-to-all "1Monks only. Challenge accepted.")
+; 	(set-goal G-strat GV-monks-only)
+; 	(set-goal G-locked-strat 1)
+; 	(disable-self))
+; #end-if

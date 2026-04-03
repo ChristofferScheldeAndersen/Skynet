@@ -1,0 +1,151 @@
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-dock-training-filter 0)
+	(up-setup-cost-data 0 g-food-available)
+)
+(defrule
+	(can-train trade-cart)
+	(civilian-population < 160)
+	(players-unit-type-count any-ally market > 0)
+	(unit-type-count-total trade-cart < 30)
+	(or	(civilian-population < 125)
+		(up-compare-goal g-research-status < research-complete))
+	(xor	(and	(building-type-count town-center > 0)
+			(dropsite-min-distance wood < 7))
+		(unit-type-count-total villager == 0))
+=>
+	(train trade-cart)
+	(up-add-object-cost c: trade-cart c: -1)
+)
+
+(defrule
+	(can-train trade-cog)
+	(civilian-population < 160)
+	(players-unit-type-count any-ally dock > 0)
+	(unit-type-count-total trade-cog < 3)
+	(or	(civilian-population < 125)
+		(up-compare-goal g-research-status < research-complete))
+	(xor	(and	(building-type-count town-center > 0)
+			(dropsite-min-distance wood < 7))
+		(unit-type-count-total villager == 0))
+=>
+	(set-strategic-number sn-dock-training-filter 1)
+	(train trade-cog)
+	(up-add-object-cost c: trade-cog c: -1)
+)
+
+(defrule
+	(civilian-population < 150)
+	(can-train fishing-ship)
+	(or	(current-age < castle-age)
+		(wood-amount > 400))
+	(up-compare-flag f-map-type == fv-fish-map)
+	(unit-type-count-total fishing-ship < 40)
+	(or	(civilian-population < 120)
+		(up-compare-goal g-research-status < research-complete))
+	(building-type-count town-center > 0)
+	(dropsite-min-distance wood < 5)
+	(or	(wood-amount > 240)
+		(up-research-status c: feudal-age != research-pending))
+	(or	(building-type-count-total blacksmith > 0)
+		(current-age < feudal-age))
+=>
+	(set-strategic-number sn-dock-training-filter 0)
+	(train fishing-ship)
+	(up-add-object-cost c: fishing-ship c: -1)
+)
+
+(defrule
+	(civilian-population < 150)
+	(unit-type-count-total villager < 140)
+	(or	(civilian-population < 120)
+		(up-compare-goal g-research-status < research-complete))
+	(or	(up-research-status c: feudal-age >= research-pending)
+		(unit-type-count-total villager < 40))
+	(up-can-train g-enable-escrow-vills c: villager)
+=>
+	(up-train g-enable-escrow-vills c: villager)
+	(enable-timer t-drop-food 21)
+	(up-add-object-cost c: villager c: -1)
+
+)
+(defrule
+	(up-compare-flag f-siege-allowed == fv-trebs)
+	(can-train trebuchet)
+=>
+	(up-add-object-cost c: trebuchet c: -1)
+	(train trebuchet)
+)
+
+(defrule
+	(up-compare-flag f-monks-allowed == fv-monks)
+	(can-train monk)
+=>
+	(up-add-object-cost c: monk c: -1)
+	(train monk)
+)
+
+(defrule
+	(up-compare-flag f-siege-allowed == fv-bombard-cannons)
+	(can-train bombard-cannon)
+=>
+	(up-add-object-cost c: bombard-cannon c: -1)
+	(train bombard-cannon)
+)
+
+
+(defrule
+	(up-compare-flag f-siege-allowed == fv-rams)
+	(can-train ram-unit)
+=>
+	(up-add-object-cost c: ram-unit c: -1)
+	(train ram-unit)
+)
+
+(defrule
+	(up-compare-flag f-siege-allowed == fv-mangonels)
+	(can-train mangonel-line)
+=>
+	(up-add-object-cost c: mangonel-line c: -1)
+	(train mangonel-line)
+)
+
+
+(defrule
+	(up-compare-flag f-siege-allowed == fv-scorpions)
+	(can-train scorpion-line)
+=>
+	(up-add-object-cost c: scorpion-line c: -1)
+	(train scorpion-line)
+)
+
+(defrule
+	(goal g-second-turn 1)
+	(up-compare-goal my-best-ranged-unit != -1)
+	(up-can-train 0 g: my-best-ranged-unit)
+=>
+	(up-add-object-cost g: my-best-ranged-unit c: -1)
+	(up-train g-without-escrow g: my-best-ranged-unit)
+)
+(defrule
+	(goal g-second-turn 0)
+	(up-compare-goal my-best-melee-unit != -1)
+	(up-can-train 0 g: my-best-melee-unit)
+=>
+	(up-add-object-cost g: my-best-melee-unit c: -1)
+	(up-train g-without-escrow g: my-best-melee-unit)
+)
+
+
+
+
+
+
+
+
+
+
+
+

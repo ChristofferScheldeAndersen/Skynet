@@ -1,0 +1,172 @@
+(defrule
+	(game-time >= 240)
+	(goal g-fifth-turn 1)
+=>
+	(up-full-reset-search)
+	(up-copy-point p-x-1 p-self-x)
+	(up-modify-goal p-x-1 c:- 1)
+	(up-modify-goal p-y-1 c:+ 2)
+	(up-set-group search-local c: sheep-scout-group)
+	(up-remove-objects search-local object-data-player != my-player-number);don't cheat
+	(up-target-point p-x-1 action-default -1 -1) 
+	(up-full-reset-search)
+	(up-modify-group-flag 0 c: sheep-scout-group)
+	(up-reset-group c: sheep-scout-group)
+	(up-create-group 0 0 c: sheep-scout-group)
+	(up-modify-group-flag 1 c: sheep-scout-group)
+	(disable-self)
+)
+
+
+(defrule
+	(game-time < 240)
+	(goal g-fifth-turn 1)
+=>
+	(up-full-reset-search)
+	(up-copy-point p-x-1 p-self-x)
+	(up-modify-goal p-x-1 c:- 2)
+	(up-modify-goal p-y-1 c:+ 1)
+	(up-set-group search-local c: sheep-scout-group)
+	(up-remove-objects search-local object-data-player != my-player-number);don't cheat
+	(up-target-point p-x-1 action-move -1 -1))
+
+(defrule
+	(game-time < 240)
+	(goal g-fifth-turn 1)
+=>
+	(set-goal g-math-2 8)
+	(set-goal check-goal 0)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-modify-goal g-math-2 c:* -1)
+	(up-full-reset-search)
+	(up-find-local c: livestock-class c: 10)
+	(up-get-search-state lt)
+	(up-modify-goal g-math-3 g:= lt)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: -1 c: 10)
+	(up-filter-status c: status-gather c: list-inactive)
+	(up-find-status-remote c: livestock-class c: 10)
+	(up-find-status-remote c: wild-animals-class c: 10)
+	(up-find-status-remote c: prey-animals-class c: 10)
+	(up-remove-objects search-remote object-data-carry < 35)
+	(up-clean-search search-local object-data-distance search-order-asc)
+	(up-get-search-state lt)
+	(up-modify-goal g-math-3 g:+ rt)
+)
+
+(defrule
+	(game-time < 240)
+	(goal g-fifth-turn 1)
+;	(up-compare-goal lt > 2)
+	(up-compare-goal rt < 2)
+=>
+	(up-remove-objects search-local object-data-index < 1)
+)
+
+
+
+
+(defrule
+	(game-time < 240)
+	(goal g-fifth-turn 1)
+	(up-compare-goal g-math-3 > 1)
+=>
+;	(up-set-target-point p-self-x)
+	(up-clean-search search-local -1 search-order-asc)
+;	(up-remove-objects search-local object-data-index < 1)
+	(up-modify-group-flag 0 c: sheep-scout-group)
+	(up-reset-group c: sheep-scout-group)
+	(up-create-group 0 0 c: sheep-scout-group)
+	(up-modify-group-flag 1 c: sheep-scout-group)
+)
+
+(defrule
+	(game-time < 240)
+	(goal g-fifth-turn 1)
+	(up-group-size c: sheep-scout-group > 0)
+=>
+	(up-full-reset-search)
+	(set-goal g-math-1 0)
+)
+
+(defrule
+	(game-time < 240)
+	(up-group-size c: sheep-scout-group > 0)
+	(goal g-fifth-turn 1)
+=>
+	(up-set-group search-local c: sheep-scout-group)
+	(up-remove-objects search-local object-data-player != my-player-number);don't cheat
+	(up-get-search-state lt)
+)
+
+(defrule
+	(game-time < 240)
+	(up-group-size c: sheep-scout-group > 0)
+	(goal g-fifth-turn 1)
+	(up-set-target-object search-local g: g-math-1)
+	(up-compare-goal g-math-1 g:< lt)
+=>
+	(up-set-group search-local c: sheep-scout-group)
+	(up-remove-objects search-local object-data-player != my-player-number);don't cheat
+	(up-remove-objects search-local object-data-index g:!= g-math-1)
+	(up-get-point position-object p-x-2)
+	(up-cross-tiles p-x-2 p-self-x g: g-math-2)
+	(up-bound-precise-point p-x-2 0 c: 2)
+)
+(defrule
+	(game-time < 240)
+	(up-group-size c: sheep-scout-group > 0)
+	(goal g-fifth-turn 1)
+	(up-point-distance p-x-2 p-self-x > 5)
+	(up-point-explored p-self-x != explored-no)
+	(up-point-explored p-x-2 == explored-no)
+	(up-compare-goal g-math-1 g:< lt)
+=>
+	(up-lerp-tiles p-x-2 p-self-x c: 1)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(game-time < 240)
+	(up-group-size c: sheep-scout-group > 0)
+	(goal g-fifth-turn 1)
+	(up-compare-goal g-math-1 g:< lt)
+=>
+	(up-lerp-tiles p-x-2 p-self-x c: -4)
+)
+
+(defrule
+	(game-time < 240)
+	(up-group-size c: sheep-scout-group > 0)
+	(goal g-fifth-turn 1)
+	(or	(up-point-contains p-x-2 c: trees-class)
+		(up-point-contains p-x-2 c: forage-bush-class))
+	(up-compare-goal g-math-1 g:< lt)
+=>
+	(up-lerp-tiles p-x-2 p-self-x c: -2)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(game-time < 240)
+	(up-group-size c: sheep-scout-group > 0)
+	(goal g-fifth-turn 1)
+	(up-compare-goal g-math-1 g:< lt)
+=>
+	(up-bound-precise-point p-x-2 0 c: 2)
+	(up-target-point p-x-2 action-default -1 -1)
+)
+
+(defrule
+	(game-time < 240)
+	(up-group-size c: sheep-scout-group > 0)
+	(goal g-fifth-turn 1)
+	(up-compare-goal g-math-1 g:< lt)
+=>
+	(up-set-group search-local c: sheep-scout-group)
+	(up-remove-objects search-local object-data-player != my-player-number);don't cheat
+	(up-get-search-state lt)
+	(up-modify-goal g-math-2 c:* -1)
+	(up-modify-goal g-math-1 c:+ 1)
+	(up-jump-rule -6)
+)

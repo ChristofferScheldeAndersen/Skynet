@@ -1,0 +1,5747 @@
+(defconst fire-lancer-weight -800)
+(defconst mounted-trebuchet-weight -800)
+(defconst champi-scout-weight -800)
+
+(defconst catapult-galleon 2633)
+
+(defconst drush-boost 0)
+
+(defconst farmer-threshold 0)
+(defconst farm-2-pasture-1 2)
+(defconst farm-4-pasture-2 4)
+(defconst farm-8-pasture-4 8)
+(defconst farm-10-pasture-5 10)
+(defconst farm-20-pasture-10 20)
+(defconst bld-farm-or-pasture farm)
+
+(defconst lc-cost 100)
+
+(defconst my-special-unit 0)
+(defconst my-special-unit-weight -800)
+(defconst special-unit-upgrade 0)
+(defconst special-unit-armour1 0)
+(defconst special-unit-armour2 0)
+(defconst special-unit-armour3 0)
+(defconst special-unit-attack1 0)
+(defconst special-unit-attack2 0)
+(defconst special-unit-attack3 0)
+(defconst special-unit-choice1 0)
+(defconst special-unit-choice2 0)
+(defconst special-unit-choice3 0)
+
+#load-if-defined ARMENIANS-CIV
+
+(defconst lc-cost 80)
+
+(defconst militiaman-weight 85)
+(defconst spearman-weight 55)
+(defconst condottiero-weight 15)
+(defconst archer-weight 40)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight -10)
+(defconst genitour-weight 30)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 10)
+(defconst knight-weight 30)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 80)
+(defconst scorpion-weight 0)
+(defconst mangonel-weight 10)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 45)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 6)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 12)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 knight-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 knight-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 45)
+(defconst castle-military-boost 30)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 0)
+(defconst full-navy-boost 45)
+
+#end-if
+
+#load-if-defined AZTEC-CIV
+
+(defconst militiaman-weight 60)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 35)
+(defconst archer-weight 20)
+(defconst skirmisher-weight 10)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 20)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight -800)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 75)
+(defconst scorpion-weight 5)
+(defconst mangonel-weight 35)
+(defconst eagle-weight 45)
+
+(defconst galley-weight 15)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 45)
+(defconst demo-ship-weight 5)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit eagle-warrior-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 0)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 0)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 7)
+
+(defconst max-imperial-barracks 7)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 0)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit eagle-warrior-line)
+(defconst anti-archer-castle-unit eagle-warrior-line)
+(defconst anti-archer-imperial-unit eagle-warrior-line)
+
+(defconst anti-cavalry-feudal-unit eagle-warrior-line)
+(defconst anti-cavalry-castle-unit eagle-warrior-line)
+(defconst anti-cavalry-imperial-unit eagle-warrior-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defconst dromon catapult-galleon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 60)
+(defconst castle-military-boost 15)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 15)
+
+#end-if
+
+#load-if-defined BENGALIS-CIV
+
+(defconst militiaman-weight 25)
+(defconst spearman-weight 15)
+(defconst condottiero-weight 5)
+(defconst archer-weight 25)
+(defconst skirmisher-weight 15)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 35)
+(defconst elephant-archer-weight 60)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 15)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight 55)
+(defconst monk-weight 50)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle armored-elephant-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 0)
+(defconst sling-boost 0)
+(defconst castle-military-boost 30)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+(defconst militiaman-weight 35)
+(defconst spearman-weight 0)
+(defconst condottiero-weight 10)
+(defconst archer-weight 25)
+(defconst skirmisher-weight 30)
+(defconst cavalry-archer-weight 40)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight 40)
+(defconst camel-weight 55)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 35)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 45)
+(defconst demo-ship-weight 35)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 30)
+(defconst sling-boost 30)
+(defconst castle-military-boost 60)
+(defconst boom-boost 15)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined BOHEMIANS-CIV
+
+(defconst militiaman-weight 40)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 15)
+(defconst archer-weight 40)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 30)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 65)
+(defconst scout-cavalry-weight -20)
+(defconst knight-weight 5)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 60)
+(defconst scorpion-weight 35)
+(defconst mangonel-weight 35)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 45)
+(defconst fire-ship-weight 10)
+(defconst hulk-weight 50)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-archery)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon-line)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 0)
+(defconst sling-boost 60)
+(defconst castle-military-boost 60)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 45)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined BRITON-CIV
+
+(defconst militiaman-weight 40)
+(defconst spearman-weight 25)
+(defconst condottiero-weight 15)
+(defconst archer-weight 65)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight 20)
+(defconst genitour-weight 25)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 5)
+(defconst knight-weight 25)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 20)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 10)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 0)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 5)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 4)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 4)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit archer-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit archer-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit archer-line)
+(defconst anti-archer-castle-unit archer-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 0)
+(defconst castle-military-boost 45)
+(defconst boom-boost 45)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined BULGARIANS-CIV
+
+(defconst militiaman-weight 75)
+(defconst spearman-weight 50)
+(defconst condottiero-weight 40)
+(defconst archer-weight -20)
+(defconst skirmisher-weight 25)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 45)
+(defconst knight-weight 55)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 10)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 40)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 45)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 60)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 2)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 7)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 5)
+(defconst max-imperial-monasteries 4)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit eagle-warrior-line)
+(defconst anti-archer-castle-unit eagle-warrior-line)
+(defconst anti-archer-imperial-unit eagle-warrior-line)
+
+(defconst anti-cavalry-feudal-unit eagle-warrior-line)
+(defconst anti-cavalry-castle-unit eagle-warrior-line)
+(defconst anti-cavalry-imperial-unit eagle-warrior-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 4500);45
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined BURGUNDIANS-CIV
+
+(defconst militiaman-weight 50)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 30)
+(defconst archer-weight 10)
+(defconst skirmisher-weight 10)
+(defconst cavalry-archer-weight -20)
+(defconst genitour-weight 20)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 70)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight 80)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 40)
+(defconst scorpion-weight -20)
+(defconst mangonel-weight 0)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 60)
+(defconst castle-military-boost 60)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+(defconst militiaman-weight 50)
+(defconst spearman-weight 35)
+(defconst condottiero-weight 25)
+(defconst archer-weight -5)
+(defconst skirmisher-weight 0)
+(defconst cavalry-archer-weight 35)
+(defconst genitour-weight 45)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight 40)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight 50)
+(defconst monk-weight 60)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 5)
+
+(defconst max-castle-barracks 4)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 7)
+(defconst max-imperial-archery-ranges 3)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 7)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 skirmisher-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit battle-elephant-line)
+(defconst anti-cavalry-imperial-unit battle-elephant-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit knight-line)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 30)
+(defconst castle-military-boost 60)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+(defconst militiaman-weight 25)
+(defconst spearman-weight 25)
+(defconst condottiero-weight 0)
+(defconst archer-weight 45)
+(defconst skirmisher-weight 45)
+(defconst cavalry-archer-weight 20)
+(defconst genitour-weight 55)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight 10)
+(defconst knight-weight 30)
+(defconst camel-weight 25)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 55)
+(defconst scorpion-weight -20)
+(defconst mangonel-weight 0)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 55)
+(defconst hulk-weight 20)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit skirmisher-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 7)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 archer-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 archer-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 0)
+(defconst castle-military-boost 0)
+(defconst boom-boost 30)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 45)
+(defconst full-navy-boost 45)
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+(defconst militiaman-weight 40)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 15)
+(defconst archer-weight 0)
+(defconst skirmisher-weight 5)
+(defconst cavalry-archer-weight 5)
+(defconst genitour-weight 15)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 10)
+(defconst knight-weight 30)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight -40)
+(defconst scorpion-weight 60)
+(defconst mangonel-weight 80)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 5)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 2)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 4)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 5)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 3)
+(defconst max-castle-siege-workshops 2)
+(defconst max-castle-monasteries 1)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 2)
+(defconst max-imperial-stables 2)
+(defconst max-imperial-siege-workshops 7)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 30)
+(defconst castle-military-boost 45)
+(defconst boom-boost 45)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 45)
+(defconst full-navy-boost 15)
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+(defconst militiaman-weight 30)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 10)
+(defconst fire-lancer-weight 35)
+(defconst archer-weight 50)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 55)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 10)
+(defconst knight-weight 30)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 30)
+(defconst scorpion-weight 25)
+(defconst mangonel-weight 5)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 30)
+(defconst fire-ship-weight 50)
+(defconst hulk-weight 45)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 4)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 6)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 3)
+(defconst max-imperial-siege-workshops 7)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit archer-line)
+(defconst anti-archer-castle-unit archer-line)
+(defconst anti-archer-imperial-unit archer-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 30)
+(defconst castle-military-boost 45)
+(defconst boom-boost 15)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined CUMANS-CIV
+
+(defconst militiaman-weight 30)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 10)
+(defconst archer-weight 20)
+(defconst skirmisher-weight 25)
+(defconst cavalry-archer-weight 65)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 60)
+(defconst knight-weight 60)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight -30)
+(defconst scorpion-weight -20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 5)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 2)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 7)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 8)
+(defconst max-imperial-stables 9)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit eagle-warrior-line)
+(defconst anti-archer-castle-unit eagle-warrior-line)
+(defconst anti-archer-imperial-unit eagle-warrior-line)
+
+(defconst anti-cavalry-feudal-unit eagle-warrior-line)
+(defconst anti-cavalry-castle-unit eagle-warrior-line)
+(defconst anti-cavalry-imperial-unit eagle-warrior-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defconst dromon catapult-galleon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades off)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 30)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 0)
+(defconst full-navy-boost 15)
+
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+
+(defconst militiaman-weight 60)
+(defconst spearman-weight 50)
+(defconst condottiero-weight 35)
+(defconst archer-weight 50)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 45)
+(defconst elephant-archer-weight 50)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 10)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight 20)
+(defconst monk-weight 0)
+(defconst scorpion-weight 5)
+(defconst mangonel-weight 25)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight 55)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle armored-elephant-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades off)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 30)
+(defconst sling-boost 15)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 15)
+(defconst castle-drop-boost 45)
+(defconst full-navy-boost 45)
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+(defconst militiaman-weight 25)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 20)
+(defconst archer-weight 55)
+(defconst skirmisher-weight 40)
+(defconst cavalry-archer-weight 40)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 15)
+(defconst knight-weight 20)
+(defconst camel-weight 20)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 10)
+(defconst scorpion-weight 40)
+(defconst mangonel-weight 60)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 3)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 5)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 7)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 4)
+(defconst max-imperial-siege-workshops 7)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit archer-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit archer-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit archer-line)
+(defconst anti-archer-castle-unit archer-line)
+(defconst anti-archer-imperial-unit archer-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 30)
+(defconst castle-military-boost 60)
+(defconst boom-boost 30)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+(defconst militiaman-weight 40)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 15)
+(defconst archer-weight -10)
+(defconst skirmisher-weight 0)
+(defconst cavalry-archer-weight -5)
+(defconst genitour-weight 10)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 25)
+(defconst scout-cavalry-weight 30)
+(defconst knight-weight 80)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 20)
+(defconst scorpion-weight 25)
+(defconst mangonel-weight 25)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 5)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 6)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 12)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 knight-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 knight-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 30)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 30)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 15)
+
+#end-if
+
+#load-if-defined GEORGIANS-CIV
+
+(defconst lc-cost 80)
+
+(defconst militiaman-weight 50)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 15)
+(defconst archer-weight 0)
+(defconst skirmisher-weight 10)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 35)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 30)
+(defconst scout-cavalry-weight 45)
+(defconst knight-weight 40)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 35)
+(defconst scorpion-weight 25)
+(defconst mangonel-weight 45)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 10)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 6)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 12)
+(defconst spare-stone towers)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 knight-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 knight-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 45)
+(defconst castle-military-boost 60)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 45)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+(defconst militiaman-weight 70)
+(defconst spearman-weight 50)
+(defconst condottiero-weight 50)
+(defconst archer-weight 5)
+(defconst skirmisher-weight 10)
+(defconst cavalry-archer-weight 20)
+(defconst genitour-weight 30)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight 20)
+(defconst knight-weight 20)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 0)
+(defconst scorpion-weight 0)
+(defconst mangonel-weight 0)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 3)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 6)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 3)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 6)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit spearman-line)
+(defconst anti-cavalry-imperial-unit spearman-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-archer)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 0)
+(defconst castle-military-boost 30)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 30)
+(defconst drush-boost 60)
+
+#end-if
+
+#load-if-defined GURJARAS-CIV
+
+(defconst militiaman-weight 10)
+(defconst spearman-weight -25)
+(defconst condottiero-weight -5)
+(defconst archer-weight 15)
+(defconst skirmisher-weight 25)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight 75)
+(defconst hand-cannoneer-weight 45)
+(defconst scout-cavalry-weight 35)
+(defconst knight-weight -800)
+(defconst camel-weight 70);70
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 30)
+(defconst scorpion-weight 0)
+(defconst mangonel-weight 0)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 20)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit skirmisher-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle armored-elephant-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 45)
+(defconst castle-military-boost 60)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 0)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+(defconst militiaman-weight 0)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 0)
+(defconst archer-weight 25)
+(defconst skirmisher-weight 30)
+(defconst cavalry-archer-weight 65)
+(defconst genitour-weight 60)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight 60)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight -10)
+(defconst scorpion-weight -10)
+(defconst mangonel-weight -10)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 10)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 3)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 1)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 5)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 8)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit knight-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit knight-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 60)
+(defconst castle-military-boost 30)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+(defconst militiaman-weight -800)
+(defconst champi-scout-weight 60)
+(defconst spearman-weight 40)
+(defconst condottiero-weight 55)
+(defconst archer-weight 60)
+(defconst skirmisher-weight 50)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 55)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 70)
+(defconst scout-cavalry-weight -800)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 50)
+(defconst scorpion-weight 45)
+(defconst mangonel-weight 35)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 0)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 6)
+(defconst min-castle-stables 0)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 4)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 9)
+(defconst max-imperial-stables 0)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 5)
+
+(defconst max-castles 1)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit eagle-warrior-line)
+(defconst anti-archer-castle-unit eagle-warrior-line)
+(defconst anti-archer-imperial-unit eagle-warrior-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type anti-cavalry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defconst dromon catapult-galleon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 15)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 0)
+(defconst full-navy-boost 30)
+(defconst drush-boost 60)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+(defconst militiaman-weight 35)
+(defconst spearman-weight 15)
+(defconst condottiero-weight 10)
+(defconst archer-weight 30)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 40)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 70)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight -800)
+(defconst camel-weight 65)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 45)
+(defconst scorpion-weight 5)
+(defconst mangonel-weight 25)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 6)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 5)
+(defconst max-imperial-archery-ranges 8)
+(defconst max-imperial-stables 9)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 5)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 camel-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit camel-line)
+(defconst anti-archer-imperial-unit camel-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type anti-archer)
+
+(defconst pref-siege-castle armored-elephant-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 0)
+(defconst castle-military-boost 30)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 30)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+(defconst militiaman-weight 35)
+(defconst spearman-weight 0)
+(defconst condottiero-weight 20)
+(defconst archer-weight 55)
+(defconst skirmisher-weight 40)
+(defconst cavalry-archer-weight 20)
+(defconst genitour-weight 40)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 50)
+(defconst scout-cavalry-weight 30)
+(defconst knight-weight 30)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 50)
+(defconst scorpion-weight -20)
+(defconst mangonel-weight 0)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 35)
+(defconst fire-ship-weight 40)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 5)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 5)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 3)
+(defconst spare-stone towers)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 0)
+(defconst castle-military-boost 30)
+(defconst boom-boost 30)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+(defconst lc-cost 50)
+
+(defconst militiaman-weight 50)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 20)
+(defconst archer-weight 50)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight 60)
+(defconst genitour-weight 60)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight 0)
+(defconst knight-weight 20)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 50)
+(defconst scorpion-weight 25)
+(defconst mangonel-weight 25)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 35)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 5)
+(defconst max-feudal-archery-ranges 5)
+(defconst max-feudal-stables 3)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 4)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 8)
+(defconst max-imperial-stables 3)
+(defconst max-imperial-siege-workshops 5)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit archer-line)
+(defconst anti-archer-castle-unit archer-line)
+(defconst anti-archer-imperial-unit archer-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 30)
+(defconst castle-military-boost 45)
+(defconst boom-boost 30)
+(defconst fast-imp-boost 15)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined JURCHENS-CIV
+
+(defconst militiaman-weight -35)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 30)
+(defconst fire-lancer-weight 30)
+(defconst archer-weight 10)
+(defconst skirmisher-weight 10)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 40)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 20)
+(defconst scout-cavalry-weight 35)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 30)
+(defconst scorpion-weight 60)
+(defconst mangonel-weight 75)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 10)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 5)
+(defconst max-feudal-archery-ranges 5)
+(defconst max-feudal-stables 3)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 4)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 8)
+(defconst max-imperial-stables 3)
+(defconst max-imperial-siege-workshops 5)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit archer-line)
+(defconst anti-archer-castle-unit archer-line)
+(defconst anti-archer-imperial-unit archer-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 0)
+(defconst castle-military-boost 45)
+(defconst boom-boost 15)
+(defconst fast-imp-boost -30)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+(defconst cannon-galleon-line lou-chuan)
+
+#end-if
+
+#load-if-defined KHITANS-CIV
+
+(defconst militiaman-weight 75)
+(defconst spearman-weight 65)
+(defconst condottiero-weight 65)
+(defconst fire-lancer-weight 55)
+(defconst archer-weight 15)
+(defconst skirmisher-weight 50)
+(defconst cavalry-archer-weight 80)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 55)
+(defconst knight-weight -800)
+(defconst camel-weight 30)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 10)
+(defconst scorpion-weight 5)
+(defconst mangonel-weight 45)
+(defconst mounted-trebuchet-weight 25)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 10)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 50)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 5)
+(defconst max-feudal-archery-ranges 5)
+(defconst max-feudal-stables 3)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 4)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 8)
+(defconst max-imperial-stables 3)
+(defconst max-imperial-siege-workshops 5)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit archer-line)
+(defconst anti-archer-castle-unit archer-line)
+(defconst anti-archer-imperial-unit archer-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 15)
+(defconst castle-military-boost 30)
+(defconst boom-boost 30)
+(defconst fast-imp-boost -30)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 30)
+
+(defconst farm pasture)
+(defconst farmer-threshold 1)
+(defconst farm-2-pasture-1 1)
+(defconst farm-4-pasture-2 2)
+(defconst farm-8-pasture-4 4)
+(defconst farm-10-pasture-5 5)
+(defconst farm-20-pasture-10 10)
+(defconst bld-farm-or-pasture 1889)
+
+;(defconst idle-farm-count fe-idle-pasture-count)
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+(defconst militiaman-weight 10)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 10)
+(defconst archer-weight 25)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 55)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 50)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight 40)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight 60)
+(defconst monk-weight 20)
+(defconst scorpion-weight 70)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 5)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 2)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 5)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 1)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 7)
+(defconst max-imperial-monasteries 2)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit battle-elephant-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit battle-elephant-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit battle-elephant-line)
+(defconst anti-archer-imperial-unit battle-elephant-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit battle-elephant-line)
+(defconst anti-cavalry-imperial-unit battle-elephant-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 15)
+(defconst castle-military-boost 60)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+(defconst militiaman-weight 25)
+(defconst spearman-weight 15)
+(defconst fire-lancer-weight 20)
+(defconst condottiero-weight -10)
+(defconst archer-weight 60)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 55)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 50)
+(defconst scout-cavalry-weight 0)
+(defconst knight-weight 0)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 0)
+(defconst scorpion-weight 0)
+(defconst mangonel-weight 60)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 30)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 20)
+(defconst demo-ship-weight -800)
+(defconst turtle-ship-weight 50)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 2)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 3)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 5)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 2)
+(defconst max-imperial-siege-workshops 6)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit archer-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit archer-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit skirmisher-line)
+(defconst anti-archer-imperial-unit skirmisher-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit spearman-line)
+(defconst anti-cavalry-imperial-unit spearman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 15)
+(defconst castle-military-boost 45)
+(defconst boom-boost 45)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined LITHUANIANS-CIV
+
+(defconst militiaman-weight 20)
+(defconst spearman-weight 25)
+(defconst condottiero-weight 0)
+(defconst archer-weight 25)
+(defconst skirmisher-weight 45)
+(defconst cavalry-archer-weight 40)
+(defconst genitour-weight 55)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight 20)
+(defconst knight-weight 50)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 60)
+(defconst scorpion-weight -20)
+(defconst mangonel-weight 0)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight -10)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit skirmisher-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 2)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 7)
+
+(defconst max-imperial-barracks 3)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit eagle-warrior-line)
+(defconst anti-archer-castle-unit eagle-warrior-line)
+(defconst anti-archer-imperial-unit eagle-warrior-line)
+
+(defconst anti-cavalry-feudal-unit eagle-warrior-line)
+(defconst anti-cavalry-castle-unit eagle-warrior-line)
+(defconst anti-cavalry-imperial-unit eagle-warrior-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 0)
+(defconst castle-military-boost 45)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+(defconst militiaman-weight 45)
+(defconst spearman-weight 30)
+(defconst condottiero-weight 20)
+(defconst archer-weight 50)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight 60)
+(defconst genitour-weight 60)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight 50)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 20)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 50)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 3)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 3)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 2)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 9)
+(defconst max-imperial-stables 10)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit knight-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit knight-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 30)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 0)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined MALAY-CIV
+
+(defconst militiaman-weight 20)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 10)
+(defconst archer-weight 45)
+(defconst skirmisher-weight 30)
+(defconst cavalry-archer-weight 10)
+(defconst genitour-weight 40)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight -15)
+(defconst knight-weight 5)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight 35)
+(defconst monk-weight 20)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 3)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 10)
+(defconst max-imperial-archery-ranges 8)
+(defconst max-imperial-stables 4)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit battle-elephant-line)
+(defconst anti-archer-imperial-unit battle-elephant-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit battle-elephant-line)
+(defconst anti-cavalry-imperial-unit battle-elephant-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 3000);30
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+(defconst militiaman-weight 50)
+(defconst spearman-weight 10)
+(defconst condottiero-weight 25)
+(defconst archer-weight 60)
+(defconst skirmisher-weight 35)
+(defconst cavalry-archer-weight 55)
+(defconst genitour-weight 55)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 50)
+(defconst scout-cavalry-weight 25)
+(defconst knight-weight 55)
+(defconst camel-weight 55)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 30)
+(defconst scorpion-weight 5)
+(defconst mangonel-weight 35)
+(defconst eagle-weight -800)
+
+(defconst galley-weight -5)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 20)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 7)
+(defconst max-imperial-archery-ranges 5)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 1)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 45)
+(defconst castle-military-boost 45)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 30)
+(defconst castle-drop-boost 0)
+(defconst full-navy-boost 15)
+
+#end-if
+
+#load-if-defined MAPUCHE-CIV
+
+(defconst my-special-unit bolas-rider-line)
+(defconst special-unit-upgrade ri-elite-bolas-rider)
+(defconst special-unit-armour1 ri-padded-archer-armor)
+(defconst special-unit-armour2 ri-leather-archer-armor)
+(defconst special-unit-armour3 ri-ring-archer-armor)
+(defconst special-unit-attack1 ri-fletching)
+(defconst special-unit-attack2 ri-bodkin-arrow)
+;(defconst special-unit-attack3 0)
+
+(defconst special-unit-choice1 ri-fletching)
+(defconst special-unit-choice2 ri-bodkin-arrow)
+(defconst special-unit-choice3 ri-bodkin-arrow) 
+
+(defconst militiaman-weight -800)
+(defconst spearman-weight 60);75
+(defconst condottiero-weight 60)
+(defconst archer-weight 10)
+(defconst skirmisher-weight 45);75
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 35)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 45)
+(defconst scout-cavalry-weight -800)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 0)
+(defconst scorpion-weight 40)
+(defconst mangonel-weight 30)
+(defconst eagle-weight -800)
+(defconst champi-scout-weight 65)
+(defconst my-special-unit-weight 65)
+
+(defconst galley-weight 5)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit skirmisher-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 7)
+(defconst max-imperial-archery-ranges 5)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 1)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defconst dromon catapult-galleon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 0)
+(defconst castle-military-boost 30)
+(defconst boom-boost 0)
+(defconst fast-imp-boost 0)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+(defconst drush-boost 60)
+
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+(defconst militiaman-weight 10)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 10)
+(defconst archer-weight 50)
+(defconst skirmisher-weight 45)
+(defconst genitour-weight 60)
+(defconst cavalry-archer-weight -800)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight -800)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 10)
+(defconst scorpion-weight 0)
+(defconst mangonel-weight 0)
+(defconst eagle-weight 40)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 0)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 6)
+(defconst min-castle-stables 0)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 6)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 2)
+(defconst max-castle-monasteries 2)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 12)
+(defconst max-imperial-stables 0)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit archer-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit archer-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit eagle-warrior-line)
+(defconst anti-archer-imperial-unit eagle-warrior-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 60)
+(defconst castle-military-boost 30)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 30)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+(defconst dromon catapult-galleon)
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+(defconst militiaman-weight 30)
+(defconst spearman-weight 0)
+(defconst condottiero-weight 10)
+(defconst archer-weight 25)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight 55)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 35)
+(defconst knight-weight 20)
+(defconst camel-weight 20)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight -40)
+(defconst scorpion-weight 30)
+(defconst mangonel-weight 50)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 10)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 3)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 6)
+(defconst min-castle-siege-workshops 3)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 4)
+(defconst max-castle-archery-ranges 4)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 2)
+(defconst max-castle-monasteries 1)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 12)
+(defconst max-imperial-siege-workshops 5)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 archer-line)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 archer-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit skirmisher-line)
+(defconst anti-archer-imperial-unit skirmisher-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit monk)
+(defconst anti-infantry-imperial-unit monk)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades off)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 15)
+(defconst castle-military-boost 60)
+(defconst boom-boost 30)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined MUISCA-CIV
+
+(defconst my-special-unit temple-guard-line)
+(defconst special-unit-upgrade ri-elite-temple-guard)
+(defconst special-unit-armour1 ri-scale-mail)
+(defconst special-unit-armour2 ri-chain-mail)
+(defconst special-unit-armour3 ri-plate-mail)
+(defconst special-unit-attack1 ri-forging)
+(defconst special-unit-attack2 ri-iron-casting)
+;(defconst special-unit-attack3 0)
+
+(defconst special-unit-choice1 ri-scale-mail)
+(defconst special-unit-choice2 ri-chain-mail)
+(defconst special-unit-choice3 ri-plate-mail) 
+
+(defconst militiaman-weight -800)
+(defconst spearman-weight 5)
+(defconst condottiero-weight 50)
+(defconst archer-weight 75)
+(defconst skirmisher-weight 30)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 35)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 60)
+(defconst scout-cavalry-weight -800)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 90)
+(defconst scorpion-weight 65)
+(defconst mangonel-weight 75)
+(defconst eagle-weight -800)
+(defconst champi-scout-weight 65)
+(defconst my-special-unit-weight 55)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 20)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 7)
+(defconst max-imperial-archery-ranges 5)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 1)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defconst dromon catapult-galleon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 60)
+(defconst sling-boost 45)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 45)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 45)
+(defconst drush-boost 60)
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+
+(defconst militiaman-weight 5)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 10)
+(defconst archer-weight 25)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight 50)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight 30)
+(defconst knight-weight 60)
+(defconst camel-weight 30)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight -10)
+(defconst scorpion-weight 0)
+(defconst mangonel-weight 0)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 15)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 5)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 1)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 5)
+(defconst max-castle-siege-workshops 2)
+(defconst max-castle-monasteries 2)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 7)
+(defconst max-imperial-stables 5)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 1)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit knight-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit knight-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit spearman-line)
+(defconst anti-cavalry-imperial-unit spearman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 45)
+(defconst castle-military-boost 45)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined POLES-CIV
+
+(defconst militiaman-weight 50)
+(defconst spearman-weight 5)
+(defconst condottiero-weight 25)
+(defconst archer-weight 45)
+(defconst skirmisher-weight 25)
+(defconst cavalry-archer-weight 40)
+(defconst genitour-weight 35)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 55)
+(defconst knight-weight 65)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 30)
+(defconst scorpion-weight 10)
+(defconst mangonel-weight 30)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 30)
+(defconst castle-military-boost 0)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 15)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+(defconst militiaman-weight 40)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 20)
+(defconst archer-weight 45)
+(defconst skirmisher-weight 30)
+(defconst cavalry-archer-weight 35)
+(defconst genitour-weight 40)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 70)
+(defconst scout-cavalry-weight 10)
+(defconst knight-weight 30)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 30)
+(defconst scorpion-weight 15)
+(defconst mangonel-weight 45)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 5)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight -800)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight 50)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 6)
+(defconst min-castle-archery-ranges 6)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 12)
+(defconst max-imperial-stables 2)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 archer-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 archer-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-archery)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 30)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 45)
+
+#end-if
+
+#load-if-defined ROMANS-CIV
+
+(defconst militiaman-weight 90)
+(defconst spearman-weight 50)
+(defconst condottiero-weight 60)
+(defconst archer-weight 10)
+(defconst skirmisher-weight 30)
+(defconst cavalry-archer-weight 45)
+(defconst genitour-weight 45)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 35)
+(defconst knight-weight 75)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 40)
+(defconst scorpion-weight 90)
+(defconst mangonel-weight 40)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 35)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 10)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 6)
+(defconst min-castle-archery-ranges 6)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 12)
+(defconst max-imperial-stables 2)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 archer-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 archer-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-archery)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 30)
+(defconst sling-boost 15)
+(defconst castle-military-boost 45)
+(defconst boom-boost 30)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 45)
+
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+(defconst militiaman-weight 35)
+(defconst spearman-weight 0)
+(defconst condottiero-weight 10)
+(defconst archer-weight 50)
+(defconst skirmisher-weight 30)
+(defconst cavalry-archer-weight 55)
+(defconst genitour-weight 50)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight 30)
+(defconst knight-weight 10)
+(defconst camel-weight 45)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 50)
+(defconst scorpion-weight 0)
+(defconst mangonel-weight 30)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 40)
+(defconst fire-ship-weight 10)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 4)
+(defconst min-castle-monasteries 6)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 9)
+(defconst max-imperial-stables 6)
+(defconst max-imperial-siege-workshops 8)
+(defconst max-imperial-monasteries 12)
+
+(defconst max-castles 2)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 archer-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 archer-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit skirmisher-line)
+(defconst anti-archer-imperial-unit skirmisher-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 0)
+(defconst sling-boost 15)
+(defconst castle-military-boost 60)
+(defconst boom-boost 30)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 45)
+(defconst full-navy-boost 45)
+
+#end-if
+
+#load-if-defined SHU-CIV
+
+(defconst militiaman-weight 25)
+(defconst spearman-weight 45);30
+(defconst condottiero-weight 5)
+(defconst archer-weight 50);65
+(defconst skirmisher-weight 50);35
+(defconst cavalry-archer-weight 40);40
+(defconst genitour-weight 35);45
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight -15)
+(defconst knight-weight 5)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 0)
+(defconst scorpion-weight 45)
+(defconst mangonel-weight 45)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 0)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 1)
+(defconst max-feudal-archery-ranges 2)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 5)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 4)
+(defconst min-castle-monasteries 6)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 5)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 9)
+(defconst max-imperial-stables 6)
+(defconst max-imperial-siege-workshops 8)
+(defconst max-imperial-monasteries 12)
+
+(defconst max-castles 2)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit archer-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 archer-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 archer-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit skirmisher-line)
+(defconst anti-archer-imperial-unit skirmisher-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type off)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial traction-trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 1145)
+(defconst sling-boost 30)
+(defconst castle-military-boost 30)
+(defconst boom-boost 45)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 15)
+
+(defconst cannon-galleon-line lou-chuan)
+
+#end-if
+
+#load-if-defined SICILIANS-CIV
+
+(defconst militiaman-weight 45)
+(defconst spearman-weight 40)
+(defconst condottiero-weight 20)
+(defconst archer-weight 35)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight 10)
+(defconst genitour-weight 30)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 20)
+(defconst knight-weight 50)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight -10)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 40)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 5)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 4)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 4)
+(defconst max-imperial-archery-ranges 4)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit knight-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 15)
+(defconst castle-military-boost 30)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 45)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+(defconst militiaman-weight 65)
+(defconst spearman-weight 50)
+(defconst condottiero-weight 35)
+(defconst archer-weight -5)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight 25)
+(defconst genitour-weight 30)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 35)
+(defconst knight-weight 35)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 50)
+(defconst scorpion-weight 25)
+(defconst mangonel-weight 45)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 5)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 4)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 0)
+(defconst max-feudal-stables 1)
+
+(defconst min-castle-barracks 7)
+(defconst min-castle-archery-ranges 1)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 5)
+(defconst min-castle-monasteries 5)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 0)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 6)
+
+(defconst max-imperial-barracks 14)
+(defconst max-imperial-archery-ranges 2)
+(defconst max-imperial-stables 6)
+(defconst max-imperial-siege-workshops 10)
+(defconst max-imperial-monasteries 10)
+
+(defconst max-castles 8)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 scout-cavalry-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit scout-cavalry-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit spearman-line)
+(defconst anti-cavalry-imperial-unit spearman-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 30)
+(defconst castle-military-boost 45)
+(defconst boom-boost 60)
+(defconst fast-imp-boost 30)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 15)
+
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+(defconst militiaman-weight 40)
+(defconst spearman-weight 20)
+(defconst condottiero-weight 15)
+(defconst archer-weight -5)
+(defconst skirmisher-weight 30)
+(defconst genitour-weight 40)
+(defconst cavalry-archer-weight 45)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 60)
+(defconst scout-cavalry-weight 30)
+(defconst knight-weight 55)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 65)
+(defconst scorpion-weight -15)
+(defconst mangonel-weight 5)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 35)
+(defconst fire-ship-weight 30)
+(defconst hulk-weight 50)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 2)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 3)
+(defconst max-feudal-archery-ranges 0)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 7)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 0)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 6)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 10)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 14)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit spearman-line)
+(defconst anti-cavalry-imperial-unit spearman-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 45)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined TATARS-CIV
+
+(defconst militiaman-weight 0)
+(defconst spearman-weight 10)
+(defconst condottiero-weight 0)
+(defconst archer-weight 35)
+(defconst skirmisher-weight 45)
+(defconst cavalry-archer-weight 75)
+(defconst genitour-weight 80)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 45)
+(defconst scout-cavalry-weight 40)
+(defconst knight-weight 35)
+(defconst camel-weight 35)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 0)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit skirmisher-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 1)
+(defconst min-castle-archery-ranges 6)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 7)
+
+(defconst max-imperial-barracks 1)
+(defconst max-imperial-archery-ranges 10)
+(defconst max-imperial-stables 6)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 3)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit eagle-warrior-line)
+(defconst anti-archer-castle-unit eagle-warrior-line)
+(defconst anti-archer-imperial-unit eagle-warrior-line)
+
+(defconst anti-cavalry-feudal-unit eagle-warrior-line)
+(defconst anti-cavalry-castle-unit eagle-warrior-line)
+(defconst anti-cavalry-imperial-unit eagle-warrior-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type anti-archer)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades off)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 30)
+(defconst sling-boost 15)
+(defconst castle-military-boost 45)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 0)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+(defconst militiaman-weight 45)
+(defconst spearman-weight 40)
+(defconst condottiero-weight 20)
+(defconst archer-weight 15)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight 10)
+(defconst genitour-weight 30)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 40)
+(defconst scout-cavalry-weight -10)
+(defconst knight-weight 50)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 55)
+(defconst scorpion-weight 30)
+(defconst mangonel-weight 50)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 5)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 1)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 4)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 1)
+(defconst min-castle-stables 3)
+(defconst min-castle-siege-workshops 5)
+(defconst min-castle-monasteries 5)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 1)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 6)
+
+(defconst max-imperial-barracks 8)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 6)
+(defconst max-imperial-siege-workshops 10)
+(defconst max-imperial-monasteries 10)
+
+(defconst max-castles 8)
+(defconst spare-stone towers)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 militiaman-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 30)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 15)
+
+#end-if
+
+#load-if-defined TUPI-CIV
+
+(defconst my-special-unit ibirapema-warrior-line)
+(defconst special-unit-upgrade ri-elite-ibirapema-warrior)
+(defconst special-unit-armour1 ri-scale-mail)
+(defconst special-unit-armour2 ri-chain-mail)
+(defconst special-unit-armour3 ri-plate-mail)
+(defconst special-unit-attack1 ri-forging)
+(defconst special-unit-attack2 ri-iron-casting)
+;(defconst special-unit-attack3 0)
+
+(defconst special-unit-choice1 ri-scale-mail)
+(defconst special-unit-choice2 ri-chain-mail)
+(defconst special-unit-choice3 ri-plate-mail) 
+
+(defconst militiaman-weight -800)
+(defconst spearman-weight 35)
+(defconst condottiero-weight 35)
+(defconst archer-weight 85)
+(defconst skirmisher-weight 55)
+(defconst cavalry-archer-weight -800)
+(defconst genitour-weight 45)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 80)
+(defconst scout-cavalry-weight -800)
+(defconst knight-weight -800)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 45)
+(defconst scorpion-weight 50)
+(defconst mangonel-weight 65)
+(defconst eagle-weight -800)
+(defconst champi-scout-weight 55)
+(defconst my-special-unit-weight 55)
+
+(defconst galley-weight 50)
+(defconst fire-ship-weight 40)
+(defconst hulk-weight 10)
+(defconst demo-ship-weight 20)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 3)
+(defconst min-feudal-stables 2)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 4)
+(defconst min-castle-archery-ranges 3)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 3)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 3)
+(defconst max-castle-stables 1)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 3)
+
+(defconst max-imperial-barracks 7)
+(defconst max-imperial-archery-ranges 5)
+(defconst max-imperial-stables 7)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 6)
+
+(defconst max-castles 1)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit camel-line)
+(defconst anti-cavalry-imperial-unit camel)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defconst dromon catapult-galleon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 0)
+(defconst castle-military-boost 60)
+(defconst boom-boost 0)
+(defconst fast-imp-boost 45)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 60)
+(defconst drush-boost 60)
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+(defconst militiaman-weight 40)
+(defconst spearman-weight -20)
+(defconst condottiero-weight 15)
+(defconst archer-weight 40)
+(defconst skirmisher-weight 0)
+(defconst genitour-weight 75)
+(defconst cavalry-archer-weight 80)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight 70)
+(defconst scout-cavalry-weight 45)
+(defconst knight-weight 35)
+(defconst camel-weight 35)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 15)
+(defconst scorpion-weight 5)
+(defconst mangonel-weight -15)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 35)
+(defconst fire-ship-weight 10)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 3)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 3)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 3)
+(defconst min-castle-archery-ranges 6)
+(defconst min-castle-stables 4)
+(defconst min-castle-siege-workshops 1)
+(defconst min-castle-monasteries 2)
+
+(defconst max-castle-barracks 3)
+(defconst max-castle-archery-ranges 2)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 1)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 6)
+(defconst max-imperial-archery-ranges 14)
+(defconst max-imperial-stables 8)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 4)
+
+(defconst max-castles 3)
+(defconst spare-stone sell)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit monk)
+(defconst pref-castle-unit-2 militiaman-line)
+(defconst pref-imperial-unit monk)
+(defconst pref-imperial-unit-2 militiaman-line)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit knight-line)
+(defconst anti-archer-imperial-unit knight-line)
+
+(defconst anti-cavalry-feudal-unit spearman-line)
+(defconst anti-cavalry-castle-unit knight-line)
+(defconst anti-cavalry-imperial-unit knight-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit hand-cannoneer)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 15)
+(defconst sling-boost 15)
+(defconst castle-military-boost 45)
+(defconst boom-boost 15)
+(defconst fast-imp-boost 60)
+(defconst castle-drop-boost 30)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+
+(defconst militiaman-weight 35)
+(defconst spearman-weight 15)
+(defconst fire-lancer-weight 25)
+(defconst condottiero-weight 10)
+(defconst archer-weight 65)
+(defconst skirmisher-weight 60)
+(defconst genitour-weight 55)
+(defconst cavalry-archer-weight 60)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 0)
+(defconst knight-weight 30)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight 80)
+(defconst monk-weight 30)
+(defconst scorpion-weight 10)
+(defconst mangonel-weight 30)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 0)
+(defconst hulk-weight 20)
+(defconst demo-ship-weight 30)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit archer-line)
+
+(defconst min-feudal-barracks 1)
+(defconst min-feudal-archery-ranges 5)
+(defconst min-feudal-stables 1)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 5)
+(defconst max-feudal-stables 2)
+
+(defconst min-castle-barracks 2)
+(defconst min-castle-archery-ranges 10)
+(defconst min-castle-stables 2)
+(defconst min-castle-siege-workshops 2)
+(defconst min-castle-monasteries 2)
+
+(defconst max-castle-barracks 2)
+(defconst max-castle-archery-ranges 4)
+(defconst max-castle-stables 2)
+(defconst max-castle-siege-workshops 0)
+(defconst max-castle-monasteries 4)
+
+(defconst max-imperial-barracks 3)
+(defconst max-imperial-archery-ranges 15)
+(defconst max-imperial-stables 3)
+(defconst max-imperial-siege-workshops 4)
+(defconst max-imperial-monasteries 3)
+
+(defconst max-castles 2)
+(defconst spare-stone towers)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit archer-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit archer-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit battle-elephant-line)
+(defconst anti-archer-imperial-unit battle-elephant-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit battle-elephant-line)
+(defconst anti-cavalry-imperial-unit battle-elephant-line)
+
+(defconst anti-infantry-feudal-unit militiaman-line)
+(defconst anti-infantry-castle-unit militiaman-line)
+(defconst anti-infantry-imperial-unit militiaman-line)
+
+(defconst unique-unit-type anti-infantry)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial bombard-cannon)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 30)
+(defconst sling-boost 30)
+(defconst castle-military-boost 15)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 30)
+
+#end-if
+
+#load-if-defined VIKING-CIV
+
+(defconst militiaman-weight 50)
+(defconst spearman-weight 15)
+(defconst condottiero-weight 25)
+(defconst archer-weight 35)
+(defconst skirmisher-weight 25)
+(defconst cavalry-archer-weight 0)
+(defconst genitour-weight 35)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight -5)
+(defconst knight-weight 15)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight -20)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 5)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight -800)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight 55)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 5)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 0)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 10)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 1)
+(defconst min-castle-siege-workshops 4)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 5)
+(defconst max-castle-archery-ranges 4)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 2)
+(defconst max-castle-monasteries 1)
+
+(defconst max-imperial-barracks 15)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 2)
+(defconst max-imperial-siege-workshops 8)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit skirmisher-line)
+(defconst anti-archer-imperial-unit skirmisher-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 30)
+(defconst sling-boost 45)
+(defconst castle-military-boost 30)
+(defconst boom-boost 60)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 45)
+
+#end-if
+
+#load-if-defined WEI-CIV
+
+(defconst militiaman-weight 15)
+(defconst spearman-weight 25)
+(defconst condottiero-weight 20)
+(defconst archer-weight 20)
+(defconst skirmisher-weight 20)
+(defconst cavalry-archer-weight 75)
+(defconst genitour-weight 80)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 65)
+(defconst knight-weight 80)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 10)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+(defconst eagle-weight -800)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 20)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 0)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit scout-cavalry-line)
+
+(defconst min-feudal-barracks 5)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 0)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 10)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 1)
+(defconst min-castle-siege-workshops 4)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 5)
+(defconst max-castle-archery-ranges 4)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 2)
+(defconst max-castle-monasteries 1)
+
+(defconst max-imperial-barracks 15)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 2)
+(defconst max-imperial-siege-workshops 8)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit skirmisher-line)
+(defconst anti-archer-imperial-unit skirmisher-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial traction-trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 45)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost -240)
+(defconst castle-drop-boost 60)
+(defconst full-navy-boost 30)
+
+(defconst cannon-galleon-line lou-chuan)
+
+#end-if
+
+#load-if-defined WU-CIV
+
+(defconst militiaman-weight 60)
+(defconst spearman-weight 50)
+(defconst condottiero-weight 45)
+(defconst eagle-weight 65)
+(defconst archer-weight 20)
+(defconst skirmisher-weight 15)
+(defconst cavalry-archer-weight -10)
+(defconst genitour-weight 30)
+(defconst elephant-archer-weight -800)
+(defconst hand-cannoneer-weight -800)
+(defconst scout-cavalry-weight 45)
+(defconst knight-weight 55)
+(defconst camel-weight -800)
+(defconst battle-elephant-weight -800)
+(defconst monk-weight 40)
+(defconst scorpion-weight 20)
+(defconst mangonel-weight 20)
+
+(defconst galley-weight 25)
+(defconst fire-ship-weight 25)
+(defconst hulk-weight 40)
+(defconst demo-ship-weight 40)
+(defconst turtle-ship-weight -800)
+(defconst longboat-weight -800)
+(defconst caravel-weight -800)
+(defconst thirisadai-weight -800)
+
+(defconst starting-unit militiaman-line)
+
+(defconst min-feudal-barracks 5)
+(defconst min-feudal-archery-ranges 2)
+(defconst min-feudal-stables 0)
+
+(defconst max-feudal-barracks 2)
+(defconst max-feudal-archery-ranges 1)
+(defconst max-feudal-stables 0)
+
+(defconst min-castle-barracks 10)
+(defconst min-castle-archery-ranges 4)
+(defconst min-castle-stables 1)
+(defconst min-castle-siege-workshops 4)
+(defconst min-castle-monasteries 1)
+
+(defconst max-castle-barracks 5)
+(defconst max-castle-archery-ranges 4)
+(defconst max-castle-stables 0)
+(defconst max-castle-siege-workshops 2)
+(defconst max-castle-monasteries 1)
+
+(defconst max-imperial-barracks 15)
+(defconst max-imperial-archery-ranges 6)
+(defconst max-imperial-stables 2)
+(defconst max-imperial-siege-workshops 8)
+(defconst max-imperial-monasteries 1)
+
+(defconst max-castles 5)
+(defconst spare-stone forward-castles)
+
+(defconst pref-feudal-unit militiaman-line)
+(defconst pref-feudal-unit-2 archer-line)
+(defconst pref-castle-unit militiaman-line)
+(defconst pref-castle-unit-2 monk)
+(defconst pref-imperial-unit militiaman-line)
+(defconst pref-imperial-unit-2 monk)
+
+(defconst anti-archer-feudal-unit skirmisher-line)
+(defconst anti-archer-castle-unit skirmisher-line)
+(defconst anti-archer-imperial-unit skirmisher-line)
+
+(defconst anti-cavalry-feudal-unit militiaman-line)
+(defconst anti-cavalry-castle-unit militiaman-line)
+(defconst anti-cavalry-imperial-unit militiaman-line)
+
+(defconst anti-infantry-feudal-unit archer-line)
+(defconst anti-infantry-castle-unit archer-line)
+(defconst anti-infantry-imperial-unit archer-line)
+
+(defconst unique-unit-type preferred)
+
+(defconst pref-siege-castle battering-ram-line)
+(defconst pref-siege-imperial traction-trebuchet)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades on)
+(disable-self)
+)
+
+(defconst feudal-rush-boost 45)
+(defconst sling-boost 15)
+(defconst castle-military-boost 60)
+(defconst boom-boost 45)
+(defconst fast-imp-boost 30)
+(defconst castle-drop-boost 15)
+(defconst full-navy-boost 30)
+
+(defconst cannon-galleon-line lou-chuan)
+
+#end-if
+
+(load "Bright Spark 49f\Unique Unit Resource Constants")

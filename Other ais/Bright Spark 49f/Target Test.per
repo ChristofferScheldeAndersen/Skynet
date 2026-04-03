@@ -1,0 +1,1199 @@
+(defconst closest-enemy-goal 48)
+(defconst strategy-goal 49)
+(defconst closest-enemy 1)
+(defconst last-place-enemy 2)
+(defconst random-enemy 3)
+(defconst weakest-enemy 4)
+(defconst destroy-the-wonder 5)
+
+(defconst leader-player-number 41)
+(defconst weakest-player 42)
+(defconst lowest-enemy-military 43)
+(defconst focus-player-military 44)
+(defconst focus-player-score 45)
+(defconst enemy-low-score 46)
+(defconst lowest-scoring-enemy 47)
+(defconst player-with-wonder 52)
+
+;//////// Decide Leader /////////////
+
+(defrule
+(true)
+=>
+(set-goal 77 1)
+(set-strategic-number sn-target-player-number 0)
+(disable-self)
+)
+
+(defrule
+(false)
+(goal military-mode assault)
+=>
+(set-goal 77 0)
+(generate-random-number 100)
+(disable-self)
+)
+
+(defrule
+(goal 77 0)
+(random-number != 7)
+=>
+(generate-random-number 100)
+)
+
+(defrule
+(goal 77 0)
+(random-number == 7)
+=>
+(set-goal 77 1)
+(chat-to-allies "I'm the leader")
+(chat-to-allies "/17")
+)
+
+(defrule
+(goal 77 0)
+(taunt-detected any-ally 17)
+=>
+(acknowledge-taunt this-any-ally 17)
+(up-get-player-fact this-any-ally player-number 0 leader-player-number)
+(up-chat-data-to-player every-ally "Long live the king! Player %d." g: leader-player-number)
+(set-goal 77 -1)
+)
+
+;(defrule
+;(goal 77 -1)
+;=>
+;(up-chat-data-to-player every-ally "Long live the king! Player %d." g: leader-player-number)
+;(disable-self)
+;)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 1)
+(not(player-in-game 1))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 2)
+(not(player-in-game 2))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 3)
+(not(player-in-game 3))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 4)
+(not(player-in-game 4))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 5)
+(not(player-in-game 5))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 6)
+(not(player-in-game 6))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 7)
+(not(player-in-game 7))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+(defrule
+(goal 77 -1)
+(goal leader-player-number 8)
+(not(player-in-game 8))
+=>
+(set-goal 77 0)
+(chat-to-allies "The king is dead")
+)
+
+;//////// Player Commands ///////////
+
+(defrule
+(or(taunt-detected my-player-number 60)
+(taunt-detected any-ally 60))
+=>
+(acknowledge-taunt my-player-number 60)
+(acknowledge-taunt this-any-ally 60)
+(up-chat-data-to-player every-ally "The target is player %d." s: sn-target-player-number)
+(up-chat-data-to-player every-ally "The focus is player %d." s: sn-focus-player-number)
+(up-chat-data-to-self "The target is player %d." s: sn-target-player-number)
+(up-chat-data-to-self "The focus is player %d." s: sn-focus-player-number)
+)
+
+(defrule
+(taunt-detected any-ally 18)
+=>
+(acknowledge-taunt this-any-ally 18)
+(attack-now)
+)
+
+;/////// Attack Closest Enemy ////////
+
+;Identify closest enemy
+
+(defrule
+(goal 77 1)
+(goal strategy-goal closest-enemy)
+(or(players-population every-enemy < 10)
+(game-time < 1170))
+=>
+(up-jump-rule 7)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal closest-enemy)
+(or(strategic-number sn-target-player-number <= 0)
+(players-population target-player < 10))
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal closest-enemy)
+(strategic-number sn-target-player-number <= 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal closest-enemy)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+;If current enemy is out the game, reset targetting
+(defrule
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(set-strategic-number sn-target-player-number 0)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal closest-enemy)
+(strategic-number sn-target-player-number > 0)
+=>
+(up-chat-data-to-player every-ally "/6%d" s: sn-target-player-number)
+)
+
+;/////// Attack Closest Pocket  ////////
+
+(defrule
+(goal strategy-goal 7)
+=>
+(up-modify-sn sn-target-player-number c:= 0)
+(disable-self)
+)
+
+(defrule
+;(goal 77 1)
+(goal strategy-goal 7)
+(or(players-population every-enemy < 10)
+(game-time < 1170))
+=>
+(up-jump-rule 7)
+)
+
+(defrule
+(goal strategy-goal 7)
+(or(strategic-number sn-target-player-number <= 0)
+(players-population target-player < 10))
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+;(goal 77 1)
+(goal strategy-goal 7)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(or(players-population target-player < 10)
+(not(player-in-game target-player)))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(strategic-number sn-target-player-number <= 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+;(goal 77 1)
+(goal strategy-goal 7)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+(defrule
+(goal strategy-goal 7)
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(up-find-player enemy find-closest closest-enemy-goal)
+(up-find-next-player enemy find-closest closest-enemy-goal)
+(up-modify-sn sn-target-player-number g:= closest-enemy-goal)
+)
+
+;If current enemy is out the game, reset targetting
+(defrule
+(not(player-in-game target-player))
+(strategic-number sn-target-player-number > 0)
+=>
+(set-strategic-number sn-target-player-number 0)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal closest-enemy)
+(strategic-number sn-target-player-number > 0)
+=>
+(up-chat-data-to-player every-ally "/6%d" s: sn-target-player-number)
+)
+
+;/////// Set Targets For Allies ////////
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 61)
+=>
+(acknowledge-taunt this-any-ally 61)
+(set-strategic-number sn-target-player-number 1)
+(chat-to-allies "The target is blue.")
+)
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 62)
+=>
+(acknowledge-taunt this-any-ally 62)
+(set-strategic-number sn-target-player-number 2)
+(chat-to-allies "The target is red.")
+)
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 63)
+=>
+(acknowledge-taunt this-any-ally 63)
+(set-strategic-number sn-target-player-number 3)
+(chat-to-allies "The target is green.")
+)
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 64)
+=>
+(acknowledge-taunt this-any-ally 64)
+(set-strategic-number sn-target-player-number 4)
+(chat-to-allies "The target is yellow.")
+)
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 65)
+=>
+(acknowledge-taunt this-any-ally 65)
+(set-strategic-number sn-target-player-number 5)
+(chat-to-allies "The target is cyan.")
+)
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 66)
+=>
+(acknowledge-taunt this-any-ally 66)
+(set-strategic-number sn-target-player-number 6)
+(chat-to-allies "The target is purple.")
+)
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 67)
+=>
+(acknowledge-taunt this-any-ally 67)
+(set-strategic-number sn-target-player-number 7)
+(chat-to-allies "The target is grey.")
+)
+
+(defrule
+(goal 77 -1)
+(taunt-detected any-ally 68)
+=>
+(acknowledge-taunt this-any-ally 68)
+(set-strategic-number sn-target-player-number 8)
+(chat-to-allies "The target is orange.")
+)
+
+;/////// Target Enemy With Lowest Score ///////
+
+(defrule
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+=>
+(set-strategic-number sn-focus-player-number 0)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(strategic-number sn-focus-player-number == 0)
+=>
+(set-strategic-number sn-focus-player-number 1)
+(up-get-fact-max any-enemy current-score 0 enemy-low-score)
+(up-get-fact-max this-any-enemy player-number 0 lowest-scoring-enemy)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(strategic-number sn-focus-player-number > 0)
+(stance-toward focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-get-focus-fact current-score 0 focus-player-score)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(strategic-number sn-focus-player-number > 0)
+(stance-toward focus-player enemy)
+(player-in-game focus-player)
+(up-compare-goal focus-player-score g:< enemy-low-score)
+=>
+(up-get-focus-fact current-score 0 enemy-low-score)
+(up-get-focus-fact player-number 0 lowest-scoring-enemy)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(strategic-number sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(up-compare-sn sn-target-player-number g:!= lowest-scoring-enemy)
+;(up-compare-sn sn-target-player-number c:> 0)
+=>
+(up-modify-sn sn-target-player-number g:= lowest-scoring-enemy)
+(up-chat-data-to-player every-ally "/6%d" s: sn-target-player-number)
+;(enable-timer 8 180)
+;(up-modify-sn sn-focus-player-number c:+ 1)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(strategic-number sn-focus-player-number == 9)
+(strategic-number sn-target-player-number > 0)
+=>
+(up-modify-sn sn-target-player-number g:= lowest-scoring-enemy)
+(up-chat-data-to-player every-ally "/6%d" s: sn-target-player-number)
+(enable-timer 8 180)
+(up-modify-sn sn-focus-player-number c:+ 1)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(strategic-number sn-focus-player-number > 9)
+(timer-triggered 8)
+=>
+(disable-timer 8)
+(set-strategic-number sn-focus-player-number 0)
+(up-jump-rule -6)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal last-place-enemy)
+(not(player-in-game target-player))
+=>
+(disable-timer 8)
+(set-strategic-number sn-focus-player-number 0)
+(set-strategic-number sn-target-player-number 0)
+)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number == 0)
+;=>
+;(set-strategic-number sn-focus-player-number 1)
+;(up-get-fact-min any-enemy 20 0 1)
+;(disable-self)
+;)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number > 8)
+;=>
+;(set-strategic-number sn-focus-player-number 1)
+;(up-get-fact-min any-enemy 20 0 1)
+;)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number < 9)
+;(stance-toward focus-player enemy)
+;(player-in-game focus-player)
+;(up-compare-goal 2 g:== 1)
+;=>
+;(up-modify-sn sn-target-player-number s:= sn-focus-player-number)
+;(up-chat-data-to-player every-ally "6%d" s: sn-target-player-number)
+;(up-jump-rule 1)
+;)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number < 9)
+;=>
+;(up-modify-sn sn-focus-player-number c:+ 1)
+;(up-jump-rule -4)
+;)
+
+;/////// Target Random Enemy ///////
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(strategic-number sn-target-player-number > 0)
+(not(player-in-game target-player))
+=>
+(set-strategic-number sn-target-player-number 0)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(strategic-number sn-target-player-number == 0)
+=>
+(generate-random-number 8)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 1)
+=>
+(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 2)
+=>
+(set-strategic-number sn-focus-player-number 2)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 3)
+=>
+(set-strategic-number sn-focus-player-number 3)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 4)
+=>
+(set-strategic-number sn-focus-player-number 4)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 5)
+=>
+(set-strategic-number sn-focus-player-number 5)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 6)
+=>
+(set-strategic-number sn-focus-player-number 6)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 7)
+=>
+(set-strategic-number sn-focus-player-number 7)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(random-number == 8)
+=>
+(set-strategic-number sn-focus-player-number 8)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(strategic-number sn-focus-player-number > 0)
+(strategic-number sn-target-player-number == 0)
+(stance-toward focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-modify-sn sn-target-player-number s:= sn-focus-player-number)
+(up-chat-data-to-player every-ally "/6%d" s: sn-target-player-number)
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(strategic-number sn-focus-player-number > 0)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule -10)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal random-enemy)
+(strategic-number sn-focus-player-number > 0)
+(not(player-in-game focus-player))
+=>
+(up-jump-rule -11)
+)
+
+;/////// Target Weakest Enemy ///////
+
+(defrule
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+=>
+(set-strategic-number sn-focus-player-number 0)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+(strategic-number sn-focus-player-number == 0)
+=>
+(set-strategic-number sn-focus-player-number 1)
+(up-get-fact-max any-enemy military-population 0 lowest-enemy-military)
+(up-get-player-fact this-any-enemy player-number 0 weakest-player)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+(strategic-number sn-focus-player-number > 0)
+(stance-toward focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-get-focus-fact military-population 0 focus-player-military)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+(strategic-number sn-focus-player-number > 0)
+(stance-toward focus-player enemy)
+(player-in-game focus-player)
+(up-compare-goal focus-player-military g:< lowest-enemy-military)
+=>
+(up-get-focus-fact military-population 0 lowest-enemy-military)
+(up-get-focus-fact player-number 0 weakest-player)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+(strategic-number sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+;(strategic-number sn-focus-player-number == 9)
+(up-compare-sn sn-target-player-number g:!= weakest-player)
+;(up-compare-sn sn-target-player-number c:> 0)
+=>
+(up-modify-sn sn-target-player-number g:= weakest-player)
+(up-chat-data-to-player every-ally "/6%d" s: sn-target-player-number)
+;(enable-timer 8 180)
+;(up-modify-sn sn-focus-player-number c:+ 1)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+(strategic-number sn-focus-player-number == 9)
+(strategic-number sn-target-player-number > 0)
+=>
+(up-modify-sn sn-target-player-number g:= weakest-player)
+(up-chat-data-to-player every-ally "/6%d" s: sn-target-player-number)
+(enable-timer 8 180)
+(up-modify-sn sn-focus-player-number c:+ 1)
+)
+
+(defrule
+(false)
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+(strategic-number sn-focus-player-number > 9)
+(timer-triggered 8)
+=>
+(disable-timer 8)
+(set-strategic-number sn-focus-player-number 0)
+(up-jump-rule -6)
+)
+
+(defrule
+(goal 77 1)
+(goal strategy-goal weakest-enemy)
+(not(player-in-game target-player))
+=>
+(disable-timer 8)
+(set-strategic-number sn-focus-player-number 0)
+(set-strategic-number sn-target-player-number 0)
+)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number == 0)
+;=>
+;(set-strategic-number sn-focus-player-number 1)
+;(up-get-fact-min any-enemy 20 0 1)
+;(disable-self)
+;)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number > 8)
+;=>
+;(set-strategic-number sn-focus-player-number 1)
+;(up-get-fact-min any-enemy 20 0 1)
+;)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number < 9)
+;(stance-toward focus-player enemy)
+;(player-in-game focus-player)
+;(up-compare-goal 2 g:== 1)
+;=>
+;(up-modify-sn sn-target-player-number s:= sn-focus-player-number)
+;(up-chat-data-to-player every-ally "6%d" s: sn-target-player-number)
+;(up-jump-rule 1)
+;)
+
+;(defrule
+;(goal 77 1)
+;(goal strategy-goal last-place-enemy)
+;(strategic-number sn-focus-player-number < 9)
+;=>
+;(up-modify-sn sn-focus-player-number c:+ 1)
+;(up-jump-rule -4)
+;)
+
+;/////// Target The Wonder ///////
+
+(defrule
+(not(goal strategy-goal destroy-the-wonder))
+(players-building-type-count any-enemy wonder > 0)
+=>
+(set-goal strategy-goal destroy-the-wonder)
+(chat-local-to-self "Changing targeting to Wonder")
+)
+
+(defrule
+(goal strategy-goal destroy-the-wonder)
+(players-building-type-count any-enemy wonder > 0)
+(up-get-player-fact this-any-enemy player-number 0 player-with-wonder)
+(up-compare-sn sn-target-player-number g:!= player-with-wonder)
+=>
+(up-modify-sn sn-target-player-number g:= player-with-wonder)
+)
+
+(defrule
+(goal strategy-goal destroy-the-wonder)
+(players-building-type-count target-player wonder == 0)
+=>
+(set-goal strategy-goal closest-enemy)
+(chat-local-to-self "Reverting targeting")
+)
+
+;/////// Leader Demands Tribute ///////
+
+;(defrule
+;(goal 77 1)
+;(current-age == feudal-age)
+;(food-amount < 800)
+;=>
+;(chat-to-player any-ally "103")
+;)
+
+;(defrule
+;(goal 77 1)
+;(current-age == feudal-age)
+;(gold-amount < 200)
+;=>
+;(chat-to-player any-ally "105")
+;)
+
+;(defrule
+;(goal 77 1)
+;(current-age == castle-age)
+;(food-amount < 1000)
+;=>
+;(chat-to-player any-ally "103")
+;)
+
+;(defrule
+;(goal 77 1)
+;(current-age == castle-age)
+;(gold-amount < 800)
+;=>
+;(chat-to-player any-ally "105")
+;)
+
+;/////// Tribute Allies Behind ///////
+
+(defrule
+(false)
+(players-current-age any-ally < feudal-age)
+(current-age >= feudal-age)
+(food-amount > 300)
+(player-in-game this-any-ally)
+=>
+(tribute-to-player this-any-ally food 100)
+)
+
+(defrule
+(false)
+(players-current-age any-ally < feudal-age)
+(current-age >= feudal-age)
+(wood-amount > 300)
+(player-in-game this-any-ally)
+=>
+(tribute-to-player this-any-ally wood 100)
+)
+
+(defrule
+(false)
+(players-current-age any-ally < castle-age)
+(current-age >= castle-age)
+(food-amount > 300)
+(player-in-game this-any-ally)
+=>
+(tribute-to-player this-any-ally food 100)
+)
+
+(defrule
+(false)
+(players-current-age any-ally < castle-age)
+(current-age >= castle-age)
+(wood-amount > 300)
+(player-in-game this-any-ally)
+=>
+(tribute-to-player this-any-ally wood 100)
+)
+
+(defrule
+(false)
+(players-current-age any-ally < castle-age)
+(current-age >= castle-age)
+(gold-amount > 300)
+(player-in-game this-any-ally)
+=>
+(tribute-to-player this-any-ally gold 100)
+)
+
+(defrule
+(false)
+(players-current-age any-ally < imperial-age)
+(current-age >= imperial-age)
+(food-amount > 300)
+(player-in-game this-any-ally)
+=>
+(tribute-to-player this-any-ally food 100)
+)
+
+(defrule
+(false)
+(players-current-age any-ally < imperial-age)
+(current-age >= imperial-age)
+(gold-amount > 300)
+(player-in-game this-any-ally)
+=>
+(tribute-to-player this-any-ally gold 100)
+)
+
+;/////// Respond To Tribute Command ///////
+
+(defrule
+(false)
+(goal 77 -1)
+(taunt-detected any-ally 103)
+(food-amount > 100)
+(player-in-game this-any-ally)
+=>
+(acknowledge-taunt this-any-ally 103)
+(tribute-to-player this-any-ally food 100)
+)
+
+(defrule
+(false)
+(goal 77 -1)
+(taunt-detected any-ally 105)
+(player-in-game this-any-ally)
+=>
+(acknowledge-taunt this-any-ally 105)
+(tribute-to-player this-any-ally gold 100)
+)

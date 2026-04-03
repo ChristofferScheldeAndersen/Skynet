@@ -1,0 +1,9 @@
+(defrule
+(up-compare-flag gl-anti-lag-flag == anti-lag-level2)
+(up-pending-objects c: mining-camp < 1)
+(goal gl-need-gold-mining-camp 1)
+(can-build mining-camp)
+=>
+(build mining-camp)
+(up-modify-sn sn-mining-camp-max-distance c:+ 10)
+)

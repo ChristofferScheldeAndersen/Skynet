@@ -1,0 +1,605 @@
+(defrule
+	(true)
+=>
+	(set-goal f-cavalry-allowed 0)
+	(set-goal f-infantry-allowed 0)
+	(set-goal f-monks-allowed 0)
+	(set-goal f-siege-allowed 0)
+	(set-goal f-archers-allowed 0)
+)
+
+;-------------------------Archer flags------------------------------------------------
+
+(defrule
+	(goal g-archer-rush yes)
+	(unit-available slinger)
+	(building-type-count archery-range > 0)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(or	(strategic-number sn-food-gold-comparison < -50)
+	(or	(strategic-number sn-husks > 2)
+		(strategic-number sn-monksiege > 8)))
+	(or	(food-amount >= 120)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+=>
+	(up-modify-flag f-archers-allowed c:+ fv-slings)
+)
+
+(defrule
+	(goal g-archer-rush yes)
+	(unit-available skirmisher-line)
+	(building-type-count archery-range > 0)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(or	(dropsite-min-distance wood < 7)
+		(wood-amount >= 1450))
+	(or	(strategic-number sn-food-gold-comparison < -50)
+	(or	(strategic-number sn-ranged > 2)
+		(goal g-rushing-unit skirmisher)))
+	(or	(food-amount >= 75)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+=>
+	(up-modify-flag f-archers-allowed c:+ fv-skirms)
+)
+
+(defrule
+	(unit-available genitour-line)
+	(up-compare-flag f-archers-allowed == fv-skirms)
+=>
+	(up-modify-flag f-archers-allowed c:- fv-skirms)
+	(up-modify-flag f-archers-allowed c:+ fv-genitour)
+)
+
+(defrule
+	(unit-available archer-line)
+	(building-type-count archery-range > 0)
+	(or	(dropsite-min-distance wood < 7)
+		(wood-amount >= 1450))
+	(or	(gold-amount >= 245)
+		(goal g-rushing-unit archer))
+	(current-age == feudal-age)
+	(goal g-rushing-age feudal-age)
+	(goal g-archer-rush yes)
+=>
+	(up-modify-flag f-archers-allowed c:+ fv-archers)
+)
+
+(defrule
+	(unit-available archer-line)
+	(or	(dropsite-min-distance wood < 7)
+		(wood-amount >= 1450))
+	(or	(research-completed ri-crossbow)
+	(or	(gold-amount >= 400)
+		(and	(up-compare-flag f-archers-allowed == fv-skirms)
+			(or	(strategic-number sn-eagles >= 4)
+			(or	(strategic-number sn-cavalry >= 4)
+				(strategic-number sn-infantry >= 4))))))
+	(building-type-count archery-range > 0)
+	(goal g-archer-rush yes)
+=>
+	(up-modify-flag f-archers-allowed c:+ fv-archers)
+)
+
+
+
+#load-if-defined BERBERS-CIV
+(defrule
+	(or	(dropsite-min-distance wood < 7)
+		(wood-amount >= 1450))
+	(goal g-archer-rush yes)
+	(unit-available my-unique-unit-line)
+	(building-type-count castle > 0)
+=>
+	(up-modify-flag f-archers-allowed c:- fv-archers)
+	(up-modify-flag f-archers-allowed c:+ fv-uu)
+)
+#end-if
+
+
+(defrule
+	(goal g-archer-rush yes)
+	(unit-available hand-cannoneer)
+	(building-type-count archery-range > 0)
+	(or	(and	(strategic-number sn-food-wood-comparison < 0)
+			(up-compare-flag f-archers-allowed != fv-elephants))
+	(or	(strategic-number sn-camels > 3)
+	(or	(strategic-number sn-eagles > 4)
+		(strategic-number sn-husks > 4))))
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+
+=>
+	(up-modify-flag f-archers-allowed c:+ fv-handcannons)
+)
+
+(defrule
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(goal g-archer-rush yes)
+	(unit-available elephant-archer-line)
+	(building-type-count archery-range > 0)
+=>
+	(up-modify-flag f-archers-allowed c:- fv-handcannons)
+	(up-modify-flag f-archers-allowed c:+ fv-elephants)
+)
+
+(defrule
+	(food-amount >= 110)
+	(goal g-archer-rush yes)
+	(unit-available elephant-archer-line)
+	(strategic-number sn-food-wood-comparison <= 0)
+	(building-type-count archery-range > 0)
+=>
+	(up-modify-flag f-archers-allowed c:- fv-handcannons)
+	(up-modify-flag f-archers-allowed c:- fv-archers)
+	(up-modify-flag f-archers-allowed c:+ fv-elephants)
+)
+
+;--------------------------------Cavalry flags------------------------------------
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-available scout-cavalry-line)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(or	(goal g-rushing-unit scout-cavalry)
+		(goal g-rushing-unit -1))
+	(or	(food-amount >= 130)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(nand	(research-available ri-bloodlines)
+		(gold-amount >= 100))
+=>
+	(up-modify-flag f-cavalry-allowed c:+ fv-scouts)
+)
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-available scout-cavalry-line)
+	(or	(food-amount >= 130)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(or	(strategic-number sn-food-gold-comparison < -160)
+		(strategic-number sn-monks > 4))
+	(up-research-status g: g-rushing-age >= research-pending)
+=>
+	(up-modify-flag f-cavalry-allowed c:+ fv-scouts)
+)
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-available knight-line)
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(or	(research-completed ri-paladin)
+		(current-age == castle-age))
+=>
+	(up-modify-flag f-cavalry-allowed c:+ fv-knights)
+)
+(defrule
+	(goal g-cavalry-rush yes)
+	(current-age == castle-age)
+	(or	(food-amount >= 150)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(or	(research-completed ri-elite-battle-elephant)
+		(current-age == castle-age))
+	(or	(strategic-number sn-cavalry > 4)
+	(or	(strategic-number sn-infantry > 5)
+		(strategic-number sn-husks > 2)))
+	(building-type-count stable > 0)
+=>
+	(up-modify-flag f-cavalry-allowed c:+ fv-elephants)
+)
+(defrule
+	(goal g-cavalry-rush yes)
+	(strategic-number sn-cavalry > 2)
+	(unit-available camel-line)
+	(nand	(research-completed ri-halberdier)
+		(strategic-number sn-wood-gold-comparison < 0))
+=>
+	(up-modify-flag f-cavalry-allowed c:+ fv-camels)
+)
+
+;-------------------------------------------infantry flags
+
+
+(defrule
+	(goal g-infantry-rush yes)
+	(unit-available spearman-line)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(strategic-number sn-cavalry > 3)
+	(or	(food-amount >= 85)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+=>
+	(up-modify-flag f-infantry-allowed c:+ fv-spears)
+)
+
+
+(defrule
+	(goal g-infantry-rush yes)
+	(unit-available militiaman-line)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(or	(goal g-rushing-unit militiaman)
+	(or	(strategic-number sn-spears > 4)
+	(or	(strategic-number sn-eagles > 3)
+		(research-completed ri-champion))))
+	(nor	(research-available ri-man-at-arms)
+		(research-available ri-long-swordsman))
+=>
+	(up-modify-flag f-infantry-allowed c:+ fv-militia)
+)
+(defrule
+	(goal g-infantry-rush yes)
+	(goal g-cavalry-rush no)
+	(goal g-rushing-unit -1)
+	(unit-available militiaman-line)
+	(current-age g:>= g-rushing-age)
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(nor	(research-available ri-man-at-arms)
+		(research-available ri-long-swordsman))
+	(strategic-number sn-food-wood-comparison < 0)
+	(strategic-number sn-wood-gold-comparison > 0)
+=>
+	(up-modify-flag f-infantry-allowed c:+ fv-militia)
+)
+
+(defrule
+	(unit-available champi-line)
+	(goal g-infantry-rush yes)
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(or	(goal g-archer-rush no)
+	(or	(goal g-rushing-unit champi-line)
+		(and	(goal g-rushing-unit -1)
+			(gold-amount >= 70))))
+	(nor	(research-available ri-champi-runner)
+		(research-available ri-champi-warrior))
+=>
+	(up-modify-flag f-infantry-allowed c:- fv-militia)
+	(up-modify-flag f-infantry-allowed c:+ fv-champi)
+)
+
+#load-if-defined AZTEC-CIV
+(defrule
+	(goal g-infantry-rush yes)
+	(or	(gold-amount >= 250)
+	(or	(research-completed ri-eagle-warrior)
+		(goal g-rushing-unit eagle-warrior)))
+	(or	(food-amount >= 70)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(or	(goal g-monk-rush no)
+	(or	(goal g-rushing-unit eagle-warrior)
+	(or	(building-type-count monastery == 0)
+		(gold-amount > 1900))))
+=>
+	(up-modify-flag f-infantry-allowed c:+ fv-eagles)
+)
+(defrule
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(goal g-infantry-rush yes)
+	(unit-available my-unique-unit-line)
+	(building-type-count castle > 0)
+=>
+	(up-modify-flag f-infantry-allowed c:- fv-militia)
+	(up-modify-flag f-infantry-allowed c:+ fv-uu)
+)
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+(defrule
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(goal g-infantry-rush yes)
+	(current-age == castle-age)
+	(or	(strategic-number sn-cavalry > 3)
+		(strategic-number sn-infantry > 4))
+	(unit-available my-unique-unit-line)
+	(building-type-count castle > 0)
+=>
+	(up-modify-flag f-infantry-allowed c:+ fv-uu)
+)
+#end-if
+
+#load-if-defined INCAN-CIV
+(defrule
+	(or	(food-amount >= 110)
+		(and	(up-pending-objects c: villager > 0)
+			(or	(strategic-number sn-military-superiority < -1)
+				(up-compare-goal g-rush-aggression >= rush-high))))
+	(or	(strategic-number sn-cavalry > 3)
+		(strategic-number sn-infantry > 4))
+	(goal g-infantry-rush yes)
+	(unit-available my-unique-unit-line)
+	(building-type-count castle > 0)
+=>
+	(up-modify-flag f-infantry-allowed c:+ fv-uu)
+)
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-spears)
+	(strategic-number sn-wood-gold-comparison >= 0)
+	(unit-available my-unique-unit-line)
+	(building-type-count castle > 0)
+=>
+	(up-modify-flag f-infantry-allowed c:- fv-spears)
+	(up-modify-flag f-infantry-allowed c:+ fv-uu)
+)
+#end-if
+
+
+;------------------------------------------Siege flags----------------------
+
+(defrule
+	(unit-available trebuchet)
+	(military-population > 14)
+	(building-type-count castle > 0)
+	(unit-type-count-total trebuchet-set < 3)
+	(or	(unit-type-count-total ram-unit < 4)
+		(unit-type-count trebuchet-set < 2))
+	(unit-type-count-total bombard-cannon < 4)
+=>
+	(up-modify-flag f-siege-allowed c:+ fv-trebs)
+)
+(defrule
+	(goal g-siege-rush yes)
+	(unit-available scorpion-line)
+	(building-type-count siege-workshop > 0)
+	(or	(unit-type-count ram-unit > 2)
+		(unit-type-count scorpion-line < 15))
+=>
+	(up-modify-flag f-siege-allowed c:+ fv-scorpions)
+)
+(defrule
+	(military-population > 14)
+	(unit-available ram-unit)
+	(building-type-count siege-workshop > 0)
+	(or	(unit-type-count-total ram-unit < 3)
+		(military-population > 40))
+	(unit-type-count-total ram-unit < 5)
+=>
+	(up-modify-flag f-siege-allowed c:+ fv-rams))
+(defrule
+	(unit-available mangonel-line)
+	(building-type-count siege-workshop > 0)
+	(or	(strategic-number sn-military-superiority < 0)
+		(military-population > 32))
+	(strategic-number sn-ranged > 12)
+	(or	(unit-type-count-total mangonel-line < 2)
+		(strategic-number sn-ranged > 20))
+	(unit-type-count-total mangonel-line < 4)
+	(not	(research-available ri-onager))
+=>
+	(up-modify-flag f-siege-allowed c:+ fv-mangonels))
+
+(defrule
+	(gold-amount > 400)
+	(research-completed ri-siege-engineers)
+	(unit-available bombard-cannon)
+	(unit-type-count-total bombard-cannon < 15)
+=>
+	(up-modify-flag f-siege-allowed c:+ fv-bombard-cannons))
+;-----------------------------------------Monk flags----------------------------------------
+(defrule
+	(unit-available monk)
+	(unit-type-count-total monk < 3)
+	(or	(and	(dropsite-min-distance gold > -1)
+			(dropsite-min-distance gold < 10))
+		(unit-type-count-total monk == 0))
+=>
+	(up-modify-flag f-monks-allowed c:+ fv-monks)
+)
+(defrule
+	(unit-available monk)
+	(goal g-monk-rush yes)
+	(or	(unit-type-count ram-unit > 2)
+	(or	(unit-type-count monk < 15)
+		(gold-amount > 400)))
+=>
+	(up-modify-flag f-monks-allowed c:+ fv-monks)
+)
+(defrule
+	(up-compare-flag f-monks-allowed == fv-monks)
+	(unit-type-count-total monk > 2)
+=>
+	(up-modify-goal g-math-1 s:= sn-heavy-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-cavalry-archers)
+	(up-modify-goal g-math-1 s:- sn-light-cavalry)
+	(up-modify-goal g-math-1 s:- sn-archers)
+	(up-modify-goal g-math-1 s:- sn-eagles)
+	(up-modify-goal g-math-1 c:+ 5)
+)
+
+(defrule
+	(up-compare-flag f-monks-allowed == fv-monks)
+	(unit-type-count-total monk > 2)
+	(up-compare-goal g-math-1 < 0)
+=>
+	(up-modify-flag f-monks-allowed c:- fv-monks)
+)
+(defrule
+	(strategic-number sn-food-gold-comparison > 100)
+	(strategic-number sn-wood-gold-comparison > 100)
+=>
+	(up-modify-flag f-monks-allowed c:+ fv-monks)
+)
+;-----------------------------resource controls------------------------------
+;allow all:
+(defrule
+	(true)
+=>
+	(up-modify-flag f-cavalry-allowed c:+ fv-all-res)
+	(up-modify-flag f-infantry-allowed c:+ fv-all-res)
+	(up-modify-flag f-monks-allowed c:+ fv-all-res)
+	(up-modify-flag f-siege-allowed c:+ fv-all-res)
+	(up-modify-flag f-archers-allowed c:+ fv-all-res)
+)
+
+
+;then subtract:
+
+(defrule
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit eagle-warrior)
+	(or	(strategic-number sn-monksiege > 7)
+		(unit-type-count-total eagle-warrior-line > 3)))
+	(research-available ri-eagle-warrior)
+	(building-type-count barracks > 0)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(food-amount < 400)
+=>
+
+	(up-modify-flag f-cavalry-allowed c:- fv-food)
+	(up-modify-flag f-infantry-allowed c:- fv-food)
+	(up-modify-flag f-monks-allowed c:- fv-food)
+	(up-modify-flag f-siege-allowed c:- fv-food)
+	(up-modify-flag f-archers-allowed c:- fv-food)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit eagle-warrior)
+	(or	(strategic-number sn-monksiege > 7)
+		(unit-type-count-total eagle-warrior-line > 3)))
+	(research-available ri-eagle-warrior)
+	(building-type-count barracks > 0)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(gold-amount < 400)
+=>
+	(up-modify-flag f-monks-allowed c:- fv-gold)
+	(up-modify-flag f-cavalry-allowed c:- fv-gold)
+	(up-modify-flag f-infantry-allowed c:- fv-gold)
+	(up-modify-flag f-siege-allowed c:- fv-gold)
+	(up-modify-flag f-archers-allowed c:- fv-gold)
+)
+
+
+(defrule
+	(military-population > 10)
+	(or	(dropsite-min-distance wood > 5)
+	(or	(and	(dropsite-min-distance gold > 5)
+			(strategic-number sn-gold-gatherer-percentage > 0))
+		(and	(dropsite-min-distance stone > 5)
+			(strategic-number sn-stone-gatherer-percentage > 0))))
+	(wood-amount < 300)
+=>
+	(up-modify-flag f-cavalry-allowed c:- fv-wood)
+	(up-modify-flag f-infantry-allowed c:- fv-wood)
+	(up-modify-flag f-monks-allowed c:- fv-wood)
+	(up-modify-flag f-siege-allowed c:- fv-wood)
+	(up-modify-flag f-archers-allowed c:- fv-wood)
+)
+
+(defrule
+	(up-research-status c: castle-age >= research-pending)
+	(strategic-number sn-military-superiority >= -5)
+	(military-population > 10)
+	(or	(building-type-count-total town-center g:< g-number-town-centers)
+		(building-type-count-total monastery == 0))
+	(stone-amount >= 100)
+	(wood-amount < 500)
+=>
+	(up-modify-flag f-cavalry-allowed c:- fv-wood)
+	(up-modify-flag f-infantry-allowed c:- fv-wood)
+	(up-modify-flag f-monks-allowed c:- fv-wood)
+	(up-modify-flag f-siege-allowed c:- fv-wood)
+	(up-modify-flag f-archers-allowed c:- fv-wood)
+)
+;create a buffer so both can be trained
+(defrule
+	(gold-amount < 150)
+	(up-compare-flag f-monks-allowed == fv-monks)
+	(up-compare-flag f-infantry-allowed == fv-eagles)
+=>
+	(up-modify-flag f-monks-allowed c:- fv-gold)
+	(up-modify-flag f-cavalry-allowed c:- fv-gold)
+	(up-modify-flag f-infantry-allowed c:- fv-gold)
+	(up-modify-flag f-siege-allowed c:- fv-gold)
+	(up-modify-flag f-archers-allowed c:- fv-gold)
+)
+
+(defrule
+	(up-compare-flag f-monks-allowed == fv-monks)
+	(unit-type-count-total monk == 0)
+	(up-research-status c: castle-age >= research-pending)
+	(strategic-number sn-military-superiority >= -5)
+	(military-population > 10)
+	(building-type-count monastery > 0)
+	(gold-amount < 300)
+=>
+	(up-modify-flag f-cavalry-allowed c:- fv-gold)
+	(up-modify-flag f-infantry-allowed c:- fv-gold)
+	(up-modify-flag f-siege-allowed c:- fv-gold)
+	(up-modify-flag f-archers-allowed c:- fv-gold)
+)
+
+
+(defrule
+	(food-amount < 150)
+	(strategic-number sn-eagles >= 4)
+	(up-compare-flag f-archers-allowed == fv-skirms)
+;	(or	(up-compare-flag f-cavalry-allowed == fv-knights)
+;		(up-compare-flag f-infantry-allowed == fv-militia))
+=>
+	(up-modify-flag f-cavalry-allowed c:- fv-food)
+	(up-modify-flag f-infantry-allowed c:- fv-food)
+	(up-modify-flag f-monks-allowed c:- fv-food)
+	(up-modify-flag f-siege-allowed c:- fv-food)
+	(up-modify-flag f-archers-allowed c:- fv-food)
+)
+
+
+
+
+
+;override monk cancelation if no monks
+(defrule
+	(unit-type-count-total monk < 2)
+=>
+	(up-modify-flag f-monks-allowed c:+ fv-all-res)
+
+)
+
+
+
+(defrule
+	(population > 190)
+	(unit-available trebuchet)
+	(military-population > 20)
+	(unit-type-count-total trebuchet-set < 3)
+	(unit-type-count-total ram-unit < 4)
+	(unit-type-count-total bombard-cannon < 4)
+=>
+	(set-goal f-cavalry-allowed 0)
+	(set-goal f-infantry-allowed 0)
+	(set-goal f-monks-allowed 0)
+	(set-goal f-archers-allowed 0)
+)

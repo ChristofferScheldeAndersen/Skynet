@@ -1,0 +1,3420 @@
+; =========================================================
+; Definitioner opdelt efter type
+; =========================================================
+
+; Goals
+	(defconst gl-retask-return-label 2)
+	(defconst gl-wood-dropoff-support-count 79)
+	(defconst gl-target-resource 27)
+	(defconst gl-source-villager-id 28)
+	(defconst gl-direct-reassign-search-radius 29)
+	(defconst gl-same-resource-stay-distance 32)
+	(defconst gl-local-radius-divisor 33)
+	(defconst gl-wood-fallback-anchor-enabled 36)
+	(defconst gl-farm-crowding-threshold 34)
+	(defconst gl-resource-balance-weight 35)
+	(defconst gl-anchor-resource-search-radius 37)
+	(defconst gl-fallback-anchor-count 38)
+	(defconst gl-food-anchor-branch-lock 23)
+	(defconst gl-forced-food-retask-mode 39)
+	(defconst gl-reassign-result-code 40)
+	(defconst gl-scaled-idle-farm-threshold 415)
+	(defconst gl-villager-origin-pos 416)
+	(defconst gl-source-villager-role 418)
+	(defconst gl-source-villager-resource 419)
+	(defconst gl-villager-move-target-pos 421)
+	(defconst gl-villager-move-target-pos-x 421)
+	(defconst gl-villager-move-target-pos-y 422)
+	(defconst gl-villager-distance-origin-pos 423)
+	(defconst gl-villager-to-move-target-distance 425)
+	(defconst gl-source-villager-tag 426)
+	(defconst gl-max-allowed-target-tasks 427)
+	(defconst gl-target-work-group 428)
+	(defconst gl-local-anchor-search-radius 415)
+	(defconst gl-best-anchor-id 421)
+	(defconst gl-best-anchor-score 422)
+	(defconst gl-local-anchor-index 420)
+	(defconst gl-current-anchor-id 423)
+	(defconst gl-current-anchor-distance 424)
+	(defconst gl-current-anchor-class-id 429)
+	(defconst gl-current-anchor-is-farm 430)
+	(defconst gl-current-anchor-pos 432)
+	(defconst gl-current-anchor-crowding-score 433)
+	(defconst gl-required-group-tag 434)
+	(defconst gl-crowding-overflow-penalty 435)
+	(defconst gl-current-anchor-resource-count-score 429)
+	(defconst gl-current-anchor-nearest-resource-score 431)
+	(defconst gl-resource-shortage-penalty 432)
+	(defconst gl-resource-balance-score 434)
+	(defconst gl-adjusted-nearest-resource-distance 435)
+	(defconst gl-weighted-crowding-score 432)
+	(defconst gl-current-anchor-total-score 434)
+	(defconst gl-best-anchor-pos 423)
+	(defconst gl-best-anchor-class-id 429)
+	(defconst gl-quick-pass-random-roll 420)
+	(defconst gl-nearby-pass-random-roll 420)
+	(defconst gl-second-pass-search-radius 420)
+	(defconst gl-second-pass-random-roll 420)
+	(defconst gl-second-pass-target-index 420)
+	(defconst gl-probe-east-pos 429)
+	(defconst gl-probe-east-pos-x 429)
+	(defconst gl-probe-south-pos 431)
+	(defconst gl-probe-south-pos-y 432)
+	(defconst gl-probe-west-pos 433)
+	(defconst gl-probe-west-pos-x 433)
+	(defconst gl-probe-north-pos 435)
+	(defconst gl-probe-north-pos-y 436)
+	(defconst gl-final-task-limit 420)
+	(defconst gl-unload-state-offset 26)
+	(defconst gl-required-unload-sn82-state 415)
+	(defconst gl-local-total 45)
+	(defconst gl-local-last 46)
+	(defconst gl-remote-total 47)
+	(defconst gl-remote-last 48)
+	(defconst gl-search-state-scratch-base 94)
+	(defconst gl-food-anchor-branch-lock 23)
+	(defconst gl-preselected-source-villager-id 243)
+	(defconst gl-direct-reassign-resource-balance-weight 26)
+	(defconst gl-second-pass-direct-search-radius 26)
+	(defconst gl-second-pass-stay-distance-threshold 230)
+	(defconst gl-second-pass-local-radius-divisor 241)
+	(defconst gl-second-pass-wood-alt-search-mode 242)
+	(defconst gl-second-pass-farm-crowding-threshold 243)
+	(defconst gl-second-pass-resource-balance-weight 244)
+	(defconst gl-second-pass-anchor-resource-search-radius 278)
+	(defconst gl-fallback-pass-attempts-remaining 43)
+	(defconst gl-unused-temp-goal-388 388)
+	(defconst gl-first-cleanup-candidate-index 26)
+	(defconst gl-first-cleanup-tag-resource 43)
+	(defconst gl-first-cleanup-normalized-resource 51)
+	(defconst gl-first-cleanup-language-id 65)
+	(defconst gl-first-cleanup-candidate-id 107)
+	(defconst gl-first-cleanup-tick-modulo 26)
+	(defconst gl-second-cleanup-candidate-index 43)
+	(defconst gl-second-cleanup-candidate-id 51)
+	(defconst gl-second-cleanup-candidate-group-flag 65)
+	(defconst gl-second-cleanup-candidate-resource 107)
+	(defconst gl-second-cleanup-move-distance 251)
+	(defconst gl-second-cleanup-target-class 278)
+	(defconst gl-second-cleanup-target-group-plus-one 26)
+	(defconst gl-second-cleanup-tick-modulo 26)
+	(defconst gl-nearby-farm-scan-index 51)
+	(defconst gl-nearby-farm-move-distance 251)
+	(defconst gl-fallback-candidate-index 26)
+	(defconst gl-fallback-candidate-id 51)
+	(defconst gl-fallback-candidate-group-flag 65)
+	(defconst gl-fallback-candidate-resource 107)
+	(defconst gl-fallback-candidate-gather-type 230)
+	(defconst gl-fallback-candidate-language-id 241)
+	(defconst gl-fallback-target-language-id 230)
+	(defconst gl-fallback-current-target-id 241)
+	(defconst gl-fallback-candidate-carry-amount 242)
+	(defconst gl-fallback-target-group-flag-min 243)
+	(defconst gl-fallback-target-group-flag-max 244)
+	(defconst gl-nearby-dropoff-group-flag-min 243)
+	(defconst gl-nearby-dropoff-group-flag-max 244)
+	(defconst gl-food-followup-anchor-pos 241)
+	(defconst gl-food-followup-anchor-pos-x 241)
+	(defconst gl-food-followup-anchor-pos-y 242)
+	(defconst gl-second-cleanup-candidate-move-target-pos 241)
+	(defconst gl-second-cleanup-candidate-move-target-pos-x 241)
+	(defconst gl-second-cleanup-candidate-move-target-pos-y 242)
+	(defconst gl-second-cleanup-candidate-current-pos 243)
+	(defconst gl-second-cleanup-candidate-current-pos-x 243)
+	(defconst gl-second-cleanup-candidate-current-pos-y 244)
+	(defconst gl-nearby-farm-candidate-move-target-pos 241)
+	(defconst gl-nearby-farm-candidate-move-target-pos-x 241)
+	(defconst gl-nearby-farm-candidate-move-target-pos-y 242)
+	(defconst gl-nearby-farm-candidate-current-pos 243)
+	(defconst gl-nearby-farm-candidate-current-pos-x 243)
+	(defconst gl-nearby-farm-candidate-current-pos-y 244)
+	(defconst gl-fallback-target-anchor-pos 243)
+	(defconst gl-fallback-target-anchor-pos-x 243)
+	(defconst gl-fallback-target-anchor-pos-y 244)
+
+	; Rule-id goals for jump markers
+	(defconst gl-rule-3408-abort-early-food-retasking-id 500)
+	(defconst gl-rule-3430-derive-first-local-search-id 501)
+	(defconst gl-rule-3439-clean-local-anchor-list-id 502)
+	(defconst gl-rule-3440-exit-local-anchor-loop-id 503)
+	(defconst gl-rule-3449-filter-resource-list-around-id 504)
+	(defconst gl-rule-3451-rescale-scoring-routine-special-id 505)
+	(defconst gl-rule-3454-finalize-local-anchor-pass-id 506)
+	(defconst gl-rule-3464-roll-random-value-decide-id 507)
+	(defconst gl-rule-3471-clean-quick-retask-candidate-id 508)
+	(defconst gl-rule-3474-snapshot-quick-retask-search-id 509)
+	(defconst gl-rule-3481-filter-second-pass-resource-id 510)
+	(defconst gl-rule-3484-move-second-pass-search-id 511)
+	(defconst gl-rule-3488-snapshot-candidate-list-obstruction-id 512)
+	(defconst gl-rule-3494-relax-congestion-threshold-final-id 513)
+	(defconst gl-rule-3495-snapshot-final-candidate-list-id 514)
+	(defconst gl-rule-3503-abort-fallback-anchor-survived-id 515)
+	(defconst gl-rule-3510-filter-sort-fallback-targets-id 516)
+	(defconst gl-rule-3518-set-final-failure-code-id 517)
+	(defconst gl-rule-9408-skip-immediate-food-clean-id 518)
+	(defconst gl-rule-9413-gate-first-large-retask-id 519)
+	(defconst gl-rule-9415-skip-first-cleanup-pass-id 520)
+	(defconst gl-rule-9423-start-first-cleanup-cooldown-id 521)
+	(defconst gl-rule-9426-continue-scanning-remaining-candidates-id 522)
+	(defconst gl-rule-9427-gate-second-cleanup-pass-id 523)
+	(defconst gl-rule-9429-skip-second-cleanup-pass-id 524)
+	(defconst gl-rule-9438-start-second-cleanup-cooldown-id 525)
+	(defconst gl-rule-9440-continue-scanning-remaining-active-id 526)
+	(defconst gl-rule-9441-gate-broad-fallback-retask-id 527)
+	(defconst gl-rule-9443-stop-pruning-broad-candidates-id 528)
+	(defconst gl-rule-9447-freeze-pruned-candidate-set-id 529)
+	(defconst gl-rule-9448-end-fallback-sweep-grouped-id 530)
+	(defconst gl-rule-9457-snapshot-candidate-villager-target-id 531)
+	(defconst gl-rule-9464-route-non-food-villagers-id 532)
+	(defconst gl-rule-9466-skip-further-fallback-attempts-id 533)
+	(defconst gl-rule-9468-first-wood-attempt-failed-id 534)
+	(defconst gl-rule-9469-wood-failed-try-gold-id 535)
+	(defconst gl-rule-9470-gold-failed-try-stone-id 536)
+	(defconst gl-rule-9471-exit-food-family-fallback-id 537)
+	(defconst gl-rule-9472-route-non-wood-villagers-id 538)
+	(defconst gl-rule-9474-failed-try-wood-again-id 539)
+	(defconst gl-rule-9475-skip-deeper-fallback-chain-id 540)
+	(defconst gl-rule-9477-gold-failed-try-stone-id 541)
+	(defconst gl-rule-9478-stone-failed-try-food-id 542)
+	(defconst gl-rule-9479-exit-wood-family-fallback-id 543)
+	(defconst gl-rule-9480-route-non-gold-villagers-id 544)
+	(defconst gl-rule-9482-skip-deeper-fallback-chain-id 545)
+	(defconst gl-rule-9484-failed-try-wood-again-id 546)
+	(defconst gl-rule-9485-wood-failed-try-stone-id 547)
+	(defconst gl-rule-9486-stone-failed-try-food-id 548)
+	(defconst gl-rule-9487-exit-gold-family-fallback-id 549)
+	(defconst gl-rule-9488-skip-stone-family-branch-id 550)
+	(defconst gl-rule-9490-skip-deeper-fallback-chain-id 551)
+	(defconst gl-rule-9492-gold-failed-try-wood-id 552)
+	(defconst gl-rule-9493-failed-try-wood-again-id 553)
+	(defconst gl-rule-9494-wood-failed-try-food-id 554)
+	(defconst gl-rule-9495-start-broad-fallback-cooldown-id 555)
+	(defconst gl-rule-9498-refresh-top-level-resource-id 556)
+
+	(defconst gl-vill-hopping-target-resource 26)
+	(defconst gl-vill-hopping-target-group 43)
+	(defconst gl-vill-hopping-required-villager-role 51)
+	(defconst gl-vill-hopping-required-drop-site-line 65)
+	(defconst gl-vill-hopping-center-pos 58)
+	(defconst gl-vill-hopping-center-pos-x 58)
+	(defconst gl-vill-hopping-center-pos-y 59)
+	(defconst gl-vill-hopping-hunter-count 415)
+	(defconst gl-vill-hopping-nearby-same-role-count 415)
+	(defconst gl-vill-hopping-hunter-shepherd-count 416)
+	(defconst gl-vill-hopping-time-modulo 417)
+	(defconst gl-vill-hopping-nearby-tagged-worker-count 417)
+	(defconst gl-vill-hopping-source-garrison-count 418)
+	(defconst gl-vill-hopping-selected-worker-id 418)
+	(defconst gl-vill-hopping-selected-drop-site-id 419)
+	(defconst gl-vill-hopping-drop-site-loop-index 423)
+	(defconst gl-vill-hopping-search-radius 423)
+	(defconst gl-vill-hopping-best-drop-site-id 419)
+	(defconst gl-vill-hopping-found-resource-id 420)
+	(defconst gl-vill-hopping-best-drop-site-score 422)
+	(defconst gl-vill-hopping-primary-resource-id 422)
+	(defconst gl-vill-hopping-next-unload-state 422)
+	(defconst gl-vill-hopping-current-drop-site-pos 426)
+	(defconst gl-vill-hopping-current-drop-site-pos-x 426)
+	(defconst gl-vill-hopping-current-drop-site-pos-y 427)
+	(defconst gl-vill-hopping-current-drop-site-distance-score 428)
+	(defconst gl-vill-hopping-current-drop-site-total-score 429)
+	(defconst gl-wood-drop-site-line-id 557)
+	(defconst gl-mining-drop-site-line-id 558)
+	(defconst gl-buildability-probe-line-id 559)
+	(defconst gl-vill-hopping-source-town-center-id 560)
+	(defconst gl-vill-hopping-gather-point-target-id 561)
+	(defconst gl-vill-hopping-nearby-drop-site-pos 422)
+	(defconst gl-vill-hopping-nearby-drop-site-pos-x 422)
+	(defconst gl-vill-hopping-nearby-drop-site-pos-y 423)
+
+	; Rule-id goals for added vill-hopping branch markers
+	(defconst gl-rule-3531-start-vill-hopping-branch-id 557)
+	(defconst gl-rule-3545-evaluate-next-drop-site-candidate-id 558)
+	(defconst gl-rule-3549-finalize-drop-site-selection-id 559)
+	(defconst gl-rule-3555-filter-found-resource-targets-id 560)
+	(defconst gl-rule-3557-check-nearby-wood-fallback-id 561)
+	(defconst gl-rule-3560-abort-without-resource-target-id 562)
+	(defconst gl-rule-3572-return-from-vill-hopping-branch-id 563)
+; Strategic numbers (SNs)
+	(defconst sn-keystates 312)
+	(defconst sn-retask-economy-size 71)
+	(defconst sn-reassign-target-resource 484)
+	(defconst sn-unload-support-state 82)
+
+; Flags
+	(defconst fl-wood-town-center-fallback-mode 227)
+	(defconst fl-food-idle-farm-mode 227)
+	(defconst fl-food-idle-farm-mode-value 1048576)
+	(defconst fl-wood-town-center-fallback-mode-value 524288)
+
+
+	(defconst fl-vill-hopping-wood-fallback-needed 421)
+	(defconst fl-opening-wood-priority 106)
+	(defconst fl-opening-wood-priority-value 134217728)
+	(defconst fl-midgame-wood-support-a 114)
+	(defconst fl-midgame-wood-support-a-value 65536)
+	(defconst fl-midgame-wood-support-b 54)
+	(defconst fl-midgame-wood-support-b-value 2097152)
+
+; Groups
+	(defconst food-villager-group 1)
+	(defconst wood-villager-group 2)
+	(defconst stone-villager-group 3)
+	(defconst gold-villager-group 4)
+
+
+	(defconst generic-work-group-5 5)
+	(defconst generic-work-group-6 6)
+	(defconst generic-work-group-7 7)
+	(defconst generic-work-group-8 8)
+	(defconst generic-work-group-9 9)
+
+; Timers
+	(defconst food-stay-put-timer 15)
+	(defconst unload-support-timer 46)
+	(defconst retask-first-cleanup-cooldown-timer 43)
+	(defconst retask-second-cleanup-cooldown-timer 44)
+	(defconst retask-fallback-cooldown-timer 45)
+
+; Konstanter der ikke kan ændres direkte som goals/flags/timers
+	(defconst stance-ignore -1)
+	(defconst mill 68)
+	(defconst town-center 109)
+	(defconst lumber-camp 562)
+	(defconst mule-cart 1808)
+	(defconst villager-class 904)
+	(defconst farm-class 949)
+	(defconst food 0)
+	(defconst wood 1)
+	(defconst stone 2)
+	(defconst gold 3)
+	(defconst idle-farm-count 4)
+	(defconst building-type-count-total 29)
+	(defconst random-number 33)
+	(defconst formation-ignore -1)
+	(defconst lid_villager-shepherd 5496)
+	(defconst lid_villager-farmer 5123)
+	(defconst lid_villager-forager 5402)
+	(defconst lid_villager-lumberjack 5125)
+	(defconst lid_villager-gold-miner 5482)
+	(defconst lid_villager-stone-miner 5126)
+	(defconst object-data-index -1)
+	(defconst object-data-id 0)
+	(defconst object-data-class 2)
+	(defconst object-data-garrison-count 18)
+	(defconst object-data-player 20)
+	(defconst object-data-tasks-count 32)
+	(defconst object-data-distance 44)
+	(defconst object-data-precise-distance 45)
+	(defconst object-data-full-distance 46)
+	(defconst object-data-move-x 50)
+	(defconst object-data-move-y 51)
+	(defconst object-data-gather-type 71)
+	(defconst object-data-language-id 72)
+	(defconst object-data-group-flag 73)
+	(defconst list-active 0)
+	(defconst status-pending 0)
+	(defconst status-ready 2)
+	(defconst status-resource 3)
+	(defconst status-down 4)
+	(defconst status-gather 5)
+	(defconst position-curr-object 12)
+	(defconst amount-food 0)
+	(defconst amount-wood 1)
+	(defconst amount-stone 2)
+	(defconst amount-gold 3)
+	(defconst search_order-ascending 1)
+	(defconst search-local 1)
+	(defconst search-remote 2)
+	(defconst action-default 0)
+	(defconst action-unload 9)
+	(defconst timer-triggered 1)
+	(defconst timer-running 2)
+	(defconst build-line-check-mode 6)
+	(defconst retask-idle-farm-scale-divisor 70)
+	(defconst building-class 903)
+	(defconst mining-camp 584)
+	(defconst farm 50)
+	(defconst villager-food 978)
+	(defconst villager-wood 979)
+	(defconst actionid-attack 600)
+	(defconst actionid-build 602)
+	(defconst actionid-explore 605)
+	(defconst actionid-gather 609)
+	(defconst actionid-hunt 613)
+	(defconst actionid-enter 617)
+	(defconst object-data-action 5)
+	(defconst object-data-target-class-id 7)
+	(defconst object-data-carry 16)
+	(defconst object-data-target-unique-id 23)
+	(defconst object-data-precise-x 38)
+	(defconst object-data-precise-y 39)
+	(defconst lid_villager-builder 5122)
+	(defconst lid_villager-hunter 5124)
+	(defconst lid_villager-fisherman 5499)
+	(defconst timeSec 15)
+	(defconst timeMilli 11)
+	(defconst msecPerLoop 8)
+	(defconst _fcn_manualReassignVillager 3408)
+
+
+	(defconst berry-bush-class 907)
+	(defconst villager-hunter 976)
+	(defconst villager-shepherd 973)
+	(defconst action-garrison 7)
+	(defconst action-set-gather-point 11)
+	(defconst action-goto-work 13)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; Rule #3407.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3408-abort-early-food-retasking-id))
+; Rule #3408
+	; Purpose: Abort early when food retasking is blocked by the idle-farm check or when no valid villager ID was supplied.
+	(defrule
+		(up-modify-goal gl-scaled-idle-farm-threshold s:= sn-retask-economy-size)
+		(up-modify-goal gl-scaled-idle-farm-threshold c:/ retask-idle-farm-scale-divisor)
+		(or (and (and (up-compare-goal gl-target-resource c:== food)
+					(up-compare-flag fl-food-idle-farm-mode c:== fl-food-idle-farm-mode-value))
+				(idle-farm-count g:<= gl-scaled-idle-farm-threshold))
+			(up-compare-goal gl-source-villager-id c:< 0))
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-modify-goal gl-reassign-result-code c:= -1)
+		(up-jump-direct g: gl-retask-return-label))
+
+	; Rule #3409
+	; Purpose: Mark wood retasking as structure-constrained when lumber-camp support is missing.
+	(defrule
+		(up-compare-sn sn-retask-economy-size c:< 30)
+		(or (building-type-count-total mule-cart c:== 0)
+			(up-compare-goal gl-wood-dropoff-support-count c:== 0))
+		(building-type-count-total lumber-camp c:== 0)
+		=>
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 1))
+
+	; Rule #3410
+	; Purpose: Initialize the resource-balance weight for food retasking.
+	(defrule
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-resource-balance-weight c:== -1)
+		=>
+		(up-modify-goal gl-resource-balance-weight c:= 1))
+
+	; Rule #3411
+	; Purpose: Initialize the resource-balance weight for wood retasking.
+	(defrule
+		(up-compare-goal gl-target-resource c:== wood)
+		(up-compare-goal gl-resource-balance-weight c:== -1)
+		=>
+		(up-modify-goal gl-resource-balance-weight c:= 7))
+
+	; Rule #3412
+	; Purpose: Initialize the resource-balance weight for stone retasking.
+	(defrule
+		(up-compare-goal gl-target-resource c:== stone)
+		(up-compare-goal gl-resource-balance-weight c:== -1)
+		=>
+		(up-modify-goal gl-resource-balance-weight c:= 1))
+
+	; Rule #3413
+	; Purpose: Initialize the resource-balance weight for gold retasking.
+	(defrule
+		(up-compare-goal gl-target-resource c:== gold)
+		(up-compare-goal gl-resource-balance-weight c:== -1)
+		=>
+		(up-modify-goal gl-resource-balance-weight c:= 1))
+
+	; Rule #3414
+	; Purpose: Load the chosen villager's current state and initialize temporary values used by the rest of the retask search.
+	(defrule
+		(up-modify-goal gl-reassign-result-code c:= 0)
+		=>
+		(up-set-target-by-id g: gl-source-villager-id)
+		(up-get-point position-curr-object gl-villager-origin-pos)
+		(up-get-object-data object-data-language-id gl-source-villager-role)
+		(up-get-object-data object-data-gather-type gl-source-villager-resource)
+		(up-get-object-data object-data-move-x gl-villager-move-target-pos-x)
+		(up-get-object-data object-data-move-y gl-villager-move-target-pos-y)
+		(up-get-point position-curr-object gl-villager-distance-origin-pos)
+		(up-get-point-distance gl-villager-distance-origin-pos gl-villager-move-target-pos gl-villager-to-move-target-distance)
+		(up-get-object-data object-data-group-flag gl-source-villager-tag)
+		(up-modify-goal gl-max-allowed-target-tasks c:= 1)
+		(up-modify-goal gl-target-work-group c:= food-villager-group)
+		(up-modify-goal gl-target-work-group g:+ gl-target-resource))
+
+	; Rule #3415
+	; Purpose: Reject villagers whose tag makes them ineligible for this retask routine.
+	(defrule
+		(nor (and (up-compare-goal gl-source-villager-tag c:>= 1)
+				(up-compare-goal gl-source-villager-tag c:<= 4))
+			(up-compare-goal gl-source-villager-tag c:<= -1))
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-chat-data-to-all "!! ERROR: vill to be reassigned is not allowable %d" g: gl-source-villager-tag)
+		(up-modify-goal gl-reassign-result-code c:= -2)
+		(up-jump-direct g: gl-retask-return-label))
+
+	; Rule #3416
+	; Purpose: Allow farmers to count as already-good food workers over a larger distance before forcing a retask.
+	(defrule
+		(up-compare-goal gl-forced-food-retask-mode c:== 0)
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-source-villager-role c:== lid_villager-farmer)
+		=>
+		(up-modify-goal gl-same-resource-stay-distance c:max 32))
+
+	; Rule #3417
+	; Purpose: Allow an already-food villager to stay put during the active timer window unless the mismatch is meaningful.
+	(defrule
+		(up-compare-goal gl-forced-food-retask-mode c:== 0)
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-source-villager-resource c:== food)
+		(up-timer-status food-stay-put-timer c:== timer-running)
+		=>
+		(up-modify-goal gl-same-resource-stay-distance c:max 28))
+
+	; Rule #3418
+	; Purpose: Allow foragers to count as already-good food workers with a smaller tolerance window.
+	(defrule
+		(up-compare-goal gl-forced-food-retask-mode c:== 0)
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-source-villager-role c:== lid_villager-forager)
+		=>
+		(up-modify-goal gl-same-resource-stay-distance c:max 22))
+
+	; Rule #3419
+	; Purpose: Normalize farmer, forager, and shepherd roles into the shared food category for later comparisons.
+	(defrule
+		(or (or (up-compare-goal gl-source-villager-role c:== lid_villager-farmer)
+				(up-compare-goal gl-source-villager-role c:== lid_villager-forager))
+			(up-compare-goal gl-source-villager-role c:== lid_villager-shepherd))
+		=>
+		(up-modify-goal gl-source-villager-resource c:= food))
+
+	; Rule #3420
+	; Purpose: Normalize lumberjacks into the shared wood category for later comparisons.
+	(defrule
+		(up-compare-goal gl-source-villager-role c:== lid_villager-lumberjack)
+		=>
+		(up-modify-goal gl-source-villager-resource c:= wood))
+
+	; Rule #3421
+	; Purpose: Normalize stone miners into the shared stone category for later comparisons.
+	(defrule
+		(up-compare-goal gl-source-villager-role c:== lid_villager-stone-miner)
+		=>
+		(up-modify-goal gl-source-villager-resource c:= stone))
+
+	; Rule #3422
+	; Purpose: Normalize gold miners into the shared gold category for later comparisons.
+	(defrule
+		(up-compare-goal gl-source-villager-role c:== lid_villager-gold-miner)
+		=>
+		(up-modify-goal gl-source-villager-resource c:= gold))
+
+	; Rule #3423
+	; Purpose: Abort same-resource retasking when the villager is already close enough to a suitable target.
+	(defrule
+		(up-compare-goal gl-same-resource-stay-distance c:> 0)
+		(up-compare-goal gl-source-villager-resource g:== gl-target-resource)
+		(up-compare-goal gl-villager-to-move-target-distance g:< gl-same-resource-stay-distance)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-modify-goal gl-reassign-result-code c:= -3)
+		(up-jump-direct g: gl-retask-return-label))
+
+	; Rule #3424
+	; Purpose: Seed the local search state with the villager currently being reconsidered.
+	(defrule
+		(true)
+		=>
+		(up-reset-search 1 1 0 0)
+		(up-add-object-by-id search-local g: gl-source-villager-id))
+
+	; Rule #3425
+	; Purpose: Skip group retagging if the villager already belongs to the desired work bucket.
+	(defrule
+		(up-compare-goal gl-target-work-group g:== gl-source-villager-tag)
+		(up-compare-goal gl-rule-3430-derive-first-local-search-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3430-derive-first-local-search-id)) ; Jump to rule #3430
+
+	; Rule #3426
+	; Purpose: Recreate work group 1 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== food-villager-group)
+		=>
+		(up-create-group 0 0 c: food-villager-group)
+		(up-modify-group-flag 1 c: food-villager-group)
+		(up-reset-group c: food-villager-group))
+
+	; Rule #3427
+	; Purpose: Recreate work group 2 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== wood-villager-group)
+		=>
+		(up-create-group 0 0 c: wood-villager-group)
+		(up-modify-group-flag 1 c: wood-villager-group)
+		(up-reset-group c: wood-villager-group))
+
+	; Rule #3428
+	; Purpose: Recreate work group 3 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== stone-villager-group)
+		=>
+		(up-create-group 0 0 c: stone-villager-group)
+		(up-modify-group-flag 1 c: stone-villager-group)
+		(up-reset-group c: stone-villager-group))
+
+	; Rule #3429
+	; Purpose: Recreate work group 4 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== gold-villager-group)
+		=>
+		(up-create-group 0 0 c: gold-villager-group)
+		(up-modify-group-flag 1 c: gold-villager-group)
+		(up-reset-group c: gold-villager-group))
+
+; Rule #3429.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3430-derive-first-local-search-id))
+	; Rule #3430
+	; Purpose: Derive the first local search radius from the villager's current movement distance and the configured limits.
+	(defrule
+		(up-modify-goal gl-local-anchor-search-radius g:= gl-villager-to-move-target-distance)
+		(up-modify-goal gl-local-anchor-search-radius g:/ gl-local-radius-divisor)
+		(up-modify-goal gl-local-anchor-search-radius g:min gl-direct-reassign-search-radius)
+		(up-compare-goal gl-local-radius-divisor c:<= 0)
+		=>
+		(up-modify-goal gl-local-anchor-search-radius g:= gl-direct-reassign-search-radius))
+
+	; Rule #3431
+	; Purpose: Start a local anchor search around the villager using the computed search radius.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-set-precise-target-point gl-villager-origin-pos)
+		(up-filter-distance c: -1 g: gl-local-anchor-search-radius))
+
+	; Rule #3432
+	; Purpose: Search town-center and mining-dropoff anchors for stone and gold retasking.
+	(defrule
+		(or (up-compare-goal gl-target-resource c:== stone)
+			(up-compare-goal gl-target-resource c:== gold))
+		=>
+		(up-find-local c: town-center c: 240)
+		(up-find-local g: gl-mining-drop-site-line-id c: 240)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local g: gl-mining-drop-site-line-id c: 240)
+		(up-modify-goal gl-max-allowed-target-tasks c:= 3))
+
+	; Rule #3433
+	; Purpose: Use the town center as a wood fallback anchor when normal wood dropoff support is unavailable.
+	(defrule
+		(or (up-compare-flag fl-wood-town-center-fallback-mode c:== fl-wood-town-center-fallback-mode-value)
+			(up-compare-goal gl-wood-fallback-anchor-enabled c:== 1))
+		(up-compare-goal gl-target-resource c:== wood)
+		=>
+		(up-find-local c: town-center c: 240))
+
+	; Rule #3434
+	; Purpose: Search lumber-camp anchors for normal wood retasking.
+	(defrule
+		(up-compare-goal gl-target-resource c:== wood)
+		=>
+		(up-find-local g: gl-wood-drop-site-line-id c: 240)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local g: gl-wood-drop-site-line-id c: 240))
+
+	; Rule #3435
+	; Purpose: Search for available farms as the first local anchors for food retasking.
+	(defrule
+		(up-compare-goal gl-target-resource c:== food)
+		=>
+		(up-find-local c: farm-class c: 240)
+		(up-remove-objects search-local object-data-tasks-count c:> 0))
+
+	; Rule #3436
+	; Purpose: Skip the broader food-anchor path when the current food situation calls for the alternate branch instead.
+	(defrule
+		(nand (and (up-compare-goal gl-target-resource c:== food)
+				(or (up-compare-flag fl-food-idle-farm-mode c:!= fl-food-idle-farm-mode-value)
+					(up-compare-goal gl-forced-food-retask-mode c:== 1)))
+			(up-compare-goal gl-food-anchor-branch-lock c:!= 1))
+		(up-compare-goal gl-rule-3439-clean-local-anchor-list-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3439-clean-local-anchor-list-id)) ; Jump to rule #3439
+
+	; Rule #3437
+	; Purpose: Search town-center and mill anchors for food retasking and switch to the food-specific task limit.
+	(defrule
+		(true)
+		=>
+		(up-find-local c: town-center c: 240)
+		(up-find-local c: mill c: 240)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: mill c: 240)
+		(up-modify-goal gl-max-allowed-target-tasks c:= 4))
+
+	; Rule #3438
+	; Purpose: Relax the allowed task congestion when the economy is small or the food retask is forced.
+	(defrule
+		(or (up-compare-sn sn-retask-economy-size c:<= 18)
+			(up-compare-goal gl-forced-food-retask-mode c:== 1))
+		=>
+		(up-modify-goal gl-max-allowed-target-tasks c:= 6))
+
+; Rule #3438.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3439-clean-local-anchor-list-id))
+	; Rule #3439
+	; Purpose: Clean the local anchor list and reset the variables that track the best anchor candidate.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-local object-data-group-flag c:== gold-villager-group)
+		(up-remove-objects search-local object-data-group-flag c:== stone-villager-group)
+		(up-remove-objects search-local object-data-group-flag c:== wood-villager-group)
+		(up-remove-objects search-local object-data-group-flag c:== food-villager-group)
+		(up-reset-filters)
+		(up-modify-goal gl-local-anchor-index c:= 0)
+		(up-modify-goal gl-best-anchor-id c:= -1)
+		(up-modify-goal gl-best-anchor-score c:= 2147483647)
+		(up-get-search-state gl-local-total))
+
+; Rule #3439.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3440-exit-local-anchor-loop-id))
+	; Rule #3440
+	; Purpose: Exit the local-anchor loop once every candidate anchor has been evaluated.
+	(defrule
+		(up-compare-goal gl-local-anchor-index g:>= gl-local-total)
+		(up-compare-goal gl-rule-3454-finalize-local-anchor-pass-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3454-finalize-local-anchor-pass-id)) ; Jump to rule #3454
+
+	; Rule #3441
+	; Purpose: Load the next local anchor and initialize the scoring context for evaluating it.
+	(defrule
+		(true)
+		=>
+		(up-set-target-object search-local g: gl-local-anchor-index)
+		(up-modify-goal gl-local-anchor-index c:+ 1)
+		(up-get-object-data object-data-id gl-current-anchor-id)
+		(up-reset-filters)
+		(up-set-precise-target-point gl-villager-origin-pos)
+		(up-get-object-data object-data-distance gl-current-anchor-distance)
+		(up-get-object-data object-data-class gl-current-anchor-class-id)
+		(up-modify-goal gl-current-anchor-is-farm g:= gl-current-anchor-class-id)
+		(up-modify-goal gl-current-anchor-is-farm c:- farm-class)
+		(up-modify-goal gl-current-anchor-is-farm g:* gl-current-anchor-is-farm)
+		(up-modify-goal gl-current-anchor-is-farm c:min 1)
+		(up-get-point position-curr-object gl-current-anchor-pos)
+		(up-set-precise-target-point gl-current-anchor-pos)
+		(up-modify-goal gl-current-anchor-crowding-score c:= -4))
+
+	; Rule #3442
+	; Purpose: Penalize crowded farm anchors so food retasks prefer less-contested farming spots.
+	(defrule
+		(up-compare-goal gl-current-anchor-is-farm c:== 1)
+		=>
+		(up-reset-search 0 0 1 1)
+		(up-filter-distance c: -1 c: 9)
+		(up-find-remote c: villager-class c: 40)
+		(up-modify-goal gl-required-group-tag g:= gl-target-resource)
+		(up-modify-goal gl-required-group-tag c:+ 1)
+		(up-remove-objects search-remote object-data-group-flag g:!= gl-required-group-tag)
+		(up-remove-objects search-remote object-data-language-id c:== lid_villager-farmer)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-current-anchor-crowding-score g:= gl-remote-last)
+		(up-modify-goal gl-crowding-overflow-penalty g:= gl-current-anchor-crowding-score)
+		(up-modify-goal gl-crowding-overflow-penalty g:- gl-farm-crowding-threshold)
+		(up-modify-goal gl-crowding-overflow-penalty c:max 0)
+		(up-modify-goal gl-crowding-overflow-penalty c:* 300)
+		(up-modify-goal gl-current-anchor-crowding-score g:+ gl-crowding-overflow-penalty))
+
+	; Rule #3443
+	; Purpose: Initialize scoring terms for the current anchor and skip farm-only logic when the anchor is not a farm.
+	(defrule
+		(up-modify-goal gl-current-anchor-resource-count-score c:= 0)
+		(up-modify-goal gl-current-anchor-nearest-resource-score c:= 1)
+		(up-compare-goal gl-current-anchor-is-farm c:!= 1)
+		(up-compare-goal gl-rule-3451-rescale-scoring-routine-special-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3451-rescale-scoring-routine-special-id)) ; Jump to rule #3451
+
+	; Rule #3444
+	; Purpose: Search nearby resource nodes around the current anchor candidate.
+	(defrule
+		(true)
+		=>
+		(up-reset-search 0 0 1 1)
+		(up-filter-distance c: -1 g: gl-anchor-resource-search-radius))
+
+	; Rule #3445
+	; Purpose: Collect nearby food targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-rule-3449-filter-resource-list-around-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct g: gl-rule-3449-filter-resource-list-around-id)) ; Jump to rule #3449
+
+	; Rule #3446
+	; Purpose: Collect nearby wood targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal gl-target-resource c:== wood)
+		(up-compare-goal gl-rule-3449-filter-resource-list-around-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct g: gl-rule-3449-filter-resource-list-around-id)) ; Jump to rule #3449
+
+	; Rule #3447
+	; Purpose: Collect nearby stone targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal gl-target-resource c:== stone)
+		(up-compare-goal gl-rule-3449-filter-resource-list-around-id c:!= -1)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct g: gl-rule-3449-filter-resource-list-around-id)) ; Jump to rule #3449
+
+	; Rule #3448
+	; Purpose: Collect nearby gold targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal gl-target-resource c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+; Rule #3448.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3449-filter-resource-list-around-id))
+	; Rule #3449
+	; Purpose: Filter the resource list around the anchor and compute the crowding component of its score.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object-data-player c:== my-player-number)
+		(up-remove-objects search-remote object-data-class c:== farm-class)
+		(up-remove-objects search-remote object-data-tasks-count g:> gl-max-allowed-target-tasks)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-current-anchor-resource-count-score g:= gl-remote-last)
+		(up-modify-goal gl-resource-shortage-penalty g:= gl-resource-balance-weight)
+		(up-modify-goal gl-resource-shortage-penalty g:- gl-current-anchor-resource-count-score)
+		(up-modify-goal gl-resource-shortage-penalty c:max 0)
+		(up-modify-goal gl-resource-shortage-penalty c:* 300)
+		(up-modify-goal gl-resource-balance-score g:= gl-resource-balance-weight)
+		(up-modify-goal gl-resource-balance-score c:+ 4)
+		(up-modify-goal gl-resource-balance-score c:min 26)
+		(up-modify-goal gl-resource-balance-score g:min gl-current-anchor-resource-count-score)
+		(up-modify-goal gl-resource-balance-score c:/ 2)
+		(up-modify-goal gl-resource-balance-score g:- gl-resource-shortage-penalty)
+		(up-modify-goal gl-current-anchor-resource-count-score g:= gl-resource-balance-score))
+
+	; Rule #3450
+	; Purpose: Convert the closest resource distance into a score term for the current anchor.
+	(defrule
+		(up-compare-goal gl-remote-last c:!= 0)
+		=>
+		(up-clean-search search-remote object-data-full-distance search_order-ascending)
+		(up-set-target-object search-remote c: 0)
+		(up-get-object-data object-data-distance gl-adjusted-nearest-resource-distance)
+		(up-modify-goal gl-adjusted-nearest-resource-distance c:- 2)
+		(up-modify-goal gl-adjusted-nearest-resource-distance c:max 0)
+		(up-modify-goal gl-current-anchor-nearest-resource-score g:= gl-adjusted-nearest-resource-distance))
+
+; Rule #3450.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3451-rescale-scoring-routine-special-id))
+	; Rule #3451
+	; Purpose: Rescale scoring when the routine is in the special forced-food branch.
+	(defrule
+		(up-compare-goal gl-forced-food-retask-mode c:== 1)
+		=>
+		(up-modify-goal gl-current-anchor-distance c:* 3)
+		(up-modify-goal gl-current-anchor-crowding-score c:/ 6))
+
+	; Rule #3452
+	; Purpose: Update the remembered best anchor when the current anchor scores better than the previous best.
+	(defrule
+		(up-modify-goal gl-weighted-crowding-score g:= gl-current-anchor-crowding-score)
+		(up-modify-goal gl-weighted-crowding-score c:* 6)
+		(up-modify-goal gl-current-anchor-total-score g:= gl-current-anchor-nearest-resource-score)
+		(up-modify-goal gl-current-anchor-total-score c:* 3)
+		(up-modify-goal gl-current-anchor-total-score g:+ gl-current-anchor-distance)
+		(up-modify-goal gl-current-anchor-total-score g:+ gl-weighted-crowding-score)
+		(up-modify-goal gl-current-anchor-total-score g:- gl-current-anchor-resource-count-score)
+		(up-compare-goal gl-current-anchor-total-score g:< gl-best-anchor-score)
+		=>
+		(up-modify-goal gl-best-anchor-score g:= gl-current-anchor-total-score)
+		(up-modify-goal gl-best-anchor-id g:= gl-current-anchor-id))
+
+	; Rule #3453
+	; Purpose: Loop back to evaluate the next local anchor candidate.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-3440-exit-local-anchor-loop-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3440-exit-local-anchor-loop-id)) ; Jump to rule #3440
+
+; Rule #3453.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3454-finalize-local-anchor-pass-id))
+	; Rule #3454
+	; Purpose: Finalize the local-anchor pass and snapshot its search state.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state gl-local-total))
+
+	; Rule #3455
+	; Purpose: Jump to the fallback path when no usable anchor/resource combination was found.
+	(defrule
+		(nand (up-compare-goal gl-local-total c:!= 0)
+			(up-compare-goal gl-best-anchor-id c:!= -1))
+		(up-compare-goal gl-rule-3503-abort-fallback-anchor-survived-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3503-abort-fallback-anchor-survived-id)) ; Jump to rule #3503
+
+	; Rule #3456
+	; Purpose: Prepare a direct retask around the best anchor that was selected by scoring.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-add-object-by-id search-local g: gl-source-villager-id)
+		(up-set-target-by-id g: gl-best-anchor-id)
+		(up-get-point position-curr-object gl-best-anchor-pos)
+		(up-set-precise-target-point gl-best-anchor-pos)
+		(up-get-object-data object-data-class gl-best-anchor-class-id))
+
+	; Rule #3457
+	; Purpose: Branch away from the immediate farm-handling path when the chosen anchor is not a farm.
+	(defrule
+		(up-compare-goal gl-best-anchor-class-id c:!= farm-class)
+		(up-compare-goal gl-rule-3464-roll-random-value-decide-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3464-roll-random-value-decide-id)) ; Jump to rule #3464
+
+	; Rule #3458
+	; Purpose: Issue the immediate retask order for the successful farm-based choice.
+	(defrule
+		(true)
+		=>
+		(up-modify-sn sn-keystates c:= 2)
+		(up-target-objects 1 action-default formation-ignore stance-ignore)
+		(up-modify-sn sn-keystates c:= 0)
+		(up-remove-objects search-local object-data-group-flag g:== gl-target-work-group))
+
+	; Rule #3459
+	; Purpose: Recreate work group 1 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== food-villager-group)
+		=>
+		(up-create-group 0 0 c: food-villager-group)
+		(up-modify-group-flag 1 c: food-villager-group)
+		(up-reset-group c: food-villager-group))
+
+	; Rule #3460
+	; Purpose: Recreate work group 2 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== wood-villager-group)
+		=>
+		(up-create-group 0 0 c: wood-villager-group)
+		(up-modify-group-flag 1 c: wood-villager-group)
+		(up-reset-group c: wood-villager-group))
+
+	; Rule #3461
+	; Purpose: Recreate work group 3 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== stone-villager-group)
+		=>
+		(up-create-group 0 0 c: stone-villager-group)
+		(up-modify-group-flag 1 c: stone-villager-group)
+		(up-reset-group c: stone-villager-group))
+
+	; Rule #3462
+	; Purpose: Recreate work group 4 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== gold-villager-group)
+		=>
+		(up-create-group 0 0 c: gold-villager-group)
+		(up-modify-group-flag 1 c: gold-villager-group)
+		(up-reset-group c: gold-villager-group))
+
+	; Rule #3463
+	; Purpose: Return after a successful immediate farm retask.
+	(defrule
+		(true)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+
+; Rule #3463.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3464-roll-random-value-decide-id))
+	; Rule #3464
+	; Purpose: Roll a random value used to decide how strict the next nearby-resource pass should be.
+	(defrule
+		(true)
+		=>
+		(generate-random-number 2147483647)
+		(up-get-fact random-number 0 gl-quick-pass-random-roll)
+		(up-modify-goal gl-quick-pass-random-roll c:+ -1)
+		(up-modify-goal gl-quick-pass-random-roll c:mod 1000))
+
+	; Rule #3465
+	; Purpose: Skip the nearby quick-retask path unless the villager is close enough and suitable for that shortcut.
+	(defrule
+		(nand (and (and (up-compare-goal gl-villager-to-move-target-distance c:<= 4)
+					(up-compare-goal gl-quick-pass-random-roll c:<= 500))
+				(up-compare-goal gl-source-villager-resource g:== gl-target-resource))
+			(up-compare-goal gl-target-resource c:!= wood))
+		(up-compare-goal gl-rule-3474-snapshot-quick-retask-search-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3474-snapshot-quick-retask-search-id)) ; Jump to rule #3474
+
+	; Rule #3466
+	; Purpose: Restrict the next search pass to a very small radius around the villager.
+	(defrule
+		(true)
+		=>
+		(up-set-precise-target-point gl-villager-origin-pos)
+		(up-filter-distance c: -1 c: 3))
+
+	; Rule #3467
+	; Purpose: Search for very nearby food targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-rule-3471-clean-quick-retask-candidate-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct g: gl-rule-3471-clean-quick-retask-candidate-id)) ; Jump to rule #3471
+
+	; Rule #3468
+	; Purpose: Search for very nearby wood targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal gl-target-resource c:== wood)
+		(up-compare-goal gl-rule-3471-clean-quick-retask-candidate-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct g: gl-rule-3471-clean-quick-retask-candidate-id)) ; Jump to rule #3471
+
+	; Rule #3469
+	; Purpose: Search for very nearby stone targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal gl-target-resource c:== stone)
+		(up-compare-goal gl-rule-3471-clean-quick-retask-candidate-id c:!= -1)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct g: gl-rule-3471-clean-quick-retask-candidate-id)) ; Jump to rule #3471
+
+	; Rule #3470
+	; Purpose: Search for very nearby gold targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal gl-target-resource c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+; Rule #3470.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3471-clean-quick-retask-candidate-id))
+	; Rule #3471
+	; Purpose: Clean the quick-retask candidate list and randomize how strict the congestion filter will be.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object-data-class c:== farm-class)
+		(generate-random-number 2147483647)
+		(up-get-fact random-number 0 gl-nearby-pass-random-roll)
+		(up-modify-goal gl-nearby-pass-random-roll c:+ -1)
+		(up-modify-goal gl-nearby-pass-random-roll c:mod 1000))
+
+	; Rule #3472
+	; Purpose: Sometimes require fully free nearby nodes so quick retasks do not pile onto busy targets.
+	(defrule
+		(up-compare-goal gl-nearby-pass-random-roll c:<= 500)
+		=>
+		(up-remove-objects search-remote object-data-tasks-count c:> 0))
+
+	; Rule #3473
+	; Purpose: Recenter the comparison point on the chosen anchor before the next pass continues.
+	(defrule
+		(true)
+		=>
+		(up-set-precise-target-point gl-best-anchor-pos))
+
+; Rule #3473.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3474-snapshot-quick-retask-search-id))
+	; Rule #3474
+	; Purpose: Snapshot the quick-retask search state after the nearby search pass.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state gl-local-total))
+
+	; Rule #3475
+	; Purpose: Skip ahead when the quick-retask pass already found usable targets.
+	(defrule
+		(up-compare-goal gl-remote-last c:!= 0)
+		(up-compare-goal gl-rule-3495-snapshot-final-candidate-list-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3495-snapshot-final-candidate-list-id)) ; Jump to rule #3495
+
+	; Rule #3476
+	; Purpose: Slightly widen the search radius for a broader second-pass resource scan.
+	(defrule
+		(up-modify-goal gl-second-pass-search-radius g:= gl-anchor-resource-search-radius)
+		=>
+		(up-modify-goal gl-second-pass-search-radius c:+ 2)
+		(up-filter-distance c: -1 g: gl-second-pass-search-radius))
+
+	; Rule #3477
+	; Purpose: Search for food targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-rule-3481-filter-second-pass-resource-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct g: gl-rule-3481-filter-second-pass-resource-id)) ; Jump to rule #3481
+
+	; Rule #3478
+	; Purpose: Search for wood targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal gl-target-resource c:== wood)
+		(up-compare-goal gl-rule-3481-filter-second-pass-resource-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct g: gl-rule-3481-filter-second-pass-resource-id)) ; Jump to rule #3481
+
+	; Rule #3479
+	; Purpose: Search for stone targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal gl-target-resource c:== stone)
+		(up-compare-goal gl-rule-3481-filter-second-pass-resource-id c:!= -1)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct g: gl-rule-3481-filter-second-pass-resource-id)) ; Jump to rule #3481
+
+	; Rule #3480
+	; Purpose: Search for gold targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal gl-target-resource c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+; Rule #3480.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3481-filter-second-pass-resource-id))
+	; Rule #3481
+	; Purpose: Filter the second-pass resource list and randomize how aggressively busy nodes are removed.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object-data-class c:== farm-class)
+		(up-remove-objects search-remote object-data-tasks-count c:> 1)
+		(generate-random-number 2147483647)
+		(up-get-fact random-number 0 gl-second-pass-random-roll)
+		(up-modify-goal gl-second-pass-random-roll c:+ -1)
+		(up-modify-goal gl-second-pass-random-roll c:mod 1000))
+
+	; Rule #3482
+	; Purpose: Sometimes tighten the second-pass filter so only completely free targets remain.
+	(defrule
+		(up-compare-goal gl-second-pass-random-roll c:<= 200)
+		=>
+		(up-remove-objects search-remote object-data-tasks-count c:> 0))
+
+	; Rule #3483
+	; Purpose: Apply the current congestion threshold and record how many second-pass targets survived.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object-data-tasks-count g:> gl-max-allowed-target-tasks)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-second-pass-target-index g:= gl-remote-last))
+
+; Rule #3483.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3484-move-second-pass-search-id))
+	; Rule #3484
+	; Purpose: Move on when the second-pass search found no viable targets.
+	(defrule
+		(up-compare-goal gl-second-pass-target-index c:<= 0)
+		(up-compare-goal gl-rule-3488-snapshot-candidate-list-obstruction-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3488-snapshot-candidate-list-obstruction-id)) ; Jump to rule #3488
+
+	; Rule #3485
+	; Purpose: Inspect each surviving second-pass target and build nearby probe points for validation.
+	(defrule
+		(up-modify-goal gl-second-pass-target-index c:- 1)
+		=>
+		(up-set-target-object search-remote g: gl-second-pass-target-index)
+		(up-get-point position-curr-object gl-probe-east-pos)
+		(up-copy-point gl-probe-south-pos gl-probe-east-pos)
+		(up-copy-point gl-probe-west-pos gl-probe-east-pos)
+		(up-copy-point gl-probe-north-pos gl-probe-east-pos)
+		(up-modify-goal gl-probe-east-pos-x c:+ 1)
+		(up-modify-goal gl-probe-south-pos-y c:+ 1)
+		(up-modify-goal gl-probe-west-pos-x c:- 1)
+		(up-modify-goal gl-probe-north-pos-y c:- 1))
+
+	; Rule #3486
+	; Purpose: Discard second-pass targets whose surrounding tiles fail the routine's buildability/pathing checks.
+	(defrule
+		(nor (not (up-can-build 0 g: gl-buildability-probe-line-id))
+			(or (or (or (up-can-build-line build-line-check-mode gl-probe-east-pos g: gl-buildability-probe-line-id)
+						(up-can-build-line build-line-check-mode gl-probe-south-pos g: gl-buildability-probe-line-id))
+					(up-can-build-line build-line-check-mode gl-probe-west-pos g: gl-buildability-probe-line-id))
+				(up-can-build-line build-line-check-mode gl-probe-north-pos g: gl-buildability-probe-line-id)))
+		=>
+		(up-remove-objects search-remote object-data-index g:== gl-second-pass-target-index))
+
+	; Rule #3487
+	; Purpose: Continue iterating through the remaining second-pass targets.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-3484-move-second-pass-search-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3484-move-second-pass-search-id)) ; Jump to rule #3484
+
+; Rule #3487.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3488-snapshot-candidate-list-obstruction-id))
+	; Rule #3488
+	; Purpose: Snapshot the candidate list after obstruction filtering.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state gl-local-total))
+
+	; Rule #3489
+	; Purpose: Skip to final selection when valid targets remain after obstruction filtering.
+	(defrule
+		(up-compare-goal gl-remote-last c:!= 0)
+		(up-compare-goal gl-rule-3494-relax-congestion-threshold-final-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3494-relax-congestion-threshold-final-id)) ; Jump to rule #3494
+
+	; Rule #3490
+	; Purpose: Run a final broad food search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-rule-3494-relax-congestion-threshold-final-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct g: gl-rule-3494-relax-congestion-threshold-final-id)) ; Jump to rule #3494
+
+	; Rule #3491
+	; Purpose: Run a final broad wood search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal gl-target-resource c:== wood)
+		(up-compare-goal gl-rule-3494-relax-congestion-threshold-final-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct g: gl-rule-3494-relax-congestion-threshold-final-id)) ; Jump to rule #3494
+
+	; Rule #3492
+	; Purpose: Run a final broad stone search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal gl-target-resource c:== stone)
+		(up-compare-goal gl-rule-3494-relax-congestion-threshold-final-id c:!= -1)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct g: gl-rule-3494-relax-congestion-threshold-final-id)) ; Jump to rule #3494
+
+	; Rule #3493
+	; Purpose: Run a final broad gold search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal gl-target-resource c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+; Rule #3493.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3494-relax-congestion-threshold-final-id))
+	; Rule #3494
+	; Purpose: Relax the congestion threshold by one final step before the last selection.
+	(defrule
+		(up-modify-goal gl-final-task-limit g:= gl-max-allowed-target-tasks)
+		=>
+		(up-modify-goal gl-final-task-limit c:+ 1)
+		(up-remove-objects search-remote object-data-tasks-count g:> gl-final-task-limit))
+
+; Rule #3494.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3495-snapshot-final-candidate-list-id))
+	; Rule #3495
+	; Purpose: Snapshot the final candidate list before dispatching the villager.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state gl-local-total))
+
+	; Rule #3496
+	; Purpose: Abort with a hard failure code when no final target exists.
+	(defrule
+		(up-compare-goal gl-remote-last c:== 0)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-modify-goal gl-reassign-result-code c:= -4)
+		(up-jump-direct g: gl-retask-return-label))
+
+	; Rule #3497
+	; Purpose: Dispatch the villager to the chosen target and remove its old work-tag membership.
+	(defrule
+		(true)
+		=>
+		(up-clean-search search-remote object-data-precise-distance search_order-ascending)
+		(up-set-target-object search-remote c: 0)
+		(up-modify-sn sn-keystates c:= 2)
+		(up-target-objects 1 action-default formation-ignore stance-ignore)
+		(up-modify-sn sn-keystates c:= 0)
+		(up-remove-objects search-local object-data-group-flag g:== gl-target-work-group))
+
+	; Rule #3498
+	; Purpose: Recreate work group 1 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== food-villager-group)
+		=>
+		(up-create-group 0 0 c: food-villager-group)
+		(up-modify-group-flag 1 c: food-villager-group)
+		(up-reset-group c: food-villager-group))
+
+	; Rule #3499
+	; Purpose: Recreate work group 2 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== wood-villager-group)
+		=>
+		(up-create-group 0 0 c: wood-villager-group)
+		(up-modify-group-flag 1 c: wood-villager-group)
+		(up-reset-group c: wood-villager-group))
+
+	; Rule #3500
+	; Purpose: Recreate work group 3 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== stone-villager-group)
+		=>
+		(up-create-group 0 0 c: stone-villager-group)
+		(up-modify-group-flag 1 c: stone-villager-group)
+		(up-reset-group c: stone-villager-group))
+
+	; Rule #3501
+	; Purpose: Recreate work group 4 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== gold-villager-group)
+		=>
+		(up-create-group 0 0 c: gold-villager-group)
+		(up-modify-group-flag 1 c: gold-villager-group)
+		(up-reset-group c: gold-villager-group))
+
+	; Rule #3502
+	; Purpose: Return after a successful normal dispatch.
+	(defrule
+		(true)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+
+; Rule #3502.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3503-abort-fallback-anchor-survived-id))
+	; Rule #3503
+	; Purpose: Abort when no fallback anchor survived the earlier anchor-selection phase.
+	(defrule
+		(up-compare-goal gl-fallback-anchor-count c:== 0)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-modify-goal gl-reassign-result-code c:= -5)
+		(up-jump-direct g: gl-retask-return-label))
+
+	; Rule #3504
+	; Purpose: Check whether the required dropoff/building support exists before trying the structure-based fallback search.
+	(defrule
+		(nor (or (and (up-object-type-count-total g: gl-mining-drop-site-line-id c:== 0)
+					(or (up-compare-sn sn-reassign-target-resource c:== stone)
+						(up-compare-sn sn-reassign-target-resource c:== gold)))
+				(and (up-object-type-count-total g: gl-wood-drop-site-line-id c:== 0)
+					(up-compare-sn sn-reassign-target-resource c:== wood)))
+			(and (building-type-count-total mill c:== 0)
+				(up-compare-sn sn-reassign-target-resource c:== food)))
+		(up-compare-goal gl-rule-3518-set-final-failure-code-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3518-set-final-failure-code-id)) ; Jump to rule #3518
+
+	; Rule #3505
+	; Purpose: Set up the structure-based fallback search around the chosen fallback anchor.
+	(defrule
+		(true)
+		=>
+		(up-set-target-by-id g: gl-best-anchor-id)
+		(up-full-reset-search)
+		(up-add-object-by-id search-local g: gl-source-villager-id)
+		(up-set-precise-target-point gl-villager-origin-pos)
+		(up-filter-distance c: -1 g: gl-direct-reassign-search-radius))
+
+	; Rule #3506
+	; Purpose: Search for food targets around the fallback anchor.
+	(defrule
+		(up-compare-goal gl-target-resource c:== food)
+		(up-compare-goal gl-rule-3510-filter-sort-fallback-targets-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct g: gl-rule-3510-filter-sort-fallback-targets-id)) ; Jump to rule #3510
+
+	; Rule #3507
+	; Purpose: Search for wood targets around the fallback anchor.
+	(defrule
+		(up-compare-goal gl-target-resource c:== wood)
+		(up-compare-goal gl-rule-3510-filter-sort-fallback-targets-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct g: gl-rule-3510-filter-sort-fallback-targets-id)) ; Jump to rule #3510
+
+	; Rule #3508
+	; Purpose: Search for stone targets around the fallback anchor.
+	(defrule
+		(up-compare-goal gl-target-resource c:== stone)
+		(up-compare-goal gl-rule-3510-filter-sort-fallback-targets-id c:!= -1)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct g: gl-rule-3510-filter-sort-fallback-targets-id)) ; Jump to rule #3510
+
+	; Rule #3509
+	; Purpose: Search for gold targets around the fallback anchor.
+	(defrule
+		(up-compare-goal gl-target-resource c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+; Rule #3509.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3510-filter-sort-fallback-targets-id))
+	; Rule #3510
+	; Purpose: Filter and sort fallback targets around the structure anchor.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object-data-class c:== farm-class)
+		(up-remove-objects search-remote object-data-tasks-count g:> gl-max-allowed-target-tasks)
+		(up-clean-search search-remote object-data-precise-distance search_order-ascending)
+		(up-get-search-state gl-local-total))
+
+	; Rule #3511
+	; Purpose: Abandon the structure-based fallback when it still finds no resource target.
+	(defrule
+		(up-compare-goal gl-remote-last c:== 0)
+		(up-compare-goal gl-rule-3518-set-final-failure-code-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3518-set-final-failure-code-id)) ; Jump to rule #3518
+
+	; Rule #3512
+	; Purpose: Dispatch the villager using the structure-based fallback target and clear its old tag.
+	(defrule
+		(true)
+		=>
+		(up-modify-sn sn-keystates c:= 2)
+		(up-target-objects 1 action-default formation-ignore stance-ignore)
+		(up-modify-sn sn-keystates c:= 0)
+		(up-remove-objects search-local object-data-group-flag g:== gl-target-work-group))
+
+	; Rule #3513
+	; Purpose: Recreate work group 1 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== food-villager-group)
+		=>
+		(up-create-group 0 0 c: food-villager-group)
+		(up-modify-group-flag 1 c: food-villager-group)
+		(up-reset-group c: food-villager-group))
+
+	; Rule #3514
+	; Purpose: Recreate work group 2 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== wood-villager-group)
+		=>
+		(up-create-group 0 0 c: wood-villager-group)
+		(up-modify-group-flag 1 c: wood-villager-group)
+		(up-reset-group c: wood-villager-group))
+
+	; Rule #3515
+	; Purpose: Recreate work group 3 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== stone-villager-group)
+		=>
+		(up-create-group 0 0 c: stone-villager-group)
+		(up-modify-group-flag 1 c: stone-villager-group)
+		(up-reset-group c: stone-villager-group))
+
+	; Rule #3516
+	; Purpose: Recreate work group 4 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal gl-target-work-group c:== gold-villager-group)
+		=>
+		(up-create-group 0 0 c: gold-villager-group)
+		(up-modify-group-flag 1 c: gold-villager-group)
+		(up-reset-group c: gold-villager-group))
+
+	; Rule #3517
+	; Purpose: Return after a successful fallback dispatch.
+	(defrule
+		(true)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+
+; Rule #3517.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3518-set-final-failure-code-id))
+	; Rule #3518
+	; Purpose: Set the final failure code for retask attempts that found no workable destination.
+	(defrule
+		(up-modify-goal gl-reassign-result-code c:= -6)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+
+	; Rule #3519
+	; Purpose: Gate the special unload-support branch so it only runs for the intended SN 82 state.
+	(defrule
+		(up-modify-goal gl-required-unload-sn82-state c:= 3)
+		(up-modify-goal gl-required-unload-sn82-state g:+ gl-unload-state-offset)
+		(up-compare-sn sn-unload-support-state g:!= gl-required-unload-sn82-state)
+		(up-compare-goal gl-rule-3531-start-vill-hopping-branch-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3531-start-vill-hopping-branch-id)) ; Jump to rule #3531
+
+	; Rule #3520
+	; Purpose: Search for town centers that still have garrisoned villagers for the unload-support cleanup.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: town-center c: 240)
+		(up-remove-objects search-local object-data-garrison-count c:== 0)
+		(up-remove-objects search-local object-data-index c:>= 1))
+
+	; Rule #3521
+	; Purpose: When the unload timer fires, order the unload and clear the temporary unload state.
+	(defrule
+		(up-timer-status unload-support-timer c:== timer-triggered)
+		=>
+		(up-modify-sn sn-unload-support-state c:= 0)
+		(up-target-point 0 action-unload formation-ignore stance-ignore)
+		(up-reset-search 1 1 0 0)
+		(disable-timer unload-support-timer))
+
+	; Rule #3522
+	; Purpose: Start the unload timer when unload support is pending but not yet running.
+	(defrule
+		(up-timer-status unload-support-timer c:!= timer-running)
+		=>
+		(up-set-timer c: unload-support-timer c: 8))
+
+	; Rule #3523
+	; Purpose: Snapshot the unload-support search state.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state gl-local-total))
+
+	; Rule #3524
+	; Purpose: Skip the unload-support action when no eligible garrisoned town center exists.
+	(defrule
+		(up-compare-goal gl-local-total c:== 0)
+		(up-compare-goal gl-rule-3531-start-vill-hopping-branch-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3531-start-vill-hopping-branch-id)) ; Jump to rule #3531
+
+	; Rule #3525
+	; Purpose: Select the first eligible garrisoned town center for the unload-support action.
+	(defrule
+		(true)
+		=>
+		(up-set-target-object search-local c: 0))
+
+	; Rule #3526
+	; Purpose: Shorten the unload timer once a valid town center has already been selected.
+	(defrule
+		(up-timer-status unload-support-timer c:!= timer-running)
+		=>
+		(up-set-timer c: unload-support-timer c: 4))
+
+; Rule #3530.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3531-start-vill-hopping-branch-id))
+	; Rule #3531
+	; Purpose: Start the vill-hopping recovery branch by sampling the source town center state and nearby hunter/shepherd pressure.
+	(defrule
+		(true)
+		=>
+		(up-set-target-by-id g: gl-vill-hopping-source-town-center-id)
+		(up-get-fact unit-type-count-total villager-hunter gl-vill-hopping-hunter-count)
+		(up-get-fact unit-type-count-total villager-shepherd gl-vill-hopping-hunter-shepherd-count)
+		(up-modify-goal gl-vill-hopping-hunter-shepherd-count g:+ gl-vill-hopping-hunter-count)
+		(up-modify-goal gl-vill-hopping-time-modulo g:= timeMilli)
+		(up-modify-goal gl-vill-hopping-time-modulo c:mod 1300)
+		(up-get-object-data object-data-garrison-count gl-vill-hopping-source-garrison-count))
+	; Rule #3532
+	; Purpose: Abort the branch when the source town center does not currently justify a vill-hopping rescue attempt.
+	(defrule
+		(nand (and (and (and (up-compare-goal gl-vill-hopping-source-garrison-count c:== 0)
+						(up-compare-sn sn-unload-support-state c:== 0))
+					(up-compare-goal gl-vill-hopping-time-modulo g:< msecPerLoop))
+					(up-compare-goal gl-vill-hopping-hunter-shepherd-count c:>= 2))
+			(up-compare-sn sn-retask-economy-size c:>= 9))
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+	; Rule #3533
+	; Purpose: Count same-role villagers near the anchor point and separately count nearby tagged workers that are free to be reassigned.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-set-precise-target-point gl-vill-hopping-center-pos)
+		(up-filter-distance c: -1 c: 9)
+		(up-find-local c: villager-class c: 240)
+		(up-remove-objects search-local object-data-language-id g:!= gl-vill-hopping-required-villager-role)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-vill-hopping-nearby-same-role-count g:= gl-local-total)
+		(up-reset-search 1 1 0 0)
+		(up-find-local c: villager-class c: 240)
+		(up-remove-objects search-local object-data-group-flag c:!= 1)
+		(up-remove-objects search-local object-data-target-class-id c:== farm-class)
+		(up-remove-objects search-local object-data-target-class-id c:== berry-bush-class)
+		(up-remove-objects search-local object-data-action c:== actionid-enter)
+		(up-remove-objects search-local object-data-action c:== actionid-attack)
+		(up-remove-objects search-local object-data-tasks-count c:> 0)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-vill-hopping-nearby-tagged-worker-count g:= gl-local-total))
+	; Rule #3534
+	; Purpose: Stop the branch early when there are too few nearby free workers to justify the rescue.
+	(defrule
+		(up-compare-goal gl-vill-hopping-nearby-tagged-worker-count c:< 2)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+	; Rule #3535
+	; Purpose: Narrow the nearby worker list to non-builders that are still reasonably close to the anchor.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-local object-data-action c:== actionid-build)
+		(up-remove-objects search-local object-data-precise-distance c:> 500)
+		(up-get-search-state gl-local-total))
+	; Rule #3536
+	; Purpose: Abort when the refined nearby worker list ended up empty.
+	(defrule
+		(up-compare-goal gl-local-total c:== 0)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+	; Rule #3537
+	; Purpose: Select the nearest eligible worker and reset the branch state used to search for a drop site and matching resource.
+	(defrule
+		(true)
+		=>
+		(up-clean-search search-local object-data-precise-distance search_order-ascending)
+		(up-set-target-object search-local c: 0)
+		(up-get-object-data object-data-id gl-vill-hopping-selected-worker-id)
+		(up-modify-goal gl-vill-hopping-best-drop-site-id c:= -1)
+		(up-modify-goal gl-vill-hopping-found-resource-id c:= -1)
+		(up-modify-flag fl-vill-hopping-wood-fallback-needed c:- 1))
+	; Rule #3538
+	; Purpose: Enable a wood-specific fallback when local drop-site support is weak or wood pressure is otherwise high.
+	(defrule
+		(or (and (building-type-count-total lumber-camp c:== 0)
+				(or (up-compare-goal gl-search-state-scratch-base_W c:== 0)
+					(building-type-count-total mule-cart c:== 0)))
+			(and (and (up-compare-sn sn-retask-economy-size c:>= 18)
+					(up-compare-goal gl-vill-hopping-nearby-tagged-worker-count c:<= 4))
+				(up-compare-goal gl-vill-hopping-nearby-same-role-count c:< 2)))
+		(up-compare-goal gl-vill-hopping-target-resource c:== wood)
+		=>
+		(up-modify-flag fl-vill-hopping-wood-fallback-needed c:+ 1))
+	; Rule #3539
+	; Purpose: Enable the same wood fallback during the flagged opening state when wood-role counts are especially thin.
+	(defrule
+		(up-compare-sn 75 c:< 100)
+		(up-compare-sn sn-retask-economy-size c:< 30)
+		(up-compare-goal gl-vill-hopping-nearby-same-role-count c:< 5)
+		(up-compare-flag fl-opening-wood-priority c:== fl-opening-wood-priority-value)
+		(up-compare-sn 75 c:> 0)
+		(up-compare-goal gl-vill-hopping-target-resource c:== wood)
+		=>
+		(up-modify-flag fl-vill-hopping-wood-fallback-needed c:+ 1))
+	; Rule #3540
+	; Purpose: Enable the wood fallback for the specific midgame flag combination where wood pressure is still undersupplied.
+	(defrule
+		(up-compare-goal gl-vill-hopping-nearby-same-role-count c:<= 3)
+		(up-compare-flag fl-midgame-wood-support-a c:== fl-midgame-wood-support-a-value)
+		(up-compare-flag fl-midgame-wood-support-b c:== fl-midgame-wood-support-b-value)
+		(unit-type-count-total villager-wood c:>= 8)
+		(up-compare-sn sn-retask-economy-size c:>= 20)
+		(up-compare-sn sn-retask-economy-size c:< 35)
+		(up-compare-goal gl-vill-hopping-target-resource c:== wood)
+		=>
+		(up-modify-flag fl-vill-hopping-wood-fallback-needed c:+ 1))
+	; Rule #3541
+	; Purpose: Skip the drop-site search immediately when the wood fallback says to avoid relying on a local drop site.
+	(defrule
+		(up-compare-flag fl-vill-hopping-wood-fallback-needed c:== 1)
+		(up-compare-goal gl-rule-3549-finalize-drop-site-selection-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3549-finalize-drop-site-selection-id)) ; Jump to rule #3549
+	; Rule #3542
+	; Purpose: Search for nearby drop sites of the required line around the anchor point.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-set-precise-target-point gl-vill-hopping-center-pos)
+		(up-filter-distance c: -1 c: 28)
+		(up-find-local g: gl-vill-hopping-required-drop-site-line c: 240)
+		(up-remove-objects search-local object-data-group-flag c:!= -2)
+		(up-clean-search search-local object-data-full-distance search_order-ascending)
+		(up-remove-objects search-local object-data-index c:>= 3)
+		(up-get-search-state gl-local-total))
+	; Rule #3543
+	; Purpose: Skip the drop-site scoring loop when no nearby drop site of the right line exists.
+	(defrule
+		(up-compare-goal gl-local-total c:== 0)
+		(up-compare-goal gl-rule-3549-finalize-drop-site-selection-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3549-finalize-drop-site-selection-id)) ; Jump to rule #3549
+	; Rule #3544
+	; Purpose: Reset the loop state used to score candidate drop sites and keep the best one.
+	(defrule
+		(up-modify-goal gl-vill-hopping-best-drop-site-score c:= -1)
+		=>
+		(up-modify-goal gl-vill-hopping-drop-site-loop-index c:= 0)
+		(up-modify-goal gl-vill-hopping-best-drop-site-id c:= -1)
+		(up-modify-goal gl-vill-hopping-best-drop-site-score c:= 2147483647))
+; Rule #3544.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3545-evaluate-next-drop-site-candidate-id))
+	; Rule #3545
+	; Purpose: End the drop-site scoring loop after all shortlisted candidates have been evaluated.
+	(defrule
+		(up-compare-goal gl-vill-hopping-drop-site-loop-index g:>= gl-local-total)
+		(up-compare-goal gl-rule-3549-finalize-drop-site-selection-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3549-finalize-drop-site-selection-id)) ; Jump to rule #3549
+	; Rule #3546
+	; Purpose: Score the current drop-site candidate by combining nearby-role support and distance from the anchor.
+	(defrule
+		(true)
+		=>
+		(up-set-target-object search-local g: gl-vill-hopping-drop-site-loop-index)
+		(up-modify-goal gl-vill-hopping-drop-site-loop-index c:+ 1)
+		(up-get-object-data object-data-id gl-vill-hopping-selected-drop-site-id)
+		(up-get-point position-curr-object gl-vill-hopping-current-drop-site-pos)
+		(up-set-precise-target-point gl-vill-hopping-current-drop-site-pos)
+		(up-filter-distance c: -1 c: 7)
+		(up-reset-search 0 0 1 1)
+		(up-find-remote c: villager-class c: 40)
+		(up-remove-objects search-remote object-data-language-id g:!= gl-vill-hopping-required-villager-role)
+		(up-get-point-distance gl-vill-hopping-current-drop-site-pos gl-vill-hopping-center-pos gl-vill-hopping-current-drop-site-distance-score)
+		(up-modify-goal gl-vill-hopping-current-drop-site-distance-score c:/ 10)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-vill-hopping-current-drop-site-total-score g:= gl-remote-total)
+		(up-modify-goal gl-vill-hopping-current-drop-site-total-score c:* 2)
+		(up-modify-goal gl-vill-hopping-current-drop-site-total-score g:+ gl-vill-hopping-current-drop-site-distance-score))
+	; Rule #3547
+	; Purpose: Remember the best drop site found so far when the current score improves on the previous best.
+	(defrule
+		(up-compare-goal gl-vill-hopping-current-drop-site-total-score g:< gl-vill-hopping-best-drop-site-score)
+		=>
+		(up-modify-goal gl-vill-hopping-best-drop-site-score g:= gl-vill-hopping-current-drop-site-total-score)
+		(up-modify-goal gl-vill-hopping-best-drop-site-id g:= gl-vill-hopping-selected-drop-site-id))
+	; Rule #3548
+	; Purpose: Continue the drop-site scoring loop with the next candidate.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-3545-evaluate-next-drop-site-candidate-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3545-evaluate-next-drop-site-candidate-id)) ; Jump to rule #3545
+; Rule #3548.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3549-finalize-drop-site-selection-id))
+	; Rule #3549
+	; Purpose: Skip the main resource search when no suitable drop site was found.
+	(defrule
+		(up-compare-goal gl-vill-hopping-best-drop-site-id c:< 0)
+		(up-compare-goal gl-rule-3557-check-nearby-wood-fallback-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3557-check-nearby-wood-fallback-id)) ; Jump to rule #3557
+	; Rule #3550
+	; Purpose: Center the resource search on the best drop site and scale the search radius with current economy size.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-set-target-by-id g: gl-vill-hopping-best-drop-site-id)
+		(up-get-point position-curr-object gl-vill-hopping-nearby-drop-site-pos)
+		(up-set-precise-target-point gl-vill-hopping-nearby-drop-site-pos)
+		(up-modify-goal gl-vill-hopping-search-radius s:= sn-retask-economy-size)
+		(up-modify-goal gl-vill-hopping-search-radius c:/ 48)
+		(up-modify-goal gl-vill-hopping-search-radius c:* 2)
+		(up-modify-goal gl-vill-hopping-search-radius c:+ 4)
+		(up-filter-distance c: -1 g: gl-vill-hopping-search-radius))
+	; Rule #3551
+	; Purpose: Search for food resources around the chosen drop site.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-resource c:== food)
+		(up-compare-goal gl-rule-3555-filter-found-resource-targets-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct g: gl-rule-3555-filter-found-resource-targets-id)) ; Jump to rule #3555
+	; Rule #3552
+	; Purpose: Search for wood resources around the chosen drop site.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-resource c:== wood)
+		(up-compare-goal gl-rule-3555-filter-found-resource-targets-id c:!= -1)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct g: gl-rule-3555-filter-found-resource-targets-id)) ; Jump to rule #3555
+	; Rule #3553
+	; Purpose: Search for stone resources around the chosen drop site.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-resource c:== stone)
+		(up-compare-goal gl-rule-3555-filter-found-resource-targets-id c:!= -1)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct g: gl-rule-3555-filter-found-resource-targets-id)) ; Jump to rule #3555
+	; Rule #3554
+	; Purpose: Search for gold resources around the chosen drop site.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-resource c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+; Rule #3554.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3555-filter-found-resource-targets-id))
+	; Rule #3555
+	; Purpose: Remove over-assigned resource targets and snapshot whether any usable resource remains.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object-data-tasks-count c:> 2)
+		(up-get-search-state gl-local-total))
+	; Rule #3556
+	; Purpose: Keep the nearest found resource target when the filtered resource list is non-empty.
+	(defrule
+		(up-compare-goal gl-remote-total c:!= 0)
+		=>
+		(up-clean-search search-remote object-data-precise-distance search_order-ascending)
+		(up-set-target-object search-remote c: 0)
+		(up-get-object-data object-data-id gl-vill-hopping-primary-resource-id)
+		(up-modify-goal gl-vill-hopping-found-resource-id g:= gl-vill-hopping-primary-resource-id))
+; Rule #3556.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3557-check-nearby-wood-fallback-id))
+	; Rule #3557
+	; Purpose: Only fall back to a nearby wood search when wood was the target and the main search did not already succeed cleanly.
+	(defrule
+		(nand (or (up-compare-flag fl-vill-hopping-wood-fallback-needed c:== 1)
+				(up-compare-goal gl-vill-hopping-found-resource-id c:== -1))
+			(up-compare-goal gl-vill-hopping-target-resource c:== wood))
+		(up-compare-goal gl-rule-3560-abort-without-resource-target-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3560-abort-without-resource-target-id)) ; Jump to rule #3560
+	; Rule #3558
+	; Purpose: Search a tighter area around the original anchor for any nearby wood that can serve as the fallback target.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-set-precise-target-point gl-vill-hopping-center-pos)
+		(up-filter-distance c: -1 c: 8)
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-get-search-state gl-local-total))
+	; Rule #3559
+	; Purpose: Use the nearest fallback wood target when that tighter search found one.
+	(defrule
+		(up-compare-goal gl-remote-total c:!= 0)
+		=>
+		(up-clean-search search-remote object-data-precise-distance search_order-ascending)
+		(up-set-target-object search-remote c: 0)
+		(up-get-object-data object-data-id gl-vill-hopping-primary-resource-id)
+		(up-modify-goal gl-vill-hopping-found-resource-id g:= gl-vill-hopping-primary-resource-id))
+; Rule #3559.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3560-abort-without-resource-target-id))
+	; Rule #3560
+	; Purpose: Abort the branch when no final resource target could be found.
+	(defrule
+		(up-compare-goal gl-vill-hopping-found-resource-id c:<= 0)
+		(up-compare-goal gl-rule-3572-return-from-vill-hopping-branch-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-3572-return-from-vill-hopping-branch-id)) ; Jump to rule #3572
+	; Rule #3561
+	; Purpose: Restore the selected worker and source town center as the active objects for the final rescue order sequence.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-add-object-by-id search-local g: gl-vill-hopping-selected-worker-id)
+		(up-set-target-by-id g: gl-vill-hopping-source-town-center-id))
+	; Rule #3562
+	; Purpose: Recreate work group 1 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== food-villager-group)
+		=>
+		(up-create-group 0 0 c: food-villager-group)
+		(up-modify-group-flag 1 c: food-villager-group)
+		(up-reset-group c: food-villager-group))
+	; Rule #3563
+	; Purpose: Recreate work group 2 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== wood-villager-group)
+		=>
+		(up-create-group 0 0 c: wood-villager-group)
+		(up-modify-group-flag 1 c: wood-villager-group)
+		(up-reset-group c: wood-villager-group))
+	; Rule #3564
+	; Purpose: Recreate work group 3 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== stone-villager-group)
+		=>
+		(up-create-group 0 0 c: stone-villager-group)
+		(up-modify-group-flag 1 c: stone-villager-group)
+		(up-reset-group c: stone-villager-group))
+	; Rule #3565
+	; Purpose: Recreate work group 4 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== gold-villager-group)
+		=>
+		(up-create-group 0 0 c: gold-villager-group)
+		(up-modify-group-flag 1 c: gold-villager-group)
+		(up-reset-group c: gold-villager-group))
+	; Rule #3566
+	; Purpose: Recreate work group 5 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== generic-work-group-5)
+		=>
+		(up-create-group 0 0 c: generic-work-group-5)
+		(up-modify-group-flag 1 c: generic-work-group-5)
+		(up-reset-group c: generic-work-group-5))
+	; Rule #3567
+	; Purpose: Recreate work group 6 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== generic-work-group-6)
+		=>
+		(up-create-group 0 0 c: generic-work-group-6)
+		(up-modify-group-flag 1 c: generic-work-group-6)
+		(up-reset-group c: generic-work-group-6))
+	; Rule #3568
+	; Purpose: Recreate work group 7 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== generic-work-group-7)
+		=>
+		(up-create-group 0 0 c: generic-work-group-7)
+		(up-modify-group-flag 1 c: generic-work-group-7)
+		(up-reset-group c: generic-work-group-7))
+	; Rule #3569
+	; Purpose: Recreate work group 8 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== generic-work-group-8)
+		=>
+		(up-create-group 0 0 c: generic-work-group-8)
+		(up-modify-group-flag 1 c: generic-work-group-8)
+		(up-reset-group c: generic-work-group-8))
+	; Rule #3570
+	; Purpose: Recreate work group 9 before reissuing the rescued villager order.
+	(defrule
+		(up-compare-goal gl-vill-hopping-target-group c:== generic-work-group-9)
+		=>
+		(up-create-group 0 0 c: generic-work-group-9)
+		(up-modify-group-flag 1 c: generic-work-group-9)
+		(up-reset-group c: generic-work-group-9))
+	; Rule #3571
+	; Purpose: Garrison the rescued villager, update the unload-support state, and point the source town center at the chosen resource target.
+	(defrule
+		(true)
+		=>
+		(up-target-objects 1 action-garrison formation-ignore stance-ignore)
+		(up-modify-goal gl-vill-hopping-next-unload-state c:= 3)
+		(up-modify-goal gl-vill-hopping-next-unload-state g:+ gl-vill-hopping-target-resource)
+		(up-modify-sn sn-unload-support-state g:= gl-vill-hopping-next-unload-state)
+		(up-modify-goal gl-vill-hopping-gather-point-target-id g:= gl-vill-hopping-found-resource-id)
+		(up-gather-inside c: town-center c: old-only)
+		(up-reset-search 1 1 0 0)
+		(up-add-object-by-id search-local g: gl-vill-hopping-source-town-center-id)
+		(up-set-target-by-id g: gl-vill-hopping-gather-point-target-id)
+		(up-target-objects 1 action-set-gather-point formation-ignore stance-ignore))
+; Rule #3571.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-3572-return-from-vill-hopping-branch-id))
+	; Rule #3572
+	; Purpose: Return from the vill-hopping recovery branch to the caller workflow.
+	(defrule
+		(true)
+		(up-compare-goal gl-retask-return-label c:!= -1)
+		=>
+		(up-jump-direct g: gl-retask-return-label))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; =========================================================
+; EXPANDED CALLER WORKFLOW AROUND THE VILLAGER RETASK ENGINE
+; Added from the original Immortal file so this excerpt now includes
+; the main caller-side selection, cleanup, fallback and cooldown logic.
+; =========================================================
+
+	; Rule #9406
+	; Purpose: Enable the wood-specific fallback mode before the direct retask attempt when lumber support is low.
+	(defrule
+		(unit-type-count-total villager-wood c:< 14)
+		(up-compare-sn 484 c:== wood)
+		(up-compare-flag fl-wood-town-center-fallback-mode c:== 524288)
+		=>
+		(up-modify-goal gl-direct-reassign-resource-balance-weight c:= 2))
+	; Rule #9407
+	; Purpose: Configure and invoke the direct retask attempt for the preselected villager and current strategic-number target resource.
+	(defrule
+		(up-modify-goal gl-target-resource s:= sn-retask-economy-size)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-source-villager-id g:= gl-preselected-source-villager-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 41)
+		(up-modify-goal gl-same-resource-stay-distance c:= 0)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 14)
+		(up-modify-goal gl-resource-balance-weight g:= gl-direct-reassign-resource-balance-weight)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 0)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9408-skip-immediate-food-clean-id) ; Jump to rule #9408 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9407.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9408-skip-immediate-food-clean-id))
+	; Rule #9408
+	; Purpose: Skip the immediate food clean-up when the surrounding food setup does not warrant an extra follow-up order.
+	(defrule
+		(nand (and (and (and (up-compare-goal gl-search-state-scratch-base_W c:> 0)
+						(up-compare-sn 71 c:< 10))
+					(building-type-count-total town-center c:> 0))
+				(unit-type-count-total villager-food c:>= 8))
+			(up-compare-goal gl-search-state-scratch-base_F c:== 7))
+		(up-compare-goal gl-rule-9413-gate-first-large-retask-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9413-gate-first-large-retask-id)) ; Jump to rule #9413
+	; Rule #9409
+	; Purpose: Find loaded food villagers in the work group that may need a nearby town center follow-up after the direct retask.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 240)
+		(up-remove-objects search-local object-data-group-flag c:!= 2)
+		(up-remove-objects search-local object-data-gather-type c:!= food)
+		(up-remove-objects search-local object-data-tasks-count c:!= 0)
+		(up-remove-objects search-local object-data-carry c:== 0)
+		(up-remove-objects search-local object-data-target-class-id c:== building-class)
+		(disable-timer retask-first-cleanup-cooldown-timer)
+		(up-get-search-state gl-local-total))
+	; Rule #9410
+	; Purpose: Skip the food follow-up when no eligible loaded food villager was found.
+	(defrule
+		(up-compare-goal gl-local-total c:== 0)
+		(up-compare-goal gl-rule-9413-gate-first-large-retask-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9413-gate-first-large-retask-id)) ; Jump to rule #9413
+	; Rule #9411
+	; Purpose: Anchor the selected food villager and look for a nearby town center to receive a default order.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-local object-data-index c:>= 1)
+		(up-set-target-object search-local c: 0)
+		(up-get-point position-curr-object gl-food-followup-anchor-pos)
+		(up-set-precise-target-point gl-food-followup-anchor-pos)
+		(up-filter-distance c: -1 c: 6)
+		(up-modify-sn sn-focus-player c:= my-player-number)
+		(up-find-remote c: town-center c: 1)
+		(up-get-search-state gl-local-total))
+	; Rule #9412
+	; Purpose: Issue the town-center follow-up order when a nearby anchor was found.
+	(defrule
+		(up-compare-goal gl-remote-last c:!= 0)
+		=>
+		(up-target-objects 0 action-default formation-ignore stance-ignore))
+; Rule #9412.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9413-gate-first-large-retask-id))
+	; Rule #9413
+	; Purpose: Gate the first large retask-cleanup pass behind its cooldown and controlling flag.
+	(defrule
+		(nand (up-timer-status retask-first-cleanup-cooldown-timer c:!= timer-running)
+			(up-compare-flag fl-retask-workflow-handoff c:!= 262144))
+		(up-compare-goal gl-rule-9427-gate-second-cleanup-pass-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9427-gate-second-cleanup-pass-id)) ; Jump to rule #9427
+	; Rule #9414
+	; Purpose: Build a candidate group of idle-safe villagers whose tag and actual work may need reconciliation.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 240)
+		(up-remove-objects search-local object-data-carry c:> 0)
+		(up-remove-objects search-local object-data-action c:== actionid-build)
+		(up-remove-objects search-local object-data-action c:== actionid-attack)
+		(up-remove-objects search-local object-data-action c:== actionid-explore)
+		(up-remove-objects search-local object-data-tasks-count c:> 0)
+		(up-remove-objects search-local object-data-group-flag c:< 1)
+		(up-remove-objects search-local object-data-group-flag c:> 4)
+		(up-create-group 0 0 c: 0)
+		(up-get-group-size c: 0 gl-first-cleanup-candidate-index))
+; Rule #9414.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9415-skip-first-cleanup-pass-id))
+	; Rule #9415
+	; Purpose: Skip the first cleanup pass when no eligible villagers were gathered.
+	(defrule
+		(up-compare-goal gl-first-cleanup-candidate-index c:<= 0)
+		(up-compare-goal gl-rule-9427-gate-second-cleanup-pass-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9427-gate-second-cleanup-pass-id)) ; Jump to rule #9427
+	; Rule #9416
+	; Purpose: Load one cleanup candidate and snapshot its tag, work type, villager type and id for evaluation.
+	(defrule
+		(up-modify-goal gl-first-cleanup-candidate-index c:- 1)
+		=>
+		(up-reset-search 1 1 0 0)
+		(up-set-group search-local c: 0)
+		(up-remove-objects search-local object-data-index g:!= gl-first-cleanup-candidate-index)
+		(up-set-target-object search-local c: 0)
+		(up-get-object-data object-data-group-flag gl-first-cleanup-tag-resource)
+		(up-modify-goal gl-first-cleanup-tag-resource c:- 1)
+		(up-get-object-data object-data-gather-type gl-first-cleanup-normalized-resource)
+		(up-get-object-data object-data-language-id gl-first-cleanup-language-id)
+		(up-get-object-data object-data-id gl-first-cleanup-candidate-id))
+	; Rule #9417
+	; Purpose: Normalize all food-style villager types into the shared food resource bucket for mismatch checking.
+	(defrule
+		(or (or (or (or (up-compare-goal gl-first-cleanup-language-id c:== lid_villager-farmer)
+						(up-compare-goal gl-first-cleanup-language-id c:== lid_villager-forager))
+					(up-compare-goal gl-first-cleanup-language-id c:== lid_villager-shepherd))
+				(up-compare-goal gl-first-cleanup-language-id c:== lid_villager-hunter))
+			(up-compare-goal gl-first-cleanup-language-id c:== lid_villager-fisherman))
+		=>
+		(up-modify-goal gl-first-cleanup-normalized-resource c:= food))
+	; Rule #9418
+	; Purpose: Normalize lumberjacks into the wood resource bucket for mismatch checking.
+	(defrule
+		(up-compare-goal gl-first-cleanup-language-id c:== lid_villager-lumberjack)
+		=>
+		(up-modify-goal gl-first-cleanup-normalized-resource c:= wood))
+	; Rule #9419
+	; Purpose: Normalize stone miners into the stone bucket for mismatch checking.
+	(defrule
+		(up-compare-goal gl-first-cleanup-language-id c:== lid_villager-stone-miner)
+		=>
+		(up-modify-goal gl-first-cleanup-normalized-resource c:= stone))
+	; Rule #9420
+	; Purpose: Normalize gold miners into the gold bucket for mismatch checking.
+	(defrule
+		(up-compare-goal gl-first-cleanup-language-id c:== lid_villager-gold-miner)
+		=>
+		(up-modify-goal gl-first-cleanup-normalized-resource c:= gold))
+	; Rule #9421
+	; Purpose: Skip retasking when the villager tag already matches the actual resource or the data is unusable.
+	(defrule
+		(nand (and (up-compare-goal gl-first-cleanup-tag-resource g:!= gl-first-cleanup-normalized-resource)
+				(up-compare-goal gl-first-cleanup-normalized-resource c:>= 0))
+			(up-compare-goal gl-first-cleanup-tag-resource c:>= 0))
+		(up-compare-goal gl-rule-9426-continue-scanning-remaining-candidates-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9426-continue-scanning-remaining-candidates-id)) ; Jump to rule #9426
+	; Rule #9422
+	; Purpose: Configure and invoke the first cleanup retask using the villager tag as the desired target resource.
+	(defrule
+		(up-modify-goal gl-target-resource g:= gl-first-cleanup-tag-resource)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-source-villager-id g:= gl-first-cleanup-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 40)
+		(up-modify-goal gl-same-resource-stay-distance c:= 0)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 17)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 8)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 0)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9423-start-first-cleanup-cooldown-id) ; Jump to rule #9423 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9422.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9423-start-first-cleanup-cooldown-id))
+	; Rule #9423
+	; Purpose: Start the first cleanup cooldown after a failed tag-vs-work correction attempt.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		=>
+		(up-set-timer c: retask-first-cleanup-cooldown-timer c: 8))
+	; Rule #9424
+	; Purpose: Lengthen that cooldown later in the game after a failed correction.
+	(defrule
+		(up-compare-goal timeSec c:> 1500)
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		=>
+		(up-set-timer c: retask-first-cleanup-cooldown-timer c: 16))
+	; Rule #9425
+	; Purpose: Leave the first cleanup loop early when the correction succeeded.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:>= 0)
+		(up-compare-goal gl-rule-9427-gate-second-cleanup-pass-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9427-gate-second-cleanup-pass-id)) ; Jump to rule #9427
+; Rule #9425.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9426-continue-scanning-remaining-candidates-id))
+	; Rule #9426
+	; Purpose: Continue scanning the remaining candidates in the first cleanup group.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-9415-skip-first-cleanup-pass-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9415-skip-first-cleanup-pass-id)) ; Jump to rule #9415
+; Rule #9426.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9427-gate-second-cleanup-pass-id))
+	; Rule #9427
+	; Purpose: Gate the second cleanup pass behind timing, cooldown and control-flag checks.
+	(defrule
+		(up-modify-goal gl-first-cleanup-tick-modulo g:= timeMilli)
+		(up-modify-goal gl-first-cleanup-tick-modulo c:mod 1000)
+		(nand (and (and (up-compare-goal gl-first-cleanup-tick-modulo g:< msecPerLoop)
+					(up-timer-status retask-second-cleanup-cooldown-timer c:!= timer-running))
+				(up-compare-sn 124 c:<= 12))
+			(up-compare-flag fl-retask-workflow-handoff c:!= 262144))
+		(up-compare-goal gl-rule-9441-gate-broad-fallback-retask-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9441-gate-broad-fallback-retask-id)) ; Jump to rule #9441
+	; Rule #9428
+	; Purpose: Build a candidate group of active gatherers whose movement and target situation may be inconsistent.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 240)
+		(up-remove-objects search-local object-data-target-unique-id c:<= 0)
+		(up-remove-objects search-local object-data-tasks-count c:> 0)
+		(up-remove-objects search-local object-data-gather-type c:<= -1)
+		(up-remove-objects search-local object-data-action c:< actionid-gather)
+		(up-remove-objects search-local object-data-action c:> actionid-hunt)
+		(up-remove-objects search-local object-data-group-flag c:< 1)
+		(up-remove-objects search-local object-data-group-flag c:> 4)
+		(up-remove-objects search-local object-data-index c:>= 40)
+		(up-create-group 0 0 c: 0)
+		(up-get-group-size c: 0 gl-second-cleanup-candidate-index))
+; Rule #9428.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9429-skip-second-cleanup-pass-id))
+	; Rule #9429
+	; Purpose: Skip the second cleanup pass when no active-gather candidates remain.
+	(defrule
+		(up-compare-goal gl-second-cleanup-candidate-index c:<= 0)
+		(up-compare-goal gl-rule-9441-gate-broad-fallback-retask-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9441-gate-broad-fallback-retask-id)) ; Jump to rule #9441
+	; Rule #9430
+	; Purpose: Load one active gatherer candidate and snapshot its id, tag, gather type, move target and distance.
+	(defrule
+		(up-modify-goal gl-second-cleanup-candidate-index c:- 1)
+		=>
+		(up-reset-search 1 1 0 0)
+		(up-set-group search-local c: 0)
+		(up-remove-objects search-local object-data-index g:!= gl-second-cleanup-candidate-index)
+		(up-set-target-object search-local c: 0)
+		(up-get-object-data object-data-id gl-second-cleanup-candidate-id)
+		(up-get-object-data object-data-group-flag gl-second-cleanup-candidate-group-flag)
+		(up-get-object-data object-data-gather-type gl-second-cleanup-candidate-resource)
+		(up-get-object-data object-data-move-x gl-second-cleanup-candidate-move-target-pos_x)
+		(up-get-object-data object-data-move-y gl-second-cleanup-candidate-move-target-pos_y)
+		(up-get-point position-curr-object gl-second-cleanup-candidate-current-pos)
+		(up-get-point-distance gl-second-cleanup-candidate-current-pos gl-second-cleanup-candidate-move-target-pos gl-second-cleanup-move-distance)
+		(up-modify-goal gl-food-anchor-branch-lock c:= 0)
+		(up-get-object-data object-data-target-class-id gl-second-cleanup-target-class))
+	; Rule #9431
+	; Purpose: Mark farm targets specially so later distance and threshold logic can treat them as farm work.
+	(defrule
+		(up-compare-goal gl-second-cleanup-target-class c:== farm-class)
+		=>
+		(up-modify-goal gl-food-anchor-branch-lock c:= 1))
+	; Rule #9432
+	; Purpose: Skip candidates whose current tag already fits their gather type or whose move target is still close enough.
+	(defrule
+		(up-modify-goal gl-second-cleanup-target-group-plus-one g:= gl-second-cleanup-candidate-resource)
+		(up-modify-goal gl-second-cleanup-target-group-plus-one c:+ 1)
+		(or (up-compare-goal gl-second-cleanup-target-group-plus-one g:!= gl-second-cleanup-candidate-group-flag)
+			(up-compare-goal gl-second-cleanup-move-distance c:< 9))
+		(up-compare-goal gl-rule-9429-skip-second-cleanup-pass-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9429-skip-second-cleanup-pass-id)) ; Jump to rule #9429
+	; Rule #9433
+	; Purpose: Initialize the default retask thresholds used for food-style gatherers in the second cleanup pass.
+	(defrule
+		(up-modify-goal gl-second-pass-direct-search-radius c:= 30)
+		(up-modify-goal gl-second-pass-stay-distance-threshold c:= 9)
+		(up-modify-goal gl-second-pass-local-radius-divisor c:= 3)
+		(up-modify-goal gl-second-pass-wood-alt-search-mode c:= 0)
+		(up-modify-goal gl-second-pass-farm-crowding-threshold c:= 14)
+		(up-modify-goal gl-second-pass-resource-balance-weight c:= 2)
+		(up-modify-goal gl-second-pass-anchor-resource-search-radius c:= 5)
+		(up-compare-goal gl-second-cleanup-candidate-resource c:== wood)
+		=>
+		(up-modify-goal gl-second-pass-direct-search-radius c:= 38)
+		(up-modify-goal gl-second-pass-stay-distance-threshold c:= 13)
+		(up-modify-goal gl-second-pass-local-radius-divisor c:= 3)
+		(up-modify-goal gl-second-pass-wood-alt-search-mode c:= 1)
+		(up-modify-goal gl-second-pass-farm-crowding-threshold c:= 14)
+		(up-modify-goal gl-second-pass-resource-balance-weight c:= 20)
+		(up-modify-goal gl-second-pass-anchor-resource-search-radius c:= 6))
+	; Rule #9434
+	; Purpose: Override those thresholds for stone gatherers.
+	(defrule
+		(up-compare-goal gl-second-cleanup-candidate-resource c:== stone)
+		=>
+		(up-modify-goal gl-second-pass-direct-search-radius c:= 40)
+		(up-modify-goal gl-second-pass-stay-distance-threshold c:= 13)
+		(up-modify-goal gl-second-pass-local-radius-divisor c:= 3)
+		(up-modify-goal gl-second-pass-wood-alt-search-mode c:= 0)
+		(up-modify-goal gl-second-pass-farm-crowding-threshold c:= 9)
+		(up-modify-goal gl-second-pass-resource-balance-weight c:= 1)
+		(up-modify-goal gl-second-pass-anchor-resource-search-radius c:= 5))
+	; Rule #9435
+	; Purpose: Override those thresholds for gold gatherers.
+	(defrule
+		(up-compare-goal gl-second-cleanup-candidate-resource c:== gold)
+		=>
+		(up-modify-goal gl-second-pass-direct-search-radius c:= 40)
+		(up-modify-goal gl-second-pass-stay-distance-threshold c:= 13)
+		(up-modify-goal gl-second-pass-local-radius-divisor c:= 3)
+		(up-modify-goal gl-second-pass-wood-alt-search-mode c:= 0)
+		(up-modify-goal gl-second-pass-farm-crowding-threshold c:= 10)
+		(up-modify-goal gl-second-pass-resource-balance-weight c:= 2)
+		(up-modify-goal gl-second-pass-anchor-resource-search-radius c:= 5))
+	; Rule #9436
+	; Purpose: Skip retasking if the gatherer is still close enough to its move target.
+	(defrule
+		(up-compare-goal gl-second-cleanup-move-distance g:< gl-second-pass-stay-distance-threshold)
+		(up-compare-goal gl-rule-9440-continue-scanning-remaining-active-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9440-continue-scanning-remaining-active-id)) ; Jump to rule #9440
+	; Rule #9437
+	; Purpose: Configure and invoke the second cleanup retask using thresholds tuned to the current gather type.
+	(defrule
+		(up-modify-goal gl-target-resource g:= gl-second-cleanup-candidate-resource)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-source-villager-id g:= gl-second-cleanup-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius g:= gl-second-pass-direct-search-radius)
+		(up-modify-goal gl-same-resource-stay-distance g:= gl-second-pass-stay-distance-threshold)
+		(up-modify-goal gl-local-radius-divisor g:= gl-second-pass-local-radius-divisor)
+		(up-modify-goal gl-farm-crowding-threshold g:= gl-second-pass-farm-crowding-threshold)
+		(up-modify-goal gl-resource-balance-weight g:= gl-second-pass-resource-balance-weight)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius g:= gl-second-pass-anchor-resource-search-radius)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 0)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9438-start-second-cleanup-cooldown-id) ; Jump to rule #9438 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9437.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9438-start-second-cleanup-cooldown-id))
+	; Rule #9438
+	; Purpose: Start the second cleanup cooldown after a failed active-gather correction attempt.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		=>
+		(up-set-timer c: retask-second-cleanup-cooldown-timer c: 5))
+	; Rule #9439
+	; Purpose: Lengthen the second cleanup cooldown later in the game after failure and then exit the pass.
+	(defrule
+		(up-compare-goal timeSec c:> 1620)
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-9441-gate-broad-fallback-retask-id c:!= -1)
+		=>
+		(up-set-timer c: retask-second-cleanup-cooldown-timer c: 20)
+		(up-jump-direct g: gl-rule-9441-gate-broad-fallback-retask-id)) ; Jump to rule #9441
+; Rule #9439.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9440-continue-scanning-remaining-active-id))
+	; Rule #9440
+	; Purpose: Continue scanning the remaining active-gather candidates.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-9429-skip-second-cleanup-pass-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9429-skip-second-cleanup-pass-id)) ; Jump to rule #9429
+; Rule #9440.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9441-gate-broad-fallback-retask-id))
+	; Rule #9441
+	; Purpose: Gate the broad fallback retask sweep behind timing and its own cooldown timer.
+	(defrule
+		(up-modify-goal gl-food-anchor-branch-lock c:= 0)
+		(up-modify-goal gl-second-cleanup-tick-modulo g:= timeMilli)
+		(up-modify-goal gl-second-cleanup-tick-modulo c:mod 1400)
+		(nand (up-compare-goal gl-second-cleanup-tick-modulo g:< msecPerLoop)
+			(up-timer-status retask-fallback-cooldown-timer c:!= timer-running))
+		(up-compare-goal gl-rule-9498-refresh-top-level-resource-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9498-refresh-top-level-resource-id)) ; Jump to rule #9498
+	; Rule #9442
+	; Purpose: Build a broad candidate set of villagers with valid targets for fallback resource reassignment.
+	(defrule
+		(up-modify-goal gl-fallback-pass-attempts-remaining c:= 5)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: villager-class c: 240)
+		(up-remove-objects search-local object-data-group-flag c:> 4)
+		(up-remove-objects search-local object-data-action c:== actionid-attack)
+		(up-remove-objects search-local object-data-action c:== actionid-enter)
+		(up-remove-objects search-local object-data-language-id c:== lid_villager-builder)
+		(up-remove-objects search-local object-data-target-unique-id c:<= 0)
+		(up-get-search-state gl-local-total)
+		(up-modify-goal gl-nearby-farm-scan-index g:= gl-local-total)
+		(up-modify-goal gl-nearby-farm-scan-index c:- 1))
+; Rule #9442.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9443-stop-pruning-broad-candidates-id))
+	; Rule #9443
+	; Purpose: Stop pruning when no more broad candidates remain to inspect.
+	(defrule
+		(up-compare-goal gl-nearby-farm-scan-index c:< 0)
+		(up-compare-goal gl-rule-9447-freeze-pruned-candidate-set-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9447-freeze-pruned-candidate-set-id)) ; Jump to rule #9447
+	; Rule #9444
+	; Purpose: Load one broad candidate and measure how far it is from its current move target.
+	(defrule
+		(true)
+		=>
+		(up-set-target-object search-local g: gl-nearby-farm-scan-index)
+		(up-get-object-data object-data-move-x gl-nearby-farm-candidate-move-target-pos_x)
+		(up-get-object-data object-data-move-y gl-nearby-farm-candidate-move-target-pos_y)
+		(up-get-point position-curr-object gl-nearby-farm-candidate-current-pos)
+		(up-get-point-distance gl-nearby-farm-candidate-current-pos gl-nearby-farm-candidate-move-target-pos gl-nearby-farm-move-distance))
+	; Rule #9445
+	; Purpose: Remove villagers that are already close enough to their move target from the fallback candidate set.
+	(defrule
+		(up-compare-goal gl-nearby-farm-move-distance c:< 9)
+		=>
+		(up-remove-objects search-local object-data-index g:== gl-nearby-farm-scan-index))
+	; Rule #9446
+	; Purpose: Continue pruning the broad candidate set one villager at a time.
+	(defrule
+		(up-modify-goal gl-nearby-farm-scan-index c:- 1)
+		(up-compare-goal gl-rule-9443-stop-pruning-broad-candidates-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9443-stop-pruning-broad-candidates-id)) ; Jump to rule #9443
+; Rule #9446.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9447-freeze-pruned-candidate-set-id))
+	; Rule #9447
+	; Purpose: Freeze the pruned candidate set into a group for the fallback sweep.
+	(defrule
+		(true)
+		=>
+		(up-create-group 0 0 c: 0)
+		(up-get-group-size c: 0 gl-fallback-candidate-index))
+; Rule #9447.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9448-end-fallback-sweep-grouped-id))
+	; Rule #9448
+	; Purpose: End the fallback sweep when the grouped candidates are exhausted.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-index c:<= 0)
+		(up-compare-goal gl-rule-9498-refresh-top-level-resource-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9498-refresh-top-level-resource-id)) ; Jump to rule #9498
+	; Rule #9449
+	; Purpose: Load one villager from the fallback group for resource-family fallback evaluation.
+	(defrule
+		(up-modify-goal gl-fallback-candidate-index c:- 1)
+		=>
+		(up-reset-search 1 1 0 0)
+		(up-set-group search-local c: 0)
+		(up-remove-objects search-local object-data-index g:!= gl-fallback-candidate-index)
+		(up-set-target-object search-local c: 0))
+	; Rule #9450
+	; Purpose: Stop the fallback sweep when the per-pass attempt budget is exhausted.
+	(defrule
+		(up-compare-goal gl-fallback-pass-attempts-remaining c:<= 0)
+		(up-compare-goal gl-rule-9498-refresh-top-level-resource-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9498-refresh-top-level-resource-id)) ; Jump to rule #9498
+	; Rule #9451
+	; Purpose: Prefer the villager tag as the current resource-family hint when it is valid.
+	(defrule
+		(up-get-object-data object-data-id gl-fallback-candidate-id)
+		(up-get-object-data object-data-group-flag gl-fallback-candidate-group-flag)
+		(up-modify-goal gl-fallback-candidate-resource g:= gl-fallback-candidate-group-flag)
+		(up-modify-goal gl-fallback-candidate-resource c:- 1)
+		(up-compare-goal gl-fallback-candidate-group-flag c:>= 1)
+		(up-compare-goal gl-rule-9457-snapshot-candidate-villager-target-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9457-snapshot-candidate-villager-target-id)) ; Jump to rule #9457
+	; Rule #9452
+	; Purpose: Otherwise fall back to the current gather type as the resource-family hint when available.
+	(defrule
+		(up-get-object-data object-data-gather-type gl-fallback-candidate-gather-type)
+		(up-modify-goal gl-fallback-candidate-resource g:= gl-fallback-candidate-gather-type)
+		(up-compare-goal gl-fallback-candidate-resource c:>= 0)
+		(up-compare-goal gl-rule-9457-snapshot-candidate-villager-target-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9457-snapshot-candidate-villager-target-id)) ; Jump to rule #9457
+	; Rule #9453
+	; Purpose: Derive wood as the current resource-family hint from villager type when tag and gather type were not usable.
+	(defrule
+		(up-get-object-data object-data-language-id gl-fallback-candidate-language-id)
+		(up-modify-goal gl-fallback-candidate-resource g:= gl-fallback-candidate-language-id)
+		(up-compare-goal gl-fallback-candidate-resource c:== lid_villager-lumberjack)
+		(up-compare-goal gl-rule-9457-snapshot-candidate-villager-target-id c:!= -1)
+		=>
+		(up-modify-goal gl-fallback-candidate-resource c:= wood)
+		(up-jump-direct g: gl-rule-9457-snapshot-candidate-villager-target-id)) ; Jump to rule #9457
+	; Rule #9454
+	; Purpose: Derive gold as the current resource-family hint from villager type.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-resource c:== lid_villager-gold-miner)
+		(up-compare-goal gl-rule-9457-snapshot-candidate-villager-target-id c:!= -1)
+		=>
+		(up-modify-goal gl-fallback-candidate-resource c:= gold)
+		(up-jump-direct g: gl-rule-9457-snapshot-candidate-villager-target-id)) ; Jump to rule #9457
+	; Rule #9455
+	; Purpose: Derive stone as the current resource-family hint from villager type.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-resource c:== lid_villager-stone-miner)
+		(up-compare-goal gl-rule-9457-snapshot-candidate-villager-target-id c:!= -1)
+		=>
+		(up-modify-goal gl-fallback-candidate-resource c:= stone)
+		(up-jump-direct g: gl-rule-9457-snapshot-candidate-villager-target-id)) ; Jump to rule #9457
+	; Rule #9456
+	; Purpose: Derive food as the current resource-family hint from food-style villager types.
+	(defrule
+		(or (up-compare-goal gl-fallback-candidate-resource c:== lid_villager-farmer)
+			(up-compare-goal gl-fallback-candidate-resource c:== lid_villager-forager))
+		=>
+		(up-modify-goal gl-fallback-candidate-resource c:= food))
+; Rule #9456.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9457-snapshot-candidate-villager-target-id))
+	; Rule #9457
+	; Purpose: Snapshot the candidate villager target and carry state, then inspect the target unit for its tag.
+	(defrule
+		(up-get-object-data object-data-language-id gl-fallback-target-language-id)
+		=>
+		(up-get-object-data object-data-target-unique-id gl-fallback-current-target-id)
+		(up-get-object-data object-data-carry gl-fallback-candidate-carry-amount)
+		(up-set-target-by-id g: gl-fallback-current-target-id)
+		(up-get-object-data object-data-group-flag gl-fallback-target-group-flag-min)
+		(up-get-object-data object-data-group-flag gl-fallback-target-group-flag-max))
+	; Rule #9458
+	; Purpose: Reject farmers whose current target does not look like a valid tagged work anchor.
+	(defrule
+		(or (up-compare-goal gl-fallback-target-group-flag-max c:> 4)
+			(up-compare-goal gl-fallback-target-group-flag-min c:< 1))
+		(up-compare-goal gl-fallback-target-language-id c:== lid_villager-farmer)
+		(up-compare-goal gl-rule-9448-end-fallback-sweep-grouped-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9448-end-fallback-sweep-grouped-id)) ; Jump to rule #9448
+	; Rule #9459
+	; Purpose: Farmers with an acceptable target skip the extra nearby-dropoff validation and go straight to fallback selection.
+	(defrule
+		(up-compare-goal gl-fallback-target-language-id c:== lid_villager-farmer)
+		(up-compare-goal gl-rule-9464-route-non-food-villagers-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9464-route-non-food-villagers-id)) ; Jump to rule #9464
+	; Rule #9460
+	; Purpose: For non-farmers, look for a nearby dropoff structure around the current target before attempting fallback retasks.
+	(defrule
+		(true)
+		=>
+		(up-reset-filters)
+		(up-set-target-by-id g: gl-fallback-current-target-id)
+		(up-get-point position-curr-object gl-fallback-target-anchor-pos)
+		(up-set-precise-target-point gl-fallback-target-anchor-pos)
+		(up-filter-distance c: -1 c: 9)
+		(up-modify-sn sn-focus-player c:= my-player-number)
+		(up-reset-search 0 0 1 1)
+		(up-find-remote c: mill c: 40)
+		(up-find-remote c: mining-camp c: 40)
+		(up-find-remote c: lumber-camp c: 40)
+		(up-find-remote c: town-center c: 40)
+		(up-find-remote c: mule-cart c: 40)
+		(up-get-search-state gl-local-total))
+	; Rule #9461
+	; Purpose: Reject the candidate when no nearby dropoff structure was found.
+	(defrule
+		(up-compare-goal gl-remote-last c:== 0)
+		(up-compare-goal gl-rule-9448-end-fallback-sweep-grouped-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9448-end-fallback-sweep-grouped-id)) ; Jump to rule #9448
+	; Rule #9462
+	; Purpose: Select the nearest acceptable dropoff structure and inspect its tag range.
+	(defrule
+		(true)
+		=>
+		(up-clean-search search-remote object-data-full-distance search_order-ascending)
+		(up-set-target-object search-remote c: 0)
+		(up-get-object-data object-data-group-flag gl-nearby-dropoff-group-flag-min)
+		(up-get-object-data object-data-group-flag gl-nearby-dropoff-group-flag-max))
+	; Rule #9463
+	; Purpose: Reject the candidate when the nearby dropoff structure does not have a valid work tag.
+	(defrule
+		(or (up-compare-goal gl-nearby-dropoff-group-flag-max c:> 4)
+			(up-compare-goal gl-nearby-dropoff-group-flag-min c:< 1))
+		(up-compare-goal gl-rule-9448-end-fallback-sweep-grouped-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9448-end-fallback-sweep-grouped-id)) ; Jump to rule #9448
+; Rule #9463.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9464-route-non-food-villagers-id))
+	; Rule #9464
+	; Purpose: Route non-food villagers to the next resource-family fallback chain.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-resource c:!= food)
+		(up-compare-goal gl-rule-9472-route-non-wood-villagers-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9472-route-non-wood-villagers-id)) ; Jump to rule #9472
+	; Rule #9465
+	; Purpose: First try to keep a food-family villager on food through the shared retask engine.
+	(defrule
+		(up-modify-goal gl-target-resource c:= food)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 7)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9466-skip-further-fallback-attempts-id) ; Jump to rule #9466 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9465.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9466-skip-further-fallback-attempts-id))
+	; Rule #9466
+	; Purpose: Skip further fallback attempts for loaded food-family villagers that are already carrying resources.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-carry-amount c:> 1)
+		(up-compare-goal gl-rule-9471-exit-food-family-fallback-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9471-exit-food-family-fallback-id)) ; Jump to rule #9471
+	; Rule #9467
+	; Purpose: If food failed, try moving the villager to wood with the primary wood search mode.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 7)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9468-first-wood-attempt-failed-id) ; Jump to rule #9468 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9467.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9468-first-wood-attempt-failed-id))
+	; Rule #9468
+	; Purpose: If the first wood attempt failed, try wood again with the alternate wood search mode.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 1)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 7)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9469-wood-failed-try-gold-id) ; Jump to rule #9469 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9468.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9469-wood-failed-try-gold-id))
+	; Rule #9469
+	; Purpose: If wood still failed, try gold next.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= gold)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 7)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9470-gold-failed-try-stone-id) ; Jump to rule #9470 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9469.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9470-gold-failed-try-stone-id))
+	; Rule #9470
+	; Purpose: If gold failed, try stone as the last fallback for a food-family villager.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= stone)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 7)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9471-exit-food-family-fallback-id) ; Jump to rule #9471 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9470.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9471-exit-food-family-fallback-id))
+	; Rule #9471
+	; Purpose: Exit the food-family fallback chain and proceed to the shared failure handling.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-9495-start-broad-fallback-cooldown-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9495-start-broad-fallback-cooldown-id)) ; Jump to rule #9495
+; Rule #9471.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9472-route-non-wood-villagers-id))
+	; Rule #9472
+	; Purpose: Route non-wood villagers to the next resource-family fallback chain.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-resource c:!= wood)
+		(up-compare-goal gl-rule-9480-route-non-gold-villagers-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9480-route-non-gold-villagers-id)) ; Jump to rule #9480
+	; Rule #9473
+	; Purpose: First try to keep a wood-family villager on wood with the primary wood search mode.
+	(defrule
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 8)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9474-failed-try-wood-again-id) ; Jump to rule #9474 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9473.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9474-failed-try-wood-again-id))
+	; Rule #9474
+	; Purpose: If that failed, try wood again with the alternate wood search mode.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 1)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 8)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9475-skip-deeper-fallback-chain-id) ; Jump to rule #9475 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9474.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9475-skip-deeper-fallback-chain-id))
+	; Rule #9475
+	; Purpose: Skip the deeper fallback chain for loaded wood-family villagers that are already carrying resources.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-carry-amount c:> 1)
+		(up-compare-goal gl-rule-9479-exit-wood-family-fallback-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9479-exit-wood-family-fallback-id)) ; Jump to rule #9479
+	; Rule #9476
+	; Purpose: If wood failed and the villager is free to move, try gold next.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= gold)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 8)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9477-gold-failed-try-stone-id) ; Jump to rule #9477 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9476.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9477-gold-failed-try-stone-id))
+	; Rule #9477
+	; Purpose: If gold failed, try stone next.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= stone)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 8)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9478-stone-failed-try-food-id) ; Jump to rule #9478 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9477.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9478-stone-failed-try-food-id))
+	; Rule #9478
+	; Purpose: If stone failed, try food as the final fallback for a wood-family villager.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= food)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 8)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9479-exit-wood-family-fallback-id) ; Jump to rule #9479 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9478.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9479-exit-wood-family-fallback-id))
+	; Rule #9479
+	; Purpose: Exit the wood-family fallback chain and proceed to the shared failure handling.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-9495-start-broad-fallback-cooldown-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9495-start-broad-fallback-cooldown-id)) ; Jump to rule #9495
+; Rule #9479.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9480-route-non-gold-villagers-id))
+	; Rule #9480
+	; Purpose: Route non-gold villagers to the final stone-family branch when needed.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-resource c:!= gold)
+		(up-compare-goal gl-rule-9488-skip-stone-family-branch-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9488-skip-stone-family-branch-id)) ; Jump to rule #9488
+	; Rule #9481
+	; Purpose: First try to keep a gold-family villager on gold through the shared retask engine.
+	(defrule
+		(up-modify-goal gl-target-resource c:= gold)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 0)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9482-skip-deeper-fallback-chain-id) ; Jump to rule #9482 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9481.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9482-skip-deeper-fallback-chain-id))
+	; Rule #9482
+	; Purpose: Skip the deeper fallback chain for loaded gold-family villagers that are already carrying resources.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-carry-amount c:> 1)
+		(up-compare-goal gl-rule-9487-exit-gold-family-fallback-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9487-exit-gold-family-fallback-id)) ; Jump to rule #9487
+	; Rule #9483
+	; Purpose: If gold failed, try wood with the primary wood search mode.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9484-failed-try-wood-again-id) ; Jump to rule #9484 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9483.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9484-failed-try-wood-again-id))
+	; Rule #9484
+	; Purpose: If that failed, try wood again with the alternate wood search mode.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 1)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9485-wood-failed-try-stone-id) ; Jump to rule #9485 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9484.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9485-wood-failed-try-stone-id))
+	; Rule #9485
+	; Purpose: If wood failed, try stone next.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= stone)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9486-stone-failed-try-food-id) ; Jump to rule #9486 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9485.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9486-stone-failed-try-food-id))
+	; Rule #9486
+	; Purpose: If stone failed, try food as the final fallback for a gold-family villager.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= food)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9487-exit-gold-family-fallback-id) ; Jump to rule #9487 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9486.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9487-exit-gold-family-fallback-id))
+	; Rule #9487
+	; Purpose: Exit the gold-family fallback chain and proceed to the shared failure handling.
+	(defrule
+		(true)
+		(up-compare-goal gl-rule-9495-start-broad-fallback-cooldown-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9495-start-broad-fallback-cooldown-id)) ; Jump to rule #9495
+; Rule #9487.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9488-skip-stone-family-branch-id))
+	; Rule #9488
+	; Purpose: Skip the stone-family branch entirely when the candidate does not belong to stone.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-resource c:!= stone)
+		(up-compare-goal gl-rule-9495-start-broad-fallback-cooldown-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9495-start-broad-fallback-cooldown-id)) ; Jump to rule #9495
+	; Rule #9489
+	; Purpose: First try to keep a stone-family villager on stone through the shared retask engine.
+	(defrule
+		(up-modify-goal gl-target-resource c:= stone)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9490-skip-deeper-fallback-chain-id) ; Jump to rule #9490 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9489.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9490-skip-deeper-fallback-chain-id))
+	; Rule #9490
+	; Purpose: Skip the deeper fallback chain for loaded stone-family villagers that are already carrying resources.
+	(defrule
+		(up-compare-goal gl-fallback-candidate-carry-amount c:> 1)
+		(up-compare-goal gl-rule-9495-start-broad-fallback-cooldown-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9495-start-broad-fallback-cooldown-id)) ; Jump to rule #9495
+	; Rule #9491
+	; Purpose: If stone failed, try gold next.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= gold)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9492-gold-failed-try-wood-id) ; Jump to rule #9492 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9491.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9492-gold-failed-try-wood-id))
+	; Rule #9492
+	; Purpose: If gold failed, try wood with the primary wood search mode.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9493-failed-try-wood-again-id) ; Jump to rule #9493 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9492.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9493-failed-try-wood-again-id))
+	; Rule #9493
+	; Purpose: If that failed, try wood again with the alternate wood search mode.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= wood)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 1)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9494-wood-failed-try-food-id) ; Jump to rule #9494 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9493.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9494-wood-failed-try-food-id))
+	; Rule #9494
+	; Purpose: If wood failed, try food as the final fallback for a stone-family villager.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		(up-compare-goal gl-rule-3408-abort-early-food-retasking-id c:!= -1)
+		=>
+		(up-modify-goal gl-target-resource c:= food)
+		(up-modify-goal gl-source-villager-id g:= gl-fallback-candidate-id)
+		(up-modify-goal gl-direct-reassign-search-radius c:= 30)
+		(up-modify-goal gl-same-resource-stay-distance c:= -1)
+		(up-modify-goal gl-local-radius-divisor c:= 0)
+		(up-modify-goal gl-farm-crowding-threshold c:= 18)
+		(up-modify-goal gl-resource-balance-weight c:= -1)
+		(up-modify-goal gl-wood-fallback-anchor-enabled c:= 0)
+		(up-modify-goal gl-anchor-resource-search-radius c:= 6)
+		(up-modify-goal gl-fallback-anchor-count c:= 0)
+		(up-modify-goal gl-forced-food-retask-mode c:= 1)
+		(up-modify-goal gl-retask-return-label g:= gl-rule-9495-start-broad-fallback-cooldown-id) ; Jump to rule #9495 later
+		(up-jump-direct g: gl-rule-3408-abort-early-food-retasking-id)) ; Jump to rule #3408
+; Rule #9494.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9495-start-broad-fallback-cooldown-id))
+	; Rule #9495
+	; Purpose: Start the broad fallback cooldown when every attempted fallback retask failed.
+	(defrule
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		=>
+		(up-set-timer c: retask-fallback-cooldown-timer c: 5))
+	; Rule #9496
+	; Purpose: Shorten that cooldown in lower-economy states so fallback retries happen sooner.
+	(defrule
+		(up-compare-sn 71 c:< 50)
+		(up-compare-goal gl-reassign-result-code c:< 0)
+		=>
+		(up-set-timer c: retask-fallback-cooldown-timer c: 2))
+	; Rule #9497
+	; Purpose: Spend one fallback attempt and continue with the next grouped candidate.
+	(defrule
+		(up-modify-goal gl-fallback-pass-attempts-remaining c:+ 1)
+		(up-compare-goal gl-rule-9448-end-fallback-sweep-grouped-id c:!= -1)
+		=>
+		(up-jump-direct g: gl-rule-9448-end-fallback-sweep-grouped-id)) ; Jump to rule #9448
+; Rule #9497.5
+	(defrule
+		(true)
+		=>
+		(up-get-rule-id gl-rule-9498-refresh-top-level-resource-id))
+	; Rule #9498
+	; Purpose: Refresh the top-level resource-availability flags before the next selection cycle.
+	(defrule
+		(true)
+		=>
+		(up-modify-flag fl-food-resource-availability c:+ 125829120)
+		(up-modify-flag fl-resource-availability-reset-state c:- 2013265920))
+	; Rule #9499
+	; Purpose: Clear the food-availability flag when no workable food economy remains on the map.
+	(defrule
+		(or (and (up-gaia-type-count c: amount-food c:== 0)
+				(building-type-count-total farm c:== 0))
+			(and (building-type-count-total mill c:== 0)
+				(building-type-count-total town-center c:== 0)))
+		=>
+		(up-modify-flag fl-food-resource-availability c:- 8388608))
+	; Rule #9500
+	; Purpose: Clear the wood-availability flag when no workable wood economy remains on the map.
+	(defrule
+		(or (up-gaia-type-count c: amount-wood c:== 0)
+			(and (up-object-type-count-total g: gl-wood-drop-site-line-id c:== 0)
+				(building-type-count-total town-center c:== 0)))
+		=>
+		(up-modify-flag fl-wood-resource-availability c:- 16777216))
+	; Rule #9501
+	; Purpose: Clear the stone-availability flag when no workable stone economy remains on the map.
+	(defrule
+		(or (up-gaia-type-count c: amount-stone c:== 0)
+			(and (up-object-type-count-total g: gl-mining-drop-site-line-id c:== 0)
+				(building-type-count-total town-center c:== 0)))
+		=>
+		(up-modify-flag fl-stone-resource-availability c:- 33554432))
+	; Rule #9502
+	; Purpose: Clear the gold-availability flag when no workable gold economy remains on the map.
+	(defrule
+		(or (up-gaia-type-count c: amount-gold c:== 0)
+			(and (up-object-type-count-total g: gl-mining-drop-site-line-id c:== 0)
+				(building-type-count-total town-center c:== 0)))
+		=>
+		(up-modify-flag fl-gold-resource-availability c:- 67108864))
+	; Rule #9503
+	; Purpose: Exit this workflow early when the controlling global flag says the broader system should hand off elsewhere.
+	(defrule
+		(up-compare-flag fl-retask-workflow-handoff c:== 262144)
+		=>
+		(up-jump-direct c: 9524))

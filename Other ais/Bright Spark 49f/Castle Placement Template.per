@@ -1,0 +1,673 @@
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-x c:== -2000)
+=>
+(up-full-reset-search)
+(up-modify-goal gl-tile-score c:= 0)
+(up-modify-goal gl-tile-high-score c:= -1)
+(up-get-point position-custom gl-enemy-area-x)
+(up-copy-point gl-tile-checker-x gl-frontline-x)
+(up-lerp-tiles gl-tile-checker-x gl-enemy-area-x c: 11)
+(up-copy-point gl-tile-target-x gl-tile-checker-x)
+(up-modify-goal gl-tile-checker-x c:- 20);9
+(up-modify-goal gl-tile-checker-y c:- 20);9
+(up-modify-goal gl-tile-target-x c:+ 20);9
+(up-modify-goal gl-tile-target-y c:+ 20);9
+;(chat-local-to-self "castle rule 1")
+)
+
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-tile-score c:= 0)
+(up-get-point-distance gl-tile-checker-x gl-enemy-area-x gl-tile-score)
+;(up-modify-goal gl-tile-score c:/ 4)
+(up-modify-goal gl-tile-score c:* -5)
+(up-modify-goal gl-tile-score c:+ 20);40
+;(chat-local-to-self "castle rule 2")
+)
+
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-point-explored gl-tile-checker-x != 15)
+=>
+(up-modify-goal gl-tile-score c:- 7000)
+;(chat-local-to-self "castle rule 3")
+(up-jump-rule 36)
+)
+
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(not(up-can-build-line 0 gl-tile-checker-x c: arena-building))
+=>
+(up-modify-goal gl-tile-score c:- 7000)
+;(chat-local-to-self "castle rule 4")
+(up-jump-rule 35)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-point gl-tile-checker-x)
+(up-filter-distance c: 0 c: 14)
+;(chat-local-to-self "castle rule 5")
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: castle c: 40);
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* -200)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 10)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: town-center c: 40)
+(up-find-remote c: krepost c: 40)
+(up-find-remote c: donjon c: 40)
+(up-find-remote c: watch-tower c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* -50)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: lumber-camp c: 40)
+(up-find-remote c: mining-camp c: 40)
+(up-find-remote c: mill c: 40)
+(up-find-remote c: mule-cart c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 20)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: villager-class c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 1)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8)
+(up-filter-include 4 -1 -1 -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: -1 c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* -5)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 6)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(not(player-in-game focus-player))
+(not(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number c:!= my-player-number)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: castle c: 40)
+(up-find-remote c: watch-tower c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:- 1)
+(up-modify-goal gl-remote-total c:* -60);100
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 10)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(not(player-in-game focus-player))
+(not(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number c:!= my-player-number)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: castle c: 40)
+(up-find-remote c: krepost c: 40)
+(up-find-remote c: donjon c: 40)
+(up-find-remote c: watch-tower c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 30)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: 0 c: 8)
+(up-filter-status c: 3 c: 0)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-find-resource c: gold c: 40)
+(up-find-resource c: stone c: 40)
+(up-find-resource c: food c: 40)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 15);15
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: 0 c: 8)
+(up-filter-status c: 2 c: 0)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-find-resource c: wood c: 40)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(false); cutting loops
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 1)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-goal gl-tile-score g:> gl-tile-high-score)
+=>
+(up-modify-goal gl-tile-high-score g:= gl-tile-score)
+(up-modify-goal gl-best-tile-x g:= gl-tile-checker-x)
+(up-modify-goal gl-best-tile-y g:= gl-tile-checker-y)
+;(up-send-flare gl-best-tile-x)
+)
+
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-goal gl-tile-checker-x g:< gl-tile-target-x)
+=>
+(up-modify-goal gl-tile-checker-x c:+ 2);1
+;(up-chat-data-to-self "tile-checker-x: %d" g: gl-tile-checker-x)
+;(up-chat-data-to-self "tile-target-x: %d" g: gl-tile-target-x)
+;(up-chat-data-to-self "tile-target-y: %d" g: gl-tile-target-y)
+;(up-chat-data-to-self "tile-checker-y: %d" g: gl-tile-checker-y)
+(up-jump-rule -39)
+)
+
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line)
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-goal gl-tile-checker-x g:>= gl-tile-target-x)
+=>
+(up-modify-goal gl-tile-checker-x c:- 40);18
+(up-modify-goal gl-tile-checker-y c:+ 2);2
+;(up-chat-data-to-self "tile-checker-x: %d" g: gl-tile-checker-x)
+;(up-chat-data-to-self "tile-checker-y: %d" g: gl-tile-checker-y)
+(up-jump-rule -40)
+)
+
+(defrule
+(building-type-count-total castle >= 1)
+(up-pending-objects c: arena-building-line < 1)
+(can-build arena-building-line);castle
+(map-type arena)
+(up-compare-goal gl-game-strategy == castle-drop)
+(up-compare-goal gl-tile-checker-y g:> gl-tile-target-y)
+(up-compare-goal gl-tile-high-score > -1)
+(up-can-build-line 0 gl-best-tile-x c: arena-building)
+=>
+;(up-chat-data-to-self "list number: %d" g: gl-tile-high-score)
+(up-build-line gl-best-tile-x gl-best-tile-x c: arena-building)
+(up-assign-builders c: arena-building c: -1);arena-building-builders
+(up-modify-goal gl-tile-checker-x c:= -2000)
+)
+
+(defrule
+(up-compare-goal gl-tile-checker-y g:> gl-tile-target-y)
+=>
+;(up-modify-goal gl-precise-time-a g:= gl-precise-time-b)
+;(up-get-precise-time 0 gl-precise-time-b)
+;(up-chat-data-to-self "precise time a %d" g: gl-precise-time-a)
+;(up-chat-data-to-self "precise time b %d" g: gl-precise-time-b)
+(up-modify-goal gl-tile-checker-x c:= -2000)
+(up-modify-goal gl-tile-checker-y c:= -2000)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-tile-checker-x c:= -2000)
+(disable-self)
+)
+
+(defrule
+(false)
+(not(can-build castle))
+(map-type arena)
+=>
+(up-modify-goal gl-tile-checker-x c:= -2000)
+)

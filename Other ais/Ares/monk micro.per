@@ -1,0 +1,478 @@
+;Monk micro
+(defconst g-convert-list-1 211)
+;keep this space empty for the list
+(defconst g-convert-list-final 241)
+
+
+(defrule
+	(timer-triggered t-29-sec)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-exclude -1 actionid-convert 731 siege-weapon-class)
+	(up-find-local c: monastery-class c: 80)
+	(up-remove-objects search-local object-data-action == actionid-heal)	
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-get-search-state lt)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-remote c: -1 c: 100)
+	(up-set-target-point p-safety-x)
+	(up-clean-search search-local object-data-full-distance search-order-asc)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-clean-search search-remote object-data-maxhp search-order-desc)
+	(up-clean-search search-remote object-data-hitpoints search-order-asc)
+	(up-remove-objects search-remote object-data-index g:>= lt)
+	(up-target-objects 0 action-default -1 -1)
+)
+
+;==============================
+; Refresh convert list
+;==============================
+(defrule
+	(research-completed ri-theocracy)
+=>
+    ; Clear entire list range
+	(set-goal 211 -1)
+	(set-goal 212 -1)
+	(set-goal 213 -1)
+	(set-goal 214 -1)
+	(set-goal 215 -1)
+	(set-goal 216 -1)
+	(set-goal 217 -1)
+	(set-goal 218 -1)
+	(set-goal 219 -1)
+	(set-goal 220 -1)	
+	(set-goal 221 -1)
+	(set-goal 222 -1)
+	(set-goal 223 -1)
+	(set-goal 224 -1)
+	(set-goal 225 -1)
+	(set-goal 226 -1)
+	(set-goal 227 -1)
+	(set-goal 228 -1)
+	(set-goal 229 -1)
+	(set-goal 230 -1)
+	(set-goal 231 -1)
+	(set-goal 232 -1)
+	(set-goal 233 -1)
+	(set-goal 234 -1)
+	(set-goal 235 -1)
+	(set-goal 236 -1)
+	(set-goal 237 -1)
+	(set-goal 238 -1)
+	(set-goal 239 -1)
+	(set-goal 240 -1)
+	(set-goal 241 -1)
+)
+(defrule
+	(timer-triggered t-4-sec)
+=>
+    ; Clear entire list range
+	(set-goal 211 -1)
+	(set-goal 212 -1)
+	(set-goal 213 -1)
+	(set-goal 214 -1)
+	(set-goal 215 -1)
+	(set-goal 216 -1)
+	(set-goal 217 -1)
+	(set-goal 218 -1)
+	(set-goal 219 -1)
+	(set-goal 220 -1)	
+	(set-goal 221 -1)
+	(set-goal 222 -1)
+	(set-goal 223 -1)
+	(set-goal 224 -1)
+	(set-goal 225 -1)
+	(set-goal 226 -1)
+	(set-goal 227 -1)
+	(set-goal 228 -1)
+	(set-goal 229 -1)
+	(set-goal 230 -1)
+	(set-goal 231 -1)
+	(set-goal 232 -1)
+	(set-goal 233 -1)
+	(set-goal 234 -1)
+	(set-goal 235 -1)
+	(set-goal 236 -1)
+	(set-goal 237 -1)
+	(set-goal 238 -1)
+	(set-goal 239 -1)
+	(set-goal 240 -1)
+	(set-goal 241 -1)
+)
+
+
+
+;real monk micro begins here
+;goals
+;g-math-1: monk index
+;g-math-2: monk id
+;g-math-3: target id
+;g-math-4: acts as a check goal for monks converting units too far
+
+(defrule
+	(true)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal g-math-1 0)
+	(set-goal check-goal 0)
+	(up-get-rule-id g-jump-direct-1)
+	(up-modify-goal g-jump-direct-1 c:+ 1)
+	(up-filter-exclude -1 -1 731 -1)
+	(up-find-local c: monastery-class c: 80)
+	(up-remove-objects search-local object-data-carry != 100)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-reset-group c: monk-ready-group)
+	(up-create-group 0 0 c: monk-ready-group)
+)
+
+(defrule
+	(unit-type-count monastery-class > 0)
+	(research-completed ri-atonement)
+	(up-set-target-object search-local g: g-math-1)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal g-list-counter g-convert-list-1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-get-object-data object-data-id g-math-2)
+	(up-get-object-data object-data-range g-monk-range)
+	(up-get-object-data object-data-precise-x p-x-3)
+	(up-get-object-data object-data-precise-y p-y-3)
+	(up-get-object-data object-data-precise-move-x p-x-2)
+	(up-get-object-data object-data-precise-move-y p-y-2)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: -1 g: g-monk-range)
+	(up-modify-goal g-monk-range c:* 100)
+	(set-goal check-goal 1))
+
+(defrule
+	(goal check-goal 1)
+	(research-completed ri-atonement)
+	(up-set-target-object search-local g: g-math-1)
+	(up-object-data object-data-target != building-class)
+	(up-object-data object-data-target != villager-class)
+	(up-object-data object-data-order == orderid-convert)
+	(up-point-distance p-x-2 p-x-3 g:<= g-monk-range)
+=>
+	(up-modify-goal g-math-1 c:+ 1)
+	(set-goal check-goal 0)
+	(up-jump-rule -2)
+)
+
+
+(defrule
+	(goal check-goal 1)
+	(research-completed ri-atonement)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: monastery-class c: 50)
+	(up-find-remote c: monk-with-relic-class c: 5)
+)
+
+(defrule
+	(goal check-goal 1)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2))
+
+;remove targetted units
+(defrule
+	(goal check-goal 1)
+	(up-compare-goal g-list-manager != -1)
+	(up-compare-goal g-list-counter < g-convert-list-final)
+=>
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-remove-objects search-remote object-data-id g:== g-list-manager)
+	(up-modify-goal g-list-counter c:+ 1)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(goal check-goal 1)
+=>
+	(up-clean-search search-remote object-data-hitpoints search-order-desc)
+	(up-clean-search search-remote object-data-carry search-order-desc)
+)
+
+(defrule
+	(goal check-goal 1)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id g-math-3)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+;	(chat-to-player my-player-number "Convert monk")
+	(up-add-object-by-id search-local g: g-math-2)
+	(up-add-object-by-id search-remote g: g-math-3)
+	(up-target-objects 0 action-default -1 -1)
+	(set-goal g-list-counter g-convert-list-1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(set-goal check-goal 2)
+)
+
+(defrule
+	(goal check-goal 2)
+	(up-compare-goal g-list-manager != -1)
+	(up-compare-goal g-list-counter < g-convert-list-final)
+=>
+	(up-modify-goal g-list-counter c:+ 1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(goal check-goal 2)
+	(goal g-list-manager -1)
+	(up-compare-goal g-list-counter >= g-convert-list-1)
+	(up-compare-goal g-list-counter <= g-convert-list-final)
+=>
+	(up-set-indirect-goal g: g-list-counter g: g-math-3)
+)
+
+(defrule
+	(goal check-goal 2)
+=>
+	(set-goal check-goal 0)
+	(up-modify-goal g-math-1 c:+ 1)
+	(up-full-reset-search)
+	(up-set-group search-local c: monk-ready-group)
+	(up-jump-direct g: g-jump-direct-1)
+)
+
+
+
+
+;----------------------------------CONVERT MILITARY
+
+(defrule
+	(up-compare-goal check-goal != 2)
+	(unit-type-count monastery-class > 0)
+	(up-set-target-object search-local g: g-math-1)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal g-list-counter g-convert-list-1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-get-object-data object-data-id g-math-2)
+	(up-get-object-data object-data-range g-monk-range)
+	(up-get-object-data object-data-precise-x p-x-3)
+	(up-get-object-data object-data-precise-y p-y-3)
+	(up-get-object-data object-data-precise-move-x p-x-2)
+	(up-get-object-data object-data-precise-move-y p-y-2)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-filter-distance c: -1 g: g-monk-range)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-modify-goal g-monk-range c:* 100)
+	(set-goal check-goal 4))
+
+(defrule
+	(goal check-goal 4)
+	(up-set-target-object search-local g: g-math-1)
+	(up-object-data object-data-target != building-class)
+	(up-object-data object-data-target != villager-class)
+	(up-object-data object-data-order == orderid-convert)
+	(up-point-distance p-x-2 p-x-3 g:<= g-monk-range)
+=>
+	(up-modify-goal g-math-1 c:+ 1)
+	(set-goal check-goal 0)
+	(up-jump-rule -2)
+)
+
+
+(defrule
+	(goal check-goal 4)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: -1 c: 80)
+)
+(defrule
+	(goal check-goal 4)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2))
+
+;remove targetted units
+(defrule
+	(goal check-goal 4)
+	(up-compare-goal g-list-manager != -1)
+	(up-compare-goal g-list-counter < g-convert-list-final)
+=>
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-remove-objects search-remote object-data-id g:== g-list-manager)
+	(up-modify-goal g-list-counter c:+ 1)
+	(up-jump-rule -1)
+)
+(defrule
+	(goal check-goal 4)
+	(up-research-status c: ri-redemption != research-complete)
+=>
+	(up-remove-objects search-remote object-data-class == scorpion-class)
+	(up-remove-objects search-remote object-data-class == siege-weapon-class))
+(defrule
+	(goal check-goal 4)
+=>
+	(up-remove-objects search-remote object-data-type == battering-ram)
+	(up-remove-objects search-remote object-data-class == tower-class)
+	(up-remove-objects search-remote object-data-class == wall-class)
+	(up-remove-objects search-remote object-data-class == gate-class)
+	(up-remove-objects search-remote object-data-class == building-class)
+	(up-remove-objects search-remote object-data-class == farm-class)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-clean-search search-remote object-data-hitpoints search-order-desc)
+)
+
+(defrule
+	(goal check-goal 4)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id g-math-3)
+;	(up-reset-search 1 1 1 1)
+;	(up-reset-filters)
+	(up-remove-objects search-local object-data-id g:!= g-math-2)
+;	(chat-to-player my-player-number "Convert military")
+;	(up-add-object-by-id search-local g: g-math-2)
+;	(up-add-object-by-id search-remote g: g-math-3)
+	(up-target-objects 1 action-default -1 -1)
+	(set-goal g-list-counter g-convert-list-1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(set-goal check-goal 2)
+)
+
+;----------------------------------CONVERT VILLAGERS---------------------------
+
+(defrule
+	(up-compare-goal check-goal != 2)
+	(unit-type-count monastery-class > 0)
+	(up-set-target-object search-local g: g-math-1)
+	(up-object-data object-data-action != actionid-convert)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal g-list-counter g-convert-list-1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-get-object-data object-data-id g-math-2)
+	(up-get-object-data object-data-range g-monk-range)
+	(up-get-object-data object-data-precise-x p-x-3)
+	(up-get-object-data object-data-precise-y p-y-3)
+	(up-get-object-data object-data-precise-move-x p-x-2)
+	(up-get-object-data object-data-precise-move-y p-y-2)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 g: g-monk-range)
+	(up-modify-goal g-monk-range c:* 100)
+	(set-goal check-goal 3)
+)
+
+
+
+(defrule
+	(goal check-goal 3)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: villager-class c: 30)
+)
+(defrule
+	(goal check-goal 3)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+
+;remove targetted units
+(defrule
+	(goal check-goal 3)
+	(up-compare-goal g-list-manager != -1)
+	(up-compare-goal g-list-counter < g-convert-list-final)
+=>
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-remove-objects search-remote object-data-id g:== g-list-manager)
+	(up-modify-goal g-list-counter c:+ 1)
+	(up-jump-rule -1)
+)
+(defrule
+	(goal check-goal 3)
+=>
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-clean-search search-remote object-data-hitpoints search-order-desc)
+)
+
+(defrule
+	(goal check-goal 3)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id g-math-3)
+;	(up-reset-search 1 1 1 1)
+;	(up-reset-filters)
+	(up-remove-objects search-local object-data-id g:!= g-math-2)
+;	(chat-to-player my-player-number "Convert villager")
+;	(up-add-object-by-id search-local g: g-math-2)
+;	(up-add-object-by-id search-remote g: g-math-3)
+	(up-target-objects 1 action-default -1 -1)
+	(set-goal g-list-counter g-convert-list-1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(set-goal check-goal 2)
+)
+;-----------------------------------------------------------------------------------------
+
+(defrule
+	(goal check-goal 2)
+	(up-compare-goal g-list-manager != -1)
+	(up-compare-goal g-list-counter < g-convert-list-final)
+=>
+	(up-modify-goal g-list-counter c:+ 1)
+	(up-get-indirect-goal g: g-list-counter g-list-manager)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(goal check-goal 2)
+	(goal g-list-manager -1)
+	(up-compare-goal g-list-counter >= g-convert-list-1)
+	(up-compare-goal g-list-counter <= g-convert-list-final)
+=>
+	(up-set-indirect-goal g: g-list-counter g: g-math-3)
+)
+
+
+
+
+
+
+
+;(defrule
+;	(goal check-goal 1)
+;	(up-compare-goal g-ranged-group-size > 0)
+;	(unit-type-count monastery-class > 0)
+;	(up-set-target-object search-local g: g-math-1)
+;	(up-object-data object-data-action == -1)
+;=>
+;	(up-remove-objects search-local object-data-id g:!= g-math-2)
+;	(up-target-point p-march-x action-attack-move -1 -1)
+;)
+
+
+
+
+
+
+
+(defrule
+	(up-compare-goal check-goal != 0)
+=>
+	(set-goal check-goal 0)
+	(up-full-reset-search)
+	(up-modify-goal g-math-1 c:+ 1)
+	(up-set-group search-local c: monk-ready-group)
+	(up-jump-direct g: g-jump-direct-1)
+)
+
+
+
+
+
+

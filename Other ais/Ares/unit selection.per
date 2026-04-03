@@ -1,0 +1,1498 @@
+;Unit comparison
+; longswords (neutral) vs Pikes (Counter) == +0.717 -> +2
+; longswords (neutral) vs knights (neutral strong) == -0.225 -> -1
+; longswords (neutral) vs light cav (neutral weak) == +0.410 -> +1
+; pikes (counter) vs knights (counter target) == +0.693 -> +2
+; pikes (counter) vs eagle warrior (neutral weak) == -0.466 -> -1
+
+(defconst rw 30); lower value reduces influence of resource amount (min 1)
+
+(defrule
+	(true)
+=>
+	(up-setup-cost-data 1 g-food-buffer)
+	(up-add-object-cost c: villager c: 1)
+	(up-add-object-cost c: house c: 1)
+	(up-add-object-cost g: g-want-siege c: 1)
+	(up-add-object-cost g: my-best-melee-unit c: 2)
+	(up-add-object-cost g: my-best-ranged-unit c: 2)
+	(set-goal g-want-melee -1)
+	(set-goal g-want-ranged -1)
+	(set-goal g-want-siege -1)
+	(set-goal my-best-melee-unit -1)
+	(set-goal my-best-ranged-unit -1)
+	(set-goal my-backup-melee-unit -1)
+	(set-goal my-backup-ranged-unit -1)
+
+	(set-goal g-melee-score -10000)
+	(set-goal g-ranged-score -10000)
+	(set-goal temporary-goal -10000)
+
+	(set-goal check-goal 0)
+
+	(up-get-fact soldier-count 0 g-math-2)
+	(set-goal g-math-3 50)
+	(up-modify-goal g-math-3 g:- g-math-2)
+	(up-modify-goal g-math-3 c:max 1)
+)
+(defrule
+	(up-compare-flag f-map-type == fv-fish-map)
+=>
+	(up-add-object-cost c: fishing-ship c: 2))
+;step 0: find siege cost
+
+(defrule
+	(goal g-want-siege -1)
+	(unit-available trebuchet)
+	(military-population > 20)
+	(unit-type-count-total trebuchet-set < 3)
+	(unit-type-count-total ram-unit < 4)
+	(unit-type-count-total bombard-cannon < 4)
+	(up-compare-flag f-siege-allowed == fv-trebs)
+=>
+	(set-goal g-want-siege trebuchet))
+
+(defrule
+	(goal g-want-siege -1)
+	(unit-available bombard-cannon)
+	(military-population > 20)
+	(unit-type-count-total trebuchet-set < 3)
+	(unit-type-count-total ram-unit < 4)
+	(unit-type-count-total bombard-cannon < 4)
+	(up-compare-flag f-siege-allowed == fv-bombard-cannons)
+=>
+	(set-goal g-want-siege bombard-cannon))
+
+(defrule
+	(goal g-want-siege -1)
+	(unit-available ram-unit)
+	(military-population > 20)
+	(unit-type-count-total trebuchet-set < 3)
+	(unit-type-count-total ram-unit < 4)
+	(unit-type-count-total bombard-cannon < 4)
+	(up-compare-flag f-siege-allowed == fv-rams)
+=>
+	(set-goal g-want-siege ram-unit))
+
+(defrule
+	(goal g-want-siege -1)
+	(unit-available monk)
+	(unit-type-count-total monk < 2)
+	(military-population > 20)
+	(up-compare-flag f-monks-allowed == fv-monks)
+=>
+	(set-goal g-want-siege monk))
+
+
+
+;step 0: find civs best and backup units
+;step 1: find ideal ranged unit
+;step 2: find ideal melee unit
+;step 3: find siege cost
+
+;step 4: choose priority unit (siege, melee or ranged), regardless of eco
+;step 5: choose ideal units if eco affords it, otherwise choose budget units
+
+
+
+;step 1: find best melee unit
+
+(defrule
+	(up-compare-flag f-cavalry-allowed == fv-camels)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-cavalry-archers)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-skirms)
+	(up-modify-goal temporary-goal s:+ sn-siege)
+;----------------------------------------------------------------
+	(set-goal check-goal camel-line)
+)
+(defrule
+	(goal check-goal camel-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count camel-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal camel-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-archers)
+	(up-modify-goal g-math-1 s:+ sn-spears)
+	(up-modify-goal g-math-1 s:+ sn-eagles)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-gunpowder)
+	(up-modify-goal g-math-4 s:+ sn-cataphracts)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal camel-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit camel-line))
+
+
+(defrule
+	(up-compare-flag f-cavalry-allowed == fv-knights)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-husks)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-skirms)
+	(up-modify-goal temporary-goal s:+ sn-siege)
+	(up-modify-goal temporary-goal s:+ sn-infantry)
+	(up-modify-goal temporary-goal s:+ sn-light-cavalry)
+	(up-modify-goal temporary-goal s:+ sn-eagles)
+	(up-modify-goal temporary-goal s:+ sn-archers)
+	(up-modify-goal temporary-goal s:+ sn-cataphracts)
+;----------------------------------------------------------------
+	(set-goal check-goal knight-line)
+)
+(defrule
+	(goal check-goal knight-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count knight-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal knight-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-camels)
+	(up-modify-goal g-math-1 s:+ sn-spears)
+	(up-modify-goal g-math-1 s:+ sn-monks)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal knight-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit knight-line))
+
+
+;=--------------------BATTLE ELEPHANTS------------------------
+
+(defrule
+	(up-compare-flag f-cavalry-allowed == fv-elephants)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-cataphracts)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-eagles)
+	(up-modify-goal temporary-goal s:+ sn-skirms)
+	(up-modify-goal temporary-goal s:+ sn-archers)
+;----------------------------------------------------------------
+	(set-goal check-goal battle-elephant-line)
+)
+(defrule
+	(goal check-goal battle-elephant-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count battle-elephant-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal battle-elephant-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-camels)
+	(up-modify-goal g-math-1 s:+ sn-spears)
+	(up-modify-goal g-math-1 s:+ sn-monks)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-cavalry-archers)
+	(up-modify-goal g-math-4 s:+ sn-scorpions)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal battle-elephant-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit battle-elephant-line))
+
+;------------------------------------------------------------------------
+
+
+
+
+
+
+(defrule
+	(up-compare-flag f-cavalry-allowed == fv-scouts)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-monks)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-skirms)
+	(up-modify-goal temporary-goal s:+ sn-siege)
+;----------------------------------------------------------------
+	(set-goal check-goal scout-cavalry-line)
+)
+(defrule
+	(goal check-goal scout-cavalry-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count scout-cavalry-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal scout-cavalry-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-spears)
+	(up-modify-goal g-math-1 s:+ sn-camels)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-infantry)
+	(up-modify-goal g-math-4 s:+ sn-heavy-cavalry)
+
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal scout-cavalry-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit scout-cavalry-line))
+
+
+
+
+
+
+
+
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-spears)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-camels)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+
+;----------------------------------------------------------------
+	(set-goal check-goal spearman-line)
+)
+(defrule
+	(goal check-goal spearman-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count spearman-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal spearman-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-archers)
+	(up-modify-goal g-math-1 s:+ sn-gunpowder)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-skirms)
+	(up-modify-goal g-math-4 s:+ sn-eagles)
+	(up-modify-goal g-math-4 s:+ sn-cataphracts)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal spearman-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit spearman-line))
+
+
+
+
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-militia)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-eagles)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-skirms)
+	(up-modify-goal temporary-goal s:+ sn-light-cavalry)
+	(up-modify-goal temporary-goal s:+ sn-husks)
+	(up-modify-goal temporary-goal s:+ sn-spears)
+	(up-modify-goal temporary-goal s:+ sn-camels)
+
+;----------------------------------------------------------------
+	(set-goal check-goal militiaman-line)
+)
+(defrule
+	(goal check-goal militiaman-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count militiaman-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal militiaman-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-archers)
+	(up-modify-goal g-math-1 s:+ sn-gunpowder)
+	(up-modify-goal g-math-1 s:+ sn-cataphracts)
+	(up-modify-goal g-math-1 s:+ sn-cavalry-archers)
+	(up-modify-goal g-math-1 s:+ sn-scorpions)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-monks)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal militiaman-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit militiaman-line))
+
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-eagles)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-ranged)
+	(up-modify-goal g-math-1 s:+ sn-monksiege)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-light-cavalry)
+	(up-modify-goal temporary-goal s:+ sn-camels)
+
+;----------------------------------------------------------------
+	(set-goal check-goal eagle-warrior-line)
+)
+(defrule
+	(goal check-goal eagle-warrior-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count eagle-warrior-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal eagle-warrior-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-heavy-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-cataphracts)
+	(up-modify-goal g-math-1 s:+ sn-infantry)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-gunpowder)
+	(up-modify-goal g-math-4 s:+ sn-husks)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal eagle-warrior-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit eagle-warrior-line))
+
+;------------------CHAMPI
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-champi)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-archers)
+	(up-modify-goal g-math-1 s:+ sn-skirms)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-cavalry-archers)
+
+;----------------------------------------------------------------
+	(set-goal check-goal champi-line)
+)
+(defrule
+	(goal check-goal champi-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count champi-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal champi-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-heavy-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-cataphracts)
+	(up-modify-goal g-math-1 s:+ sn-infantry)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-gunpowder)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal champi-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit champi-line))
+
+
+#load-if-defined AZTEC-CIV
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-uu)
+=>
+	(set-goal temporary-goal 2);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-eagles)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-light-cavalry)
+	(up-modify-goal temporary-goal s:+ sn-skirms)
+;----------------------------------------------------------------
+	(set-goal check-goal my-unique-unit-line)
+)
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count my-unique-unit-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-scorpions)
+	(up-modify-goal g-math-1 s:+ sn-gunpowder)
+	(up-modify-goal g-math-1 s:+ sn-cataphracts)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-cavalry-archers)
+	(up-modify-goal g-math-4 s:+ sn-archers)
+	(up-modify-goal g-math-4 s:+ sn-heavy-cavalry)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal my-unique-unit-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit my-unique-unit-line))
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-uu)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-eagles)
+	(up-modify-goal g-math-1 s:+ sn-light-cavalry)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+
+	(up-modify-goal temporary-goal s:+ sn-heavy-cavalry)
+;----------------------------------------------------------------
+	(set-goal check-goal my-unique-unit-line)
+)
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count my-unique-unit-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-scorpions)
+	(up-modify-goal g-math-1 s:+ sn-ranged)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-cataphracts)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal my-unique-unit-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit my-unique-unit-line))
+#end-if
+
+
+#load-if-defined INCAN-CIV
+(defrule
+	(up-compare-flag f-infantry-allowed == fv-uu)
+=>
+	(set-goal temporary-goal 2);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-skirms)
+	(up-modify-goal g-math-1 s:+ sn-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-spears)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-eagles)
+	(up-modify-goal temporary-goal s:+ sn-husks)
+;----------------------------------------------------------------
+	(set-goal check-goal my-unique-unit-line)
+)
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count my-unique-unit-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-siege)
+	(up-modify-goal g-math-1 s:+ sn-gunpowder)
+	(up-modify-goal g-math-1 s:+ sn-cataphracts)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-infantry)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-melee-score)
+	(goal check-goal my-unique-unit-line)
+=>
+	(up-modify-goal g-melee-score g:= temporary-goal)
+	(set-goal my-best-melee-unit my-unique-unit-line))
+#end-if
+
+
+
+
+
+
+
+
+
+
+
+
+;---------------------------------------RANGED UNITS
+
+(defrule
+	(up-compare-flag f-archers-allowed == fv-archers)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-camels)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-monks)
+	(up-modify-goal temporary-goal s:+ sn-spears)
+
+;----------------------------------------------------------------
+	(set-goal check-goal archer-line)
+)
+(defrule
+	(goal check-goal archer-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count archer-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal archer-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-skirms)
+	(up-modify-goal g-math-1 s:+ sn-siege)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-eagles)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-ranged-score)
+	(goal check-goal archer-line)
+=>
+	(up-modify-goal g-ranged-score g:= temporary-goal)
+	(set-goal my-best-ranged-unit archer-line))
+
+
+
+
+
+;--------------------------------
+
+
+(defrule
+	(up-compare-flag f-archers-allowed == fv-handcannons)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-camels)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-spears)
+	(up-modify-goal temporary-goal s:+ sn-eagles)
+
+;----------------------------------------------------------------
+	(set-goal check-goal hand-cannoneer)
+)
+(defrule
+	(goal check-goal hand-cannoneer)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count hand-cannoneer g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal hand-cannoneer)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-siege)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-archers)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-ranged-score)
+	(goal check-goal hand-cannoneer)
+=>
+	(up-modify-goal g-ranged-score g:= temporary-goal)
+	(set-goal my-best-ranged-unit hand-cannoneer))
+
+
+;---------------------------SLINGER
+
+(defrule
+	(up-compare-flag f-archers-allowed == fv-slings)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-monksiege)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-spears)
+	(up-modify-goal temporary-goal s:+ sn-eagles)
+
+;----------------------------------------------------------------
+	(set-goal check-goal slinger)
+)
+(defrule
+	(goal check-goal slinger)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count slinger g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal slinger)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-cavalry)
+	(up-modify-goal g-math-1 s:+ sn-archers)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-cavalry-archers)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-ranged-score)
+	(goal check-goal slinger)
+=>
+	(up-modify-goal g-ranged-score g:= temporary-goal)
+	(set-goal my-best-ranged-unit slinger))
+
+
+
+
+
+;--------------------------------
+
+
+(defrule
+	(up-compare-flag f-archers-allowed == fv-skirms)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-ranged)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-spears)
+
+;----------------------------------------------------------------
+	(set-goal check-goal skirmisher-line)
+)
+(defrule
+	(goal check-goal skirmisher-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count skirmisher-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal skirmisher-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-siege)
+	(up-modify-goal g-math-1 s:+ sn-eagles)
+	(up-modify-goal g-math-1 s:+ sn-cavalry)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-infantry)
+	(up-modify-goal g-math-4 s:+ sn-camels)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-ranged-score)
+	(goal check-goal skirmisher-line)
+=>
+	(up-modify-goal g-ranged-score g:= temporary-goal)
+	(set-goal my-best-ranged-unit skirmisher-line))
+
+
+
+
+
+
+;--------------------------------
+
+
+(defrule
+	(up-compare-flag f-archers-allowed == fv-genitour)
+=>
+	(set-goal temporary-goal 1);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-ranged)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-spears)
+	(up-modify-goal temporary-goal s:+ sn-monks)
+	(up-modify-goal temporary-goal s:+ sn-infantry)
+
+;----------------------------------------------------------------
+	(set-goal check-goal genitour-line)
+)
+(defrule
+	(goal check-goal genitour-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count genitour-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal genitour-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-siege)
+	(up-modify-goal g-math-1 s:+ sn-eagles)
+	(up-modify-goal g-math-1 s:+ sn-camels)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-cavalry)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-ranged-score)
+	(goal check-goal genitour-line)
+=>
+	(up-modify-goal g-ranged-score g:= temporary-goal)
+	(set-goal my-best-ranged-unit genitour-line))
+
+
+
+
+;-------------------------------Elephant archer-----------------------
+(defrule
+	(up-compare-flag f-archers-allowed == fv-elephants)
+=>
+	(set-goal temporary-goal 3);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-cavalry-archers)
+	(up-modify-goal g-math-1 s:+ sn-archers)
+	(up-modify-goal g-math-1 s:+ sn-gunpowder)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-cavalry)
+;----------------------------------------------------------------
+	(set-goal check-goal elephant-archer-line)
+)
+(defrule
+	(goal check-goal elephant-archer-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count elephant-archer-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal elephant-archer-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-skirms)
+	(up-modify-goal g-math-1 s:+ sn-husks)
+	(up-modify-goal g-math-1 s:+ sn-eagles)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-scorpions)
+	(up-modify-goal g-math-4 s:+ sn-camels)
+	(up-modify-goal g-math-4 s:+ sn-spears)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-ranged-score)
+	(goal check-goal elephant-archer-line)
+=>
+	(up-modify-goal g-ranged-score g:= temporary-goal)
+	(set-goal my-best-ranged-unit elephant-archer-line))
+
+;--------------------------------
+
+
+
+#load-if-defined BERBERS-CIV
+(defrule
+	(up-compare-flag f-archers-allowed == fv-uu)
+=>
+	(set-goal temporary-goal 5);this value reduces weight of units strength in computation
+;--------------------------------------- positive + 2
+	(up-modify-goal g-math-1 s:= sn-infantry)
+	(up-modify-goal g-math-1 s:+ sn-cavalry-archers)
+	(up-modify-goal g-math-1 c:* 3)
+	(up-modify-goal temporary-goal g:+ g-math-1)
+;--------------------------------------- positive + 1
+	(up-modify-goal temporary-goal s:+ sn-cavalry)
+;----------------------------------------------------------------
+	(set-goal check-goal my-unique-unit-line)
+)
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+;--------------------------Diversity evaluation-------------
+	(up-get-fact unit-type-count my-unique-unit-line g-math-1) 
+	(up-modify-goal g-math-1 c:* 100)
+	(up-modify-goal g-math-1 g:/ g-math-2);g-math-2 == soldier-count
+	(set-goal g-math-4 100)
+	(up-modify-goal g-math-4 g:+ g-math-3);this value reduces weight of unit diversity in computation
+	(up-modify-goal g-math-4 g:- g-math-1)
+	(up-modify-goal temporary-goal g:* g-math-4)
+
+;---------------------------Cost evaluation----------------
+	(up-setup-cost-data 1 temp-food)
+	(up-add-object-cost g: check-goal c: 1)
+	(up-modify-goal g-math-1 g:= temp-food)
+	(up-modify-goal g-math-1 g:+ temp-wood)
+	(up-modify-goal g-math-1 g:+ temp-gold)
+	(up-add-object-cost g: check-goal c: 99)
+	(up-modify-goal temp-food g:* g-food-available)
+	(up-modify-goal temp-wood g:* g-wood-available)
+	(up-modify-goal temp-gold g:* g-gold-available)
+
+	(up-modify-goal g-math-1 g:* g-max-res-available)
+
+	(up-modify-goal temp-food g:+ temp-wood)
+	(up-modify-goal temp-food g:+ temp-gold)
+
+	(up-modify-goal temp-food c:+ rw);This value reduces weight of resources in computation
+	(up-modify-goal g-math-1 c:+ 1)
+
+	(up-modify-goal temp-food g:/ g-math-1)
+	(up-modify-goal temporary-goal g:* temp-food)
+)
+
+(defrule
+	(goal check-goal my-unique-unit-line)
+=>
+	(set-goal g-math-4 6);this value reduces weight of units weakness in computation
+;---------------------------------------------- negative - 2
+	(up-modify-goal g-math-1 s:= sn-skirms)
+	(up-modify-goal g-math-1 c:* 2)
+	(up-modify-goal g-math-4 g:+ g-math-1)
+;---------------------------------------------- negative - 1
+	(up-modify-goal g-math-4 s:+ sn-siege)
+	(up-modify-goal g-math-4 s:+ sn-camels)
+	(up-modify-goal temporary-goal g:/ g-math-4)
+)
+(defrule
+	(up-compare-goal temporary-goal g:> g-ranged-score)
+	(goal check-goal my-unique-unit-line)
+=>
+	(up-modify-goal g-ranged-score g:= temporary-goal)
+	(set-goal my-best-ranged-unit my-unique-unit-line))
+#end-if
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

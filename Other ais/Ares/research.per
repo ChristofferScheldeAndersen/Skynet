@@ -1,0 +1,777 @@
+;
+;--------------------------BLACKSMITH-------------------------------------------------
+
+(defrule
+	(unit-type-count trade-cart > 3)
+	(players-building-type-count any-ally market > 0)
+	(can-research ri-caravan)
+=>
+	(research ri-caravan)
+)
+(defrule
+	(unit-type-count fishing-ship > 6)
+	(up-research-status g: g-rushing-age >= research-pending)
+=>
+	(research ri-fishing-lines)
+	(research ri-gillnets)
+	(research ri-clinker-construction)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(can-research ri-double-bit-axe)
+=>
+	(research ri-double-bit-axe)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(building-type-count-total farm > 0)
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar)
+)
+
+(defrule
+	(unit-type-count villager >= 33)
+	(up-research-status c: ri-double-bit-axe != research-available)
+=>
+	(research ri-crop-rotation)
+	(research ri-heavy-plow)
+)
+
+(defrule
+	(unit-type-count villager >= 33)
+	(up-research-status c: ri-horse-collar != research-available)
+=>
+	(research ri-two-man-saw)
+	(research ri-bow-saw)
+)
+
+(defrule
+	(unit-type-count villager >= 25)
+	(strategic-number sn-gold-gatherer-percentage > 0)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining)
+)
+
+(defrule
+	(unit-type-count villager >= 38)
+	(strategic-number sn-gold-gatherer-percentage > 0)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-two-man-saw != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(up-research-status c: ri-heavy-plow != research-available)
+	(can-research ri-gold-shaft-mining)
+=>
+	(research ri-gold-shaft-mining)
+)
+
+(defrule
+	(unit-type-count villager >= 40)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-two-man-saw != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(up-research-status c: ri-heavy-plow != research-available)
+	(can-research ri-stone-shaft-mining)
+=>
+	(research ri-stone-shaft-mining)
+)
+
+(defrule
+	(unit-type-count villager >= 27)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-gold-mining != research-available)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(can-research ri-stone-mining)
+=>
+	(research ri-stone-mining)
+)
+
+
+(defrule
+	(unit-type-count trade-cart > 4)
+	(can-research ri-caravan)
+=>
+	(research ri-caravan)
+)
+
+(defrule
+	(unit-type-count villager >= 30)
+	(can-research ri-guilds)
+	(current-age-time > 100)
+=>
+	(research ri-guilds)
+)
+
+(defrule
+	(player-in-game any-ally)
+	(up-compare-goal g-research-status >= imperial-done)
+=>
+	(research ri-coinage)
+	(research ri-banking)
+)
+
+(defrule
+	(unit-type-count villager >= 34)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(can-research ri-wheel-barrow)
+=>
+	(research ri-wheel-barrow)
+)
+
+(defrule
+	(unit-type-count villager >= 60)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-two-man-saw != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(up-research-status c: ri-heavy-plow != research-available)
+	(can-research ri-hand-cart)
+=>
+	(research ri-hand-cart)
+)
+
+(defrule
+	(strategic-number sn-monks > 4)
+=>
+	(research ri-devotion)
+	(research ri-faith)
+	(research ri-heresy)
+)
+;------------------------------------------------------MILITARY TECHS---------------------------------------
+;barracks
+(defrule
+	(goal g-infantry-rush yes)
+	(strategic-number sn-cavalry > 3)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+=>
+	(research ri-pikeman)
+	(research ri-halberdier)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit eagle-warrior)
+	(or	(strategic-number sn-monksiege > 4)
+		(unit-type-count-total eagle-warrior-line > 0)))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+=>
+	(research ri-eagle-warrior)
+	(research ri-elite-eagle-warrior)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit militiaman)
+	(or	(strategic-number sn-spears > 4)
+	(or	(unit-type-count militiaman-line > 3)
+		(up-compare-goal g-research-status >= imperial-done))))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(nand	(unit-available jaguar-man-line)
+		(building-type-count castle > 0))
+=>
+	(research ri-man-at-arms)
+	(research ri-long-swordsman)
+	(research ri-two-handed-swordsman)
+	(research ri-champion)
+	(research ri-gambesons)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit champi-line)
+	(or	(strategic-number sn-ranged > 4)
+	(or	(unit-type-count champi-line > 1)
+		(up-compare-goal g-research-status >= imperial-done))))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+=>
+	(research ri-champi-warrior)
+	(research ri-champi-runner)
+	(research ri-elite-champi-warrior)
+	(research ri-gambesons)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(research-completed ri-scale-mail)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(up-compare-goal g-research-status >= rush-done)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-forging != research-available)
+	(up-research-status c: ri-iron-casting != research-available)
+	(up-research-status c: ri-chain-mail != research-available)
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(research-completed ri-scale-mail)
+	(unit-type-count villager g:>= g-dark-vills)
+	(up-compare-goal g-research-status >= rush-done)
+	(up-compare-goal g-attack >= tsa)
+	(or	(players-building-type-count target-player watch-tower > 0)
+	(or	(players-building-type-count target-player palisade-wall > 0)
+		(players-building-type-count target-player stone-wall-line > 0)))
+	(can-research ri-arson)
+=>
+	(research ri-arson))
+
+(defrule
+	(goal g-infantry-rush yes)
+	(research-completed ri-scale-mail)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(up-compare-goal g-research-status >= rush-done)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-forging != research-available)
+	(up-research-status c: ri-iron-casting != research-available)
+	(up-research-status c: ri-chain-mail != research-available)
+	(up-research-status c: ri-squires != research-available)
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+;archery
+(defrule
+	(goal g-archer-rush yes)
+	(or	(strategic-number sn-ranged > 5)
+	(or	(up-compare-goal g-research-status >= imperial-done)
+		(unit-type-count genitour-line > 4)))
+	(unit-type-count villager >= 50)
+	(can-research ri-elite-genitour)
+=>
+	(research ri-elite-genitour)
+)
+(defrule
+	(goal g-archer-rush yes)
+	(unit-type-count villager g:>= g-dark-vills)
+	(nand	(unit-available genitour-line)
+		(unit-type-count skirmisher-line < 10))
+	(or	(building-type-count-total town-center > 1)
+	(or	(stone-amount < 100)
+		(unit-type-count skirmisher-line > 8)))
+	(or	(strategic-number sn-ranged > 5)
+		(up-compare-goal g-research-status >= castle-done))
+=>
+	(research ri-elite-skirmisher)
+	(research ri-imperial-skirmisher)
+)
+
+(defrule
+	(goal g-archer-rush yes)
+	(unit-type-count villager >= 55)
+	(unit-type-count elephant-archer-line > 1)
+	(can-research ri-elite-elephant-archer)
+=>
+	(research ri-elite-elephant-archer)
+)
+
+(defrule
+	(goal g-archer-rush yes)
+	(unit-type-count villager >= 55)
+	(up-research-status c: ri-fletching != research-available)
+	(up-research-status c: ri-bodkin-arrow != research-available)
+	(research-completed ri-bloodlines)
+	(unit-type-count cavalry-archer-line > 1)
+	(can-research ri-heavy-cavalry-archer)
+=>
+	(research ri-heavy-cavalry-archer)
+)
+(defrule
+	(goal g-archer-rush yes)
+	(unit-type-count villager >= 25)
+	(or	(unit-type-count archer-line > 1)
+		(can-research ri-crossbow))
+	(nand	(unit-available camel-archer-line)
+		(building-type-count-total castle > 0))
+=>
+	(research ri-arbalest)
+	(research ri-crossbow)
+)
+(defrule
+	(goal g-archer-rush yes)
+	(unit-type-count villager >= 30)
+	(up-research-status c: ri-fletching != research-available)
+	(up-research-status c: ri-bodkin-arrow != research-available)
+	(can-research ri-thumb-ring)
+=>
+	(research ri-thumb-ring)
+)
+(defrule
+	(goal g-archer-rush yes)
+	(unit-type-count villager >= 55)
+	(up-research-status c: ri-fletching != research-available)
+	(up-research-status c: ri-bodkin-arrow != research-available)
+	(up-research-status c: ri-bracer != research-available)
+	(research-completed ri-bloodlines)
+	(or	(research-completed ri-heavy-cavalry-archer)
+		(unit-type-count cavalry-archer-class > 2))
+	(can-research ri-parthian-tactics)
+=>
+	(research ri-parthian-tactics)
+)
+;stable
+(defrule
+	(goal g-cavalry-rush yes)
+	(or	(unit-type-count scout-cavalry-line > 3)
+		(up-compare-goal g-research-status >= castle-done))
+	(unit-type-count villager >= 30)
+	(can-research ri-light-cavalry)
+=>
+	(research ri-light-cavalry)
+)
+(defrule
+	(goal g-cavalry-rush yes)
+	(or	(unit-type-count scout-cavalry-line > 3)
+		(up-compare-goal g-research-status >= imperial-done))
+	(unit-type-count villager >= 60)
+	(can-research ri-hussar)
+=>
+	(research ri-hussar)
+)
+(defrule
+	(goal g-cavalry-rush yes)
+	(strategic-number sn-cavalry > 2)
+	(or	(unit-type-count camel-line > 3)
+		(up-compare-goal g-research-status >= imperial-done))
+	(unit-type-count villager >= 60)
+	(can-research ri-heavy-camel)
+=>
+	(research ri-heavy-camel)
+)
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-type-count knight-line > 3)
+	(unit-type-count villager >= 60)
+=>
+	(research ri-cavalier)
+	(research ri-paladin)
+)
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-type-count battle-elephant-line > 3)
+	(unit-type-count villager >= 60)
+	(can-research ri-elite-battle-elephant)
+=>
+	(research ri-elite-battle-elephant)
+)
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-scale-barding != research-available)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(goal g-cavalry-rush yes)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(up-research-status c: ri-bloodlines != research-available)
+	(up-research-status c: ri-chain-barding != research-available)
+	(up-research-status c: ri-scale-barding != research-available)
+	(up-research-status c: ri-forging != research-available)
+	(up-research-status c: ri-iron-casting != research-available)
+	(unit-type-count villager g:>= g-dark-vills)
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry)
+)
+;-----------------------------------------------------BLACKSMITH-------------------------------------------
+(defrule
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(goal g-archer-rush yes)
+=>
+	(research ri-fletching)
+	(research ri-bodkin-arrow)
+	(research ri-bracer)
+	(research ri-chemistry)
+	(research ri-ballistics)
+)
+(defrule
+	(goal g-infantry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills-2)
+=>
+	(research ri-scale-mail)
+	(research ri-chain-mail)
+	(research ri-plate-mail)
+)
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills-2)
+=>
+	(research ri-scale-barding)
+	(research ri-chain-barding)
+	(research ri-plate-barding)
+)
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills)
+	(or	(up-research-status c: ri-scale-barding != research-available)
+		(goal g-infantry-rush yes))
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills)
+	(or	(and	(up-research-status c: ri-scale-barding != research-available)
+			(up-research-status c: ri-chain-barding != research-available))
+		(goal g-infantry-rush yes))
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills)
+	(or	(and	(up-research-status c: ri-scale-barding != research-available)
+		(and	(up-research-status c: ri-chain-barding != research-available)
+			(up-research-status c: ri-plate-barding != research-available)))
+		(goal g-infantry-rush yes))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+
+
+#load-if-defined AZTEC-CIV
+(defrule
+	(can-research my-unique-research)
+	(goal g-infantry-rush yes)
+	(unit-type-count villager > 30)
+=>
+	(research my-unique-research)
+)
+(defrule
+;	(unit-type-count skirmisher > 2);commented out for genitours
+	(goal g-archer-rush yes)
+	(unit-type-count villager > 30)
+	(can-research my-second-unique-research)
+=>
+	(research my-second-unique-research))
+	
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+(defrule
+	(can-research my-unique-research)
+	(unit-type-count villager > 30)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(unit-type-count elephant-archer-line > 2)
+	(goal g-archer-rush yes)
+	(unit-type-count villager > 30)
+=>
+	(research ri-husbandry)
+	(research my-second-unique-research))
+
+	
+#end-if
+
+#load-if-defined INCAN-CIV
+(defrule
+	(can-research my-unique-research)
+	(unit-type-count villager > 30)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(unit-type-count villager > 30)
+	(can-research my-second-unique-research)
+=>
+	(research my-second-unique-research))
+	
+#end-if
+(defrule
+	(goal g-infantry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills)
+	(or	(up-research-status c: ri-scale-mail != research-available)
+		(goal g-cavalry-rush yes))
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills)
+	(or	(and	(up-research-status c: ri-scale-mail != research-available)
+			(up-research-status c: ri-chain-mail != research-available))
+		(goal g-cavalry-rush yes))
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+
+(defrule
+	(goal g-infantry-rush yes)
+	(unit-type-count villager g:>= g-dark-vills)
+	(or	(and	(up-research-status c: ri-scale-mail != research-available)
+		(and	(up-research-status c: ri-chain-mail != research-available)
+			(up-research-status c: ri-plate-mail != research-available)))
+		(goal g-cavalry-rush yes))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+
+(defrule
+	(unit-type-count villager g:>= g-dark-vills)
+	(goal g-archer-rush yes)
+	(up-research-status c: ri-fletching != research-available)
+	(up-research-status c: ri-bodkin-arrow != research-available)
+=>
+	(research ri-padded-archer-armor)
+	(research ri-leather-archer-armor)
+)
+
+(defrule
+	(unit-type-count villager g:>= g-dark-vills)
+	(goal g-archer-rush yes)
+	(up-research-status c: ri-chemistry != research-available)
+	(up-research-status c: ri-bracer != research-available)
+	(up-research-status c: ri-fletching != research-available)
+	(up-research-status c: ri-bodkin-arrow != research-available)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+
+;--------------------------University---------------------------------------------------------------
+
+
+(defrule
+	(not	(research-available ri-ballistics))
+	(unit-type-count villager >= 40)
+	(current-age-time > 180)
+	(can-research ri-stonecutting)
+=>
+	(research ri-stonecutting)
+)
+(defrule
+	(not	(research-available ri-ballistics))
+	(unit-type-count villager >= 40)
+	(building-type-count castle > 0)
+	(can-research ri-murder-holes)
+=>
+	(research ri-murder-holes)
+)
+
+(defrule
+	(not	(research-available ri-ballistics))
+	(unit-type-count villager >= 80)
+	(current-age-time > 180)
+=>
+	(research ri-siege-engineers)
+	(research ri-masonry)
+	(research ri-architecture)
+)
+
+
+
+;=============================================================================
+(defrule
+	(or	(goal g-monk-rush yes)
+		(unit-type-count monk > 4))
+	(unit-type-count monk > 1)
+	(can-research ri-sanctity)
+=>
+	(research ri-sanctity)
+)
+(defrule
+	(or	(goal g-monk-rush yes)
+		(unit-type-count monk > 3))
+	(unit-type-count monk > 1)
+	(can-research ri-illumination)
+=>
+	(research ri-illumination)
+)
+(defrule
+	(or	(goal g-monk-rush yes)
+		(unit-type-count monk > 4))
+	(unit-type-count monk > 1)
+	(can-research ri-block-printing)
+=>
+	(research ri-block-printing)
+)
+(defrule
+	(or	(goal g-monk-rush yes)
+		(unit-type-count monk > 6))
+	(unit-type-count monk > 3)
+	(can-research ri-theocracy)
+=>
+	(research ri-theocracy)
+)
+(defrule
+	(or	(goal g-monk-rush yes)
+		(unit-type-count monk > 5))
+	(unit-type-count monk > 2)
+	(up-research-status c: ri-sanctity != research-available)
+	(can-research ri-fervor)
+=>
+	(research ri-fervor)
+)
+(defrule
+	(unit-type-count monk > 5)
+	(can-research ri-herbal-medicine)
+=>
+	(research ri-herbal-medicine)
+)
+(defrule
+	(or	(goal g-monk-rush yes)
+		(strategic-number sn-monks > 2))
+	(unit-type-count monk > 3)
+	(can-research ri-atonement)
+=>
+	(research ri-atonement)
+)
+
+(defrule
+	(or	(goal g-monk-rush yes)
+		(unit-type-count monk > 4))
+	(unit-type-count monk > 2)
+	(can-research ri-redemption)
+=>
+	(research ri-redemption)
+)
+#load-if-not-defined DRAVIDIANS-CIV
+(defrule
+	(unit-type-count villager >= 30)
+	(unit-type-count-total my-unique-unit-line > 0)
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+#end-if
+(defrule
+	(unit-type-count villager >= 30)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+
+(defrule
+	(unit-type-count villager >= 30)
+	(can-research my-second-unique-research)
+=>
+	(research my-second-unique-research)
+)
+
+(defrule
+	(unit-type-count villager >= 35)
+	(current-age-time > 30)
+	(can-research ri-hoardings)
+=>
+	(research ri-hoardings)
+)
+
+(defrule
+	(unit-type-count villager > 30)
+	(or	(unit-type-count battering-ram-line > 3)
+		(population > 190))
+=>
+	(research ri-capped-ram)
+	(research ri-siege-ram)
+)
+
+(defrule
+	(unit-type-count villager > 34)
+	(or	(unit-type-count armored-elephant-line > 3)
+		(population > 190))
+	(can-research ri-siege-elephant)
+=>
+	(research ri-siege-elephant)
+)
+
+(defrule
+	(unit-type-count villager > 30)
+	(unit-type-count mangonel-line > 3)
+=>
+	(research ri-onager)
+	(research ri-siege-onager)
+)
+
+(defrule
+	(unit-type-count villager > 30)
+	(unit-type-count ri-heavy-scorpion > 3)
+	(can-research ri-heavy-scorpion)
+=>
+	(research ri-heavy-scorpion)
+)
+
+
+(defrule
+	(unit-type-count villager >= 35)
+	(current-age-time > 60)
+	(can-research ri-conscription)
+=>
+	(research ri-conscription)
+)
+
+
+(defrule
+	(unit-type-count-total villager g:>= g-dark-vills)
+=>
+	(research feudal-age)
+	(research castle-age)
+	(research imperial-age)
+)
+
+(defrule
+	(population > 5)
+	(or	(and	(food-amount < 50)
+			(up-pending-objects c: villager == 0))
+		(unit-type-count villager g:>= g-dark-vills))
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+
+(defrule
+	(player-in-game any-ally)
+	(unit-type-count villager > 80)
+	(up-compare-goal g-research-status >= research-complete)
+=>
+	(research ri-coinage)
+	(research ri-banking)
+)
+
+(defrule
+	(unit-type-count villager >= 66)
+	(up-research-status c: imperial-age >= research-pending)
+	(up-research-status c: ri-wheel-barrow != research-available)
+	(up-research-status c: ri-hand-cart != research-available)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-two-man-saw != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(up-research-status c: ri-heavy-plow != research-available)
+=>
+	(research ri-town-watch)
+	(research ri-town-patrol)
+)

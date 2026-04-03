@@ -1,0 +1,4610 @@
+(defconst gl-centre-x 67)
+(defconst gl-centre-y 68)
+(defconst gl-watch-x 69)
+(defconst gl-watch-y 70)
+(defconst gl-blocked-x 71)
+(defconst gl-blocked-y 72)
+(defconst gl-measured-distance 73)
+(defconst gl-blocked2-x 74)
+(defconst gl-blocked2-y 75)
+(defconst gl-map-size-x 76)
+(defconst gl-map-size-y 77)
+(defconst gl-tile-shuffle 78)
+
+(defconst gl-map-x 83)
+(defconst gl-map-y 84)
+
+(defconst gl-tc-to-centre-distance 295)
+
+(defconst gl-scout-point-x 337)
+(defconst gl-scout-point-y 338)
+(defconst gl-scout-point-x2 339)
+(defconst gl-scout-point-y2 340)
+(defconst gl-scout-point-x3 341)
+(defconst gl-scout-point-y3 342)
+(defconst gl-scout-point-x4 343)
+(defconst gl-scout-point-y4 344)
+(defconst gl-scout-location-x 345)
+(defconst gl-scout-location-y 346)
+(defconst gl-distance 347)
+(defconst gl-scout-point-x5 348)
+(defconst gl-scout-point-y5 349)
+(defconst gl-swing 350)
+(defconst gl-center-x 351)
+(defconst gl-center-y 352)
+;(defconst gl-self-x 116)
+;(defconst gl-self-y 117)
+(defconst gl-scout-path-x 353)
+(defconst gl-scout-path-y 354)
+(defconst gl-mini-swing 355)
+
+(defconst gl-wall-x 356)
+(defconst gl-wall-y 357)
+(defconst gl-wall2-x 358)
+(defconst gl-wall2-y 359)
+
+(defconst gl-wood-x 360)
+(defconst gl-wood-y 361)
+
+(defconst gl-gold-x 362)
+(defconst gl-gold-y 363)
+
+(defconst gl-food-x 364)
+(defconst gl-food-y 365)
+
+(defconst gl-stone-x 366)
+(defconst gl-stone-y 367)
+
+(defconst tree-count 372)
+(defconst pivot-count 373)
+(defconst pivot-count2 374)
+(defconst pivot-count3 375)
+(defconst pivot-count4 376)
+
+(defconst house-wall-count 377)
+(defconst house-wall-extension 378)
+(defconst house-wall-fence-x 379)
+(defconst house-wall-fence-y 380)
+
+(defconst house-wall-corner-x 381)
+(defconst house-wall-corner-y 382)
+(defconst house-wall-corner2-x 383)
+(defconst house-wall-corner2-y 384)
+(defconst house-wall-corner3-x 385)
+(defconst house-wall-corner3-y 386)
+(defconst house-wall-corner4-x 387)
+(defconst house-wall-corner4-y 388)
+
+(defconst house-wall-count2 389)
+
+(defconst gl-mining-core-x 398)
+(defconst gl-mining-core-y 399)
+
+(defconst gl-opposite-x 503)
+(defconst gl-opposite-y 504)
+
+(defconst gl-attempted-wood-distance 507)
+
+(defconst gl-random-number 81)
+
+(defconst short-scout-timer 40)
+(defconst long-scout-timer 41)
+
+(defconst town-wall-length 16)
+(defconst neg-town-wall-length -16)
+(defconst town-wall-width 25)
+(defconst neg-town-wall-width -25)
+(defconst town-wall-length-expand 22)
+
+(defconst search-enemy-base 99)
+(defconst gl-enemy-base-x 320)
+(defconst gl-enemy-base-y 321)
+
+(defconst preferred-wall stone-wall-line)
+
+#load-if-defined TINY-MAP
+
+(defconst short-scout-time 4)
+(defconst long-scout-time 80)
+(defconst distance-increase 10);12
+(defconst max-scout-time 1080)
+
+#end-if
+
+#load-if-defined SMALL-MAP
+
+(defconst short-scout-time 4)
+(defconst long-scout-time 96)
+(defconst distance-increase 12);15
+(defconst max-scout-time 1296)
+
+#end-if
+
+#load-if-defined MEDIUM-MAP
+
+(defconst short-scout-time 4)
+(defconst long-scout-time 112)
+(defconst distance-increase 14);18
+(defconst max-scout-time 1592)
+
+#end-if
+
+#load-if-defined NORMAL-MAP
+
+(defconst short-scout-time 4)
+(defconst long-scout-time 134)
+(defconst distance-increase 17);21
+(defconst max-scout-time 2189)
+
+#end-if
+
+#load-if-defined LARGE-MAP
+
+(defconst short-scout-time 4)
+(defconst long-scout-time 147)
+(defconst distance-increase 19);24
+(defconst max-scout-time 2401)
+
+#end-if
+
+#load-if-defined GIANT-MAP
+
+(defconst short-scout-time 4)
+(defconst long-scout-time 160)
+(defconst distance-increase 22);27
+(defconst max-scout-time 2613)
+
+#end-if
+
+#load-if-defined LUDIKRIS-MAP
+
+(defconst short-scout-time 4)
+(defconst long-scout-time 320)
+(defconst distance-increase 48);60
+(defconst max-scout-time 5226)
+
+#end-if
+
+#load-if-defined HIDEOUT-MAP
+
+(defconst base-patrol-range1 10)
+(defconst base-patrol-range2 -6)
+(defconst base-scout-spot-distance 1)
+
+#else
+
+(defconst base-patrol-range1 14)
+(defconst base-patrol-range2 -12)
+(defconst base-scout-spot-distance 3)
+
+#end-if
+
+(defrule
+(true)
+=>
+(set-goal scout-goal 1)
+(set-goal active-scout-goal 0)
+;(up-get-point-distance position-self position-center gl-distance)
+(up-get-point position-center gl-center-x)
+(up-get-point position-self gl-self-x)
+(up-modify-goal gl-swing g:= gl-center-x)
+(up-modify-goal gl-mini-swing c:= 4)
+(up-modify-goal gl-distance c:= 20)
+(up-modify-goal gl-distance c:* -1)
+(up-modify-goal tree-count c:= 1)
+(up-modify-goal pivot-count c:= 1)
+(up-modify-goal pivot-count2 c:= 1)
+(up-modify-goal pivot-count3 c:= 1)
+(up-modify-goal pivot-count4 c:= 1)
+(set-goal house-wall-count 5)
+(up-get-point position-center gl-centre-x)
+(up-get-point position-map-size gl-map-size-x)
+(disable-self)
+)
+
+(defrule
+(goal scout-goal 0)
+(building-type-count town-center > 0)
+=>
+(set-goal scout-goal 1)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-first-tc-timestamp c:= 600)
+(disable-self)
+)
+
+(defrule
+(building-type-count town-center > 0)
+=>
+(up-get-fact 0 0 gl-first-tc-timestamp)
+(disable-self)
+)
+
+#load-if-defined ARENA-MAP
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-swing c:/ 2)
+(up-modify-goal gl-distance c:= 30)
+(disable-self)
+)
+
+(defrule
+(unit-type-count villager >= 13);18 15
+(not(goal scout-goal 10))
+=>
+(set-goal scout-goal 10)
+(set-goal active-scout-goal 10)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-blocked-x)
+(up-lerp-tiles gl-blocked-x gl-centre-x c: -20)
+(up-set-target-point gl-blocked-x)
+;(up-send-flare gl-blocked-x)
+(up-filter-distance c: -1 c: 15)
+;(up-find-local c: gate-class c: 200)
+(up-find-local c: stone-wall c: 200)
+;(chat-local-to-self "deleting walls")
+(up-target-objects 1 action-delete -1 -1)
+(disable-self)
+)
+
+(defrule
+(true)
+;(game-time > 120)
+=>
+(up-jump-rule 1)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 6)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 200)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-blocked-x)
+(up-cross-tiles gl-blocked-x gl-centre-x c: 20)
+(up-get-point-distance gl-blocked-x gl-centre-x gl-tc-to-centre-distance)
+(up-get-point position-object gl-blocked2-x)
+(up-cross-tiles gl-blocked2-x gl-centre-x c: -20)
+(up-get-point-distance gl-blocked2-x gl-centre-x gl-measured-distance)
+(up-modify-goal gl-tc-to-centre-distance g:max gl-measured-distance)
+;(up-modify-goal gl-tc-to-centre-distance g:* gl-tc-to-centre-distance)
+;(up-modify-goal gl-tc-to-centre-distance c:+ 400)
+;(up-modify-goal gl-tc-to-centre-distance *square-root*)
+;(up-modify-goal gl-tc-to-centre-distance c:+ 5)
+;(up-find-local c: gate-class c: 200)
+(up-find-local c: 487 c: 200)
+(up-find-local c: 78 c: 200)
+(up-find-local c: 64 c: 200)
+(up-set-target-point gl-centre-x)
+(up-remove-objects search-local 44 g:<= gl-tc-to-centre-distance)
+;(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-modify-goal gl-tile-shuffle c:= 1)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-get-point position-object gl-blocked-x)
+(up-set-target-point gl-blocked-x)
+;(up-cross-tiles gl-blocked-x gl-self-x g: gl-tile-shuffle)
+(up-modify-goal gl-blocked-x g:+ gl-tile-shuffle)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(not(up-point-contains gl-blocked-x c: 915))
+(up-compare-goal gl-blocked-x >= 0)
+(up-compare-goal gl-blocked-y >= 0)
+(up-compare-goal gl-blocked-x g:<= gl-map-size-x)
+(up-compare-goal gl-blocked-y g:<= gl-map-size-y)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-tile-shuffle c:< 17)
+=>
+(up-modify-goal gl-tile-shuffle c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(or(up-point-contains gl-blocked-x c: 915)
+(or(up-compare-goal gl-blocked-x < 0)
+(or(up-compare-goal gl-blocked-y < 0)
+(or(up-compare-goal gl-blocked-x g:> gl-map-size-x)
+(up-compare-goal gl-blocked-y g:> gl-map-size-y)))))
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-reset-filters)
+(up-modify-goal gl-tile-shuffle c:+ 1)
+(up-filter-distance c: -1 g: gl-tile-shuffle)
+(up-find-local c: wall-class c: 200)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-current-list-number g:>= gl-rule-loops)
+=>
+(up-target-objects 1 action-delete -1 -1)
+)
+
+(defrule
+(true)
+;(game-time > 120)
+=>
+(up-jump-rule 1)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 6)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 200)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-blocked-x)
+(up-cross-tiles gl-blocked-x gl-centre-x c: 20)
+(up-get-point-distance gl-blocked-x gl-centre-x gl-tc-to-centre-distance)
+(up-get-point position-object gl-blocked2-x)
+(up-cross-tiles gl-blocked2-x gl-centre-x c: -20)
+(up-get-point-distance gl-blocked2-x gl-centre-x gl-measured-distance)
+(up-modify-goal gl-tc-to-centre-distance g:max gl-measured-distance)
+;(up-modify-goal gl-tc-to-centre-distance g:* gl-tc-to-centre-distance)
+;(up-modify-goal gl-tc-to-centre-distance c:+ 400)
+;(up-modify-goal gl-tc-to-centre-distance *square-root*)
+;(up-modify-goal gl-tc-to-centre-distance c:+ 5)
+;(up-find-local c: gate-class c: 200)
+(up-find-local c: 490 c: 200)
+(up-find-local c: 88 c: 200)
+(up-find-local c: 91 c: 200)
+(up-set-target-point gl-centre-x)
+(up-remove-objects search-local 44 g:<= gl-tc-to-centre-distance)
+;(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-modify-goal gl-tile-shuffle c:= 1)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-get-point position-object gl-blocked-x)
+(up-set-target-point gl-blocked-x)
+;(up-cross-tiles gl-blocked-x gl-self-x g: gl-tile-shuffle)
+(up-modify-goal gl-blocked-y g:+ gl-tile-shuffle)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(not(up-point-contains gl-blocked-x c: 915))
+(up-compare-goal gl-blocked-x >= 0)
+(up-compare-goal gl-blocked-y >= 0)
+(up-compare-goal gl-blocked-x g:<= gl-map-size-x)
+(up-compare-goal gl-blocked-y g:<= gl-map-size-y)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-tile-shuffle c:< 17)
+=>
+(up-modify-goal gl-tile-shuffle c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(or(up-point-contains gl-blocked-x c: 915)
+(or(up-compare-goal gl-blocked-x >= 0)
+(or(up-compare-goal gl-blocked-y >= 0)
+(or(up-compare-goal gl-blocked-x g:<= gl-map-size-x)
+(up-compare-goal gl-blocked-y g:<= gl-map-size-y)))))
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-reset-filters)
+(up-modify-goal gl-tile-shuffle c:+ 1)
+(up-filter-distance c: -1 g: gl-tile-shuffle)
+(up-find-local c: wall-class c: 200)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-current-list-number g:>= gl-rule-loops)
+=>
+(up-target-objects 1 action-delete -1 -1)
+)
+
+(defrule
+(game-time > 460)
+(true)
+(false)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-find-local c: gate-class c: 200)
+(up-remove-objects search-local 29 == 1)
+(up-target-point 0 action-lock -1 -1)
+)
+
+(defrule
+(false)
+(true)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-centre-x)
+(up-find-local c: wall-class c: 200)
+(up-clean-search search-local 44 2)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-local g: gl-current-list-number)
+=>
+(up-get-point position-object gl-watch-x)
+(up-lerp-tiles gl-watch-x gl-self-x c: -1)
+)
+
+(defrule
+(false)
+(up-point-contains gl-watch-x c: 915)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-get-point position-object gl-watch-x)
+(up-lerp-tiles gl-watch-x gl-self-x c: -1)
+(up-cross-tiles gl-watch-x gl-self-x c: -1)
+)
+
+(defrule
+(false)
+(up-point-contains gl-watch-x c: 915)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-get-point position-object gl-watch-x)
+(up-lerp-tiles gl-watch-x gl-self-x c: -1)
+(up-cross-tiles gl-watch-x gl-self-x c: 1)
+)
+
+(defrule
+(false)
+(up-point-contains gl-watch-x c: 915)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(up-target-objects 1 action-delete -1 -1)
+;(up-jump-rule -6)
+)
+
+(defrule
+(false)
+(not(up-point-contains gl-watch-x c: 915))
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -5)
+)
+
+(defrule
+(false)
+(game-time > 460)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-object search-remote c: 0)
+(chat-local-to-self "setting watch-x")
+(up-get-path-distance gl-watch-x 1 gl-measured-distance)
+(up-chat-data-to-self "measured-distance: %d" g: gl-measured-distance)
+(up-chat-data-to-self "loops: %d" g: gl-rule-loops)
+(up-chat-data-to-self "current loop: %d" g: gl-current-list-number)
+)
+
+(defrule
+(false)
+(game-time > 460)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-path-distance gl-watch-x 0 != -1)
+(up-path-distance gl-watch-x 1 == 65535)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(chat-local-to-self "skipping wall")
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(game-time > 460)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-path-distance gl-watch-x 0 == -1)
+(up-path-distance gl-watch-x 1 != 65535)
+=>
+(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(chat-local-to-self "deleting pointless wall")
+(up-target-objects 1 action-delete -1 -1)
+(up-modify-goal gl-current-list-number c:+ 1)
+;(up-jump-rule -4)
+)
+
+(defrule
+;(true)
+(false)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-find-local c: gate-class c: 200)
+(up-find-local c: stone-wall c: 200)
+(up-target-point 0 action-lock -1 -1)
+)
+
+#end-if
+
+(defrule
+(building-type-count town-center > 0)
+=>
+(up-get-point position-self gl-mining-core-x)
+(up-get-point position-center gl-opposite-x)
+(up-lerp-tiles gl-mining-core-x gl-opposite-x c: -20)
+(up-bound-point gl-mining-core-x gl-mining-core-x)
+;(up-send-flare gl-mining-core-x)
+)
+
+(defrule
+(building-type-count town-center > 0)
+(map-type land-nomad)
+=>
+(up-get-point position-self gl-mining-core-x)
+;(up-get-point position-center gl-opposite-x)
+;(up-lerp-tiles gl-mining-core-x gl-opposite-x c: -20)
+;(up-bound-point gl-mining-core-x gl-mining-core-x)
+;(up-send-flare gl-mining-core-x)
+)
+
+(defrule
+(building-type-count town-center < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: -1 c: 240)
+(generate-random-number 8)
+(up-get-fact random-number 0 gl-random-number)
+)
+
+(defrule
+(building-type-count town-center < 1)
+(up-set-target-object search-local g: gl-random-number)
+=>
+(up-get-point position-object gl-mining-core-x)
+;(up-get-point position-center gl-opposite-x)
+;(up-lerp-tiles gl-mining-core-x gl-opposite-x c: -20)
+;(up-bound-point gl-mining-core-x gl-mining-core-x)
+;(up-send-flare gl-mining-core-x)
+)
+
+(defrule
+(building-type-count-total town-center > 0)
+=>
+(up-get-point position-self gl-self-x)
+(up-get-point position-self gl-home-x)
+)
+
+(defrule
+(building-type-count town-center > 0)
+=>
+(up-get-point position-self gl-wall-x)
+(up-copy-point house-wall-corner-x gl-wall-x)
+(up-copy-point house-wall-corner2-x gl-wall-x)
+(up-copy-point house-wall-corner3-x gl-wall-x)
+(up-copy-point house-wall-corner4-x gl-wall-x)
+(up-modify-goal house-wall-corner-x c:+ town-wall-length)
+(up-modify-goal house-wall-corner2-y c:+ town-wall-length)
+(up-modify-goal house-wall-corner3-x c:- town-wall-length)
+(up-modify-goal house-wall-corner4-y c:- town-wall-length)
+(up-bound-point house-wall-corner-x house-wall-corner-x)
+(up-bound-point house-wall-corner2-x house-wall-corner2-x)
+(up-bound-point house-wall-corner3-x house-wall-corner3-x)
+(up-bound-point house-wall-corner4-x house-wall-corner4-x)
+(disable-self)
+)
+
+(defrule
+(building-type-count wonder > 0)
+=>
+(up-full-reset-search)
+(up-find-local c: wonder c: 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-wall-x)
+(up-copy-point house-wall-corner-x gl-wall-x)
+(up-copy-point house-wall-corner2-x gl-wall-x)
+(up-copy-point house-wall-corner3-x gl-wall-x)
+(up-copy-point house-wall-corner4-x gl-wall-x)
+(up-modify-goal house-wall-corner-x c:+ 40)
+(up-modify-goal house-wall-corner2-y c:+ 40)
+(up-modify-goal house-wall-corner3-x c:- 40)
+(up-modify-goal house-wall-corner4-y c:- 40)
+(up-bound-point house-wall-corner-x house-wall-corner-x)
+(up-bound-point house-wall-corner2-x house-wall-corner2-x)
+(up-bound-point house-wall-corner3-x house-wall-corner3-x)
+(up-bound-point house-wall-corner4-x house-wall-corner4-x)
+;(disable-self)
+)
+
+(defrule
+(goal turtle-mode on)
+=>
+(up-build-line house-wall-corner-x house-wall-corner-x c: 490)
+(up-build-line house-wall-corner3-x house-wall-corner3-x c: 490)
+(up-build-line house-wall-corner2-x house-wall-corner2-x c: 487)
+(up-build-line house-wall-corner4-x house-wall-corner4-x c: 487)
+(up-build-line house-wall-corner-x house-wall-corner2-x c: stone-wall)
+(up-build-line house-wall-corner2-x house-wall-corner3-x c: stone-wall)
+(up-build-line house-wall-corner3-x house-wall-corner4-x c: stone-wall)
+(up-build-line house-wall-corner4-x house-wall-corner-x c: stone-wall)
+)
+
+(defrule
+(building-type-count wonder > 0)
+(not(civ-selected gothic))
+=>
+(up-build-line house-wall-corner-x house-wall-corner-x c: 490)
+(up-build-line house-wall-corner3-x house-wall-corner3-x c: 490)
+(up-build-line house-wall-corner2-x house-wall-corner2-x c: 487)
+(up-build-line house-wall-corner4-x house-wall-corner4-x c: 487)
+(up-build-line house-wall-corner-x house-wall-corner2-x c: stone-wall)
+(up-build-line house-wall-corner2-x house-wall-corner3-x c: stone-wall)
+(up-build-line house-wall-corner3-x house-wall-corner4-x c: stone-wall)
+(up-build-line house-wall-corner4-x house-wall-corner-x c: stone-wall)
+)
+
+(defrule
+(building-type-count wonder > 0)
+(civ-selected gothic)
+=>
+(up-build-line house-wall-corner-x house-wall-corner-x c: 490)
+(up-build-line house-wall-corner3-x house-wall-corner3-x c: 490)
+(up-build-line house-wall-corner2-x house-wall-corner2-x c: 487)
+(up-build-line house-wall-corner4-x house-wall-corner4-x c: 487)
+(up-build-line house-wall-corner-x house-wall-corner2-x c: house)
+(up-build-line house-wall-corner2-x house-wall-corner3-x c: house)
+(up-build-line house-wall-corner3-x house-wall-corner4-x c: house)
+(up-build-line house-wall-corner4-x house-wall-corner-x c: house)
+)
+
+(defrule
+(building-type-count town-center > 0)
+=>
+(up-copy-point gl-wall-x house-wall-corner4-x)
+(up-copy-point gl-wall2-x house-wall-corner-x)
+(set-goal house-wall-count 5);1
+(disable-self)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(goal house-wall-count 1)
+(up-point-distance gl-wall-x gl-wall2-x < 1)
+=>
+(up-copy-point gl-wall2-x house-wall-corner2-x)
+;debug(chat-local-to-self "I did the thing")
+(set-goal house-wall-count 2)
+(disable-self)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(goal house-wall-count 2)
+(up-point-distance gl-wall-x gl-wall2-x < 1)
+=>
+(up-copy-point gl-wall2-x house-wall-corner3-x)
+;debug(chat-local-to-self "I did the thing")
+(set-goal house-wall-count 3)
+(disable-self)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(goal house-wall-count 3)
+(up-point-distance gl-wall-x gl-wall2-x < 1)
+=>
+(up-copy-point gl-wall2-x house-wall-corner4-x)
+;debug(chat-local-to-self "I did the thing")
+(set-goal house-wall-count 4)
+(disable-self)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(goal house-wall-count 4)
+(up-point-distance gl-wall-x gl-wall2-x < 1)
+=>
+(set-goal house-wall-count 5)
+(disable-self)
+)
+
+(defrule
+(up-point-explored gl-wall-x == 0)
+=>
+(up-lerp-tiles gl-wall-x gl-wall2-x c: 1)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count == 2)
+;(can-build palisade-wall)
+=>
+(up-copy-point house-wall-fence-x house-wall-corner4-x)
+(disable-self)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count == 3)
+;(can-build palisade-wall)
+=>
+(up-copy-point house-wall-fence-x house-wall-corner-x)
+(disable-self)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count == 4)
+;(can-build palisade-wall)
+=>
+(up-copy-point house-wall-fence-x house-wall-corner2-x)
+(disable-self)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count == 5)
+;(can-build palisade-wall)
+=>
+(up-copy-point house-wall-fence-x house-wall-corner3-x)
+(disable-self)
+)
+
+(defrule
+(false)
+(game-time > 300)
+(up-compare-goal house-wall-count == 2)
+;(can-build palisade-wall)
+(up-point-explored house-wall-fence-x != 0)
+=>
+(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+(up-lerp-tiles house-wall-fence-x house-wall-corner-x c: 1)
+)
+
+(defrule
+(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 3)
+;(can-build palisade-wall)
+(up-point-explored house-wall-fence-x != 0)
+=>
+(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+(up-lerp-tiles house-wall-fence-x house-wall-corner2-x c: 1)
+)
+
+(defrule
+(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 4)
+;(can-build palisade-wall)
+(up-point-explored house-wall-fence-x != 0)
+=>
+(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+(up-lerp-tiles house-wall-fence-x house-wall-corner3-x c: 1)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+;(can-build palisade-wall)
+(up-point-explored house-wall-fence-x != 0)
+=>
+;(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+;(up-lerp-tiles house-wall-fence-x house-wall-corner4-x c: 1)
+(set-goal house-wall-count2 5)
+(disable-self)
+)
+
+(defrule
+(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 == 2)
+;(can-build palisade-wall)
+(up-point-explored house-wall-fence-x != 0)
+=>
+(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+(up-lerp-tiles house-wall-fence-x house-wall-corner-x c: 1)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 == 2)
+(up-point-distance house-wall-fence-x house-wall-corner-x < 1)
+;(can-build palisade-wall)
+=>
+(set-goal house-wall-count2 3)
+)
+
+(defrule
+(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 >= 3)
+;(can-build palisade-wall)
+(up-point-explored house-wall-fence-x != 0)
+=>
+(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+(up-lerp-tiles house-wall-fence-x house-wall-corner2-x c: 1)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 == 3)
+(up-point-distance house-wall-fence-x house-wall-corner2-x < 1)
+;(can-build palisade-wall)
+=>
+(set-goal house-wall-count2 4)
+)
+
+(defrule
+(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 >= 4)
+;(can-build palisade-wall)
+(up-point-explored house-wall-fence-x != 0)
+=>
+(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+(up-lerp-tiles house-wall-fence-x house-wall-corner3-x c: 1)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 == 4)
+(up-point-distance house-wall-fence-x house-wall-corner3-x < 1)
+;(can-build palisade-wall)
+=>
+(set-goal house-wall-count2 5)
+)
+
+(defrule
+(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 >= 5)
+(up-point-explored house-wall-fence-x != 0)
+;(can-build palisade-wall)
+=>
+(up-build-line house-wall-fence-x house-wall-fence-x c: preferred-wall)
+(up-lerp-tiles house-wall-fence-x house-wall-corner4-x c: 1)
+)
+
+(defrule
+;(false)
+(game-time > 300)
+(up-compare-goal house-wall-count >= 5)
+(up-compare-goal house-wall-count2 == 5)
+(up-point-distance house-wall-fence-x house-wall-corner4-x < 1)
+;(can-build palisade-wall)
+=>
+(set-goal house-wall-count2 2)
+)
+
+(defrule
+(false)
+(can-build house)
+(up-pending-objects c: house < 1)
+;(housing-headroom < 3)
+=>
+(set-strategic-number sn-placement-zone-size 0)
+(up-set-target-point gl-wall-x)
+(up-assign-builders c: house c: 3)
+(up-build place-point 0 c: house)
+(up-lerp-tiles gl-wall-x gl-wall2-x c: 1)
+)
+
+(defrule
+(not(civ-selected hun))
+(can-build house)
+(housing-headroom < 4)
+(up-compare-goal house-wall-count < 5)
+(population-headroom > 3)
+(up-pending-objects c: house < 1)
+(building-type-count-total town-center > 0)
+(building-type-count house > 0)
+(up-point-explored gl-wall-x != 0)
+=>
+(up-build-line gl-wall-x gl-wall-x c: house)
+(up-lerp-tiles gl-wall-x gl-wall2-x c: 1)
+(up-assign-builders c: house c: 1)
+)
+
+(defrule
+(not(civ-selected hun))
+(can-build house)
+(housing-headroom < 4)
+(population-headroom > 3)
+(up-pending-objects c: house < 1)
+(building-type-count-total town-center > 0)
+(building-type-count house > 0)
+(or(up-point-explored gl-wall-x == 0)
+(up-compare-goal house-wall-count == 5))
+;(or(population < 16)
+;(or(current-age >= feudal-age)
+;(and(building-type-count-total mill >= 1)
+;(building-type-count-total lumber-camp >= 1))))
+=>
+(build house)
+(up-assign-builders c: house c: 1)
+)
+
+(defrule
+(false)
+(can-build house)
+(housing-headroom < 4)
+(population-headroom > 3)
+(up-pending-objects c: house < 1)
+(building-type-count-total town-center > 0)
+(building-type-count house > 0)
+=>
+(build house)
+(up-assign-builders c: house c: 1)
+)
+
+(defrule
+(false)
+(current-age >= feudal-age)
+(up-compare-goal house-wall-count >= 1)
+;(building-type-count-total house >= 4)
+(building-type-count-total 800 < 1)
+(up-pending-objects c: 800 < 1)
+(up-point-explored gl-wall-x != 0)
+(can-build 800)
+=>
+(up-build-line gl-wall-x gl-wall-x c: 800)
+(up-lerp-tiles gl-wall-x gl-wall2-x c: 1)
+(disable-self)
+)
+
+(defrule
+(false)
+(current-age >= feudal-age)
+(up-compare-goal house-wall-count >= 2)
+;(building-type-count-total house >= 14)
+(building-type-count-total 800 < 2)
+(up-pending-objects c: 800 < 1)
+(up-point-explored gl-wall-x != 0)
+(can-build 800)
+=>
+(up-build-line gl-wall-x gl-wall-x c: 800)
+(up-lerp-tiles gl-wall-x gl-wall2-x c: 1)
+(disable-self)
+)
+
+(defrule
+(false)
+(current-age >= feudal-age)
+(up-compare-goal house-wall-count >= 3)
+;(building-type-count-total house >= 24)
+(building-type-count-total 800 < 3)
+(up-pending-objects c: 800 < 1)
+(up-point-explored gl-wall-x != 0)
+(can-build 800)
+=>
+(up-build-line gl-wall-x gl-wall-x c: 800)
+(up-lerp-tiles gl-wall-x gl-wall2-x c: 1)
+(disable-self)
+)
+
+(defrule
+(false)
+(current-age >= feudal-age)
+(up-compare-goal house-wall-count >= 4)
+;(building-type-count-total house >= 34)
+(building-type-count-total 800 < 4)
+(up-pending-objects c: 800 < 1)
+(up-point-explored gl-wall-x != 0)
+(can-build 800)
+=>
+(up-build-line gl-wall-x gl-wall-x c: 800)
+(up-lerp-tiles gl-wall-x gl-wall2-x c: 1)
+(disable-self)
+)
+
+(defrule
+(goal gl-need-lumber-camp 0)
+(or(dropsite-min-distance wood > 4)
+(and(building-type-count town-center == 0)
+(and(building-type-count lumber-camp == 0)
+(wood-amount < 275))))
+(dropsite-min-distance wood < 255)
+(or(current-age >= castle-age)
+(up-object-type-count-total g: building-type-goal >= 2))
+=>
+(set-goal gl-need-lumber-camp 1)
+)
+
+(defrule
+(goal gl-need-lumber-camp 1)
+(building-type-count-total lumber-camp >= 1)
+(building-type-count-total town-center < 1)
+=>
+(set-goal gl-need-lumber-camp 0)
+)
+
+(defrule; new rule for 40
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:>= 1)
+=>
+(set-goal gl-need-lumber-camp 0)
+)
+
+(defrule; new rule for 40
+(up-compare-goal gl-game-strategy c:== boom)
+(building-type-count-total town-center < 4)
+=>
+(set-goal gl-need-lumber-camp 0)
+)
+
+(defrule
+(goal gl-need-lumber-camp 1)
+(up-compare-goal gl-game-strategy == slinger)
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(goal gl-need-lumber-camp 1)
+(current-age < castle-age)
+(dropsite-min-distance wood < 12)
+(up-object-type-count-total g: building-type-goal < 2)
+=>
+(set-goal gl-need-lumber-camp 0)
+)
+
+(defrule
+(goal gl-need-lumber-camp 1)
+(current-age == feudal-age)
+(building-type-count-total lumber-camp == 1)
+(up-compare-goal gl-game-strategy == flush)
+(military-population < 15)
+(dropsite-min-distance wood < 6)
+=>
+(set-goal gl-need-lumber-camp 0)
+)
+
+(defrule
+(goal gl-need-lumber-camp 1)
+(or(up-research-status c: imperial-age < research-pending)
+(up-object-type-count-total g: building-type-goal < 2))
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(set-goal gl-need-lumber-camp 0)
+)
+
+(defrule
+(false)
+(goal gl-need-lumber-camp 1)
+=>
+(chat-local-to-self "need lumber camp")
+)
+
+(defrule
+(false)
+(game-time >= 30)
+(building-type-count-total town-center == 0)
+(building-type-count-total lumber-camp == 0)
+(up-pending-objects c: town-center c:< 1)
+(can-build lumber-camp)
+(wood-amount < 275)
+=>
+(build lumber-camp)
+)
+
+(defrule
+(true)
+=>
+(set-goal tree-count 0)
+)
+
+(defrule
+;(up-pending-objects c: lumber-camp < 1)
+(or(building-type-count-total town-center == 0)
+(unit-type-count-total villager >= 9))
+(building-type-count-total lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)	
+(can-build lumber-camp)
+(or(building-type-count-total town-center > 0)
+(and(building-type-count-total town-center == 0)
+(wood-amount < 275)))
+=>
+(up-full-reset-search)
+(up-set-target-point gl-mining-core-x);gl-self-x
+(up-filter-distance c: 8 c: 20)
+(up-find-resource c: wood c: 200)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote g: tree-count)
+(up-get-point position-object gl-wood-x)
+(up-set-target-point gl-wood-x)
+(up-full-reset-search)
+(up-filter-distance c: 0 c: 4);4
+(up-find-local c: lumber-camp c: 1)
+(up-find-local c: town-center c: 1)
+(up-reset-filters)
+(up-filter-distance c: 0 c: 10)
+(up-find-local c: wall-class c: 1)
+(up-find-local c: gate-class c: 1)
+(up-reset-filters)
+(up-filter-status c: 2 c: 0)
+(up-filter-distance c: 0 c: 3);3
+(up-find-resource c: wood c: 100)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(or(building-type-count-total town-center == 0)
+(unit-type-count-total villager >= 9))
+(building-type-count-total lumber-camp < 1)	
+(or(building-type-count-total town-center > 0)
+(and(building-type-count-total town-center == 0)
+(wood-amount < 275)))
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total >= 12);8
+(up-point-explored gl-wood-x != 0)
+(can-build lumber-camp)
+=>
+(up-lerp-tiles gl-wood-x gl-self-x g: pivot-count);gl-mining-core-x
+(up-modify-goal pivot-count c:+ 1)
+)
+
+(defrule
+;(false);blocking out for fencrazy
+(game-time > 60); delaying for fencrazy
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(or(building-type-count-total town-center == 0)
+(unit-type-count-total villager >= 9))
+(building-type-count-total lumber-camp < 1)	
+(or(building-type-count-total town-center > 0)
+(and(building-type-count-total town-center == 0)
+(wood-amount < 275)))
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total >= 12);8
+(up-point-explored gl-wood-x != 0)
+(can-build lumber-camp)
+(up-can-build-line 0 gl-wood-x c: lumber-camp)
+=>
+;(up-send-flare gl-wood-x)
+(up-build-line gl-wood-x gl-wood-x c: lumber-camp)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(or(building-type-count-total town-center == 0)
+(unit-type-count-total villager >= 9))
+(building-type-count-total lumber-camp < 1)	
+(or(building-type-count-total town-center > 0)
+(and(building-type-count-total town-center == 0)
+(and(building-type-count lumber-camp == 0)
+(wood-amount < 275))))
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total >= 12);8
+(up-point-explored gl-wood-x != 0)
+(can-build lumber-camp)
+(not(up-can-build-line 0 gl-wood-x c: lumber-camp))
+(up-compare-goal pivot-count < 4)
+=>
+(up-jump-rule -4)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(or(building-type-count-total town-center == 0)
+(unit-type-count-total villager >= 9))
+(building-type-count-total lumber-camp < 1)	
+(or(building-type-count-total town-center > 0)
+(and(building-type-count-total town-center == 0)
+(wood-amount < 275)))
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total >= 12);8
+(up-point-explored gl-wood-x != 0)
+(can-build lumber-camp)
+(not(up-can-build-line 0 gl-wood-x c: lumber-camp))
+(up-compare-goal pivot-count > 3)
+=>
+(up-modify-goal pivot-count c:= 1)
+;(up-modify-goal tree-count c:+ 1)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(or(building-type-count-total town-center == 0)
+(unit-type-count-total villager >= 9))
+(building-type-count-total lumber-camp < 1)	
+(can-build lumber-camp)
+(or(not(up-can-build-line 0 gl-wood-x c: lumber-camp))
+(up-compare-goal gl-local-total >= 1))
+(or(building-type-count-total town-center > 0)
+(and(building-type-count-total town-center == 0)
+(wood-amount < 275)))
+(not(up-compare-goal gl-remote-total >= 12));8
+=>
+;(up-chat-data-to-self "tree-count is %d." g: tree-count)
+(up-modify-goal tree-count c:+ 1)
+)
+
+(defrule
+(up-pending-objects c: lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(or(building-type-count-total town-center == 0)
+(unit-type-count-total villager >= 9))
+(building-type-count-total lumber-camp < 1)	
+(can-build lumber-camp)
+(not(up-can-build-line 0 gl-wood-x c: lumber-camp))
+(or(building-type-count-total town-center > 0)
+(and(building-type-count-total town-center == 0)
+(wood-amount < 275)))
+(not(up-compare-goal gl-remote-total >= 12));8
+(up-compare-goal tree-count < 101)
+(up-compare-goal tree-count > 0)
+=>
+(up-jump-rule -7)
+)
+
+(defrule
+(or(up-compare-goal pivot-count != 1)
+(up-compare-goal tree-count != 0))
+=>
+(up-modify-goal pivot-count c:= 1)
+(up-modify-goal tree-count c:= 0)
+)
+
+(defrule
+;(false)
+(or(unit-type-count-total villager >= 13)
+(and(building-type-count-total town-center == 0)
+(and(game-time > 120)
+(wood-amount < 275))))
+(building-type-count-total lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+=>
+(up-modify-sn sn-lumber-camp-max-distance c:= 20)
+(build lumber-camp)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(unit-type-count-total villager >= 9)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance wood < 255)	
+(not(can-build-with-escrow lumber-camp))
+(gold-amount >= 200)
+(wood-amount < 100)
+(not(goal halt-production on))
+(building-type-count-total town-center > 0)
+(can-buy-commodity wood)
+(unit-type-count villager-wood < 12)
+=>
+(buy-commodity wood)
+;(chat-local-to-self "buying wood for lumber camp")
+;(up-jump-rule -1)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(unit-type-count-total villager >= 9)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance wood < 255)	
+(not(can-build lumber-camp))
+(can-build-with-escrow lumber-camp)
+(building-type-count-total town-center > 0)
+=>
+(up-modify-escrow wood c: -100)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 13)
+(up-find-local c: lumber-camp c: 13)
+(up-find-local c: mule-cart c: 13)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+(generate-random-number 40)
+(up-get-fact 33 0 gl-dot-x)
+(up-modify-goal gl-dot-x g:mod gl-local-total)
+(up-set-target-object search-local g: gl-dot-x)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(unit-type-count-total villager >= 9)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance wood < 255)		
+(can-build lumber-camp)
+(building-type-count-total town-center > 0)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-dot-x);gl-mining-core-x
+(up-filter-status c: 2 c: 0)
+(up-filter-distance c: 8 s: sn-maximum-town-size)
+(up-find-resource c: wood c: 200)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote g: tree-count)
+(up-get-point position-object gl-wood-x)
+(up-set-target-point gl-wood-x)
+(up-full-reset-search)
+(up-filter-distance c: 0 c: 4)
+(up-find-local c: lumber-camp c: 1)
+(up-find-local c: town-center c: 1)
+(up-reset-filters)
+(up-filter-distance c: 0 c: 10)
+(up-find-local c: wall-class c: 1)
+(up-find-local c: gate-class c: 1)
+(up-reset-filters)
+(up-filter-status c: 2 c: 0)
+(up-filter-distance c: 0 c: 6);3
+(up-find-resource c: wood c: 200)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance wood < 255)	
+(building-type-count-total town-center > 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total >= 10);12
+(up-point-explored gl-wood-x != 0)
+(can-build lumber-camp)
+=>
+;(chat-local-to-self "Planning to place Lumber Camp")
+(up-lerp-tiles gl-wood-x gl-mining-core-x g: pivot-count);gl-self-x
+(up-modify-goal pivot-count c:+ 1)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance wood < 255)		
+(building-type-count-total town-center > 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total >= 10);12
+(up-point-explored gl-wood-x != 0)
+(can-build lumber-camp)
+(up-can-build-line 0 gl-wood-x c: lumber-camp)
+=>
+(up-build-line gl-wood-x gl-wood-x c: lumber-camp)
+(up-modify-sn sn-camp-max-distance c:+ 2)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance wood < 255)		
+(building-type-count-total town-center > 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total >= 10);12
+(up-point-explored gl-wood-x != 0)
+(can-build lumber-camp)
+(not(up-can-build-line 0 gl-wood-x c: lumber-camp))
+(up-compare-goal pivot-count < 4);4
+=>
+(up-jump-rule -4)
+)
+
+(defrule
+(up-compare-goal pivot-count > 3)
+=>
+(up-modify-goal pivot-count c:= 1)
+(up-modify-goal tree-count c:+ 1)
+)
+
+(defrule
+;(dropsite-min-distance wood >= 6)
+(up-pending-objects c: lumber-camp < 1)
+(unit-type-count-total villager >= 9)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance wood < 255)			
+(can-build lumber-camp)
+(building-type-count-total town-center > 0)
+(or(up-compare-goal gl-local-total >= 1)
+(or(not(up-can-build-line 0 gl-wood-x c: lumber-camp))
+(not(up-compare-goal gl-remote-total >= 10))));12
+=>
+;(up-chat-data-to-self "tree-count is %d." g: tree-count)
+(up-modify-goal tree-count c:+ 1)
+)
+
+(defrule
+(up-pending-objects c: lumber-camp < 1)
+(unit-type-count-total villager >= 9)
+(building-type-count-total lumber-camp >= 1)
+(goal gl-need-lumber-camp 1)
+(dropsite-min-distance wood < 255)			
+(can-build lumber-camp)
+(building-type-count-total town-center > 0)
+(or(up-compare-goal gl-local-total >= 1)
+(or(not(up-can-build-line 0 gl-wood-x c: lumber-camp))
+(not(up-compare-goal gl-remote-total >= 10))))
+(up-compare-goal tree-count < 39)
+(up-compare-goal tree-count > 0)
+=>
+(up-jump-rule -7)
+)
+
+(defrule
+(up-pending-objects c: lumber-camp >= 1)
+=>
+(up-modify-goal tree-count c:= 0)
+(up-modify-goal pivot-count c:= 1)
+(set-goal gl-need-lumber-camp 0)
+)
+
+(defrule
+(up-compare-goal tree-count >= 39)
+(up-pending-objects c: lumber-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+=>
+(up-get-point-distance gl-self-x gl-wood-x gl-attempted-wood-distance)
+(up-modify-sn sn-lumber-camp-max-distance g:= gl-attempted-wood-distance)
+(up-modify-sn sn-lumber-camp-max-distance c:+ 12);3
+(build lumber-camp)
+;(chat-local-to-self "trying to build lumber camp")
+)
+
+(defrule
+(up-compare-goal tree-count >= 39)
+(up-pending-objects c: lumber-camp < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: 218 c: 40)
+(up-find-local c: 123 c: 40)
+(up-clean-search search-local 16 2)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal tree-count >= 39);new for fencrazy fringe cases
+(up-pending-objects c: lumber-camp < 1)
+(up-set-target-object search-local c: 0)
+=>
+(up-modify-goal tree-count c:= 0)
+(up-get-point position-object gl-wood-x)
+(up-set-target-point gl-wood-x)
+(up-modify-sn sn-placement-zone-size c:= 1);2
+(up-build 3 0 c: lumber-camp)
+)
+
+(defrule
+(wood-amount < 100)
+=>
+(up-modify-goal tree-count c:= 0)
+)
+
+(defrule
+(false); checking overzealous LC deletion
+(building-type-count lumber-camp > 3)
+=>
+(up-full-reset-search)
+(up-find-local c: lumber-camp c: 10)
+)
+
+(defrule
+(false); checking overzealous LC deletion
+(building-type-count lumber-camp > 3)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-wood-x)
+(up-set-target-point gl-wood-x)
+(up-reset-search 0 0 1 1)
+(up-reset-filters)
+(up-filter-status c: 2 c: 0)
+(up-filter-distance c: -1 c: 9)
+(up-find-resource c: wood c: 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false); checking overzealous LC deletion
+(building-type-count lumber-camp > 3)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-remove-objects search-local -1 != 0)
+;(chat-local-to-self "deleting old lumber camp")
+(up-target-point 0 action-delete -1 -1)
+(up-get-search-state gl-local-total)
+(up-jump-rule 1)
+)
+
+(defrule
+(false); checking overzealous LC deletion
+(building-type-count lumber-camp > 3)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total >= 1)
+=>
+(up-remove-objects search-local -1 == 0)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+;(unit-type-count-total villager > 20)
+(dropsite-min-distance gold >= 4)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-mining-core-x)
+(up-filter-status c: 3 c: 0)
+;(up-filter-distance c: 0 c: 22)
+(up-find-resource c: gold c: 200)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-gold-x)
+(up-set-target-point gl-gold-x)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+;(unit-type-count-total villager > 20)
+(dropsite-min-distance gold >= 4)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-reset-filters)
+(up-filter-distance c: 0 c: 8)
+(up-find-local c: mining-camp c: 1)
+(up-find-local c: town-center c: 1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+;(unit-type-count-total villager > 20)
+(dropsite-min-distance gold >= 4)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-local-total < 1)
+=>
+(set-strategic-number sn-placement-zone-size 1)
+(up-build 3 0 c: mining-camp)
+)
+
+(defrule
+(building-type-count-total mining-camp < 1)
+(dropsite-min-distance gold > 4)
+(current-age == feudal-age)
+(building-type-count-total market > 0)
+(building-type-count-total blacksmith > 0)
+(up-compare-goal gl-game-strategy == fast-imp)
+(can-build mining-camp)
+=>
+;(up-reset-placement c: mining-camp)
+;(chat-local-to-self "building mining camp for fast imp")
+(build mining-camp)
+)
+
+(defrule
+(goal gl-need-gold-mining-camp 0)
+(or(dropsite-min-distance gold > 4)
+(building-type-count-total mining-camp < 1))
+(dropsite-min-distance gold < 255)
+(or(current-age >= castle-age)
+(or(up-object-type-count-total g: building-type-goal >= 2)
+(up-compare-goal chosen-military-unit c:== camel-line)))
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule
+(goal gl-need-gold-mining-camp 0)
+(building-type-count-total mining-camp < 1)
+(up-research-status c: castle-age <= research-pending)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule; new rule for 40
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:>= 1)
+=>
+(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule; new rule for 40
+(up-compare-goal gl-game-strategy c:== boom)
+(building-type-count-total town-center < 4)
+=>
+(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule; new rule for 40
+(goal gl-need-gold-mining-camp 1)
+(up-compare-goal gl-game-strategy c:== castle-drop)
+(current-age < castle-age)
+=>
+(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule
+(goal gl-need-gold-mining-camp 1)
+(up-compare-goal gl-game-strategy == slinger)
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(goal gl-need-gold-mining-camp 1)
+(current-age < castle-age)
+(up-object-type-count-total g: building-type-goal < 2)
+(up-compare-goal gl-game-strategy == flush)
+(up-compare-goal chosen-military-unit c:!= camel-line)
+=>
+(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule
+(goal gl-need-gold-mining-camp 1)
+(current-age < castle-age)
+(or(up-object-type-count-total g: building-type-goal < 2)
+(building-type-count-total blacksmith < 1))
+(or(up-compare-goal chosen-military-unit c:== archer-line)
+(up-compare-goal chosen-military-unit c:== skirmisher-line))
+(up-compare-goal gl-game-strategy == flush)
+(not(map-type team-islands))
+=>
+(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule
+(false)
+(goal gl-need-gold-mining-camp 1)
+;(up-object-type-count-total g: building-type-goal < 2)
+(up-research-status c: castle-age < research-pending)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule
+;(goal gl-need-gold-mining-camp 0)
+(building-type-count-total mining-camp < 1)
+(dropsite-min-distance gold < 255)
+(current-age == feudal-age)
+(goal halt-production navy-only)
+(map-type team-islands)
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule
+(false)
+(goal gl-need-gold-mining-camp 1)
+=>
+(chat-local-to-self "need gold mining camp")
+)
+
+(defrule
+(or(up-compare-goal pivot-count2 != 0)
+(up-compare-goal tree-count != 0))
+=>
+(up-modify-goal pivot-count2 c:= 0)
+(up-modify-goal tree-count c:= 0)
+)
+
+(defrule
+(goal gl-need-gold-mining-camp 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: town-center c:< 1)
+(up-pending-objects c: mining-camp < 1)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+(not(can-build-with-escrow mining-camp))
+(wood-amount < 100)
+(building-type-count-total town-center > 0)
+(can-buy-commodity wood)
+(not(goal halt-production on))
+(unit-type-count villager-wood < 12)
+=>
+(buy-commodity wood)
+;(chat-local-to-self "buying wood for gold mining camp")
+;(up-jump-rule -1)
+)
+
+(defrule
+(goal gl-need-gold-mining-camp 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+(not(can-build mining-camp))
+(can-build-with-escrow mining-camp)
+(building-type-count-total town-center > 0)
+=>
+(up-modify-escrow wood c: -100)
+)
+
+(defrule
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+(up-compare-goal tree-count < 40)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x);gl-mining-core-x
+(up-filter-status c: 3 c: 0)
+;(up-filter-distance c: 0 c: 22)
+(up-find-resource c: gold c: 200)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0);g: tree-count
+(up-get-point position-object gl-gold-x)
+(up-set-target-point gl-gold-x)
+(up-reset-filters)
+(up-filter-distance c: 0 c: 5);6
+(up-find-local c: mining-camp c: 1)
+(up-find-local c: town-center c: 1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "finding gold for gold mining camp")
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: 1)
+;(chat-local-to-self "found gold for gold mining camp")
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 1)
+=>
+(up-cross-tiles gl-gold-x gl-self-x c: 1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 2)
+=>
+(up-cross-tiles gl-gold-x gl-self-x c: -1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 3)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: -1)
+(up-cross-tiles gl-gold-x gl-self-x c: 1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 4)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: -1)
+(up-cross-tiles gl-gold-x gl-self-x c: -1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 5)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: -2)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 6)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: -2)
+(up-cross-tiles gl-gold-x gl-self-x c: 1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 7)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: -2)
+(up-cross-tiles gl-gold-x gl-self-x c: -1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 8)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: 1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 9)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: 1)
+(up-cross-tiles gl-gold-x gl-self-x c: 1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+(up-compare-goal pivot-count2 == 10)
+=>
+(up-lerp-tiles gl-gold-x gl-self-x c: 1)
+(up-cross-tiles gl-gold-x gl-self-x c: -1)
+)
+
+(defrule
+(false)
+;(goal 6 2)
+;(current-age == dark-age)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+;(unit-type-count-total villager > 20)
+(goal gl-need-gold-mining-camp 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: town-center c:< 1)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 1)
+(can-build mining-camp)
+(up-can-build-line 0 gl-gold-x c: mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+=>
+(up-build-line gl-gold-x gl-gold-x c: mining-camp)
+;(chat-local-to-self "trying to DUC build a gold mining camp")
+)
+
+(defrule
+(false)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+(goal gl-need-gold-mining-camp 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: town-center c:< 1)
+(up-pending-objects c: mining-camp < 1)
+(can-build mining-camp)
+(not(up-can-build-line 0 gl-gold-x c: mining-camp))
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal pivot-count2 < 2)
+(up-compare-goal tree-count < 40)
+=>
+(up-modify-goal pivot-count2 c:+ 1)
+(up-jump-rule -14);13
+;(chat-local-to-self "looping pivot count for gold mining camp")
+)
+
+(defrule
+(false)
+(up-research-status c: feudal-age >= research-pending)
+(or(up-compare-const age-up-strategy == feudal-rush)
+(up-research-status c: castle-age >= research-pending))
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+(can-build mining-camp)
+(not(up-can-build-line 0 gl-gold-x c: mining-camp))
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-gold-x != 0)
+;(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal pivot-count2 > 1)
+(up-compare-goal tree-count < 40)
+=>
+(up-modify-goal pivot-count2 c:= 0)
+(up-modify-goal tree-count c:+ 1)
+(up-jump-rule -15)
+;(chat-local-to-self "looping tree count for gold mining camp")
+)
+
+(load "Bright Spark 49f\Gold Mining Camp Placement - Placeholder")
+
+(load "Bright Spark 49f\Gold Mining Camp Placement")
+
+(defrule
+(false)
+(up-pending-objects c: mining-camp >= 1)
+=>
+(up-modify-goal pivot-count2 c:= 1)
+(up-modify-goal tree-count c:= 0)
+;(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule
+(false)
+(up-compare-goal tree-count >= 40)
+(up-pending-objects c: mining-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(can-build mining-camp)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-filter-status c: 3 c: 0)
+;(up-filter-distance c: -1 c: 30)
+(up-find-status-remote c: gold c: 500)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "preparing default mining camp")
+)
+
+(defrule
+(false);removing for 45
+;(up-compare-goal tree-count >= 40)
+(up-pending-objects c: mining-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(up-set-target-object search-remote c: 0)
+(can-build mining-camp)
+=>
+(up-get-object-data 44 pivot-count2); pivot will be reset next pass
+(up-modify-sn sn-camp-max-distance g:= pivot-count2)
+(up-modify-sn sn-camp-max-distance c:+ 10)
+(build mining-camp)
+;(chat-local-to-self "building mining camp")
+)
+
+(defrule
+(up-pending-objects c: mining-camp >= 1)
+=>
+(up-modify-goal pivot-count2 c:= 1)
+(up-modify-goal tree-count c:= 0)
+(set-goal gl-need-gold-mining-camp 0)
+)
+
+(defrule
+(goal gl-need-stone-mining-camp 0)
+(dropsite-min-distance stone >= 6)
+(dropsite-min-distance stone < 255)
+=>
+(set-goal gl-need-stone-mining-camp 1)
+)
+
+(defrule; new rule for 40
+(goal gl-need-stone-mining-camp 1)
+(up-pending-objects c: town-center c:>= 1)
+=>
+(set-goal gl-need-stone-mining-camp 0)
+)
+
+(defrule; new rule for 40
+(goal gl-need-stone-mining-camp 1)
+(or(up-research-status c: imperial-age < research-pending)
+(up-object-type-count-total g: building-type-goal < 2))
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(set-goal gl-need-stone-mining-camp 0)
+)
+
+(defrule; new rule for 40
+(up-compare-goal gl-game-strategy c:== boom)
+(building-type-count-total town-center < 4)
+=>
+(set-goal gl-need-stone-mining-camp 0)
+)
+
+(defrule
+(or(up-compare-goal pivot-count4 != 1)
+(up-compare-goal tree-count != 0))
+=>
+(up-modify-goal pivot-count4 c:= 1)
+(up-modify-goal tree-count c:= 0)
+)
+
+(defrule
+(goal gl-need-stone-mining-camp 1)
+(dropsite-min-distance stone < 255)
+(up-pending-objects c: town-center c:< 1)
+(up-pending-objects c: mining-camp < 1)
+(up-research-status c: feudal-age >= research-pending)
+(strategic-number sn-stone-gatherer-percentage > 0)
+(not(can-build-with-escrow mining-camp))
+(building-type-count-total town-center > 0)
+(can-buy-commodity wood)
+(wood-amount < 100)
+(gold-amount >= 200)
+(not(goal halt-production on))
+(unit-type-count villager-wood < 12)
+=>
+(buy-commodity wood)
+;(chat-local-to-self "buying wood for stone mining camp")
+;(up-jump-rule -1)
+)
+
+(defrule
+(goal gl-need-stone-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance stone < 255)
+(up-pending-objects c: mining-camp < 1)
+(up-research-status c: feudal-age >= research-pending)
+(strategic-number sn-stone-gatherer-percentage > 0)
+(not(can-build mining-camp))
+(can-build-with-escrow mining-camp)
+(building-type-count-total town-center > 0)
+=>
+(up-modify-escrow wood c: -100)
+)
+
+(defrule
+(strategic-number sn-stone-gatherer-percentage > 0)
+(goal gl-need-stone-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance stone < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 4)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+(up-compare-goal tree-count < 40)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-mining-core-x)
+(up-filter-status c: 3 c: 0)
+;(up-filter-distance c: 0 c: 22)
+(up-find-resource c: stone c: 200)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote g: tree-count)
+(up-get-point position-object gl-stone-x)
+(up-set-target-point gl-stone-x)
+(up-reset-filters)
+(up-filter-distance c: 0 c: 4)
+(up-find-local c: mining-camp c: 1)
+(up-find-local c: town-center c: 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(strategic-number sn-stone-gatherer-percentage > 0)
+(goal gl-need-stone-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance stone < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 4)	
+(can-build mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-stone-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+=>
+(up-lerp-tiles gl-stone-x gl-self-x g: pivot-count4)
+)
+
+(defrule
+(strategic-number sn-stone-gatherer-percentage > 0)
+(goal gl-need-stone-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance stone < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 4)	
+(can-build mining-camp)
+(up-can-build-line 0 gl-stone-x c: mining-camp)
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-stone-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal tree-count < 40)
+=>
+(up-build-line gl-stone-x gl-stone-x c: mining-camp)
+)
+
+(defrule
+(strategic-number sn-stone-gatherer-percentage > 0)
+(goal gl-need-stone-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance stone < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 4)	
+(can-build mining-camp)
+(not(up-can-build-line 0 gl-stone-x c: mining-camp))
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-stone-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal pivot-count4 < 2)
+(up-compare-goal tree-count < 40)
+=>
+(up-modify-goal pivot-count4 c:+ 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(strategic-number sn-stone-gatherer-percentage > 0)
+(goal gl-need-stone-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance stone < 255)
+(up-pending-objects c: mining-camp < 1)
+;(building-type-count-total mining-camp < 4)	
+(can-build mining-camp)
+(not(up-can-build-line 0 gl-stone-x c: mining-camp))
+(building-type-count-total town-center > 0)
+;(up-point-explored gl-stone-x != 0)
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal pivot-count4 > 1)
+(up-compare-goal tree-count < 40)
+=>
+(up-modify-goal pivot-count4 c:= -2)
+(up-modify-goal tree-count c:+ 1)
+(up-jump-rule -5)
+)
+
+(defrule
+(up-pending-objects c: mining-camp >= 1)
+=>
+(up-modify-goal pivot-count4 c:= 1)
+(up-modify-goal tree-count c:= 0)
+;(set-goal gl-need-stone-mining-camp 0)
+)
+
+(defrule
+(up-compare-goal tree-count >= 40)
+(up-pending-objects c: mining-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(can-build mining-camp)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-filter-status c: 3 c: 0)
+(up-filter-distance c: -1 c: 30)
+(up-find-status-remote c: stone c: 500)
+(up-clean-search search-remote 44 2)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal tree-count >= 40)
+(up-pending-objects c: mining-camp < 1)
+(up-pending-objects c: town-center c:< 1)
+(up-set-target-object search-remote c: 0)
+(can-build mining-camp)
+=>
+(up-get-object-data 44 pivot-count4); pivot will be reset next pass
+(up-modify-sn sn-camp-max-distance g:= pivot-count4)
+(up-modify-sn sn-camp-max-distance c:+ 2)
+(build mining-camp)
+)
+
+(defrule
+(up-pending-objects c: mining-camp >= 1)
+=>
+(up-modify-goal pivot-count4 c:= 1)
+(up-modify-goal tree-count c:= 0)
+(set-goal gl-need-stone-mining-camp 0)
+)
+
+(defrule
+(or(up-compare-goal pivot-count4 != 1)
+(up-compare-goal tree-count != 0))
+=>
+(up-modify-goal pivot-count4 c:= 1)
+(up-modify-goal tree-count c:= 0)
+)
+
+(defrule
+(building-type-count-total mill == 0)
+(game-time > 40);40
+(resource-found food) ; Builds a mill only if forage bushes or deer is found
+(unit-type-count 958 < 2); We have less than 1 livestock left
+(dropsite-min-distance hunting >= 6)
+(can-build mill)
+(or(up-remaining-boar-amount == 65535)
+(unit-type-count villager >= 15))
+(building-type-count-total town-center > 0)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-filter-status c: 3 c: 0)
+(up-filter-distance c: 0 c: 22)
+(up-find-resource c: food c: 200)
+(up-remove-objects search-remote 2 == 905)
+(up-remove-objects search-remote 2 == 933)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-food-x)
+(up-set-target-point gl-food-x)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "preparing to build mill")
+)
+
+(defrule
+(building-type-count-total mill == 0)
+(game-time > 40);40
+(resource-found food) ; Builds a mill only if forage bushes or deer is found
+(unit-type-count 958 < 1); We have less than 1 livestock left
+(dropsite-min-distance hunting >= 6)
+(can-build mill)
+(building-type-count-total town-center > 0)
+(or(up-remaining-boar-amount == 65535)
+(unit-type-count villager >= 15))
+(up-point-explored gl-food-x != 0)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-lerp-tiles gl-food-x gl-self-x g: pivot-count3)
+(up-modify-goal pivot-count3 c:+ 1)
+)
+
+(defrule
+(building-type-count-total mill == 0)
+(game-time > 40);40
+(resource-found food) ; Builds a mill only if forage bushes or deer is found
+(unit-type-count 958 < 1); We have less than 1 livestock left
+(dropsite-min-distance hunting >= 6)
+(can-build mill)
+(building-type-count-total town-center > 0)
+(or(up-remaining-boar-amount == 65535)
+(unit-type-count villager >= 15))
+(up-point-explored gl-food-x != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-can-build-line 0 gl-food-x c: mill)
+=>
+(up-build-line gl-food-x gl-food-x c: mill)
+;(chat-local-to-self "building mill")
+)
+
+(defrule
+(up-compare-goal pivot-count3 > 3)
+=>
+(up-modify-goal pivot-count3 c:= 1)
+)
+
+(defrule
+(up-pending-objects c: mill >= 1)
+=>
+(up-modify-goal pivot-count3 c:= 1)
+)
+
+(defrule
+(false);testing if chicken milling is worth it
+(building-type-count-total mill < 2)
+(game-time > 40)
+(resource-found food) ; Builds a mill only if forage bushes or deer is found
+(unit-type-count 958 < 2); We have less than 1 livestock left
+(dropsite-min-distance hunting >= 6)
+(can-build mill)
+(or(up-remaining-boar-amount == 65535)
+(unit-type-count villager >= 15))
+(building-type-count-total town-center > 0)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: 0 c: 22)
+(up-find-remote c: 2084 c: 40)
+(up-find-remote c: 2086 c: 40)
+(up-find-remote c: 2088 c: 40)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-food-x)
+(up-set-target-point gl-food-x)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "preparing to build mill")
+)
+
+(defrule
+(false);testing if chicken milling is worth it
+(building-type-count-total mill < 2)
+(game-time > 40)
+(resource-found food) ; Builds a mill only if forage bushes or deer is found
+(unit-type-count 958 < 1); We have less than 1 livestock left
+(dropsite-min-distance hunting >= 6)
+(can-build mill)
+(building-type-count-total town-center > 0)
+(or(up-remaining-boar-amount == 65535)
+(unit-type-count villager >= 15))
+(up-point-explored gl-food-x != 0)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-lerp-tiles gl-food-x gl-self-x g: pivot-count3)
+(up-modify-goal pivot-count3 c:+ 1)
+)
+
+(defrule
+(false);testing if chicken milling is worth it
+(building-type-count-total mill < 2)
+(game-time > 40)
+(resource-found food) ; Builds a mill only if forage bushes or deer is found
+(unit-type-count 958 < 1); We have less than 1 livestock left
+(dropsite-min-distance hunting >= 6)
+(can-build mill)
+(building-type-count-total town-center > 0)
+(or(up-remaining-boar-amount == 65535)
+(unit-type-count villager >= 15))
+(up-point-explored gl-food-x != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-can-build-line 0 gl-food-x c: mill)
+=>
+(up-build-line gl-food-x gl-food-x c: mill)
+;(chat-local-to-self "building mill")
+)
+
+(defrule
+(up-compare-goal pivot-count3 > 3)
+=>
+(up-modify-goal pivot-count3 c:= 1)
+)
+
+(defrule
+(up-pending-objects c: mill >= 1)
+=>
+(up-modify-goal pivot-count3 c:= 1)
+)
+
+(defrule
+(building-type-count-total mill == 0)
+(game-time > 40);40
+(resource-found food) ; Builds a mill only if forage bushes or deer is found
+(unit-type-count 958 < 1); We have less than 1 livestock left
+(dropsite-min-distance hunting >= 6)
+(can-build mill)
+(building-type-count-total town-center > 0)
+(or(up-remaining-boar-amount == 65535)
+(unit-type-count villager >= 15))
+(up-point-explored gl-food-x != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-pending-objects c: mill < 1)
+=>
+(build mill);temp before adding in rotating mill attempts
+)
+
+(defrule
+;(sheep-and-forage-too-far)
+(building-type-count-total mill == 0)
+(or(unit-type-count villager >= 16)
+(game-time > 500))
+(can-build mill)
+=>
+;(up-send-flare gl-self-x)
+;(chat-local-to-self "building back up mill")
+(build mill)
+)
+
+(defrule
+(building-type-count-total mill == 0)
+(building-type-count town-center > 0)
+(wood-amount > 300)
+(up-compare-goal gl-total-food < 1);new 27
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(game-time > 90);40
+(building-type-count-total mill == 0)
+(building-type-count town-center > 0)
+(wood-amount >= 200)
+(dropsite-min-distance food >= 6)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 500)
+(up-find-local c: mill c: 500)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 18);8pgp
+(up-compare-goal gl-local-total < 3)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 27)
+(up-compare-goal gl-local-total < 4)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 36)
+(up-compare-goal gl-local-total < 5)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 45)
+(up-compare-goal gl-local-total < 6)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 54)
+(up-compare-goal gl-local-total < 7)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 63)
+(up-compare-goal gl-local-total < 8)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 72)
+(up-compare-goal gl-local-total < 9)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 81)
+(up-compare-goal gl-local-total < 10)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 90)
+(up-compare-goal gl-local-total < 11)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(not(civ-selected khmer))
+(building-type-count farm >= 99)
+(up-compare-goal gl-local-total < 12)
+(up-pending-objects c: town-center < 1)
+(up-pending-objects c: mill < 1)
+(can-build mill)
+=>
+(build mill)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-filter-status c: 0 c: 0)
+(up-find-status-local c: mill c: 40)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 1)
+=>
+;(chat-local-to-self "more than one mill being built")
+(up-remove-objects search-local -1 == 0)
+(up-target-point 0 action-delete -1 -1)
+;(up-full-reset-search)
+)
+
+(defrule
+(false)
+(map-type nomad)
+(game-time < 240)
+(up-compare-goal gl-local-total > 0)
+=>
+;(chat-local-to-self "stopping mill before dock")
+;(up-remove-objects search-local -1 == 0)
+(up-target-point 0 action-delete -1 -1)
+(up-full-reset-search)
+)
+
+(defrule
+(or(and(up-compare-const nomad-start == 1);(map-type land-nomad)
+(and(game-time > 60)
+(building-type-count town-center > 0)))
+(and(not(map-type land-nomad))
+(up-compare-goal scout-goal < 20)))
+;(building-type-count town-center == 0)
+(up-group-size c: 0 < 1)
+=>
+(up-full-reset-search)
+;(up-find-local c: 1869 c: 1)
+(up-find-local c: scout-cavalry-line c: 1)
+(up-find-local c: eagle-warrior-line c: 1)
+(up-find-local c: 912 c: 1)
+(up-find-local c: 936 c: 1)
+(up-find-local c: 906 c: 1)
+(up-find-local c: 900 c: 1)
+(up-find-local c: camel-scout c: 1)
+(up-find-local c: trade-cart c: 1)
+;(up-find-local c: 961 c: 1)
+;(up-find-local c: 958 c: 1)
+(up-find-local c: villager-class c: 1)
+(up-remove-objects search-local -1 > 0)
+(up-create-group 0 0 c: 0)
+;(up-modify-group-flag 1 c: 7)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 1869 c: 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(or(and(up-compare-const nomad-start == 1);map-type land-nomad
+;(and(game-time > 60)
+;(building-type-count-total town-center > 0)))
+(or(and(up-compare-const nomad-start == 1)
+(building-type-count town-center > 0))
+(and(up-compare-const nomad-start == 0);(not(map-type land-nomad))
+(up-compare-goal scout-goal < 20)))
+;(building-type-count town-center == 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-get-point position-self gl-scout-point-x)
+(up-get-point position-self gl-scout-point-x2)
+(up-get-point position-self gl-scout-point-x3)
+(up-get-point position-self gl-scout-point-x4)
+(up-modify-goal gl-scout-point-x c:+ 24)
+(up-modify-goal gl-scout-point-y c:+ 24)
+(up-modify-goal gl-scout-point-x2 c:- 24)
+(up-modify-goal gl-scout-point-y2 c:+ 24)
+(up-modify-goal gl-scout-point-x3 c:- 24)
+(up-modify-goal gl-scout-point-y3 c:- 24)
+(up-modify-goal gl-scout-point-x4 c:+ 24)
+(up-modify-goal gl-scout-point-y4 c:- 24)
+(up-bound-point gl-scout-point-x gl-scout-point-x)
+(up-bound-point gl-scout-point-x2 gl-scout-point-x2)
+(up-bound-point gl-scout-point-x3 gl-scout-point-x3)
+(up-bound-point gl-scout-point-x4 gl-scout-point-x4)
+;(up-send-flare gl-scout-point-x)
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-store-map-name 0)
+;(disable-self)
+)
+
+(defrule
+(game-time < 180)
+(up-compare-text c: map-fencrazy >= 0)
+(building-type-count-total town-center > 0)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-status c: 0 c: 0)
+(up-find-status-remote c: town-center-foundation c: 40)
+(up-get-search-state gl-local-total)
+;(disable-self)
+)
+
+(defrule
+(game-time < 180)
+(up-compare-text c: map-fencrazy >= 0)
+(building-type-count-total town-center > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object gl-self-x)
+;(up-send-flare gl-self-x)
+;(disable-self)
+)
+
+(defrule
+(game-time < 180)
+(up-compare-text c: map-fencrazy >= 0)
+(building-type-count-total town-center > 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-copy-point gl-scout-point-x gl-self-x)
+(up-copy-point gl-scout-point-x2 gl-self-x)
+(up-copy-point gl-scout-point-x3 gl-self-x)
+(up-copy-point gl-scout-point-x4 gl-self-x)
+(up-modify-goal gl-scout-point-x c:+ 24)
+(up-modify-goal gl-scout-point-y c:+ 24)
+(up-modify-goal gl-scout-point-x2 c:- 24)
+(up-modify-goal gl-scout-point-y2 c:+ 24)
+(up-modify-goal gl-scout-point-x3 c:- 24)
+(up-modify-goal gl-scout-point-y3 c:- 24)
+(up-modify-goal gl-scout-point-x4 c:+ 24)
+(up-modify-goal gl-scout-point-y4 c:- 24)
+(up-bound-point gl-scout-point-x gl-scout-point-x)
+(up-bound-point gl-scout-point-x2 gl-scout-point-x2)
+(up-bound-point gl-scout-point-x3 gl-scout-point-x3)
+(up-bound-point gl-scout-point-x4 gl-scout-point-x4)
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+;(disable-self)
+)
+
+(defrule
+(game-time < 180)
+(up-compare-text c: map-fencrazy >= 0)
+(up-compare-goal scout-goal >= 20)
+=>
+(up-modify-goal scout-goal c:= 1)
+)
+
+(defrule
+(or(and(map-type land-nomad)
+(and(game-time > 60)
+(building-type-count town-center > 0)))
+(and(not(map-type land-nomad))
+(up-compare-goal scout-goal < 20)))
+;(building-type-count town-center == 0)
+=>
+;(up-get-point position-self gl-scout-point-x)
+;(up-send-flare gl-scout-point-x)
+;(up-send-flare gl-scout-point-x2)
+;(up-send-flare gl-scout-point-x3)
+;(up-send-flare gl-scout-point-x4)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+=>
+(up-full-reset-search)
+;(up-find-local c: 1869 c: 1)
+(up-find-local c: scout-cavalry-line c: 1)
+(up-find-local c: eagle-warrior-line c: 1)
+(up-find-local c: 912 c: 1)
+(up-find-local c: 936 c: 1)
+(up-find-local c: 906 c: 1)
+(up-find-local c: 900 c: 1)
+(up-find-local c: camel-scout c: 1)
+(up-find-local c: trade-cart c: 1)
+(up-find-local c: 961 c: 1)
+(up-find-local c: 958 c: 1)
+(up-remove-objects search-local -1 > 0)
+(up-create-group 0 0 c: 0)
+;(up-modify-group-flag 1 c: 0)
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-get-point position-self gl-scout-point-x)
+(up-get-point position-self gl-scout-point-x2)
+(up-get-point position-self gl-scout-point-x3)
+(up-get-point position-self gl-scout-point-x4)
+;(up-send-flare gl-scout-point-x)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+=>
+;(chat-local-to-self "rule 0 firing")
+(up-get-point position-self gl-self-x)
+(up-get-point position-object gl-scout-location-x)
+;(up-chat-data-to-self "self x %d" g: gl-self-x)
+;(up-chat-data-to-self "self y %d" g: gl-self-y)
+;(up-chat-data-to-self "scout x %d" g: gl-scout-location-x)
+;(up-chat-data-to-self "scout y %d" g: gl-scout-location-y)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 4)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-self-x g:< gl-centre-x)
+(up-compare-goal gl-self-y g:< gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:- base-patrol-range1)
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+;(chat-local-to-self "rule 1 firing")
+(disable-self)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-self-x g:< gl-centre-x)
+(up-compare-goal gl-self-y g:>= gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:- base-patrol-range1)
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+;(chat-local-to-self "rule 2 firing")
+(disable-self)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-self-x g:>= gl-centre-x)
+(up-compare-goal gl-self-y g:>= gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:+ base-patrol-range1)
+;(chat-local-to-self "rule 3 firing")
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-self-x g:>= gl-centre-x)
+(up-compare-goal gl-self-y g:< gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:+ base-patrol-range1)
+;(chat-local-to-self "rule 4 firing")
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal scout-goal < 20)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+=>
+;(up-send-flare gl-scout-point-x)
+;(up-send-flare gl-scout-point-x2)
+;(up-send-flare gl-scout-point-x3)
+;(up-send-flare gl-scout-point-x4)
+;(up-chat-data-to-self "sg: %d" g: scout-goal)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+)
+
+(defrule
+(up-set-target-object search-local c: 0)
+=>
+(up-get-object-data 0 gl-scout-id)
+;(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+(up-group-size c: 0 > 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+)
+
+(defrule
+(up-group-size c: 0 > 0)
+=>
+(up-set-target-object search-local c: 0)
+)
+
+(defrule
+(up-object-data 20 c:!= my-player-number)
+=>
+(up-reset-group c: 0)
+)
+
+(defrule
+(players-civ any-enemy hun)
+(up-compare-const nomad-start == 1)
+(game-time > 200)
+=>
+(up-modify-goal gl-temp-x c:= 1)
+(up-jump-rule 1)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 2)
+)
+
+(defrule
+(players-civ any-enemy hun)
+(up-compare-const nomad-start == 1)
+(game-time > 200)
+(up-compare-goal gl-temp-x > 0)
+(up-compare-goal gl-temp-x < 32000)
+(up-set-target-by-id g: gl-temp-x)
+(up-object-data 1 == 1869)
+(up-compare-goal gl-enemy-hunnic-horse < 0)
+=>
+(up-get-object-data 0 gl-enemy-hunnic-horse-check)
+(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+(up-jump-rule 1)
+)
+
+(defrule
+(players-civ any-enemy hun)
+(up-compare-const nomad-start == 1)
+(game-time > 200)
+(up-compare-goal gl-temp-x > 0)
+(up-compare-goal gl-temp-x < 32000)
+(up-compare-goal gl-enemy-hunnic-horse-check < 0)
+=>
+(up-modify-goal gl-temp-x c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(players-civ any-enemy hun)
+(up-compare-goal gl-enemy-hunnic-horse-check >= 1)
+;(up-compare-goal gl-enemy-hunnic-horse < 0)
+(up-set-target-by-id g: gl-enemy-hunnic-horse-check)
+=>
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(players-civ any-enemy hun)
+(up-compare-goal gl-enemy-hunnic-horse-check >= 1)
+(up-compare-goal gl-enemy-hunnic-horse < 0)
+(up-set-target-by-id g: gl-enemy-hunnic-horse-check)
+(up-point-explored gl-dot-x == 15)
+=>
+(up-modify-goal gl-enemy-hunnic-horse g:= gl-enemy-hunnic-horse-check)
+)
+
+(defrule
+(players-civ any-enemy hun)
+(up-compare-goal gl-enemy-hunnic-horse-check >= 1)
+(up-compare-goal gl-enemy-hunnic-horse g:== gl-enemy-hunnic-horse-check)
+(up-set-target-by-id g: gl-enemy-hunnic-horse-check)
+(up-point-explored gl-dot-x != 15)
+=>
+(up-modify-goal gl-enemy-hunnic-horse c:= -2)
+)
+
+(defrule
+(unit-type-count 1869 > 0)
+=>
+;(up-reset-group c: 0)
+(up-modify-sn sn-wild-animal-exploration c:= 1)
+(up-modify-sn sn-total-number-explorers c:= 1)
+(up-modify-sn sn-number-explore-groups c:= 1)
+(disable-self)
+)
+
+(defrule
+(up-set-target-by-id g: gl-scout-id)
+(up-object-data 2 == villager-class)
+(military-population > 0)
+=>
+(up-full-reset-search)
+(up-create-group 0 0 c: 0)
+(up-modify-goal gl-scout-id c:= -1)
+(disable-self)
+)
+
+(defrule
+(false)
+(up-group-size c: 0 == 0)
+(military-population > 0)
+=>
+(up-full-reset-search)
+(up-find-local c: -1 c: 500)
+(up-clean-search search-local 13 2)
+(up-remove-objects search-local -1 > 0)
+(up-create-group 0 0 c: 0)
+(up-modify-group-flag 1 c: 0)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-scout-location-x)
+)
+
+(defrule
+(goal active-scout-goal 1)
+(up-path-distance gl-scout-point-x 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal 1)
+(up-modify-goal gl-dot-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-dot-x c:+ 30)
+;(game-time < 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x < base-scout-spot-distance)
+(or(up-point-explored gl-scout-point-x != 0)
+;(game-time > 30)))
+(game-time g:> gl-dot-x)))
+=>
+(set-goal scout-goal 2)
+;(chat-local-to-self "scout goal switching to 2")
+)
+
+(defrule
+(goal active-scout-goal 2)
+(up-path-distance gl-scout-point-x2 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x2 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal 2)
+(up-modify-goal gl-dot-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-dot-x c:+ 60)
+;(game-time < 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x2 < base-scout-spot-distance)
+(or(up-point-explored gl-scout-point-x2 != 0)
+;(game-time > 60)))
+(game-time g:> gl-dot-x)))
+=>
+(set-goal scout-goal 3)
+)
+
+(defrule
+(goal active-scout-goal 3)
+(up-path-distance gl-scout-point-x3 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x3 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal 3)
+(up-modify-goal gl-dot-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-dot-x c:+ 90)
+;(game-time < 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x3 < base-scout-spot-distance)
+(or(up-point-explored gl-scout-point-x3 != 0)
+;(game-time > 90)))
+(game-time g:> gl-dot-x)))
+=>
+(set-goal scout-goal 4)
+)
+
+(defrule
+(goal active-scout-goal 4)
+(up-path-distance gl-scout-point-x4 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x4 gl-scout-location-x c: 1)
+)
+
+(defrule
+;(goal active-scout-goal 4)
+;(building-type-count town-center > 0)
+;(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < base-scout-spot-distance)
+;(game-time < 120))
+;(up-compare-goal gl-boar-found-state == 3)
+(true)
+=>
+(up-jump-rule 5)
+)
+
+(defrule
+(goal active-scout-goal 4)
+(up-modify-goal gl-dot-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-dot-x c:+ 120)
+(building-type-count town-center > 0)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < base-scout-spot-distance)
+;(game-time < 120))
+(game-time g:< gl-dot-x))
+=>
+(up-get-point position-map-size gl-map-size-x)
+(up-get-point position-self gl-dot-x)
+(up-modify-goal gl-dot-x c:- 9)
+(up-modify-goal gl-dot-y c:- 9)
+(up-modify-goal gl-current-list-number c:= 1)
+(up-modify-goal gl-rule-loops c:= 1)
+(up-jump-rule 1)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 3)
+)
+
+(defrule
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 120)
+;(game-time < 120)
+(game-time g:< gl-temp-x)
+(goal active-scout-goal 4)
+(or(up-point-explored gl-dot-x != 0)
+(or(up-compare-goal gl-dot-x < 0)
+(or(up-compare-goal gl-dot-x g:> gl-map-size-x)
+(or(up-compare-goal gl-dot-y < 0)
+(up-compare-goal gl-dot-y g:> gl-map-size-y)))))
+(up-compare-goal gl-current-list-number < 18)
+(up-compare-goal gl-rule-loops < 18)
+=>
+(up-modify-goal gl-dot-x c:+ 1)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 120)
+;(game-time < 120)
+(game-time g:< gl-temp-x)
+(goal active-scout-goal 4)
+;(or(up-point-explored gl-dot-x != 0)
+;(or(up-compare-goal gl-dot-x < 0)
+;(or(up-compare-goal gl-dot-x g:> gl-map-size-x)
+;(or(up-compare-goal gl-dot-y < 0)
+;(up-compare-goal gl-dot-y g:> gl-map-size-y)))))
+(up-compare-goal gl-current-list-number >= 18)
+(up-compare-goal gl-rule-loops < 18)
+=>
+(up-modify-goal gl-dot-y c:+ 1)
+(up-modify-goal gl-dot-x c:- 17)
+(up-modify-goal gl-rule-loops c:+ 1)
+(up-modify-goal gl-current-list-number c:= 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 120)
+;(game-time < 120)
+(game-time g:< gl-temp-x)
+(goal active-scout-goal 4)
+(up-point-explored gl-dot-x == 0)
+(up-compare-goal gl-rule-loops < 18)
+=>
+(up-copy-point gl-scout-point-x4 gl-dot-x)
+;(up-send-flare gl-scout-point-x4)
+)
+
+(defrule
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 120)
+(goal active-scout-goal 4)
+(building-type-count town-center > 0)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < base-scout-spot-distance)
+;(game-time > 120))
+(game-time g:> gl-temp-x))
+=>
+(up-get-point position-self gl-scout-point-x)
+(up-get-point position-self gl-scout-point-x2)
+(up-get-point position-self gl-scout-point-x3)
+(up-get-point position-self gl-scout-point-x4)
+(up-jump-rule 1)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 4)
+)
+
+(defrule
+(goal active-scout-goal 4)
+(building-type-count town-center > 0)
+(up-compare-goal gl-self-x g:< gl-centre-x)
+(up-compare-goal gl-self-y g:< gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:- base-patrol-range1)
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+;(chat-local-to-self "rule 1 firing")
+(disable-self)
+)
+
+(defrule
+(goal active-scout-goal 4)
+(building-type-count town-center > 0)
+(up-compare-goal gl-self-x g:< gl-centre-x)
+(up-compare-goal gl-self-y g:>= gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:- base-patrol-range1)
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+;(chat-local-to-self "rule 2 firing")
+(disable-self)
+)
+
+(defrule
+(goal active-scout-goal 4)
+(building-type-count town-center > 0)
+(up-compare-goal gl-self-x g:>= gl-centre-x)
+(up-compare-goal gl-self-y g:>= gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:+ base-patrol-range1)
+;(chat-local-to-self "rule 3 firing")
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+(defrule
+(goal active-scout-goal 4)
+(building-type-count town-center > 0)
+(up-compare-goal gl-self-x g:>= gl-centre-x)
+(up-compare-goal gl-self-y g:< gl-centre-y)
+=>
+(up-get-point position-object gl-scout-location-x)
+(up-modify-goal gl-scout-point-x c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-x2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-y2 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x3 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y3 c:- base-patrol-range1)
+(up-modify-goal gl-scout-point-x4 c:+ base-patrol-range1)
+(up-modify-goal gl-scout-point-y4 c:+ base-patrol-range1)
+;(chat-local-to-self "rule 4 firing")
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+#load-if-defined ARENA-MAP
+
+(defrule
+(false)
+(goal active-scout-goal 4)
+;(game-time < 200)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < 3)
+(or(up-path-distance gl-scout-point-x4 0 == 65535)
+(game-time > 120)))
+=>
+(up-modify-goal gl-scout-point-x c:+ 6);12
+(up-modify-goal gl-scout-point-y c:+ 6);12
+(up-bound-point gl-scout-point-x gl-scout-point-x)
+(up-modify-goal gl-scout-point-x2 c:- 6);12
+(up-modify-goal gl-scout-point-y2 c:+ 6);12
+(up-bound-point gl-scout-point-x2 gl-scout-point-x2)
+(up-modify-goal gl-scout-point-x3 c:- 6);12
+(up-modify-goal gl-scout-point-y3 c:- 6);12
+(up-bound-point gl-scout-point-x3 gl-scout-point-x3)
+(up-modify-goal gl-scout-point-x4 c:+ 6);12
+(up-modify-goal gl-scout-point-y4 c:- 6);12
+(up-bound-point gl-scout-point-x4 gl-scout-point-x4)
+(set-goal scout-goal 5)
+)
+
+(defrule
+;(false)
+(goal active-scout-goal 4)
+;(game-time < 200)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < base-scout-spot-distance)
+(game-time > 120))
+=>
+(up-lerp-tiles gl-scout-point-x gl-self-x c:- 6)
+(up-bound-point gl-scout-point-x gl-scout-point-x)
+(up-lerp-tiles gl-scout-point-x2 gl-self-x c:- 6)
+(up-bound-point gl-scout-point-x2 gl-scout-point-x2)
+(up-lerp-tiles gl-scout-point-x3 gl-self-x c:- 6)
+(up-bound-point gl-scout-point-x3 gl-scout-point-x3)
+(up-lerp-tiles gl-scout-point-x4 gl-self-x c:- 6)
+(up-bound-point gl-scout-point-x4 gl-scout-point-x4)
+(set-goal scout-goal 5)
+)
+
+#else
+
+(defrule
+(false)
+(goal active-scout-goal 4)
+;(game-time < 200)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < base-scout-spot-distance)
+(or(up-path-distance gl-scout-point-x 0 == 65535)
+(game-time > 120)))
+=>
+(up-modify-goal gl-scout-point-x c:+ 9);10
+(up-modify-goal gl-scout-point-y c:+ 9);10
+(up-bound-point gl-scout-point-x gl-scout-point-x)
+(up-modify-goal gl-scout-point-x2 c:- 9);10
+(up-modify-goal gl-scout-point-y2 c:+ 9);10
+(up-bound-point gl-scout-point-x2 gl-scout-point-x2)
+(up-modify-goal gl-scout-point-x3 c:- 9);10
+(up-modify-goal gl-scout-point-y3 c:- 9);10
+(up-bound-point gl-scout-point-x3 gl-scout-point-x3)
+(up-modify-goal gl-scout-point-x4 c:+ 9);10
+(up-modify-goal gl-scout-point-y4 c:- 9);10
+(up-bound-point gl-scout-point-x4 gl-scout-point-x4)
+(set-goal scout-goal 5)
+)
+
+(defrule
+(goal active-scout-goal 4)
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 120)
+;(game-time < 200)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < base-scout-spot-distance)
+;(game-time > 120))
+(game-time g:> gl-temp-x))
+=>
+;(up-send-flare gl-scout-point-x)
+;(up-send-flare gl-self-x)
+;(up-send-flare gl-scout-point-x2)
+;(up-send-flare gl-scout-point-x3)
+;(up-send-flare gl-scout-point-x4)
+(up-lerp-tiles gl-scout-point-x gl-self-x c: base-patrol-range2);-10
+(up-bound-point gl-scout-point-x gl-scout-point-x)
+(up-lerp-tiles gl-scout-point-x2 gl-self-x c: base-patrol-range2);-10
+(up-bound-point gl-scout-point-x2 gl-scout-point-x2)
+(up-lerp-tiles gl-scout-point-x3 gl-self-x c: base-patrol-range2);-10
+(up-bound-point gl-scout-point-x3 gl-scout-point-x3)
+(up-lerp-tiles gl-scout-point-x4 gl-self-x c: base-patrol-range2);-10
+(up-bound-point gl-scout-point-x4 gl-scout-point-x4)
+;(up-send-flare gl-scout-point-x)
+;(up-send-flare gl-scout-point-x2)
+;(up-send-flare gl-scout-point-x3)
+;(up-send-flare gl-scout-point-x4)
+(set-goal scout-goal 5)
+)
+
+#end-if
+
+(defrule
+(goal active-scout-goal 5)
+(up-path-distance gl-scout-point-x 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal 5)
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 135)
+;(game-time >= 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x < base-scout-spot-distance)
+(or(up-point-explored gl-scout-point-x != 0)
+;(game-time > 135)))
+(game-time g:> gl-temp-x)))
+=>
+(set-goal scout-goal 6)
+)
+
+(defrule
+(goal active-scout-goal 6)
+(up-path-distance gl-scout-point-x2 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x2 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal 6)
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 180)
+;(game-time >= 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x2 < base-scout-spot-distance)
+(or(up-point-explored gl-scout-point-x2 != 0)
+;(game-time > 180)))
+(game-time g:> gl-temp-x)))
+=>
+(set-goal scout-goal 7)
+)
+
+(defrule
+(goal active-scout-goal 7)
+(up-path-distance gl-scout-point-x3 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x3 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal 7)
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 225)
+;(game-time >= 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x3 < base-scout-spot-distance)
+(or(up-point-explored gl-scout-point-x3 != 0)
+;(game-time > 225)))
+(game-time g:> gl-temp-x)))
+=>
+(set-goal scout-goal -8)
+)
+
+(defrule
+(goal active-scout-goal -8)
+(up-path-distance gl-scout-point-x4 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x4 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal -8)
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 260)
+;(game-time >= 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x4 < base-scout-spot-distance)
+(or(up-point-explored gl-scout-point-x4 != 0)
+;(game-time > 260)))
+(game-time g:> gl-temp-x)))
+=>
+(set-goal scout-goal 8)
+)
+
+(defrule
+(goal active-scout-goal 8)
+(up-path-distance gl-scout-point-x4 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal active-scout-goal 8)
+(up-modify-goal gl-temp-x g:= gl-first-tc-timestamp)
+(up-modify-goal gl-temp-x c:+ 300)
+;(game-time >= 120)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x < base-scout-spot-distance)
+;(game-time > 300))
+(game-time g:> gl-temp-x))
+=>
+(set-goal scout-goal 9);change this to 22 for no laming
+)
+
+(defrule
+(false)
+(goal active-scout-goal 8)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x < base-scout-spot-distance)
+(or(up-path-distance gl-scout-point-x 0 == 65535)
+(game-time > 290)));270
+;(game-time > 210)
+=>
+(up-get-point position-self gl-scout-point-x5)
+(up-lerp-tiles gl-scout-point-x5 gl-center-x g: gl-distance)
+(up-bound-point gl-scout-point-x5 gl-scout-point-x5)
+(up-cross-tiles gl-scout-point-x5 gl-center-x g: gl-swing)
+(up-bound-point gl-scout-point-x5 gl-scout-point-x5)
+;(up-target-point gl-scout-point-x5 action-move -1 stance-no-attack)
+(set-goal scout-goal 9);9
+(set-goal active-scout-goal 9)
+(enable-timer short-scout-timer short-scout-time)
+(enable-timer long-scout-timer long-scout-time)
+(disable-self)
+)
+
+(defrule
+(not(goal scout-goal 10))
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(not(goal scout-goal 10))
+(up-compare-goal gl-local-total > 0)
+=>
+(up-set-target-object search-local c: 0)
+)
+
+(defrule
+(goal scout-goal 1)
+(or(not(goal active-scout-goal 1))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(set-goal active-scout-goal 1)
+;(up-send-flare gl-scout-point-x)
+;(chat-local-to-self "spot 1")
+)
+
+(defrule
+(goal scout-goal 2)
+(or(not(goal active-scout-goal 2))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x2 action-move -1 stance-no-attack)
+(set-goal active-scout-goal 2)
+;(up-send-flare gl-scout-point-x2)
+;(chat-local-to-self "spot 2")
+)
+
+(defrule
+(goal scout-goal 3)
+(or(not(goal active-scout-goal 3))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x3 action-move -1 stance-no-attack)
+(set-goal active-scout-goal 3)
+;(up-send-flare gl-scout-point-x3)
+)
+
+(defrule
+(goal scout-goal 4)
+(or(not(goal active-scout-goal 4))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x4 action-move -1 stance-no-attack)
+(set-goal active-scout-goal 4)
+;(up-send-flare gl-scout-point-x4)
+)
+
+(defrule
+(goal scout-goal 5)
+(or(not(goal active-scout-goal 5))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(set-goal active-scout-goal 5)
+;(up-send-flare gl-scout-point-x)
+)
+
+(defrule
+(goal scout-goal 6)
+(or(not(goal active-scout-goal 6))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x2 action-move -1 stance-no-attack)
+(set-goal active-scout-goal 6)
+;(up-send-flare gl-scout-point-x2)
+)
+
+(defrule
+(goal scout-goal 7)
+(or(not(goal active-scout-goal 7))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x3 action-move -1 stance-no-attack)
+(set-goal active-scout-goal 7)
+;(up-send-flare gl-scout-point-x3)
+)
+
+(defrule
+(goal scout-goal -8)
+(or(not(goal active-scout-goal -8))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x4 action-move -1 stance-no-attack)
+(set-goal active-scout-goal -8)
+;(up-send-flare gl-scout-point-x4)
+)
+
+(defrule
+(goal scout-goal 8)
+(or(not(goal active-scout-goal 8))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(set-goal active-scout-goal 8)
+;(up-send-flare gl-scout-point-x)
+)
+
+(defrule
+(false)
+(goal scout-goal -8)
+(or(not(goal active-scout-goal -8))
+(up-object-data 6 != -1))
+=>
+(up-target-point gl-scout-point-x action-move -1 stance-no-attack)
+(set-goal active-scout-goal -8)
+)
+
+
+(defrule
+(false)
+=>
+(up-get-point position-self gl-scout-point-x5)
+(set-goal gl-distance -10)
+(disable-self)
+)
+
+(defrule
+(goal scout-goal 9)
+(timer-triggered short-scout-timer)
+;(not(goal active-scout-goal 9))
+=>
+(up-copy-point gl-scout-path-x gl-scout-location-x)
+(up-lerp-tiles gl-scout-path-x gl-scout-point-x5 c: 15)
+(up-cross-tiles gl-scout-path-x gl-scout-point-x5 g: gl-mini-swing)
+(up-bound-point gl-scout-path-x gl-scout-path-x)
+(up-modify-goal gl-mini-swing c:* -1)
+(up-target-point gl-scout-path-x action-move -1 stance-no-attack)
+(enable-timer short-scout-timer short-scout-time)
+;(set-goal active-scout-goal 9)
+)
+
+(defrule
+(goal scout-goal 9)
+(not(goal active-scout-goal 9))
+=>
+;(up-copy-point gl-scout-path-x gl-scout-location-x)
+;(up-lerp-tiles gl-scout-path-x gl-scout-point-x5 c: 5)
+;(up-target-point gl-scout-path-x action-move -1 stance-no-attack)
+(set-goal active-scout-goal 9)
+)
+
+(defrule
+;(false)
+(goal active-scout-goal 9)
+(or(up-point-distance gl-scout-location-x gl-scout-point-x5 < 5)
+(or(up-path-distance gl-scout-point-x5 0 == 65535)
+(timer-triggered long-scout-timer)))
+=>
+(up-modify-goal gl-distance c:+ distance-increase)
+(up-modify-goal gl-swing c:* -1)
+(up-get-point position-self gl-scout-point-x5)
+(up-lerp-tiles gl-scout-point-x5 gl-center-x g: gl-distance)
+(up-bound-point gl-scout-point-x5 gl-scout-point-x5)
+(up-cross-tiles gl-scout-point-x5 gl-center-x g: gl-swing)
+(up-bound-point gl-scout-point-x5 gl-scout-point-x5)
+;(set-goal active-scout-goal 0)
+(enable-timer long-scout-timer long-scout-time)
+)
+
+;(defrule
+;(goal scout-goal 8);9
+;=>
+;(set-goal scout-goal search-enemy-base)
+;(set-goal active-scout-goal 78)
+;)
+
+;(defrule
+;(goal scout-goal 9)
+;=>
+;(set-goal scout-goal 10)
+;(set-goal active-scout-goal 10)
+;)
+
+#load-if-defined ARENA-MAP
+
+(defrule
+(goal scout-goal search-enemy-base)
+=>
+(set-goal scout-goal 10)
+(set-goal active-scout-goal 10)
+)
+
+#end-if
+
+#load-if-defined UP-MICHI-STYLE
+
+(defrule
+(goal scout-goal 9)
+=>
+(set-goal scout-goal 10)
+(set-goal active-scout-goal 10)
+)
+
+#end-if
+
+(defrule
+(or(players-building-type-count target-player house > 0);town-center
+(or(players-building-type-count target-player lumber-camp > 0)
+(or(players-building-type-count target-player town-center > 0)
+(or(players-building-type-count target-player mining-camp > 0)
+(or(players-building-type-count target-player mill > 0)
+(or(players-building-type-count target-player barracks > 0)
+(or(players-building-type-count target-player archery-range > 0)
+(or(players-building-type-count target-player stable > 0)
+(or(players-building-type-count target-player 939 > 0)
+(or(players-building-type-count target-player 927 > 0)
+(or(players-building-type-count target-player palisade-wall > 0)
+(or(players-building-type-count target-player stone-wall > 0)
+(game-time > max-scout-time)))))))))))))
+(or(game-time > 660)
+(up-compare-goal scout-goal == 9))
+;(not(goal scout-goal 10))
+;(true)
+=>
+(set-goal scout-goal search-enemy-base);10
+;(set-goal active-scout-goal search-enemy-base);10
+;(up-target-point gl-self-x action-move -1 stance-no-attack)
+(set-strategic-number sn-number-explore-groups 1)
+(disable-self)
+)
+
+(defrule
+(false); TURNING OFF EARLY DEER HUNT
+(sheep-and-forage-too-far)
+(up-compare-goal scout-goal == 9)
+=>
+(set-goal scout-goal 10)
+(set-goal active-scout-goal 10)
+(up-target-point gl-self-x action-move -1 stance-no-attack)
+(set-strategic-number sn-number-explore-groups 1)
+(disable-self)
+)
+
+(defrule
+(false)
+(goal active-scout-goal 10)
+=>
+(up-target-point position-self action-move -1 stance-no-attack)
+)
+
+(defrule
+(goal scout-goal search-enemy-base)
+(not(goal active-scout-goal search-enemy-base))
+(players-building-type-count target-player town-center < 1)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: -1 c: 40)
+)
+
+(defrule
+(false)
+(goal scout-goal search-enemy-base)
+(not(goal active-scout-goal search-enemy-base))
+(players-building-type-count target-player town-center < 1)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-flank 320);object changed for PoA
+(up-copy-point gl-scout-path-x 320)
+(up-lerp-tiles gl-scout-path-x gl-scout-location-x c: 15)
+(up-cross-tiles gl-scout-path-x 320 c: -5)
+(up-bound-point gl-scout-path-x gl-scout-path-x)
+(enable-timer short-scout-timer 2)
+(up-target-point gl-scout-path-x action-move -1 stance-no-attack)
+(set-goal active-scout-goal search-enemy-base)
+(up-jump-rule 1)
+)
+
+(defrule;editing this with new scout location DC7
+(goal scout-goal search-enemy-base)
+(not(goal active-scout-goal search-enemy-base))
+(players-building-type-count target-player town-center < 1)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+;(up-get-point position-flank gl-dot-x)
+;(up-lerp-tiles gl-dot-x gl-self-x c: -10)
+;(up-bound-point gl-dot-x gl-dot-x)
+(up-target-point gl-find-target-x action-move -1 -1);gl-dot-x
+(enable-timer short-scout-timer 2)
+(disable-self)
+)
+
+(defrule;editing this with new scout location DC7
+(goal scout-goal search-enemy-base)
+(not(goal active-scout-goal search-enemy-base))
+(players-building-type-count target-player town-center < 1)
+(timer-triggered short-scout-timer)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+;(up-get-point position-flank gl-dot-x)
+;(up-lerp-tiles gl-dot-x gl-self-x c: -10)
+;(up-bound-point gl-dot-x gl-dot-x)
+(up-target-point gl-find-target-x action-move -1 -1);gl-dot-x
+(enable-timer short-scout-timer 2)
+)
+
+(defrule
+(false)
+(goal scout-goal search-enemy-base)
+(goal active-scout-goal search-enemy-base)
+(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player mining-camp < 1)
+(timer-triggered short-scout-timer)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: 903 c: 50)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-flank 320);object changed for PoA
+(up-copy-point gl-scout-path-x 320)
+(up-modify-goal gl-range-variable c:= 4)
+(up-modify-goal gl-range-variable g:+ gl-range-variable-modifier)
+(up-lerp-tiles gl-scout-path-x gl-scout-location-x g: gl-range-variable)
+(up-cross-tiles gl-scout-path-x 320 c: -5)
+(up-bound-point gl-scout-path-x gl-scout-path-x)
+(enable-timer short-scout-timer 2)
+(up-target-point gl-scout-path-x action-move -1 stance-no-attack)
+)
+
+(defrule
+(goal scout-goal search-enemy-base)
+(goal active-scout-goal search-enemy-base)
+(players-building-type-count target-player town-center >= 1)
+(players-building-type-count target-player mining-camp < 1)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: town-center c: 50)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-flank gl-dot-x);object changed for PoA
+(up-copy-point gl-scout-path-x gl-dot-x);320 swapped for gl-dot-x
+(up-modify-goal gl-range-variable c:= 4)
+(up-modify-goal gl-range-variable g:+ gl-range-variable-modifier)
+(up-lerp-tiles gl-scout-path-x gl-scout-location-x g: gl-range-variable)
+(up-cross-tiles gl-scout-path-x gl-dot-x c: -5);320 swapped for gl-dot-x
+(up-bound-point gl-scout-path-x gl-scout-path-x)
+(enable-timer short-scout-timer 2)
+(up-target-point gl-scout-path-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+(defrule
+(goal scout-goal search-enemy-base)
+(goal active-scout-goal search-enemy-base)
+(players-building-type-count target-player town-center >= 1)
+(players-building-type-count target-player mining-camp < 1)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: town-center c: 50)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-flank gl-dot-x);object changed for PoA
+(up-copy-point gl-scout-path-x gl-scout-location-x);320 swapped for gl-dot-x
+(up-lerp-tiles gl-scout-path-x gl-dot-x c: -10)
+(up-cross-tiles gl-scout-path-x gl-dot-x c: -5);320 swapped for gl-dot-x
+(up-bound-point gl-scout-path-x gl-scout-path-x)
+;(up-send-flare gl-scout-path-x)
+(enable-timer short-scout-timer 5);2
+(up-target-point gl-scout-path-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+(defrule
+(goal scout-goal search-enemy-base)
+(goal active-scout-goal search-enemy-base)
+(players-building-type-count target-player town-center >= 1)
+(players-building-type-count target-player mining-camp < 1)
+(timer-triggered short-scout-timer)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: town-center c: 50)
+(up-set-target-object search-remote c: 0)
+;(up-get-point position-flank gl-dot-x);object changed for PoA
+;(up-copy-point gl-scout-path-x gl-scout-location-x);320 swapped for gl-dot-x
+;(up-lerp-tiles gl-scout-path-x gl-dot-x c: -10)
+(up-get-point position-flank gl-dot-x);object changed for PoA
+(up-copy-point gl-scout-path-x gl-dot-x);320 swapped for gl-dot-x
+(up-lerp-tiles gl-scout-path-x gl-scout-location-x c: 15)
+(up-cross-tiles gl-scout-path-x gl-dot-x c: -5);320 swapped for gl-dot-x
+(up-bound-point gl-scout-path-x gl-scout-path-x)
+;(up-send-flare gl-scout-path-x)
+(enable-timer short-scout-timer 2);2
+(up-target-point gl-scout-path-x action-move -1 stance-no-attack)
+)
+
+(defrule;editing this with 48c
+(goal scout-goal search-enemy-base)
+(not(goal active-scout-goal search-enemy-base))
+=>
+(set-goal active-scout-goal search-enemy-base)
+(enable-timer short-scout-timer 2)
+)
+
+
+(defrule
+(goal scout-goal search-enemy-base)
+(players-building-type-count target-player town-center >= 1)
+(players-building-type-count target-player mining-camp >= 1)
+=>
+(set-goal scout-goal 10)
+(set-goal active-scout-goal 10)
+;(chat-local-to-self "seen building, switching to scout goal 10")
+)
+
+(defrule
+(players-building-type-count target-player town-center >= 1)
+=>
+(set-goal spotted-enemy 1)
+(disable-self)
+)
+
+(defrule
+(false)
+(goal scout-goal search-enemy-base)
+=>
+(chat-local-to-self "Searching Enemy Base")
+)
+
+(defrule
+(true)
+;(false)
+=>
+(up-get-point position-map-size gl-map-x)
+(up-modify-goal gl-map-x c:/ 2)
+(up-modify-goal gl-map-y c:/ 2)
+(up-modify-goal gl-map-x c:* -1)
+(up-modify-goal gl-map-y c:* -1)
+;(up-copy-point gl-dot-x gl-self-x)
+;(up-modify-goal gl-dot-x g:- gl-map-x)
+;(up-modify-goal gl-dot-y g:- gl-map-y)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-dot-x < 0)
+=>
+(up-modify-goal gl-dot-x g:+ gl-map-x)
+(up-modify-goal gl-dot-x g:+ gl-map-x)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-dot-y < 0)
+=>
+(up-modify-goal gl-dot-y g:+ gl-map-y)
+(up-modify-goal gl-dot-y g:+ gl-map-y)
+)
+
+(defrule
+(false)
+(up-compare-const age-up-strategy == fast-castle)
+(up-research-status c: feudal-age == research-pending)
+(up-point-explored gl-dot-x == 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-target-point gl-dot-x action-move -1 stance-no-attack)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+(false)
+(up-compare-const age-up-strategy == fast-castle)
+(up-research-status c: feudal-age == research-pending)
+(up-point-explored gl-dot-x != 0)
+=>
+(up-lerp-tiles gl-dot-x gl-self-x c: 10)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+(false)
+(up-compare-const age-up-strategy == fast-castle)
+(up-research-status c: feudal-age == research-pending)
+(up-point-explored gl-dot-x != 0)
+=>
+(up-cross-tiles gl-dot-x gl-self-x c: 10)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+(false)
+(up-compare-const age-up-strategy == fast-castle)
+(up-research-status c: feudal-age == research-pending)
+(up-point-explored gl-dot-x != 0)
+=>
+(up-cross-tiles gl-dot-x gl-self-x c: -20)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+(false)
+(up-compare-const age-up-strategy == fast-castle)
+(up-research-status c: feudal-age == research-pending)
+(up-point-explored gl-dot-x == 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-target-point gl-dot-x action-move -1 stance-no-attack)
+;(up-send-flare gl-dot-x)
+)
+
+#load-if-defined UP-POCKET-POSITION
+
+(defrule
+(true)
+;(false)
+(up-compare-goal gl-game-strategy == flush)
+=>
+(up-get-point position-center gl-center-x)
+(up-copy-point gl-dot-x gl-center-x)
+(up-lerp-tiles gl-dot-x gl-self-x g: gl-map-x)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy == flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: feudal-age <= research-pending)
+(current-age >= feudal-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x == 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-target-point gl-dot-x action-move -1 stance-no-attack)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy == flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: feudal-age <= research-pending)
+(current-age >= feudal-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x != 0)
+=>
+(up-cross-tiles gl-dot-x gl-self-x c: 10)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy == flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: feudal-age <= research-pending)
+(current-age >= feudal-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x != 0)
+=>
+(up-cross-tiles gl-dot-x gl-self-x c: -20)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy == flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: feudal-age <= research-pending)
+(current-age >= feudal-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x == 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-target-point gl-dot-x action-move -1 stance-no-attack)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+;(up-compare-const age-up-strategy == fast-castle)
+(up-compare-goal gl-game-strategy != flush)
+=>
+(up-get-point position-center gl-center-x)
+(up-copy-point gl-dot-x gl-center-x)
+(up-lerp-tiles gl-dot-x gl-self-x g: gl-map-x)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy != flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: castle-age >= research-pending)
+(current-age >= castle-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x == 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-target-point gl-dot-x action-move -1 stance-no-attack)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy != flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: castle-age >= research-pending)
+(current-age >= castle-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x != 0)
+=>
+(up-cross-tiles gl-dot-x gl-self-x c: 10)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy != flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: castle-age >= research-pending)
+(current-age >= castle-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x != 0)
+=>
+(up-cross-tiles gl-dot-x gl-self-x c: -20)
+(up-bound-point gl-dot-x gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-game-strategy != flush)
+(up-compare-goal scout-goal >= 9)
+;(up-compare-const age-up-strategy == fast-castle)
+(or(up-research-status c: castle-age >= research-pending)
+(current-age >= castle-age))
+(players-building-type-count any-enemy town-center < 1)
+(up-point-explored gl-dot-x == 0)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-target-point gl-dot-x action-move -1 stance-no-attack)
+;(up-send-flare gl-dot-x)
+)
+
+#end-if
+
+;(defrule
+;(true)
+;=>
+;(up-chat-data-to-all "scout goal %d" g: scout-goal)
+;)
+
+(load "Bright Spark 49f\Laming")
+
+(defrule
+(false)
+(goal military-mode shield)
+=>
+(chat-local-to-self "Military Mode is Shield")
+)
+
+(defrule
+(false)
+(goal military-mode hold)
+=>
+(chat-local-to-self "Military Mode is Hold")
+)
+
+(defrule
+(false)
+(goal military-mode raid)
+=>
+(chat-local-to-self "Military Mode is Raid")
+)
+
+(defrule
+(false)
+(goal military-mode assault)
+=>
+(chat-local-to-self "Military Mode is Assault")
+)
+
+#load-if-defined ARENA-MAP
+
+(defrule
+(up-research-status c: castle-age == research-pending)
+=>
+(up-find-local c: town-center c: 240)
+(up-remove-objects search-local 60 != 103);remove those not researching a technology
+)
+
+(defrule
+(up-research-status c: castle-age == research-pending)
+(up-set-target-object search-local c: 0)
+;(up-object-data 61 >= 25)
+(up-object-data 61 < 26)
+(players-building-type-count target-player stone-wall >= 1)
+;(players-building-type-count target-player stone-wall < 15)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: stone-wall c: 40)
+(up-clean-search search-remote 8 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+(up-target-point gl-dot-x action-move -1 -1)
+)
+
+(defrule
+(up-research-status c: castle-age == research-pending)
+(up-set-target-object search-local c: 0)
+(up-object-data 61 >= 25)
+(up-object-data 61 < 50)
+(players-building-type-count target-player stone-wall >= 1)
+;(players-building-type-count target-player stone-wall >= 15)
+;(players-building-type-count target-player stone-wall < 40)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: stone-wall c: 40)
+(up-clean-search search-remote 8 2)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+(up-target-point gl-dot-x action-move -1 -1)
+)
+
+(defrule
+(up-research-status c: castle-age == research-pending)
+(up-set-target-object search-local c: 0)
+(up-object-data 61 >= 50)
+(up-object-data 61 < 75)
+(players-building-type-count target-player stone-wall >= 1)
+;(players-building-type-count target-player stone-wall < 15)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: stone-wall c: 40)
+(up-clean-search search-remote 9 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+(up-target-point gl-dot-x action-move -1 -1)
+)
+
+(defrule
+(up-research-status c: castle-age == research-pending)
+(up-set-target-object search-local c: 0)
+(up-object-data 61 >= 75)
+(up-object-data 61 < 100)
+(players-building-type-count target-player stone-wall >= 1)
+;(players-building-type-count target-player stone-wall >= 15)
+;(players-building-type-count target-player stone-wall < 40)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: stone-wall c: 40)
+(up-clean-search search-remote 9 2)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+(up-target-point gl-dot-x action-move -1 -1)
+)
+
+
+(defrule
+(up-research-status c: castle-age == research-pending)
+(players-building-type-count target-player stone-wall < 1);
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-get-point position-flank gl-dot-x)
+(up-target-point gl-dot-x action-move -1 -1)
+)
+
+#end-if

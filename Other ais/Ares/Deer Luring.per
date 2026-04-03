@@ -1,0 +1,235 @@
+;Deer luring taken and modified from fireball's snippets
+;###################### OVERVIEW
+;By FireBall37
+;Essentially, once you have left time for the scout to explore your base, finds the closest deer to the tc and directs the scout to the tile just behind it from the tc, thus pushing the deer forward. Once the deer is close enough to the tc, task villagers to shoot the deer and reset the system for the next deer. Continue like this until there are no more deer or it is time to scout for the enemy.
+
+;###################### DEFCONSTS
+;NOTE: Be sure that you choose values for the goals/timers that are not assigned to any other goals/timers in your script. You will need to remove the semicolons before the defconsts below to make it work. Below are suggested values, but change as needed to fit your preferences and avoid conflicts
+
+;WWWWWWWWWWWWWWWWWW Things To Adjust
+;(defconst TimeBeforeDeerLuring 270)	;seconds that must pass before starting to lure deer
+;(defconst TimeToStopDeerLuring 550)	;after this time luring will be disabled
+(defconst DistanceToShootDeer 4)	;distance from TC to shoot deer
+(defconst VillsToShootDeer 4)	;controls how many will shoot the deer
+
+;WWWWWWWWWWWWWWWWWW Timers (values: 1-40)
+;(defconst t-misc 4)
+
+;WWWWWWWWWWWWWWWWWW GOALS (values: 1-512)
+;@@@@@@@@@@@@@@ NORMAL GOALS
+;(defconst deerhp-goal 165)	;generic goal--in this case stores the deer's hp
+;(defconst gl-dlure 221)	;keeps track of the current luring stage
+;(defconst g-deer-id 151)	;stores chosen deer's ID as a way of keeping track of it
+
+;@@@@@@@@@@@@@@ POINTS	(values: 41-512)
+;(defconst p-self-x 478)	;point goals storing position of home TC--recommend keeping these as these are agreed-upon convention for home-point goals. IMPORTANT: need rule to store the position of the initial tc in these goals
+;(defconst home-y 479)
+;(defconst p-x-1 177)	;generic point goals 
+;(defconst point-y 178)
+;(defconst p-x-3 269)	;generic point goals
+;(defconst p-y-3 270)
+
+;@@@@@@@@@@@@@@ OTHER GOALS
+;(defconst lt 254)	;search-state goals, four consecutive goals that store information about the contents of the local and remote lists
+;(defconst ll 255)
+;(defconst rt 256)
+;(defconst rl 257)
+
+;###################### CODE
+;WWWWWWWWWWWWWWWWWW SETUP
+(defrule
+	(goal gl-dlure 100)
+	(game-time < 720)
+	(or	(up-gaia-type-count c: wild-deer > 0)
+	(or	(up-gaia-type-count c: wild-ostrich > 0)
+	(or	(up-gaia-type-count c: wild-ibex > 0)
+	(or	(up-gaia-type-count c: wild-gazelle > 0)
+	(or	(up-gaia-type-count c: wild-argali > 0)
+	(or	(up-gaia-type-count c: wild-zebra > 0)
+		(up-gaia-type-count c: wild-mouflon > 0)))))))
+	(building-type-count stone-wall-line < 1)
+	(building-type-count palisade-wall < 1)
+	(dropsite-min-distance deer-hunting < 50)
+	(dropsite-min-distance deer-hunting > -1)
+	(or	(and	(up-compare-goal g-current-boar > 1)
+			(up-compare-goal g-current-sheep > 5))
+		(game-time s:> sn-home-exploration-time))
+=>
+	(set-goal gl-dlure -1)
+	(up-reset-unit c: scout-unit)
+	(up-modify-goal g-dark-vills c:- 1)
+	(chat-to-player my-player-number "commence deer luring")
+;	(up-modify-goal g-dark-vills-2 c:- 1)
+	(set-strategic-number sn-home-exploration-time 10)
+	(set-strategic-number sn-total-number-explorers 0)
+	(set-strategic-number sn-number-explore-groups 0)
+	(disable-self)
+)
+
+(defrule	;when to stop luring
+	(game-time >= 720)
+=>
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1)
+	(chat-to-player my-player-number "Scout-enemy")
+	(up-reset-unit c: scout-unit)
+	(up-reset-scouts)
+	(up-send-scout group-type-land-explore scout-opposite)
+	(disable-self)
+)
+
+;WWWWWWWWWWWWWWWWWW PUSHING THE DEER
+
+
+(defrule	;search for deer around the town center and pick the closest one
+	(up-compare-goal gl-dlure != 100)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: -1 c: 50)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-find-remote c: wild-deer c: 40)
+	(up-find-remote c: wild-ostrich c: 40)
+	(up-find-remote c: wild-ibex c: 40)
+	(up-find-remote c: wild-gazelle c: 40)
+	(up-find-remote c: wild-argali c: 40)
+	(up-find-remote c: wild-zebra c: 40)
+	(up-find-remote c: wild-mouflon c: 40)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-remove-objects search-remote -1 > 0)	;only closest
+	(up-get-search-state lt)	;check how many deer were found
+)
+
+(defrule	;get the closest deer's ID into a deerhp-goal if one was found
+	(goal gl-dlure -1)
+	(up-compare-goal rt >= 1)	;deer was found
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id g-deer-id)
+	(set-goal gl-dlure 0)	;start pushing the deer
+)
+
+(defrule 	;update chosen deer's position and hp every pass
+	(up-compare-goal gl-dlure != 100)
+	(up-set-target-by-id g: g-deer-id)
+=>
+	(up-full-reset-search)
+	(up-get-object-data object-data-hitpoints deerhp-goal)
+	(up-get-object-data object-data-precise-x p-x-3)	;get the precise coordinates
+	(up-get-object-data object-data-precise-y p-y-3)
+	(up-get-point position-object p-x-4)
+
+
+	(up-copy-point p-x-2 p-self-x)	;need to multiply by 100 for precise
+	(up-modify-goal p-x-2 c:* 100)
+	(up-modify-goal p-y-2 c:* 100)
+	(up-lerp-tiles p-x-4 p-self-x c: 1)
+	(up-filter-exclude -1 actionid-attack -1 -1)
+	(generate-random-number 150)
+	(up-get-fact random-number 0 g-math-1)
+)
+
+(defrule
+	(goal g-second-turn 0)
+	(up-point-contains p-x-4 c: trees-class)
+	(up-compare-goal gl-dlure != 100)
+	(up-compare-goal deerhp-goal > 0)	;if the deer is still alive
+	(up-set-target-by-id g: g-deer-id)
+	(up-find-local c: scout-unit c: 1)
+=>
+;	(chat-to-all "Push deer away from forest")
+	(up-copy-point p-x-1 p-x-3)	;copy deer position into a second point
+	(up-cross-tiles p-x-1 p-x-2 g: g-math-1)	;move p-x-1 one-quarter tile away from tc so the scout will be behind the deer
+
+	(set-strategic-number sn-target-point-adjustment 6)	;set to enable precise targetting
+	(up-bound-precise-point p-x-1 1 c: 20)
+	(up-target-point p-x-1 action-move -1 stance-no-attack)
+	(set-strategic-number sn-target-point-adjustment 5)	;reset
+	(up-jump-rule 1)
+)
+(defrule
+	(up-compare-goal gl-dlure != 100)
+	(up-compare-goal deerhp-goal > 0)	;if the deer is still alive
+	(up-set-target-by-id g: g-deer-id)
+	(up-find-local c: scout-unit c: 1)
+=>
+;	(chat-to-all "Push The Deer")
+	(up-copy-point p-x-1 p-x-3)	;copy deer position into a second point
+	(up-lerp-tiles p-x-1 p-x-2 c: -75)	;move p-x-1 one-quarter tile away from tc so the scout will be behind the deer
+
+	(set-strategic-number sn-target-point-adjustment 6)	;set to enable precise targetting
+	(up-bound-precise-point p-x-1 1 c: 20)
+	(up-target-point p-x-1 action-move -1 stance-no-attack)
+	(set-strategic-number sn-target-point-adjustment 5)	;reset
+)
+
+(defrule	;when to stop luring
+	(goal gl-dlure -1)
+=>
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1)
+;	(chat-to-all "Stop Deer Luring")
+	(up-reset-unit c: scout-unit)
+	(set-goal gl-dlure 100)
+	(up-reset-scouts)
+	(up-send-scout group-type-land-explore scout-corner)
+	(disable-self)
+)
+
+;WWWWWWWWWWWWWWWWWW SHOOTING THE DEER
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: -1 c: DistanceToShootDeer)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-find-remote c: wild-deer c: 5)
+	(up-find-remote c: wild-ostrich c: 5)
+	(up-find-remote c: wild-ibex c: 5)
+	(up-find-remote c: wild-gazelle c: 5)
+	(up-find-remote c: wild-argali c: 5)
+	(up-find-remote c: wild-zebra c: 5)
+	(up-find-remote c: wild-mouflon c: 5)
+	(up-remove-objects search-remote object-data-carry < 120)	;only live deer
+	(up-get-search-state lt)	;see how many were found
+)
+
+(defrule	;shoot the deer if not hunting boar and one is near the tc
+	(up-compare-goal rt >= 1)	;deer found near tc
+	(up-timer-status t-misc != timer-running)	;this is so the command doesnt loop continuously
+	(or	(dropsite-min-distance live-boar == -1)
+		(dropsite-min-distance live-boar >= 10))
+=>
+;	(chat-to-all "Kill Deer")
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-find-local c: villager-class c: 20)
+	(up-clean-search search-local object-data-distance search-order-asc)
+	(up-remove-objects search-local object-data-action == actionid-build)
+	(up-remove-objects search-local object-data-target == trees-class)
+	(up-remove-objects search-local -1 > VillsToShootDeer)	;number of vills to shoot deer
+	(up-find-remote c: wild-deer c: 10)
+	(up-find-remote c: wild-ostrich c: 10)
+	(up-find-remote c: wild-ibex c: 10)
+	(up-find-remote c: wild-gazelle c: 10)
+	(up-find-remote c: wild-argali c: 10)
+	(up-find-remote c: wild-mouflon c: 10)
+	(up-find-remote c: wild-zebra c: 10)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-remove-objects search-remote -1 > 0)	;closest deer
+	(up-target-objects 0 action-default -1 -1)
+	(enable-timer t-misc 15)	;wait awhile before allowing this rule to fire again
+)
+
+(defrule 	;reset the system once deer is shot
+	(up-compare-goal deerhp-goal < 2)	;hp
+	(up-compare-goal gl-dlure >= 0)
+	(up-compare-goal gl-dlure != 100)	;not done luring yet
+=>
+	(up-reset-unit c: scout-unit)
+;	(chat-to-all "Deer Shot--Reset")
+	(set-goal gl-dlure -1)
+	(set-goal g-deer-id -1)
+	(up-reset-scouts)
+)

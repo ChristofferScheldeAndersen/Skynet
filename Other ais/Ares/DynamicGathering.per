@@ -1,0 +1,449 @@
+
+
+(defrule
+	(true)
+=>
+	(up-get-fact food-amount 0 g-food-available)
+	(up-get-fact gold-amount 0 g-gold-available)
+	(up-get-fact stone-amount 0 g-stone-available)
+	(up-get-fact wood-amount 0 g-wood-available)
+
+	(up-setup-cost-data 1 g-2xfood-available)
+	(up-add-cost-data g-food-available c: 2)
+	(up-add-cost-data g-food-escrow c: -1)
+	(up-add-cost-data g-food-buffer c: -1)
+
+	(up-setup-cost-data 0 g-food-available)
+	(up-add-cost-data g-food-escrow c: -1)
+	(up-add-cost-data g-food-buffer c: -1)
+
+	(up-modify-goal g-food-available c:max 0)
+	(up-modify-goal g-wood-available c:max 0)
+	(up-modify-goal g-stone-available c:max 0)
+	(up-modify-goal g-gold-available c:max 0)
+
+	(up-modify-goal g-2xfood-available c:max 0)
+	(up-modify-goal g-2xwood-available c:max 0)
+	(up-modify-goal g-2xstone-available c:max 0)
+	(up-modify-goal g-2xgold-available c:max 0)
+
+	(up-modify-goal g-max-res-available g:= g-food-available)
+	(up-modify-goal g-max-res-available g:max g-wood-available)
+	(up-modify-goal g-max-res-available g:max g-gold-available)
+
+)
+
+
+
+;We restrict changes to small adjustments (We can modify this in the future)
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+=>
+	(set-strategic-number sn-wood-modifier-percentage 0)
+	(up-modify-goal g-min-wood-percent g:= g-saved-wood-percent)
+	(up-modify-goal g-min-gold-percent g:= g-saved-gold-percent)
+
+	(up-modify-goal g-max-wood-percent g:= g-saved-wood-percent)
+	(up-modify-goal g-max-gold-percent g:= g-saved-gold-percent)
+
+	(up-modify-goal g-min-wood-percent c:- 4)
+	(up-modify-goal g-min-gold-percent c:- 4)
+
+	(up-modify-goal g-max-wood-percent c:+ 5)
+	(up-modify-goal g-max-gold-percent c:+ 4)
+
+	(up-modify-goal g-min-wood-percent c:max 21)
+	(up-modify-goal g-min-gold-percent c:max 6)
+
+	(up-modify-goal g-max-wood-percent c:min 64)
+	(up-modify-goal g-max-gold-percent c:min 42)
+
+	(up-modify-goal g-min-food-percent g:= g-saved-food-percent)
+	(up-modify-goal g-min-food-percent c:- 7)
+	(up-modify-goal g-min-food-percent c:max 24)
+
+)
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+=>
+	(up-setup-cost-data 1 g-foodies)
+	(up-add-cost-data g-2xfood-available c: 1)
+
+	(up-modify-goal g-foodies c:min 5000)
+	(up-modify-goal g-woodies c:min 8000)
+	(up-modify-goal g-goldies c:min 9000)
+	(up-modify-goal g-foodies c:max 1)
+	(up-modify-goal g-woodies c:max 1)
+	(up-modify-goal g-goldies c:max 1)
+
+)
+
+(defrule
+	(or	(dropsite-min-distance wood >= 17)
+		(dropsite-min-distance wood == -1))
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+=>
+	(up-modify-goal g-max-wood-percent g:min g-min-wood-percent))
+
+;This might need to be modified
+(defrule
+	(goal g-dynamic-gathering yes)
+	(or	(dropsite-min-distance gold >= 17)
+		(dropsite-min-distance gold == -1))
+	(timer-triggered t-dynamic-gather)
+=>
+	(up-modify-goal g-max-gold-percent c:min 10))
+
+;(defrule
+;	(goal g-dynamic-gathering yes)
+;	(timer-triggered t-dynamic-gather)
+;	(unit-type-count fishing-ship > 9)
+;=>
+;	(up-modify-goal g-foodies c:+ 400)
+;)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(research-available castle-age)
+	(current-age < castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 50)
+	(up-modify-goal g-woodies c:+ 850)
+	(up-modify-goal g-goldies c:+ 600)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(nor	(research-available castle-age)
+		(goal g-rushing-unit archer))
+	(current-age < castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 300)
+	(up-modify-goal g-woodies c:+ 50)
+	(up-modify-goal g-goldies c:+ 600)
+)
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(not	(research-available castle-age))
+	(goal g-rushing-unit archer)
+	(current-age < castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 800)
+	(up-modify-goal g-goldies c:+ 200)
+)
+
+(defrule
+	(gold-amount < 250)
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(goal g-rushing-unit eagle-warrior)
+=>
+	(up-modify-goal g-foodies c:+ 300)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(goal g-rushing-unit eagle-warrior)
+	(building-type-count barracks > 0)
+=>
+	(up-modify-goal g-woodies c:+ 100)
+)
+
+(defrule
+	(or	(gold-amount < 250)
+		(wood-amount > 300))
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(building-type-count-total blacksmith > 0)
+	(goal g-rushing-unit eagle-warrior)
+	(current-age < castle-age)
+=>
+	(up-modify-goal g-woodies c:+ 250)
+)
+
+(defrule
+	(or	(strategic-number sn-military-superiority < -3)
+		(military-population < 10))
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(research-available castle-age)
+	(goal g-rushing-unit archer)
+	(current-age < castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 300)
+)
+(defrule
+	(or	(strategic-number sn-military-superiority < -3)
+		(military-population < 10))
+	(or	(strategic-number sn-military-superiority < -5)
+		(up-compare-goal g-rush-aggression >= rush-high))
+	(strategic-number sn-military-superiority < 4)
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(research-available castle-age)
+	(goal g-rushing-unit archer)
+	(current-age < castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 300)
+)
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(research-available castle-age)
+	(goal g-rushing-unit militiaman)
+	(current-age < castle-age)
+=>
+	(up-modify-goal g-woodies c:+ 300)
+	(up-modify-goal g-goldies c:+ 100)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(research-available imperial-age)
+	(building-type-count town-center > 3)
+	(current-age == castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 50)
+	(up-modify-goal g-woodies c:+ 600)
+	(up-modify-goal g-goldies c:+ 200)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(building-type-count stable > 1)
+	(goal g-rushing-unit knight)
+	(building-type-count town-center g:>= g-number-town-centers)
+	(up-compare-goal g-rush-aggression >= rush-medium)
+	(current-age == castle-age)
+=>
+	(up-modify-goal g-woodies c:+ 400)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(nand	(research-available imperial-age)
+		(building-type-count town-center > 2))
+	(current-age == castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 300)
+	(up-modify-goal g-woodies c:+ 50)
+	(up-modify-goal g-goldies c:+ 600)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(current-age > castle-age)
+=>
+	(up-modify-goal g-foodies c:+ 20)
+	(up-modify-goal g-woodies c:+ 220)
+	(up-modify-goal g-goldies c:+ 260)
+
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+=>
+	(up-modify-goal g-total-res g:= g-foodies)
+	(up-modify-goal g-total-res g:+ g-woodies)
+	(up-modify-goal g-total-res g:+ g-goldies)
+
+	(up-modify-goal g-saved-wood-percent g:= g-total-res)
+	(up-modify-goal g-saved-gold-percent g:= g-total-res)
+	(up-modify-goal g-saved-food-percent g:= g-total-res)
+	(up-modify-goal g-saved-wood-percent g:/ g-woodies)
+	(up-modify-goal g-saved-gold-percent g:/ g-goldies)
+	(up-modify-goal g-saved-food-percent g:/ g-foodies)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(current-age < castle-age)
+	(or	(stone-amount >= 100)
+		(building-type-count blacksmith < 1))
+=>
+	(up-modify-goal g-total-res g:= g-saved-wood-percent)
+	(up-modify-goal g-total-res g:+ g-saved-gold-percent);reusing g-total-res to turn our results into percentages
+	(up-modify-goal g-total-res g:+ g-saved-food-percent)
+	(up-modify-goal g-saved-gold-percent c:* 95)
+	(up-modify-goal g-saved-wood-percent c:* 97)
+	(up-modify-goal g-saved-gold-percent g:/ g-total-res)
+	(up-modify-goal g-saved-wood-percent g:/ g-total-res)
+	(up-modify-goal g-saved-gold-percent g:min g-max-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:min g-max-wood-percent)
+	(up-modify-goal g-saved-gold-percent g:max g-min-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:max g-min-wood-percent)
+
+	(set-goal g-saved-stone-percent 0)
+	(set-goal g-saved-food-percent 100)
+	(up-modify-goal g-saved-food-percent g:- g-saved-wood-percent)
+	(up-modify-goal g-saved-food-percent g:- g-saved-gold-percent)
+)
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(current-age < castle-age)
+	(stone-amount < 100)
+	(building-type-count blacksmith > 0)
+=>
+	(up-modify-goal g-total-res g:= g-saved-wood-percent)
+	(up-modify-goal g-total-res g:+ g-saved-gold-percent);reusing g-total-res to turn our results into percentages
+	(up-modify-goal g-total-res g:+ g-saved-food-percent)
+	(up-modify-goal g-saved-gold-percent c:* 90)
+	(up-modify-goal g-saved-wood-percent c:* 94)
+	(up-modify-goal g-saved-gold-percent g:/ g-total-res)
+	(up-modify-goal g-saved-wood-percent g:/ g-total-res)
+	(up-modify-goal g-saved-gold-percent g:min g-max-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:min g-max-wood-percent)
+	(up-modify-goal g-saved-gold-percent g:max g-min-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:max g-min-wood-percent)
+
+	(set-goal g-saved-stone-percent 5)
+	(set-goal g-saved-food-percent 95)
+	(up-modify-goal g-saved-food-percent g:- g-saved-wood-percent)
+	(up-modify-goal g-saved-food-percent g:- g-saved-gold-percent)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(current-age == castle-age)
+=>
+	(up-modify-goal g-total-res g:= g-saved-wood-percent)
+	(up-modify-goal g-total-res g:+ g-saved-gold-percent);reusing g-total-res to turn our results into percentages
+	(up-modify-goal g-total-res g:+ g-saved-food-percent)
+	(up-modify-goal g-saved-gold-percent c:* 90)
+	(up-modify-goal g-saved-wood-percent c:* 91)
+	(up-modify-goal g-saved-gold-percent g:/ g-total-res)
+	(up-modify-goal g-saved-wood-percent g:/ g-total-res)
+	(up-modify-goal g-saved-gold-percent g:min g-max-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:min g-max-wood-percent)
+	(up-modify-goal g-saved-gold-percent g:max g-min-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:max g-min-wood-percent)
+
+	(set-goal g-saved-stone-percent 9)
+	(set-goal g-saved-food-percent 91)
+	(up-modify-goal g-saved-food-percent g:- g-saved-wood-percent)
+	(up-modify-goal g-saved-food-percent g:- g-saved-gold-percent)
+)
+
+(defrule
+	(goal g-dynamic-gathering yes)
+	(timer-triggered t-dynamic-gather)
+	(current-age > castle-age)
+=>
+	(up-modify-goal g-total-res g:= g-saved-wood-percent)
+	(up-modify-goal g-total-res g:+ g-saved-gold-percent);reusing g-total-res to turn our results into percentages
+	(up-modify-goal g-total-res g:+ g-saved-food-percent)
+	(up-modify-goal g-saved-gold-percent c:* 85)
+	(up-modify-goal g-saved-wood-percent c:* 85)
+	(up-modify-goal g-saved-gold-percent g:/ g-total-res)
+	(up-modify-goal g-saved-wood-percent g:/ g-total-res)
+	(up-modify-goal g-saved-gold-percent g:min g-max-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:min g-max-wood-percent)
+	(up-modify-goal g-saved-gold-percent g:max g-min-gold-percent)
+	(up-modify-goal g-saved-wood-percent g:max g-min-wood-percent)
+
+	(set-goal g-saved-stone-percent 14)
+	(set-goal g-saved-food-percent 86)
+	(up-modify-goal g-saved-food-percent g:- g-saved-wood-percent)
+	(up-modify-goal g-saved-food-percent g:- g-saved-gold-percent)
+)
+(defrule
+	(wood-amount < 300)
+	(timer-triggered t-dynamic-gather)
+	(goal g-dynamic-gathering yes)
+	(or	(up-compare-flag f-map-type == fv-fish-map)
+		(building-type-count-total blacksmith == 0))
+	(strategic-number sn-food-wood-comparison < 0)
+=>
+	(set-strategic-number sn-wood-modifier-percentage 4))
+(defrule
+	(timer-triggered t-dynamic-gather)
+	(goal g-dynamic-gathering yes)
+=>
+	(up-modify-goal g-saved-food-percent g:max g-min-food-percent)
+	(up-chat-data-to-self "Dynamic food %: %d" g: g-saved-food-percent)
+	(up-chat-data-to-self "Dynamic wood %: %d" g: g-saved-wood-percent)
+	(up-chat-data-to-self "Dynamic stone %: %d" g: g-saved-stone-percent)
+	(up-chat-data-to-self "Dynamic gold %: %d" g: g-saved-gold-percent)
+	(up-modify-sn sn-food-gatherer-percentage g:= g-saved-food-percent)
+	(up-modify-sn sn-wood-gatherer-percentage g:= g-saved-wood-percent)
+	(up-modify-sn sn-stone-gatherer-percentage g:= g-saved-stone-percent)
+	(up-modify-sn sn-gold-gatherer-percentage g:= g-saved-gold-percent)
+	(enable-timer t-dynamic-gather 59)
+)
+
+(defrule
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total town-center == 0)
+	(wood-amount < 275)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 100)
+	(set-strategic-number sn-food-gatherer-percentage 0)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+	(set-strategic-number sn-maximum-wood-drop-distance -1)
+)
+
+(defrule
+	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total town-center == 0)
+	(wood-amount >= 275)
+	(stone-amount < 100)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-food-gatherer-percentage 0)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 100)
+	(set-strategic-number sn-maximum-stone-drop-distance -1)
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

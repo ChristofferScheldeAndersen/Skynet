@@ -1,0 +1,2453 @@
+(defconst wild-gazelle 1796)
+(defconst wild-zebra 1019)
+(defconst wild-mouflon 2340)
+(defconst wild-ibex 1239)
+(defconst wild-deer 65)
+(defconst wild-ostrich 1026)
+(defconst wild-argali 1896)
+(defconst meat-storage 15);Hunt
+(defconst berry-storage 16)
+(defconst fish-storage 17)
+
+(defconst builder1 118)
+(defconst builder2 212)
+(defconst forager1 120)
+(defconst forager2 354)
+(defconst hunter1 122)
+(defconst hunter2 216)
+(defconst shepherd1 592)
+(defconst shepherd2 590)
+(defconst lumberjack1 123)
+(defconst lumberjack2 218)
+(defconst gold-miner1 579)
+(defconst gold-miner2 581)
+(defconst fisherman1 56)
+(defconst fisherman2 57)
+(defconst farmer1 259)
+(defconst farmer2 214)
+
+(defconst dead-male-miner 229)
+(defconst dead-female-miner 221)
+
+(defconst dead-male-builder 225)
+(defconst dead-female-builder 213)
+
+(defconst trees-class 915)
+
+(defconst prey-animals-class 909)
+(defconst wild-animals-class 910)
+
+(defconst shore-fish 933)
+(defconst sea-fish 905)
+(defconst forage-bush-class 907)
+(defconst fishing-ship-class 921)
+
+
+; The Last Chieftains:
+(defconst champi-scout 2550)
+(defconst champi-runner 2588)
+(defconst champi-warrior 2552)
+(defconst champi-elite-champi-warrior 2554)
+(defconst settlement 2556)
+(defconst ri-champi-runner 1402)
+(defconst ri-champi-warrior 1351)
+(defconst ri-elite-champi-warrior 1352)
+
+(defconst ri-fishing-lines 906)
+(defconst ri-clinker-construction 908)
+(defconst ri-carvel-hull 907)
+
+(defconst castle-arrow 746)
+(defconst Relic 285)
+(defconst ri-anarchy 16)
+(defconst ri-herbal-medicine 441)
+(defconst ri-perfusion 457)
+(defconst trade-cart-class 919)
+(defconst elite-rax-huskarl 761)
+(defconst siege-tower 1105)
+(defconst xolotl-warrior 1570)
+(defconst cao-cao 1954)
+(defconst sun-jian 1978)
+(defconst xianbei-raider 1952)
+(defconst grenadier 1911)
+(defconst jian-swordsman-shielded 1974)
+(defconst jian-swordsman-unshielded 1976)
+(defconst liu-bei 1966)
+(defconst war-chariot-focus-fire 1962)
+(defconst war-chariot-barrage 1980)
+(defconst mounted-trebuchet 1923)
+(defconst traction-trebuchet 1942)
+
+;--------------------------------------
+; Define FactId Constants
+;--------------------------------------
+(defconst game-time 0)
+(defconst population-cap 1)
+(defconst population-headroom 2)
+(defconst housing-headroom 3)
+(defconst idle-farm-count 4)
+(defconst food-amount 5)
+(defconst wood-amount 6)
+(defconst stone-amount 7)
+(defconst gold-amount 8)
+(defconst escrow-amount 9)
+(defconst commodity-buying-price 10)
+(defconst commodity-selling-price 11)
+(defconst dropsite-min-distance 12)
+(defconst soldier-count 13)
+(defconst attack-soldier-count 14)
+(defconst defend-soldier-count 15)
+(defconst warboat-count 16)
+(defconst attack-warboat-count 17)
+(defconst defend-warboat-count 18)
+(defconst current-age 19)					;any
+(defconst current-score 20)					;any
+(defconst civilization 21)					;any
+(defconst player-number 22)					;any
+(defconst player-in-game 23)				;any
+(defconst unit-count 24)					;any
+(defconst unit-type-count 25)				;any
+(defconst unit-type-count-total 26)
+(defconst building-count 27)				;any
+(defconst building-type-count 28)			;any
+(defconst building-type-count-total 29)
+(defconst population 30)					;any
+(defconst military-population 31)			;any
+(defconst civilian-population 32)			;any
+(defconst random-number 33)
+(defconst resource-amount 34)				;any
+(defconst player-distance 35)				;any
+(defconst allied-goal 36)					;any
+(defconst allied-sn 37)						;any
+(defconst resource-percent 38)				;any
+(defconst enemy-buildings-in-town 39)
+(defconst enemy-units-in-town 40)
+(defconst enemy-villagers-in-town 41)
+(defconst players-in-game 42)
+(defconst defender-count 43)
+(defconst building-type-in-town 44)
+(defconst unit-type-in-town 45)
+(defconst villager-type-in-town 46)
+(defconst gaia-type-count 47)
+(defconst gaia-type-count-total 48)
+(defconst cc-gaia-type-count 49)
+(defconst current-age-time 50)				;any
+(defconst timer-status 51)
+(defconst players-tribute 52)				;any
+(defconst players-tribute-memory 53)			;any
+
+;--------------------------------------
+; Define ObjectId Constants
+;--------------------------------------
+(defconst flare 274)
+(defconst villager-class 904)
+(defconst building-class 903)
+(defconst ocean-fish-class 905)
+(defconst shore-fish-class 933)
+(defconst farm-class 949)
+(defconst tower-class 952)
+(defconst wall-class 927)
+(defconst gate-class 939)
+(defconst king-class 959)
+(defconst livestock-class 958)
+(defconst infantry-class 906)
+(defconst archery-class 900)
+(defconst monk-with-relic-class 943)
+(defconst archery-cannon-class 944)
+(defconst scout-cavalry-class 947)
+(defconst cavalry-class 912)
+(defconst cavalry-archer-class 936)
+(defconst cavalry-cannon-class 923)
+(defconst monastery-class 918)
+(defconst siege-weapon-class 913)
+(defconst scorpion-class 955)
+(defconst packed-trebuchet-class 951)
+(defconst unpacked-trebuchet-class 954)
+(defconst petard-class 935)
+(defconst warship-class 922)
+(defconst all-units-class -1)
+
+;--------------------------------------
+; Define FoundationId Constants
+;--------------------------------------
+(defconst town-center-foundation 621)
+(defconst gate-ascending 487)
+(defconst gate-ascending-closed 64)
+(defconst gate-ascending-open 78)
+(defconst gate-descending 490)
+(defconst gate-descending-closed 88)
+(defconst gate-descending-open 91)  ;is incorrectly set to 99 in the original UserPatchConst.per
+(defconst gate-horizontal 665)
+(defconst gate-horizontal-closed 659)
+(defconst gate-horizontal-open 661)
+(defconst gate-vertical 673)
+(defconst gate-vertical-closed 667)
+(defconst gate-vertical-open 669)
+
+;--------------------------------------
+; Define ResearchState Constants
+;--------------------------------------
+(defconst research-unavailable 0)
+(defconst research-available 1)
+(defconst research-pending 2)
+(defconst research-complete 3)
+
+;--------------------------------------
+; Define TimerState Constants
+;--------------------------------------
+(defconst timer-disabled 0)
+(defconst timer-triggered 1)
+(defconst timer-running 2)
+
+;--------------------------------------
+; Define GroupType Constants
+;--------------------------------------
+(defconst group-type-land-attack 100)
+(defconst group-type-land-explore 101)
+(defconst group-type-land-trade 109)
+(defconst group-type-water-attack 102)
+(defconst group-type-water-explore 103)
+(defconst group-type-water-trade 106)
+(defconst group-type-transport-ship 104)
+(defconst group-type-fishing-ship 105)
+(defconst group-type-forward-builder 107)
+(defconst group-type-monk 108)
+
+;--------------------------------------
+; Define IdleType Constants
+;--------------------------------------
+(defconst idle-type-villager 0)
+(defconst idle-type-trade-cart 1)
+(defconst idle-type-fishing-ship 2)
+(defconst idle-type-trade-cog 3)
+
+;--------------------------------------
+; Define AttackStance Constants
+;--------------------------------------
+(defconst stance-aggressive 0)
+(defconst stance-defensive 1)
+(defconst stance-stand-ground 2)
+(defconst stance-no-attack 3)
+
+;--------------------------------------
+; Define ResourceAmount Constants
+;--------------------------------------
+(defconst amount-food 0)
+(defconst amount-wood 1)
+(defconst amount-stone 2)
+(defconst amount-gold 3)
+(defconst amount-population-cap 4)
+(defconst amount-religion 5)
+(defconst amount-current-age 6)
+(defconst amount-relics 7)
+(defconst amount-trade-bonus 8)
+(defconst amount-trade-goods 9)
+(defconst amount-trade-production 10)
+(defconst amount-population 11)
+(defconst amount-decay 12)
+(defconst amount-discovery 13)
+(defconst amount-ruins 14)
+(defconst amount-meat 15)
+(defconst amount-berries 16)
+(defconst amount-fish 17)
+(defconst amount-kills 20)
+(defconst amount-research-count 21)
+(defconst amount-exploration 22)
+(defconst amount-convert-priest 27)
+(defconst amount-convert-building 28)
+(defconst amount-building-limit 30)
+(defconst amount-food-limit 31)
+(defconst amount-unit-limit 32)
+(defconst amount-maintenance 33)
+(defconst amount-faith 34)
+(defconst amount-faith-recharge-rate 35)
+(defconst amount-farm-food 36)
+(defconst amount-civilian-population 37)
+(defconst amount-all-techs-achieved 39)
+(defconst amount-military-population 40)
+(defconst amount-conversions 41)
+(defconst amount-wonder 42)
+(defconst amount-razings 43)
+(defconst amount-kill-ratio 44)
+(defconst amount-player-killed 45)
+(defconst amount-tribute-inefficiency 46)
+(defconst amount-gold-bonus 47)
+(defconst amount-town-center-unavailable 48)
+(defconst amount-gold-counter 49)
+(defconst amount-writing 50)
+(defconst amount-monasteries 52)
+(defconst amount-tribute 53)
+(defconst amount-hold-ruins 54)
+(defconst amount-hold-relics 55)
+(defconst amount-ore 56)
+(defconst amount-captured-unit 57)
+(defconst amount-trade-good-quality 59)
+(defconst amount-trade-market-level 60)
+(defconst amount-formations 61)
+(defconst amount-building-housing-rate 62)
+(defconst amount-gather-tax-rate 63)
+(defconst amount-gather-accumulator 64)
+(defconst amount-salvage-decay-rate 65)
+(defconst amount-allow-formations 66)
+(defconst amount-can-convert 67)
+(defconst amount-player1-kills 69)
+(defconst amount-player2-kills 70)
+(defconst amount-player3-kills 71)
+(defconst amount-player4-kills 72)
+(defconst amount-player5-kills 73)
+(defconst amount-player6-kills 74)
+(defconst amount-player7-kills 75)
+(defconst amount-player8-kills 76)
+(defconst amount-convert-resistance 77)
+(defconst amount-trade-vig-rate 78)
+(defconst amount-stone-bonus 79)
+(defconst amount-queued-count 80)
+(defconst amount-training-count 81)
+(defconst amount-raider 82)
+(defconst amount-boarding-recharge-rate 83)
+(defconst amount-starting-villagers 84)
+(defconst amount-research-cost-mod 85)
+(defconst amount-research-time-mod 86)
+(defconst amount-convert-boats 87)
+(defconst amount-fish-trap-food 88)
+(defconst amount-heal-rate-modifier 89)
+(defconst amount-heal-range 90)
+(defconst amount-starting-food 91)
+(defconst amount-starting-wood 92)
+(defconst amount-starting-stone 93)
+(defconst amount-starting-gold 94)
+(defconst amount-raider-ability 95)
+(defconst amount-berserker-heal-timer 96)
+(defconst amount-dominant-sheep-control 97)
+(defconst amount-object-cost-summation 98)
+(defconst amount-research-cost-summation 99)
+(defconst amount-relic-income-summation 100)
+(defconst amount-trade-income-summation 101)
+(defconst amount-player1-tribute 102)
+(defconst amount-player2-tribute 103)
+(defconst amount-player3-tribute 104)
+(defconst amount-player4-tribute 105)
+(defconst amount-player5-tribute 106)
+(defconst amount-player6-tribute 107)
+(defconst amount-player7-tribute 108)
+(defconst amount-player8-tribute 109)
+(defconst amount-player1-kill-value 110)
+(defconst amount-player2-kill-value 111)
+(defconst amount-player3-kill-value 112)
+(defconst amount-player4-kill-value 113)
+(defconst amount-player5-kill-value 114)
+(defconst amount-player6-kill-value 115)
+(defconst amount-player7-kill-value 116)
+(defconst amount-player8-kill-value 117)
+(defconst amount-player1-razings 118)
+(defconst amount-player2-razings 119)
+(defconst amount-player3-razings 120)
+(defconst amount-player4-razings 121)
+(defconst amount-player5-razings 122)
+(defconst amount-player6-razings 123)
+(defconst amount-player7-razings 124)
+(defconst amount-player8-razings 125)
+(defconst amount-player1-razing-value 126)
+(defconst amount-player2-razing-value 127)
+(defconst amount-player3-razing-value 128)
+(defconst amount-player4-razing-value 129)
+(defconst amount-player5-razing-value 130)
+(defconst amount-player6-razing-value 131)
+(defconst amount-player7-razing-value 132)
+(defconst amount-player8-razing-value 133)
+(defconst amount-castle 134)
+(defconst amount-kills-by-player1 136)
+(defconst amount-kills-by-player2 137)
+(defconst amount-kills-by-player3 138)
+(defconst amount-kills-by-player4 139)
+(defconst amount-kills-by-player5 140)
+(defconst amount-kills-by-player6 141)
+(defconst amount-kills-by-player7 142)
+(defconst amount-kills-by-player8 143)
+(defconst amount-razings-by-player1 144)
+(defconst amount-razings-by-player2 145)
+(defconst amount-razings-by-player3 146)
+(defconst amount-razings-by-player4 147)
+(defconst amount-razings-by-player5 148)
+(defconst amount-razings-by-player6 149)
+(defconst amount-razings-by-player7 150)
+(defconst amount-razings-by-player8 151)
+(defconst amount-value-killed-by-others 152)
+(defconst amount-value-razed-by-others 153)
+(defconst amount-killed-by-others 154)
+(defconst amount-razed-by-others 155)
+(defconst amount-tribute-from-player1 156)
+(defconst amount-tribute-from-player2 157)
+(defconst amount-tribute-from-player3 158)
+(defconst amount-tribute-from-player4 159)
+(defconst amount-tribute-from-player5 160)
+(defconst amount-tribute-from-player6 161)
+(defconst amount-tribute-from-player7 162)
+(defconst amount-tribute-from-player8 163)
+(defconst amount-value-current-units 164)
+(defconst amount-value-current-buildings 165)
+(defconst amount-food-total 166)
+(defconst amount-wood-total 167)
+(defconst amount-stone-total 168)
+(defconst amount-gold-total 169)
+(defconst amount-total-value-of-kills 170)
+(defconst amount-total-tribute-received 171)
+(defconst amount-total-value-of-razings 172)
+(defconst amount-total-castles-built 173)
+(defconst amount-total-wonders-built 174)
+(defconst amount-tribute-score 175)
+(defconst amount-convert-min-adj 176)
+(defconst amount-convert-max-adj 177)
+(defconst amount-convert-resist-min-adj 178)
+(defconst amount-convert-resist-max-adj 179)
+(defconst amount-convert-building-min 180)
+(defconst amount-convert-building-max 181)
+(defconst amount-convert-building-chance 182)
+(defconst amount-spies 183)
+(defconst amount-value-wonders-castles 184)
+(defconst amount-food-score 185)
+(defconst amount-wood-score 186)
+(defconst amount-stone-score 187)
+(defconst amount-gold-score 188)
+(defconst amount-wood-bonus 189)
+(defconst amount-food-bonus 190)
+(defconst amount-relic-rate 191)
+(defconst amount-heresy 192)
+(defconst amount-theocracy 193)
+(defconst amount-crenellations 194)
+(defconst amount-construction-rate-mod 195)
+(defconst amount-hun-wonder-bonus 196)
+(defconst amount-spies-discount 197)
+(defconst amount-unused-0 220)
+(defconst amount-unused-1 221)
+(defconst amount-unused-2 222)
+(defconst amount-unused-3 223)
+(defconst amount-unused-4 224)
+
+;--------------------------------------
+; Unused ResourceAmount Constants
+;--------------------------------------
+;(defconst amount-houses 51)
+;(defconst amount-hit-points-killed 68)
+;(defconst amount-hit-points-razings 135)
+
+;--------------------------------------
+; Define ProjectileType Constants
+;--------------------------------------
+(defconst projectile-town-center 0)
+(defconst projectile-castle 1)
+(defconst projectile-watch-tower 2)
+(defconst projectile-bombard-tower 3)
+(defconst projectile-ship 4)
+(defconst projectile-siege 5)
+(defconst projectile-fortification 6)
+(defconst projectile-any 7)
+
+;--------------------------------------
+; Define EscrowState Constants
+;--------------------------------------
+(defconst with-escrow 0)
+(defconst without-escrow 1)
+
+;--------------------------------------
+; Define ExploredState Constants
+;--------------------------------------
+(defconst explored-no 0)
+(defconst explored-yes 128)					;point has been seen in the past
+(defconst explored-active 15)				;point is currently visible by an object
+
+;--------------------------------------
+; Define PlacementType Constants
+;--------------------------------------
+(defconst place-normal 0)
+(defconst place-forward 1)
+(defconst place-control 2)
+(defconst place-point 3)
+
+;--------------------------------------
+; Define PriorityType Constants
+;--------------------------------------
+(defconst priority-offense 0)
+(defconst priority-defense 1)
+
+;--------------------------------------
+; Define PositionType Constants
+;--------------------------------------
+(defconst position-center 0)
+(defconst position-opposite 1)
+(defconst position-corner 2)
+(defconst position-enemy 3)
+(defconst position-border 4)
+(defconst position-mirror 5)
+(defconst position-flank 6)
+(defconst position-zero 7)
+(defconst position-map-size 8)
+(defconst position-self 9)
+(defconst position-target 10)
+(defconst position-focus 11)
+(defconst position-object 12)
+(defconst position-point 13)
+
+;--------------------------------------
+; Define SearchSource Constants
+;--------------------------------------
+(defconst search-local 1)
+(defconst search-remote 2)
+
+;--------------------------------------
+; Define ObjectList Constants
+;--------------------------------------
+(defconst list-active 0)
+(defconst list-inactive 1)
+
+;--------------------------------------
+; Define ObjectStatus Constants
+;--------------------------------------
+(defconst status-pending 0)
+(defconst status-ready 2)
+(defconst status-resource 3)
+(defconst status-down 4)
+(defconst status-gather 5)
+
+;--------------------------------------
+; Define SearchOrder Constants
+;--------------------------------------
+(defconst search-order-none 0)
+(defconst search-order-asc 1)
+(defconst search-order-desc 2)
+
+;--------------------------------------
+; Define GuardFlag Constants
+;--------------------------------------
+(defconst guard-flag-victory 1)
+(defconst guard-flag-resource 2)
+(defconst guard-flag-inverse 4)
+
+;--------------------------------------
+; Define ProgressType Constants
+;--------------------------------------
+(defconst progress-type-train 102)
+(defconst progress-type-research 103)
+
+;--------------------------------------
+; Define TargetAction Constants
+;--------------------------------------
+(defconst action-default 0)	;target-point -> action-move
+(defconst action-move 1)	;target-point + target-objects
+(defconst action-patrol 2)	;target-point + target-objects
+(defconst action-guard 3)	;target-point -> action-move
+(defconst action-follow 4)	;target-point -> action-move
+(defconst action-stop 5)	;target-point + target-objects
+(defconst action-ground 6)	;target-point + target-objects
+(defconst action-garrison 7)	;target-point -> action-move
+(defconst action-delete 8)	;target-point + target-objects
+(defconst action-unload 9)	;target-objects -> action-none
+(defconst action-train 10)	;target-objects -> action-none
+(defconst action-gather 11)	;target-point + target-objects
+(defconst action-lock 12)	;target-objects -> action-none
+(defconst action-work 13)	;target-objects -> action-none
+(defconst action-ungarrison 14)	;target-objects -> action-none
+(defconst action-drop-relic 15)	;target-objects -> action-none
+(defconst action-pack 16)	;target-objects -> action-none
+(defconst action-unpack 17)	;target-objects -> action-none
+(defconst action-none 18)	;target-point + target-objects
+(defconst action-attack-move 19)
+(defconst action-transform 20)
+
+; action-unload: buildings ungarrison to gather point, siege (913) eject in-place, transports to target-point
+; action-ungarrison: selected units from inside an object are ungarrisoned
+; action-gather: set gather point (for buildings only)
+; action-work: send villagers back to work
+
+; action-train: (up-target-point inGoalEscrowState action-train typeOp inOpTypeId)
+; inGoalEscrowState must be either 0 for without-escrow or an extended goal from 41-510
+
+;--------------------------------------
+; Define Formation Constants
+;--------------------------------------
+(defconst formation-line 2)
+(defconst formation-box 4)
+(defconst formation-stagger 7)
+(defconst formation-flank 8)
+
+;--------------------------------------
+; Define CmdId Constants
+;--------------------------------------
+(defconst cmdid-flag 0)
+(defconst cmdid-livestock-gaia 1)
+(defconst cmdid-civilian-building 2)
+(defconst cmdid-villager 3)
+(defconst cmdid-military 4)
+(defconst cmdid-trade 5)
+(defconst cmdid-monk 6)
+(defconst cmdid-transport 7)
+(defconst cmdid-relic 8)					;includes monk-with-relic
+(defconst cmdid-fishing-ship 9)
+(defconst cmdid-military-building 10)
+
+;--------------------------------------
+; Define ActionId Constants
+;--------------------------------------
+(defconst actionid-attack 600)
+(defconst actionid-defend 601)
+(defconst actionid-build 602)
+(defconst actionid-heal 603)
+(defconst actionid-convert 604)
+(defconst actionid-explore 605)
+(defconst actionid-stop 606)
+(defconst actionid-runaway 607)
+(defconst actionid-retreat 608)
+(defconst actionid-gather 609)
+(defconst actionid-move 610)
+(defconst actionid-patrol 611)
+(defconst actionid-follow 612)
+(defconst actionid-hunt 613)
+(defconst actionid-transport 614)
+(defconst actionid-trade 615)
+(defconst actionid-evade 616)
+(defconst actionid-enter 617)
+(defconst actionid-repair 618)
+(defconst actionid-train 619)
+(defconst actionid-research 620)
+(defconst actionid-unload 621)
+(defconst actionid-relic 631)
+
+;--------------------------------------
+; Define OrderId Constants
+;--------------------------------------
+(defconst orderid-attack 700)
+(defconst orderid-defend 701)
+(defconst orderid-build 702)
+(defconst orderid-heal 703)
+(defconst orderid-convert 704)
+(defconst orderid-explore 705)
+(defconst orderid-stop 706)
+(defconst orderid-runaway 707)
+(defconst orderid-retreat 708)
+(defconst orderid-gather 709)
+(defconst orderid-move 710)
+(defconst orderid-patrol 711)
+(defconst orderid-follow 712)
+(defconst orderid-hunt 713)
+(defconst orderid-transport 714)
+(defconst orderid-trade 715)
+(defconst orderid-evade 716)
+(defconst orderid-enter 717)
+(defconst orderid-repair 718)
+(defconst orderid-train 719)
+(defconst orderid-research 720)
+(defconst orderid-unload 721)
+(defconst orderid-relic 731)
+
+;--------------------------------------
+; Define Mainland Constants
+;--------------------------------------
+(defconst off-mainland 0)
+(defconst on-mainland 1)
+
+;--------------------------------------
+; Define ObjectData Constants
+;--------------------------------------
+(defconst object-data-index -1)				;only use with up-remove-objects
+(defconst object-data-id 0)
+(defconst object-data-type 1)
+(defconst object-data-class 2)
+(defconst object-data-category 3)
+(defconst object-data-cmdid 4)
+(defconst object-data-action 5)
+(defconst object-data-order 6)
+(defconst object-data-target 7)
+(defconst object-data-point-x 8)
+(defconst object-data-point-y 9)
+(defconst object-data-hitpoints 10)
+(defconst object-data-maxhp 11)
+(defconst object-data-range 12)
+(defconst object-data-speed 13)
+(defconst object-data-dropsite 14)
+(defconst object-data-resource 15)
+(defconst object-data-carry 16)
+(defconst object-data-garrisoned 17)
+(defconst object-data-garrison-count 18)
+(defconst object-data-status 19)			;0:incomplete, 2:active, 3:resource, >=4:inactive
+(defconst object-data-player 20)
+(defconst object-data-attack-stance 21)
+(defconst object-data-action-time 22)
+(defconst object-data-target-id 23)
+(defconst object-data-formation-id 24)
+(defconst object-data-patrolling 25)
+(defconst object-data-strike-armor 26)
+(defconst object-data-pierce-armor 27)
+(defconst object-data-base-attack 28)
+(defconst object-data-locked 29)
+(defconst object-data-garrison-id 30)
+(defconst object-data-train-count 31)
+(defconst object-data-tasks-count 32)		;increased for internal tasks performed on the object (may be more than 1 per event)
+(defconst object-data-attacker-count 33)	;not increased for certain situations like hunting
+(defconst object-data-attacker-id 34)		;not set for certain situations like hunting
+(defconst object-data-under-attack 35)		;not set for certain situations like hunting
+(defconst object-data-attack-timer 36)		;resets to 60s for each attack (buildings only)
+(defconst object-data-point-z 37)
+(defconst object-data-precise-x 38)		;point x100.0
+(defconst object-data-precise-y 39)
+(defconst object-data-precise-z 40)
+(defconst object-data-researching 41)
+(defconst object-data-tile-position 42)		;match with sn-target-point-adjustment
+(defconst object-data-tile-inverse 43)
+(defconst object-data-distance 44)		;based on target-point
+(defconst object-data-precise-distance 45)	;distance x100
+(defconst object-data-full-distance 46)
+(defconst object-data-map-zone-id 47)
+(defconst object-data-on-mainland 48)		;compares map-zone-id to home TC map-zone-id
+(defconst object-data-idling 49)
+(defconst object-data-move-x 50)
+(defconst object-data-move-y 51)
+(defconst object-data-precise-move-x 52)
+(defconst object-data-precise-move-y 53)
+(defconst object-data-reload-time 54)		;in milliseconds
+(defconst object-data-next-attack 55)		;in milliseconds
+(defconst object-data-train-site 56)
+(defconst object-data-train-time 57)		;in seconds
+(defconst object-data-blast-radius 58)		;radius x100.0
+(defconst object-data-blast-level 59)
+(defconst object-data-progress-type 60)
+(defconst object-data-progress-value 61)
+(defconst object-data-min-range 62)
+(defconst object-data-target-time 63)		;in milliseconds (not for villagers)
+(defconst object-data-heresy 64)		;checks amount-heresy
+(defconst object-data-faith 65)			;checks amount-convert-resistance
+(defconst object-data-redemption 66)		;checks amount-convert-building
+(defconst object-data-atonement 67)		;checks amount-convert-priest
+(defconst object-data-theocracy 68)		;checks amount-theocracy
+(defconst object-data-spies 69)			;checks amount-spies
+(defconst object-data-ballistics 70)
+(defconst object-data-gather-type 71)		;food, wood, gold, stone, or -1 for none
+(defconst object-data-language-id 72)		;can use to check villager types
+(defconst object-data-group-flag 73)		;group id from 0 to 9 or -2 for none
+(defconst object-data-hero-flags 74)		;combined hero status flags
+(defconst object-data-hero 75)			;has actual hero flag set
+(defconst object-data-auto-heal 76)		;will hero heal (non-berserk)
+(defconst object-data-no-convert 77)		;cannot be converted
+(defconst object-data-frame-delay 78)		;number of frames for projectile delay
+(defconst object-data-attack-count 79)		;consecutive attack count
+(defconst object-data-to-precise 80)		;precise distance to a precise target-point
+(defconst object-data-base-type 81)		;object base type id
+(defconst object-data-upgrade-type 82)		;object upgrade type id
+(defconst object-data-ownership 83)
+(defconst object-data-capture-flag 84)
+(defconst object-data-charge-attack-type 85)
+(defconst object-data-charge-attack-max 86)
+(defconst object-data-charge-attack-amount 87)
+(defconst object-data-charge-attack-regeneration-rate 88)
+(defconst object-data-charge-attack-event-type 89)
+(defconst object-data-attack-delay 90)
+
+;--------------------------------------
+; Define LangId Constants (aoc)
+;--------------------------------------
+(defconst lid-villager-idle 5121)
+(defconst lid-villager-shepherd 5496)
+(defconst lid-villager-farmer 5123)
+(defconst lid-villager-forager 5402)
+(defconst lid-villager-hunter 5124)
+(defconst lid-villager-fisherman 5499)
+(defconst lid-villager-lumberjack 5125)
+(defconst lid-villager-gold-miner 5482)
+(defconst lid-villager-stone-miner 5126)
+(defconst lid-villager-builder 5122)
+(defconst lid-villager-repairer 5127)
+
+;--------------------------------------
+; Define Terrain Constants
+;--------------------------------------
+(defconst terrain-grass 0)
+(defconst terrain-grass2 12)
+(defconst terrain-grass3 9)
+(defconst terrain-grass-snow 34)
+(defconst terrain-grass-old 16)
+(defconst terrain-water 1)
+(defconst terrain-water-deep 22)
+(defconst terrain-water-medium 23)
+(defconst terrain-water-bridge 28)
+(defconst terrain-water-old 15)
+(defconst terrain-water-beach 2)
+(defconst terrain-shallows 4)
+(defconst terrain-ice 26)
+(defconst terrain-ice2 35)
+(defconst terrain-ice-beach 37)
+(defconst terrain-desert 14)
+(defconst terrain-dirt 6)
+(defconst terrain-dirt2 11)
+(defconst terrain-dirt3 3)
+(defconst terrain-dirt-snow 33)
+(defconst terrain-farm 7)
+(defconst terrain-farm1 29)
+(defconst terrain-farm2 30)
+(defconst terrain-farm3 31)
+(defconst terrain-farm-dead 8)
+(defconst terrain-forest 10)
+(defconst terrain-forest-bamboo 18)
+(defconst terrain-forest-jungle 17)
+(defconst terrain-forest-oak 20)
+(defconst terrain-forest-palm 13)
+(defconst terrain-forest-pine 19)
+(defconst terrain-forest-snow 21)
+(defconst terrain-foundation 27)
+(defconst terrain-foundation-snow 36)
+(defconst terrain-koh 40)
+(defconst terrain-leaves 5)
+(defconst terrain-road 24)
+(defconst terrain-road-broken 25)
+(defconst terrain-road-snow 38)
+(defconst terrain-road-fungus 39)
+(defconst terrain-snow 32)
+(defconst terrain-unknown 41)
+
+;--------------------------------------
+; Define SortTargetMethod Constants
+;--------------------------------------
+(defconst sort-targets 0)
+(defconst sort-random 1)
+(defconst sort-distance 2)
+(defconst sort-hitpoints 3)
+(defconst sort-range 4)
+
+;--------------------------------------
+; Define FindPlayerMethod Constants
+;--------------------------------------
+(defconst find-attacker 0)
+(defconst find-random 1)
+(defconst find-closest 2)
+(defconst find-ordered 3)
+
+;--------------------------------------
+; Define ScoutMethod Constants
+;--------------------------------------
+(defconst scout-center 0)
+(defconst scout-opposite 1)
+(defconst scout-corner 2)
+(defconst scout-enemy 3)
+(defconst scout-border 4)
+(defconst scout-mirror 5)
+(defconst scout-flank 6)
+
+;--------------------------------------
+; Define AdjustPoint Constants
+;--------------------------------------
+(defconst adjust-default 0)
+(defconst adjust-left 1)
+(defconst adjust-top 2)
+(defconst adjust-right 3)
+(defconst adjust-bottom 4)
+(defconst adjust-middle 5)
+(defconst adjust-precise 6)
+
+;--------------------------------------
+; Define PlayerStance Constants
+;--------------------------------------
+;(defconst ally 0)
+;(defconst neutral 1)
+;(defconst enemy 3)
+;(defconst any 2)
+
+;--------------------------------------
+; Define DropsiteMinDistance Constants
+;--------------------------------------
+;(defconst hunting 4)
+;(defconst boar-hunting 5)
+;(defconst deer-hunting 6)
+;(defconst live-boar 7)
+
+;--------------------------------------
+; Define Counting Constants
+;--------------------------------------
+;(defconst monk-set 970)
+;(defconst trebuchet-set 971)
+;(defconst huskarl-set 972)
+;(defconst villager-shepherd 973)
+;(defconst villager-forager 974)
+;(defconst villager-farmer 975)
+;(defconst villager-hunter 976)
+;(defconst villager-fisherman 977)
+;(defconst villager-food 978)
+;(defconst villager-wood 979)
+;(defconst villager-stone 980)
+;(defconst villager-gold 981)
+;(defconst villager-builder 982)
+;(defconst villager-repairer 983)
+;(defconst villager-base 984)
+
+;--------------------------------------
+; Define Extended Strategic Numbers
+;--------------------------------------
+;(defconst sn-enable-new-building-system 242)
+;(defconst sn-percent-building-cancellation 243)
+;(defconst sn-enable-boar-hunting 244)
+;(defconst sn-minimum-number-hunters 245)
+;(defconst sn-object-repair-level 246)
+;(defconst sn-enable-patrol-attack 247)
+;(defconst sn-dropsite-separation-distance 248)
+;(defconst sn-target-player-number 249)
+;(defconst sn-safe-town-size 250)
+;(defconst sn-focus-player-number 251)
+;(defconst sn-minimum-boar-lure-group-size 252)
+;(defconst sn-preferred-mill-placement 253)
+;(defconst sn-enable-offensive-priority 254)
+;(defconst sn-building-targeting-mode 255)
+;(defconst sn-home-exploration-time 256)
+;(defconst sn-number-civilian-militia 257)
+;(defconst sn-allow-civilian-offense 258)
+;(defconst sn-preferred-trade-distance 259)
+;(defconst sn-lumber-camp-max-distance 260)
+;(defconst sn-mining-camp-max-distance 261)
+(defconst sn-wall-targeting-mode 262)
+(defconst sn-livestock-to-town-center 263)
+(defconst sn-enable-training-queue 264)
+(defconst sn-ignore-tower-elevation 265)
+(defconst sn-town-center-placement 266)
+(defconst sn-disable-tower-priority 267)
+(defconst sn-placement-zone-size 268)
+(defconst sn-placement-fail-delta 269)
+(defconst sn-placement-to-center 270)
+(defconst sn-disable-attack-groups 271)
+(defconst sn-allow-adjacent-dropsites 272)
+(defconst sn-defer-dropsite-update 273)
+(defconst sn-maximum-garrison-fill 274)
+(defconst sn-number-garrison-units 275)
+(defconst sn-filter-under-attack 276)
+(defconst sn-disable-defend-groups 277)
+(defconst sn-dock-placement-mode 278)
+(defconst sn-dock-proximity-factor 279)
+(defconst sn-dock-avoidance-factor 280)
+(defconst sn-dock-training-filter 281)
+(defconst sn-free-siege-targeting 282)
+(defconst sn-warship-targeting-mode 283)
+(defconst sn-disable-sighted-response-cap 284)
+(defconst sn-disable-builder-assistance 285)
+(defconst sn-local-targeting-mode 286)
+(defconst sn-livestock-defend-priority 287)
+(defconst sn-number-tasked-units 288)
+(defconst sn-minimum-tasked-units 289)
+(defconst sn-maximum-tasked-units 290)
+(defconst sn-disable-villager-garrison 291)
+(defconst sn-target-point-adjustment 292)
+(defconst sn-unexplored-construction 293)
+(defconst sn-disable-trade-evasion 294)
+(defconst sn-boar-lure-destination 295)
+
+;useable SNs
+(defconst sn-food-modifier-percentage 156)
+(defconst sn-wood-modifier-percentage 157)
+(defconst sn-stone-modifier-percentage 158)
+(defconst sn-gold-modifier-percentage 159)
+(defconst sn-special-attack-influence2 110)
+(defconst sn-special-attack-influence3 111)
+
+(defconst shore-fish 933)
+(defconst sea-fish 905)
+(defconst forage-bush-class 907)
+(defconst fishing-ship-class 921)
+
+(defconst max-value 32767)
+
+(defconst yes 1)
+(defconst no 0)
+(defconst maybe 2)
+
+;goals
+
+(defconst g-build 1)
+(defconst g-escrow 2)
+(defconst g-jump-direct-3 3)
+(defconst g-cavalry-rush 4)
+(defconst g-infantry-rush 5)
+(defconst g-archer-rush 6)
+(defconst g-monk-rush 7)
+(defconst g-dynamic-gathering 8)
+
+(defconst g-current-vils 9)
+(defconst g-enemy-units-in-town 10)
+
+(defconst g-town-under-attack 11)
+
+(defconst g-want-ranged 12)
+(defconst g-want-melee 13)
+
+(defconst check-goal 14)
+(defconst g-math-1 15)
+(defconst g-math-2 16)
+(defconst g-math-3 17)
+
+
+
+(defconst g-math-4 22)
+(defconst g-math-5 23)
+(defconst g-math-6 24)
+
+
+
+(defconst g-min-food-percent 27)
+(defconst g-max-food-percent 28)
+(defconst g-min-wood-percent 29)
+(defconst g-max-wood-percent 30)
+(defconst g-min-gold-percent 31)
+(defconst g-max-gold-percent 32)
+
+(defconst g-2xfood-available 33)
+(defconst g-2xwood-available 34)
+(defconst g-2xstone-available 35)
+(defconst g-2xgold-available 36)
+
+(defconst g-foodies 37)
+(defconst g-woodies 38)
+(defconst g-stoners 39)
+(defconst g-goldies 40)
+
+(defconst g-food-escrow 41)
+(defconst g-wood-escrow 42)
+(defconst g-stone-escrow 43)
+(defconst g-gold-escrow 44)
+
+(defconst g-food-buffer 45)
+(defconst g-wood-buffer 46)
+(defconst g-stone-buffer 47)
+(defconst g-gold-buffer 48)
+
+(defconst g-want-siege 49)
+(defconst g-ranged-score 50)
+(defconst g-melee-score 51)
+
+(defconst my-best-melee-unit 52)
+(defconst my-best-ranged-unit 53)
+
+(defconst my-backup-melee-unit 54)
+(defconst my-backup-ranged-unit 55)
+
+(defconst temporary-goal 56)
+(defconst g-math-7 57)
+(defconst g-math-8 58)
+(defconst g-math-9 59)
+
+(defconst g-melee-food 60)
+(defconst g-melee-wood 61)
+(defconst g-melee-stone 62)
+(defconst g-melee-gold 63)
+
+(defconst g-ranged-food 64)
+(defconst g-ranged-wood 65)
+(defconst g-ranged-stone 66)
+(defconst g-ranged-gold 67)
+
+(defconst g-attack 68)
+	(defconst tsa 3)
+	(defconst tsa-raid 4)
+	(defconst tsa-clean 5)
+
+(defconst temp-food 69)
+(defconst temp-wood 70)
+(defconst temp-stone 71)
+(defconst temp-gold 72)
+
+(defconst g-food-available 73)
+(defconst g-wood-available 74)
+(defconst g-stone-available 75)
+(defconst g-gold-available 76)
+
+(defconst g-max-res-available 77)
+
+(defconst g-dark-vills 78)
+(defconst g-dark-vills-2 79)
+(defconst g-rushing-age 80)
+(defconst g-rushing-unit 81)
+(defconst g-rush-aggression 82)
+	(defconst rush-low 1)
+	(defconst rush-medium 2)
+	(defconst rush-high 3)
+
+(defconst lt 83)	;search-state goals, four consecutive goals that store information about the contents of the local and remote lists
+(defconst ll 84)
+(defconst rt 85)
+(defconst rl 86)
+
+
+(defconst jump-to-ranged-group-function 87)
+(defconst g-current-ranged-group 88)
+(defconst function-recall-jump 89)
+
+(defconst p-ranged-group-x 90)
+(defconst p-ranged-group-y 91)
+
+(defconst g-current-ranged-group-type 92)
+
+(defconst g-group1-type 93)
+(defconst g-group2-type 94)
+(defconst g-group3-type 95)
+
+(defconst g-other-ranged-group-type1 96)
+(defconst g-other-ranged-group-type2 97)
+
+(defconst g-projectile-release-delay 98)
+
+(defconst g-firing-range 99)
+(defconst g-tracking-range 100)
+
+(defconst p-destination-x 101)
+(defconst p-destination-y 102)
+
+(defconst p-order-x 103)
+(defconst p-order-y 104)
+
+(defconst g-melee-nearby 105)
+(defconst g-enemy-ranged-nearby 106)
+(defconst p-enemy-ranged-group-x 107)
+(defconst p-enemy-ranged-group-y 108)
+(defconst p-enemy-melee-group-x 109)
+(defconst p-enemy-melee-group-y 110)
+
+(defconst g-local-fight-evaluation 111)
+(defconst g-ranged-group-size 112)
+(defconst p-largest-ranged-group-x 113)
+(defconst p-largest-ranged-group-y 114)
+
+(defconst g-research-status 115)
+
+	(defconst rush-done 0)
+	(defconst castle-done 1)
+	(defconst imperial-done 2)
+	(defconst research-complete 3)
+
+#load-if-defined AZTEC-CIV
+(defconst scout-unit eagle-warrior-line)
+(defconst ram-unit battering-ram-line)
+(defconst fv-uu 21) ;must equal resource types + 16
+(defconst fv-rams 134);128+4+2
+#end-if
+#load-if-defined BERBERS-CIV
+(defconst scout-unit scout-cavalry-line)
+(defconst ram-unit battering-ram-line)
+(defconst fv-uu 22);16+2+4 = 22
+(defconst fv-rams 134);128+4+2
+#end-if
+#load-if-defined DRAVIDIANS-CIV
+(defconst scout-unit scout-cavalry-line)
+(defconst ram-unit armored-elephant-line)
+(defconst fv-uu 21);16+1+4
+(defconst fv-rams 133);128+1+4
+#end-if
+#load-if-defined INCAN-CIV
+(defconst scout-unit champi-line)
+(defconst ram-unit battering-ram-line)
+(defconst fv-uu 21)
+(defconst fv-rams 134);128+4+2
+#end-if
+#load-if-defined NEXT-CIV
+(defconst fv-uu 22) ;must equal resource types + 16
+(defconst fv-food 1)
+(defconst fv-wood 2)
+(defconst fv-gold 4)
+(defconst fv-stone 8)
+;(defconst fv-uu 16)
+#end-if
+
+
+#load-if-defined TINY-MAP
+(defconst min-fishing 24)
+(defconst max-trade-cart 20)
+#end-if
+#load-if-defined SMALL-MAP
+(defconst min-fishing 40)
+(defconst max-trade-cart 20)
+#end-if
+#load-if-defined MEDIUM-MAP
+(defconst min-fishing 50)
+(defconst max-trade-cart 33)
+#end-if
+#load-if-defined NORMAL-MAP
+(defconst min-fishing 60)
+(defconst max-trade-cart 37)
+#end-if
+#load-if-defined LARGE-MAP
+(defconst min-fishing 70)
+(defconst max-trade-cart 45)
+#end-if
+#load-if-not-defined TINY-MAP
+#load-if-not-defined SMALL-MAP
+#load-if-not-defined MEDIUM-MAP
+#load-if-not-defined NORMAL-MAP
+#load-if-not-defined LARGE-MAP ; HUGE MAP
+(defconst min-fishing 80)
+(defconst max-trade-cart 50)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defconst f-infantry-allowed 116)
+	(defconst fv-food 1)
+	(defconst fv-wood 2)
+	(defconst fv-gold 4)
+	(defconst fv-stone 8)
+	(defconst fv-all-res 15);1+2+4+8
+;	(defconst fv-uu 16)
+;	(defconst fv-militia 32)
+	(defconst fv-militia 37);32+1+4
+;	(defconst fv-spears 64)
+	(defconst fv-spears 67);64+2+1
+;	(defconst fv-eagles 128)
+	(defconst fv-eagles 133);128+4+1
+;	(defconst fv-champi 256)
+	(defconst fv-champi 261);256+4+1
+
+(defconst f-archers-allowed 117)
+	(defconst fv-food 1)
+	(defconst fv-wood 2)
+	(defconst fv-gold 4)
+	(defconst fv-stone 8)
+	(defconst fv-all-res 15);1+2+4+8
+;	(defconst fv-uu 16)
+;	(defconst fv-archers 32)
+	(defconst fv-archers 38); 32+2+4=
+;	(defconst fv-skirms 64)
+	(defconst fv-skirms 67); 64+1+2
+;	(defconst fv-cavarchers 128)
+	(defconst fv-cavarchers 134); 128+2+4
+	(defconst fv-elephants 261);256+1+4
+;	(defconst fv-handcannons 512)
+	(defconst fv-handcannons 517);512+1+4
+;	(defconst fv-slingers 1024)
+	(defconst fv-slings 1027);1024+2+1
+;	(defconst fv-genitour 2048)
+	(defconst fv-genitour 2051);2048+1+2
+
+(defconst f-monks-allowed 118)
+	(defconst fv-food 1)
+	(defconst fv-wood 2)
+	(defconst fv-gold 4)
+	(defconst fv-stone 8)
+	(defconst fv-all-res 15);1+2+4+8
+;	(defconst fv-uu 16)
+;	(defconst fv-monks 32)
+	(defconst fv-monks 36);32+4
+;	(defconst fv-missionaries 64)
+	(defconst fv-missionaries 68);64+4
+
+(defconst f-siege-allowed 119)
+	(defconst fv-food 1)
+	(defconst fv-wood 2)
+	(defconst fv-gold 4)
+	(defconst fv-stone 8)
+	(defconst fv-all-res 15);1+2+4+8
+;	(defconst fv-uu 16)
+;	(defconst fv-scorpions 32)
+	(defconst fv-scorpions 38);32+4+2
+;	(defconst fv-mangonels 64)
+	(defconst fv-mangonels 70);64+4+2
+;	(defconst fv-rams 128)
+;	(defconst fv-rams 136);128+4+2
+;	(defconst fv-siege-towers 256)
+	(defconst fv-siege-towers 262);256+2+4
+;	(defconst fv-bombard-cannons 512)
+	(defconst fv-bombard-cannons 518);512+2+4
+	(defconst fv-trebs 1030);1024+2+4
+
+(defconst f-cavalry-allowed 120)
+	(defconst fv-food 1)
+	(defconst fv-wood 2)
+	(defconst fv-gold 4)
+	(defconst fv-stone 8)
+	(defconst fv-all-res 15);1+2+4+8
+
+;	(defconst fv-uu 16)
+;	(defconst fv-scouts 32)
+	(defconst fv-scouts 33);32+1
+	(defconst fv-knights 69);64+1+4
+	(defconst fv-camels 133);128+1+4
+;	(defconst fv-elephants 256)
+	(defconst fv-elephants 261);256+1+4
+
+(defconst g-siege-rush 121)
+(defconst g-number-ranges 122)
+(defconst g-number-stables 123)
+(defconst g-number-barracks 124)
+(defconst g-number-monasteries 125)
+(defconst g-number-siege-workshops 126)
+(defconst g-number-town-centers 127)
+
+(defconst g-farms-required 128)
+
+(defconst jump-to-attack-function 129)
+(defconst g-rule-loops 130)
+(defconst g-current-list-number 131)
+(defconst g-closest-enemy-id 132)
+(defconst p-danger-x 133)
+(defconst p-danger-y 134)
+(defconst g-current-unit-id 135)
+(defconst g-my-elevation 136)
+(defconst g-enemy-elevation 137)
+(defconst g-next-attack 138)
+(defconst g-unit-speed 139)
+(defconst p-safety-x 140)
+(defconst p-safety-y 141)
+(defconst p-march-x 142)
+(defconst p-march-y 143)
+(defconst g-jump-direct-1 144)
+(defconst g-boar-distance 145)
+(defconst g-boar-id 146)
+(defconst g-boar-remaining-food 147)
+(defconst p-enemy-x 148)
+(defconst p-enemy-y 149)
+(defconst g-deer-id 150)
+(defconst gl-dlure 151)
+(defconst p-x-3 152)
+(defconst p-y-3 153)
+
+(defconst g-other-ranged-group1 154)
+(defconst g-other-ranged-group2 155)
+
+(defconst p-nearest-enemy-tower-x 156)
+(defconst p-nearest-enemy-tower-y 157)
+
+(defconst g-total-res 158)
+
+(defconst p-x-1 159)
+(defconst p-y-1 160)
+(defconst p-self-x 161)
+(defconst p-self-y 162)
+(defconst p-x-2 163)
+(defconst p-y-2 164)
+
+(defconst g-defend 165)
+(defconst g-enable-escrow-vills 166)
+(defconst g-position 167)
+	(defconst flank 1)
+	(defconst pocket 2)
+(defconst g-without-escrow 168)
+(defconst g-initial-attack 169)
+
+(defconst g-saved-food-percent 170)
+(defconst g-saved-wood-percent 171)
+(defconst g-saved-stone-percent 172)
+(defconst g-saved-gold-percent 173)
+
+(defconst p-saved-march-x 174)
+(defconst p-saved-march-y 175)
+(defconst delta-x-1 176)
+(defconst delta-y-1 177)
+(defconst g-full-max-range 178)
+(defconst g-full-min-range 179)
+(defconst delta-x-2 180)
+(defconst delta-y-2 181)
+
+(defconst p-dodge-x 182)
+(defconst p-dodge-y 183)
+(defconst p-dodge-z 184)
+
+(defconst deerhp-goal 185)
+(defconst saved-archer-range-2 186)
+
+(defconst g-enemy-score-prev 187)
+(defconst g-enemy-score-curr 188)
+(defconst g-enemy-score-diff 189)
+(defconst g-store-target 190)
+(defconst g-enemy-flusher 191)
+(defconst move-x 192)           ; movement vector x
+(defconst move-y 193)           ; movement vector y
+(defconst len2-x 194)           ; length squared x component
+(defconst len2-y 195)           ; length squared y component
+(defconst speed2 196)           ; speed squared
+(defconst g-archer-mode 197)
+	(defconst retreat 1)
+	(defconst sidling 2)
+	(defconst sidling-push 3)
+	(defconst retreat-from-melee 4)
+	(defconst retreat-from-fort 5)
+	(defconst sidle-away 6)
+(defconst next-x 198)           ; next tick x position
+(defconst next-y 199)           ; next tick y position
+(defconst p-x-4 200)
+(defconst p-y-4 201)
+(defconst p-x-5 202)
+(defconst p-y-5 203)
+(defconst g-second-turn 204)
+(defconst g-fifth-turn 205)
+(defconst g-turn-count 206)
+(defconst g-enemy-max-range 207)
+;monk micro
+(defconst g-monk-range 208)
+
+;list manager/counter
+(defconst g-list-manager 209)
+(defconst g-list-counter 210)
+
+(defconst g-convert-list-1 211)
+;keep this space empty for the list
+(defconst g-convert-list-final 241)
+
+(defconst g-with-escrow 244)
+(defconst g-current-ranged-group-class 245)
+(defconst g-lag-check 246)
+(defconst g-lag-eco 247)
+(defconst g-lag-ranged 248)
+(defconst g-lag-melee 249)
+(defconst g-lag-monk 250)
+(defconst g-lag-rest 251)
+(defconst g-mango-range 252)
+(defconst p-current-mango-point-x 253)
+(defconst p-current-mango-point-y 254)
+(defconst g-math-10 255)
+(defconst g-math-11 256)
+(defconst g-math-12 257)
+
+(defconst g-enemy-vills-nearby 258)
+(defconst p-enemy-vill-x 259)
+(defconst p-enemy-vill-y 260)
+(defconst g-current-target-id 261)
+
+(defconst g-previous-sheep 262)
+(defconst g-current-sheep 263)
+(defconst g-previous-boar 264)
+(defconst g-current-boar 265)
+(defconst mango-projectile-speed 266)
+
+(defconst f-map-type 267)
+	(defconst fv-land-map 1)
+	(defconst fv-fish-map 2)
+	(defconst fv-mixed-map 4)
+	(defconst fv-island-map 8)
+(defconst n-fishboats 268)
+(defconst n-docks 269)
+(defconst g-jump-direct-2 270)
+(defconst p-backline-x 271)
+(defconst p-backline-y 272)
+(defconst split-melee-turn 273)
+(defconst g-ballistic-enemies 274)
+
+
+
+(defconst f-enable-infantry 275)
+
+(defconst f-enable-archers 276)
+
+(defconst f-enable-monks 277)
+
+(defconst f-enable-siege 278)
+
+(defconst f-enable-cavalry 279)
+
+(defconst tribute-food-buffer 280)
+(defconst tribute-wood-buffer 281)
+(defconst tribute-stone-buffer 282)
+(defconst tribute-gold-buffer 283)
+(defconst ally-ares-goal 284)
+(defconst g-ally-trade 285)
+	(defconst NoBanking 1)
+	(defconst BankingAllyGuilds 2)
+	(defconst BankingAllySaracen 3)
+	(defconst BankingGuilds 4)
+	(defconst SaracenBanking 5)
+(defconst g-lag-test 286)
+;-------------------------------------------------------------------------------
+(defconst ally-id-goal 420)
+;-------------------------END GOALS-----------------------------------------
+;TIMERS
+(defconst t-dynamic-gather 1)
+(defconst t-upwood 2)
+(defconst t-4-sec 3)
+(defconst t-11-sec 4)
+(defconst t-19-sec 5)
+(defconst t-29-sec 6)
+(defconst t-41-sec 7)
+(defconst t-hunt 8)
+(defconst t-drop-food 9)
+(defconst t-misc 10)
+(defconst t-mill 11)
+(defconst t-melee-retreat 12)
+
+;obsolete SNs
+(defconst sn-food-gold-comparison 208)
+(defconst sn-food-wood-comparison 205)
+(defconst sn-wood-gold-comparison 206)
+
+(defconst sn-military-superiority 209)
+
+;threat counting
+(defconst sn-camels 180)
+(defconst sn-cavalry 207)
+(defconst sn-infantry 210)
+(defconst sn-spears 223)
+(defconst sn-husks 53)
+(defconst sn-eagles 186)
+(defconst sn-archers 187)
+(defconst sn-cavalry-archers 39)
+(defconst sn-skirms 212)
+(defconst sn-ranged 65)
+(defconst sn-gunpowder 213)
+(defconst sn-siege 64)
+(defconst sn-monks 66)
+(defconst sn-monksiege 214)
+(defconst sn-light-cavalry 224)
+(defconst sn-soldiers 45)
+(defconst sn-ranged-percentage 152)
+(defconst sn-cavalry-percentage 220)
+(defconst sn-infantry-percentage 151)
+(defconst sn-siege-percentage 150)
+(defconst sn-monk-percentage 190)
+(defconst sn-cataphracts 193)
+(defconst sn-heavy-cavalry 174)
+(defconst sn-scorpions 192)
+(defconst sn-civilian-superiority 191)
+
+;For use with object-data-group-flag
+(defconst temp-group-1 0)
+(defconst ranged-group-1 1);skirmishers
+(defconst ranged-group-2 2);unique 1 (archers/cavarchers/janissaries etc)
+(defconst ranged-group-3 3);unique 2
+(defconst melee-group 4)
+(defconst ranged-attack-group 5)
+(defconst ranged-attacked-group 6)
+(defconst sheep-scout-group 7)
+(defconst monk-ready-group 8)
+(defconst temp-enemy-group 9)
+(defconst sub-melee-group-1 10)
+(defconst sub-melee-group-2 11)
+
+
+
+(defrule
+	(true)
+=>
+	(up-get-precise-time 0  g-lag-check)
+)
+
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-camp-max-distance 20)
+	(set-strategic-number sn-building-targeting-mode 0)
+	(set-strategic-number sn-boar-lure-destination 0)
+	(set-strategic-number sn-blot-size 34)
+	(set-strategic-number sn-blot-exploration-map 0)
+	(set-strategic-number sn-attack-winning-player-factor 0)
+	(set-strategic-number sn-attack-winning-player 1)
+	(set-strategic-number sn-attack-intelligence 0)
+	(set-strategic-number sn-attack-group-size-randomness 0)
+	(set-strategic-number sn-attack-group-gather-spacing 5)
+	(set-strategic-number sn-allow-serjeant-building 1)
+	(set-strategic-number sn-allow-gathering-sea-fish-with-villagers 1)
+	(set-strategic-number sn-allow-civilian-offense 1)
+	(set-strategic-number sn-allow-civilian-defense 2)
+	(set-strategic-number sn-allow-capturing-gaia-units 1)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-cap-civilian-builders 200)
+	(set-strategic-number sn-consecutive-idle-unit-limit 0)
+	(set-strategic-number sn-do-not-scale-for-difficulty-level 1)
+	(set-strategic-number sn-enable-boar-hunting 1)
+	(set-strategic-number sn-enable-offensive-priority 1)
+	(set-strategic-number sn-enable-patrol-attack 1)
+	(set-strategic-number sn-initial-exploration-required 0)
+	(set-strategic-number sn-maximum-fish-boat-drop-distance 30)
+	(set-strategic-number sn-maximum-food-drop-distance 5)
+	(set-strategic-number sn-maximum-gold-drop-distance 0)
+	(set-strategic-number sn-maximum-hunt-drop-distance 8)
+	(set-strategic-number sn-maximum-stone-drop-distance 0)
+	(set-strategic-number sn-scale-minimum-attack-group-size 0)
+	(set-strategic-number sn-task-ungrouped-soldiers 0)
+	(disable-self)
+)
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+	(set-strategic-number sn-enable-research-queue 1)
+	(set-strategic-number sn-enable-offensive-priority 1)
+	(set-strategic-number sn-enable-new-building-system 1)
+	(set-strategic-number sn-easiest-reaction-percentage 100)
+	(set-strategic-number sn-easier-reaction-percentage 100)
+	(set-strategic-number sn-dock-training-filter 0)
+	(set-strategic-number sn-dock-proximity-factor 20)
+	(set-strategic-number sn-dock-placement-mode -1)
+	(set-strategic-number sn-dock-defend-priority 1)
+	(set-strategic-number sn-dock-avoidance-factor -3500)
+	(set-strategic-number sn-do-not-transport-from-same-zone 1)
+	(set-strategic-number sn-disable-villager-garrison 0)
+	(set-strategic-number sn-disable-trade-evasion 1); This needs testing
+	(set-strategic-number sn-disable-tower-priority 1)
+	(set-strategic-number sn-disable-sighted-response-cap 1)
+	(set-strategic-number sn-disable-defend-groups 0)
+	(set-strategic-number sn-disable-builder-assistance 1)
+	(set-strategic-number sn-disable-attack-groups 0)
+	(set-strategic-number sn-defer-dropsite-update 0)
+	(set-strategic-number sn-defense-distance 2)
+	(set-strategic-number sn-defend-overlap-distance 255)
+	(set-strategic-number sn-coop-share-information 1)
+	(set-strategic-number sn-coop-share-attacking-interval 100)
+	(set-strategic-number sn-coop-share-attacking 1)
+	(set-strategic-number sn-cap-civilian-gatherers 0)
+	(set-strategic-number sn-cap-civilian-explorers 200)
+	(set-strategic-number sn-gate-type-for-wall 1)	;only needs to be set to 1 in RoR
+	(set-strategic-number sn-zero-priority-distance 255)
+	(set-strategic-number sn-dropsite-separation-distance 5)
+	(disable-self)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-enemy-sighted-response-distance 10)
+	(set-strategic-number sn-filter-under-attack 2)
+	(set-strategic-number sn-focus-player-number 0)
+	(set-strategic-number sn-food-dropsite-distance 3)
+	(set-strategic-number sn-wood-dropsite-distance 4)
+	(set-strategic-number sn-gold-dropsite-distance 4)
+	(set-strategic-number sn-stone-dropsite-distance 4)
+	(set-strategic-number sn-food-gatherer-percentage 100)
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+	(set-strategic-number sn-forage-defend-priority 1)
+	(set-strategic-number sn-free-siege-targeting 2)
+	(set-strategic-number sn-garrison-rams 0)
+	(set-strategic-number sn-gate-type-for-wall 0)
+	(set-strategic-number sn-gather-defense-units 1)
+	(set-strategic-number sn-gather-idle-soldiers-at-center 0)
+	(set-strategic-number sn-gold-defend-priority 1)
+	(set-strategic-number sn-food-modifier-percentage 0)
+	(set-strategic-number sn-wood-modifier-percentage 0)
+	(set-strategic-number sn-gold-modifier-percentage 0)
+	(set-strategic-number sn-stone-modifier-percentage 0)
+	(set-strategic-number sn-group-commander-selection-method 2)
+	(set-strategic-number sn-group-form-distance 0)
+	(set-strategic-number sn-group-leader-defense-distance 4)
+	(set-strategic-number sn-hits-before-alliance-change 5)
+	(set-strategic-number sn-home-exploration-time 300)
+	(set-strategic-number sn-ignore-attack-group-under-attack 0)
+	(set-strategic-number sn-ignore-tower-elevation 0)
+	(set-strategic-number sn-initial-attack-delay 0)
+	(disable-self)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-initial-attack-delay-type 0)
+	(set-strategic-number sn-initial-exploration-required 0)
+	(set-strategic-number sn-intelligent-gathering 1)
+	(set-strategic-number sn-keystates 0);investigate
+	(set-strategic-number sn-livestock-defend-priority 1)
+	(set-strategic-number sn-livestock-to-town-center 1)
+	(set-strategic-number sn-lumber-camp-max-distance 15)
+	(set-strategic-number sn-max-build-plan-gatherer-percentage 33)
+	(set-strategic-number sn-max-retask-gather-amount max-value)
+	(set-strategic-number sn-max-skips-per-attempt 5)
+	(set-strategic-number sn-maximum-attack-group-size 1)
+	(set-strategic-number sn-maximum-boat-attack-group-size 1)
+	(set-strategic-number sn-maximum-boat-defend-group-size 1)
+	(set-strategic-number sn-maximum-boat-explore-group-size 0)
+	(set-strategic-number sn-maximum-defend-group-size 1)
+	(set-strategic-number sn-maximum-explore-group-size 1)
+	(set-strategic-number sn-maximum-gaia-attack-response 5)
+	(set-strategic-number sn-maximum-garrison-fill 0)
+	(set-strategic-number sn-maximum-patrol-distance -1)
+	(set-strategic-number sn-maximum-town-size 8)
+	(set-strategic-number sn-mill-max-distance 15)
+	(set-strategic-number sn-minimum-attack-group-size 1)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 7)
+	(set-strategic-number sn-minimum-boar-lure-group-size 1)
+	(set-strategic-number sn-minimum-boat-attack-group-size 1)
+	(set-strategic-number sn-minimum-boat-defend-group-size 1)
+	(set-strategic-number sn-minimum-boat-explore-group-size 0)
+	(set-strategic-number sn-minimum-civilian-explorers 100)
+	(set-strategic-number sn-minimum-defend-group-size 1)
+	(set-strategic-number sn-minimum-dropsite-buffer 58)
+	(disable-self)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-minimum-explore-group-size 1)
+	(set-strategic-number sn-minimum-number-hunters 0)
+	(set-strategic-number sn-minimum-peace-like-level 50)
+	(set-strategic-number sn-minimum-town-size 4)
+	(set-strategic-number sn-minimum-water-body-size-for-dock 500)
+	(set-strategic-number sn-mining-camp-max-distance 10)
+	(set-strategic-number sn-mule-cart-dropsite-placement lumber-camp)
+	(set-strategic-number sn-number-attack-groups 0)
+	(set-strategic-number sn-number-boat-attack-groups 0)
+	(set-strategic-number sn-number-boat-defend-groups 999)
+	(set-strategic-number sn-number-boat-explore-groups 0)
+	(set-strategic-number sn-number-build-attempts-before-skip 10)
+	(set-strategic-number sn-number-civilian-militia 5)
+	(set-strategic-number sn-number-defend-groups 999)
+	(set-strategic-number sn-number-enemy-objects-required 20)
+	(set-strategic-number sn-number-explore-groups 4)
+	(set-strategic-number sn-number-forward-builders 0)
+	(set-strategic-number sn-number-garrison-units 0)
+	(set-strategic-number sn-number-max-skip-cycles 25)
+	(set-strategic-number sn-number-tasked-units 0)
+	(set-strategic-number sn-object-repair-level 20547)
+	(set-strategic-number sn-percent-attack-boats 100)
+	(set-strategic-number sn-percent-attack-soldiers 100)
+	(set-strategic-number sn-percent-building-cancellation 25)
+	(set-strategic-number sn-percent-civilian-builders 100)
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-percent-civilian-gatherers 0)
+	(set-strategic-number sn-percent-enemy-sighted-response 100)
+	(set-difficulty-parameter ability-to-dodge-missiles 0)
+	(set-difficulty-parameter ability-to-maintain-distance 0)
+	(disable-self)
+)
+
+
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-percent-exploration-required 100)
+	(set-strategic-number sn-percent-half-exploration 50)
+	(set-strategic-number sn-percentage-explore-exterminators 100)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(set-strategic-number sn-placement-to-center 0)
+	(set-strategic-number sn-placement-zone-size 5)
+	(set-strategic-number sn-preferred-mill-placement 0)
+	(set-strategic-number sn-preferred-storage-pit-placement 0)
+	(set-strategic-number sn-preferred-trade-distance 1000)
+	(set-strategic-number sn-random-placement-factor 0)
+	(set-strategic-number sn-town-defend-priority 1)
+	(set-strategic-number sn-relic-defend-priority 5)
+	(set-strategic-number sn-stone-defend-priority 1)
+	(set-strategic-number sn-relic-return-distance 255)
+	(set-strategic-number sn-required-forest-tiles 20)
+	(set-strategic-number sn-retask-gather-amount 100)
+	(set-strategic-number sn-safe-town-size 40)
+	(set-strategic-number sn-scale-maximum-attack-group-size 0)
+	(set-strategic-number sn-scale-minimum-attack-group-size 0)
+	(set-strategic-number sn-scaling-frequency 0)
+	(set-strategic-number sn-sentry-distance 6)
+	(set-strategic-number sn-sentry-distance-variation 1)
+	(set-strategic-number sn-special-attack-type1 1)
+	(set-strategic-number sn-special-attack-type2 lumber-camp)
+	(set-strategic-number sn-special-attack-type3 0)
+	(set-strategic-number sn-special-attack-influence1 1)
+	(set-strategic-number sn-special-attack-influence2 5)
+	(set-strategic-number sn-special-attack-influence3 0)
+	(disable-self)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-save-scenario-information 0)
+	(set-strategic-number sn-target-evaluation-ally-proximity 25)
+	(set-strategic-number sn-target-evaluation-attack-attempts -20)
+	(set-strategic-number sn-target-evaluation-boat -10)
+	(set-strategic-number sn-target-evaluation-continent 10)
+	(set-strategic-number sn-target-evaluation-damage-capability 15)
+	(set-strategic-number sn-target-evaluation-distance 50)
+	(set-strategic-number sn-target-evaluation-hitpoints -15)
+	(set-strategic-number sn-target-evaluation-in-progress 10)
+	(set-strategic-number sn-target-evaluation-kills 0)
+	(set-strategic-number sn-target-evaluation-randomness 0)
+	(set-strategic-number sn-target-evaluation-range 0)
+	(set-strategic-number sn-target-evaluation-rof 15)
+	(set-strategic-number sn-target-evaluation-siege-weapon 10)
+	(set-strategic-number sn-target-evaluation-time-kill-ratio 30)
+	(set-strategic-number sn-target-player-number 0)
+	(set-strategic-number sn-target-point-adjustment 5)
+	(set-strategic-number sn-total-number-explorers 99)
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-track-player-history 0)
+	(set-strategic-number sn-ttkfactor-scalar 110)
+	(set-strategic-number sn-unexplored-construction 0)
+	(set-strategic-number sn-use-by-type-max-gathering 1)
+	(set-strategic-number sn-villager-attack-reset 1); use this 0 to make villagers aggressive
+	(set-strategic-number sn-wall-targeting-mode 1)
+	(set-strategic-number sn-warship-targeting-mode 1);set to 0 to target inland castles more
+	(set-strategic-number sn-wild-animal-exploration 1)
+	(disable-self)
+)
+(defrule
+	(true)
+=>
+	(set-goal g-ally-trade NoBanking)
+	(set-goal ally-ares-goal no)
+	(set-goal ally-id-goal ally-ares-goal)
+	(set-goal g-ballistic-enemies no)
+	(set-goal f-map-type fv-land-map)
+	(set-strategic-number sn-preferred-settlement-placement 3)
+	(set-goal g-dynamic-gathering no)
+	(set-goal g-rushing-age feudal-age)
+	(enable-timer t-4-sec 2)
+	(enable-timer t-11-sec 8)
+	(enable-timer t-19-sec 12)
+	(enable-timer t-29-sec 18)
+	(enable-timer t-41-sec 29)
+	(up-assign-builders c: town-center-foundation c: 6)
+	(up-assign-builders c: castle c: 5)
+	(up-assign-builders c: house c: 2)
+	(up-assign-builders c: watch-tower c: 2)
+	(up-assign-builders c: mining-camp c: 2)
+	(up-assign-builders c: archery-range c: 2)
+	(up-assign-builders c: stable c: 2)
+	(up-assign-builders c: fish-trap c: -1)
+	(up-get-point position-self p-self-x)
+	(set-goal g-enemy-flusher no)
+	(set-goal g-with-escrow with-escrow)
+	(set-goal g-without-escrow without-escrow)
+	(set-goal gl-dlure 100)
+	(disable-self)
+)
+
+
+#load-if-not-defined FORTRESS-MAP
+#load-if-not-defined OASIS-MAP
+#load-if-not-defined SALT-MARSH-MAP
+(defrule
+	(or	(cc-players-unit-type-count 0 sea-fish >= min-fishing) 
+		(cc-players-unit-type-count 0 shore-fish >= min-fishing))
+=>
+	(up-modify-flag f-map-type c:+ fv-fish-map)
+	(chat-to-player my-player-number "some fish found on map")
+	(disable-self))
+#else
+(defrule
+	(true)
+=>
+	(up-modify-flag f-map-type c:+ fv-fish-map)
+	(chat-to-player my-player-number "some fish found on map")
+	(disable-self))
+#end-if
+#end-if
+#end-if
+
+
+(defrule
+	(building-type-count town-center > 1)
+=>
+	(up-assign-builders c: town-center-foundation c: 3)
+	(disable-self)
+)
+(defrule
+	(building-type-count town-center > 0)
+	(or	(civ-selected hun)
+		(building-type-count-total house > 1))
+=>
+	(up-assign-builders c: house c: 0)
+	(disable-self)
+)
+(defrule
+	(building-type-count mill > 0)
+	(building-type-count town-center > 0)
+=>
+	(up-assign-builders c: mill c: 0)
+	(disable-self)
+)
+(defrule
+	(building-type-count archery-range > 0)
+	(building-type-count town-center > 0)
+=>
+	(up-assign-builders c: archery-range c: 0)
+	(disable-self)
+)
+(defrule
+	(building-type-count stable > 0)
+	(building-type-count town-center > 0)
+=>
+	(up-assign-builders c: stable c: 0)
+	(disable-self)
+)
+(defrule
+	(building-type-count mining-camp > 0)
+	(building-type-count town-center > 0)
+=>
+	(up-assign-builders c: mining-camp c: 0)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count town-center < 1)
+=>
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-percent-half-exploration 0)
+	(set-strategic-number sn-percent-exploration-required 0)
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-percent-civilian-gatherers 100)
+	(set-strategic-number sn-number-explore-groups 1)
+	(set-strategic-number sn-number-enemy-objects-required 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-gatherers 200)
+	(disable-self)
+)
+(defrule
+	(not	(sheep-and-forage-too-far))
+;	(or	(cc-players-unit-type-count 0 forage-bush-class < 8)
+;		(resource-found food))
+=>
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-percent-half-exploration 0)
+	(set-strategic-number sn-percent-exploration-required 0)
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-percent-civilian-gatherers 100)
+	(set-strategic-number sn-number-explore-groups 1)
+	(set-strategic-number sn-number-enemy-objects-required 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-gatherers 200)
+	(disable-self)
+)
+#load-if-not-defined REVEAL-NORMAL
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-unexplored-construction 1)
+	(disable-self)
+)
+#end-if
+
+
+(defrule
+	(unit-type-count villager > 5)
+=>
+	(set-strategic-number sn-maximum-food-drop-distance 20)
+	(set-strategic-number sn-maximum-gold-drop-distance 15)
+	(set-strategic-number sn-maximum-stone-drop-distance 15)
+	(set-strategic-number sn-maximum-wood-drop-distance 25)
+	(set-strategic-number sn-maximum-hunt-drop-distance 20)
+	(disable-self)
+)
+;(defrule
+;	(unit-type-count villager > 7)
+;	(research-completed ri-loom)
+;=>
+;	(set-strategic-number sn-minimum-number-hunters 1)
+;	(set-strategic-number sn-maximum-hunt-drop-distance 30)
+;	(disable-self)
+;)
+
+
+(defrule
+	(unit-type-count ram-unit > 2)
+=>
+	(set-strategic-number sn-disable-tower-priority 0)
+	(disable-self)
+)
+
+
+
+(defrule
+	(unit-type-count villager > 14)
+	(up-pending-objects c: house == 0)
+	(can-afford-building house)
+	(building-available house)
+	(not	(can-build-with-escrow house))
+	(strategic-number sn-maximum-town-size < 33)
+=>
+	(up-jump-rule 2)
+	(chat-to-player my-player-number "increase ts to build")
+	(up-modify-sn sn-maximum-town-size c:+ 1))
+(defrule
+	(unit-type-count villager > 14)
+	(up-pending-objects c: barracks == 0)
+	(or	(and	(can-afford-building barracks)
+			(building-available barracks))
+		(and	(current-age >= feudal-age)
+			(strategic-number sn-maximum-town-size < 10)))
+	(not	(can-build-with-escrow barracks))
+	(strategic-number sn-maximum-town-size < 33)
+=>
+	(up-jump-rule 1)
+	(chat-to-player my-player-number "increase ts to build")
+	(up-modify-sn sn-maximum-town-size c:+ 1))
+(defrule
+	(unit-type-count villager > 14)
+	(up-pending-objects c: market == 0)
+	(can-afford-building market)
+	(building-available market)
+	(not	(can-build-with-escrow market))
+	(strategic-number sn-maximum-town-size < 33)
+=>
+	(chat-to-player my-player-number "increase ts to build")
+	(up-modify-sn sn-maximum-town-size c:+ 1))
+
+(defrule
+	(unit-type-count villager > 14)
+	(up-pending-objects c: town-center-foundation == 0)
+	(can-afford-building town-center-foundation)
+	(building-available town-center-foundation)
+	(not	(can-build-with-escrow town-center-foundation))
+	(strategic-number sn-maximum-town-size < 33)
+=>
+	(chat-to-player my-player-number "increase ts to build")
+	(up-modify-sn sn-maximum-town-size c:+ 1))
+
+(defrule
+	(goal g-second-turn 0)
+	(unit-type-count villager > 14)
+	(up-pending-objects c: lumber-camp == 0)
+	(can-afford-building lumber-camp)
+	(building-available lumber-camp)
+	(not	(can-build-with-escrow lumber-camp))
+	(strategic-number sn-lumber-camp-max-distance < 133)
+=>
+	(chat-to-player my-player-number "increase lumber camp distance to build")
+	(up-modify-sn sn-lumber-camp-max-distance c:+ 7))
+
+(defrule
+	(goal g-second-turn 1)
+	(unit-type-count villager > 24)
+	(up-pending-objects c: mining-camp == 0)
+	(can-afford-building mining-camp)
+	(building-available mining-camp)
+	(not	(can-build-with-escrow mining-camp))
+	(strategic-number sn-mining-camp-max-distance < 133)
+=>
+	(chat-to-player my-player-number "increase mining camp distance to build")
+	(up-modify-sn sn-mining-camp-max-distance c:+ 4))
+
+(defrule
+	(unit-type-count villager > 24)
+	(building-type-count-total mining-camp > 1)
+	(strategic-number sn-mining-camp-max-distance < 33)
+=>
+	(chat-to-player my-player-number "increase mining camp distance to build")
+	(set-strategic-number sn-mining-camp-max-distance 33)
+	(up-modify-sn sn-lumber-camp-max-distance c:max 33))
+
+(defrule
+	(soldier-count > 20)
+	(strategic-number sn-maximum-town-size < 20)
+	(strategic-number sn-military-superiority > -3)
+=>
+	(set-strategic-number sn-maximum-town-size 23))
+
+(defrule
+	(true)
+=>
+	(up-modify-goal g-turn-count c:+ 1)
+	(up-modify-goal g-second-turn g:= g-turn-count)
+	(up-modify-goal g-second-turn c:mod 2)
+	(up-modify-goal g-fifth-turn g:= g-turn-count)
+	(up-modify-goal g-fifth-turn c:mod 5)
+	(up-get-point position-self p-self-x)
+	(up-full-reset-search)
+)
+(defrule
+	(building-type-count town-center == 0)
+	(up-find-local c: villager c: 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object p-self-x)
+)
+(defrule
+	(timer-triggered t-29-sec)
+=>
+	(up-set-attack-stance -1 c: stance-aggressive)
+)
+(load "Ares/sheep scouting")
+(load "Ares/threats")
+(load "Ares/coordinates")
+(load "Ares/goal controls")
+(load "Ares/attack controls")
+
+(load "Ares/Deer Luring")
+(load "Ares/economy duc")
+
+(defrule
+	(true)
+=>
+	(up-get-precise-time g-lag-check g-lag-eco)
+)
+
+(load "Ares/RangedMicro")
+
+
+(defrule
+	(true)
+=>
+	(up-get-precise-time g-lag-check g-lag-ranged)
+)
+
+;(load "Ares/melee attack")
+(load "Ares/melee micro")
+
+(defrule
+	(true)
+=>
+	(up-get-precise-time g-lag-check g-lag-melee)
+)
+
+(load "Ares/monk micro")
+(load "Ares/mangonel micro")
+
+
+(defrule
+	(true)
+=>
+	(up-get-precise-time g-lag-check g-lag-monk)
+)
+
+
+(load "Ares/escrow")
+(load "Ares/research")
+
+(load "Ares/train controls")
+(load "Ares/unit selection")
+
+(load "Ares/train")
+(load "Ares/build")
+(load "Ares/darkagegather%")
+(load "Ares/DynamicGathering")
+(load "Ares/market-main")
+
+(defrule
+	(unit-type-count livestock-class g:> g-previous-sheep)
+=>
+	(up-get-fact unit-type-count livestock-class g-math-1)
+	(up-modify-goal g-math-1 g:- g-previous-sheep)
+	(up-modify-goal g-current-sheep g:+ g-math-1)
+	(up-chat-data-to-player my-player-number ".%d sheep found" g: g-current-sheep))
+(defrule
+	(up-gaia-type-count c: wild-animals-class g:> g-previous-boar)
+=>
+	(up-get-fact gaia-type-count wild-animals-class g-math-1)
+	(up-modify-goal g-math-1 g:- g-previous-boar)
+	(up-modify-goal g-current-boar g:+ g-math-1)
+	(up-chat-data-to-player my-player-number ".%d boar found" g: g-current-boar))
+;should be at bottom of script for g-current-vils and g-enemy-units-in-town comparisons
+(defrule
+	(true)
+=>
+	(up-get-fact gaia-type-count wild-animals-class g-previous-boar)
+	(up-get-fact unit-type-count livestock-class g-previous-sheep)
+	(up-get-fact unit-type-count dead-female-builder g-math-1)
+	(up-get-fact unit-type-count dead-male-builder g-math-2)
+	(up-modify-goal g-math-1 g:+ g-math-2)
+	(up-modify-goal g-math-1 c:* 15)
+	(set-strategic-number sn-percent-building-cancellation 40)
+	(up-modify-sn sn-percent-building-cancellation g:+ g-math-1)
+	(up-modify-sn sn-percent-building-cancellation c:min 100)
+	(set-goal g-town-under-attack no)
+	(up-find-player enemy find-closest g-math-1)
+	(up-modify-sn sn-target-player-number g:= g-math-1)
+)
+(defrule
+	(strategic-number sn-maximum-town-size < 40)
+	(up-enemy-units-in-town > 3)
+	(town-under-attack)
+=>
+	(set-goal g-town-under-attack yes)
+	(up-find-player enemy find-attacker g-math-1)
+	(up-modify-sn sn-target-player-number g:= g-math-1))
+(defrule
+	(or	(unit-type-count villager g:> g-current-vils)
+		(up-pending-objects c: villager > 1))
+=>
+	(enable-timer t-drop-food 21))
+(defrule
+	(true)
+=>
+	(up-get-fact unit-type-count villager g-current-vils)
+	(up-get-fact enemy-units-in-town 0 g-enemy-units-in-town)
+
+	(up-get-fact military-population 0 g-math-1)
+	(up-get-player-fact target-player military-population 0 g-math-2)
+	(up-modify-goal g-math-1 g:- g-math-2)
+	(up-modify-sn sn-military-superiority g:= g-math-1)
+
+	(up-get-fact civilian-population 0 g-math-1)
+	(up-get-player-fact target-player civilian-population 0 g-math-2)
+	(up-modify-goal g-math-1 g:- g-math-2)
+	(up-modify-sn sn-civilian-superiority g:= g-math-1)
+
+
+	(up-get-fact wood-amount 0 g-math-1)
+	(up-get-fact food-amount 0 g-math-2)
+	(up-modify-goal g-math-1 g:- g-math-2)
+	(up-modify-sn sn-food-wood-comparison g:= g-math-1)
+
+
+	(up-get-fact gold-amount 0 g-math-1)
+	(up-get-fact food-amount 0 g-math-2)
+	(up-modify-goal g-math-1 g:- g-math-2)
+	(up-modify-sn sn-food-gold-comparison g:= g-math-1)
+
+
+	(up-get-fact gold-amount 0 g-math-1)
+	(up-get-fact wood-amount 0 g-math-2)
+	(up-modify-goal g-math-1 g:- g-math-2)
+	(up-modify-sn sn-wood-gold-comparison g:= g-math-1)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;THESE FOLLOWING RULES SHALL STAY AT END OF SCRIPT
+
+(defrule
+	(taunt-detected my-player-number 100)
+=>
+	(up-chat-data-to-all "lumber camp distance %d" s: sn-lumber-camp-max-distance)
+	(up-chat-data-to-all "Civilian superiority %d" s: sn-civilian-superiority)
+	(up-chat-data-to-all "Military superiority %d" s: sn-military-superiority)
+	(up-chat-data-to-all "Town size: %d" s: sn-maximum-town-size)
+	(up-chat-data-to-all "sn target player %d" s: sn-target-player-number)
+	(up-chat-data-to-all "mining camp distance %d" s: sn-mining-camp-max-distance)
+	(up-chat-data-to-all "Escrow: %d" g: g-escrow)
+	(up-chat-data-to-all "Attack type %d" g: g-attack)
+	(acknowledge-taunt my-player-number 100))
+
+(defrule
+	(taunt-detected my-player-number 101)
+=>
+	(up-get-fact unit-type-count villager-food g-math-1)
+	(up-get-fact unit-type-count villager-wood g-math-2)
+	(up-get-fact unit-type-count villager-gold g-math-3)
+	(up-modify-goal g-math-1 g:+ g-math-2)
+	(up-modify-goal g-math-1 g:+ g-math-3)
+	(up-get-fact unit-type-count villager-stone g-math-2)
+	(up-modify-goal g-math-1 g:+ g-math-2)
+	(up-modify-goal g-math-2 c:* 100)
+	(up-modify-goal g-math-3 c:* 100)
+	(up-modify-goal g-math-2 g:/ g-math-1)
+	(up-modify-goal g-math-3 g:/ g-math-1)
+	(up-chat-data-to-all "Stone Gatherers %: %d" g: g-math-2)
+	(up-chat-data-to-all "Gold Gatherers %: %d" g: g-math-3)
+	(up-get-fact unit-type-count villager-food g-math-3)
+	(up-get-fact unit-type-count villager-wood g-math-2)
+	(up-modify-goal g-math-2 c:* 100)
+	(up-modify-goal g-math-3 c:* 100)
+	(up-modify-goal g-math-2 g:/ g-math-1)
+	(up-modify-goal g-math-3 g:/ g-math-1)
+	(up-chat-data-to-all "Wood Gatherers %: %d" g: g-math-2)
+	(up-chat-data-to-all "Food Gatherers %: %d" g: g-math-3)
+	(up-chat-data-to-all "sn food %d" s: sn-food-gatherer-percentage)
+	(up-chat-data-to-all "sn gold %d" s: sn-gold-gatherer-percentage)
+	(up-chat-data-to-all "sn stone %d" s: sn-stone-gatherer-percentage)
+	(up-chat-data-to-all "sn wood %d" s: sn-wood-gatherer-percentage)
+	(up-chat-data-to-all "sn total explorers %d" s: sn-total-number-explorers)
+	(up-chat-data-to-all "sn number explorers %d" s: sn-number-explore-groups)
+	(acknowledge-taunt my-player-number 101)
+)
+
+(defrule
+	(taunt-detected my-player-number 102)
+=>
+	(up-chat-data-to-player my-player-number "Monk threat: %d" s: sn-monks)
+	(up-chat-data-to-player my-player-number "Archer threat: %d" s: sn-archers)
+	(up-chat-data-to-player my-player-number "Cavalry threat: %d" s: sn-cavalry)
+	(up-chat-data-to-player my-player-number "infantry-class threat: %d" s: sn-infantry)
+	(up-chat-data-to-player my-player-number "Fast infantry threat: %d" s: sn-eagles)
+	(up-chat-data-to-player my-player-number "Siege threat: %d" s: sn-siege)
+	(up-chat-data-to-player my-player-number "skirmisher threat: %d" s: sn-skirms)
+	(up-chat-data-to-player my-player-number "spearman threat: %d" s: sn-spears)
+	(acknowledge-taunt my-player-number 102))
+
+(defrule
+	(taunt-detected my-player-number 103)
+=>
+	(up-chat-data-to-self "Research tier: %d" g: g-research-status)
+	(up-chat-data-to-self "Farms required: %d" g: g-farms-required)
+	(up-chat-data-to-self "best melee unit: %d" g: my-best-melee-unit)
+	(up-chat-data-to-self "best ranged unit: %d" g: my-best-ranged-unit)
+	(up-chat-data-to-self "Food available: %d" g: g-food-available)
+	(up-chat-data-to-self "Wood available: %d" g: g-wood-available)
+	(up-chat-data-to-self "Stone available: %d" g: g-stone-available)
+	(up-chat-data-to-self "Gold available: %d" g: g-gold-available)
+	(acknowledge-taunt my-player-number 103))
+
+(defrule
+	(taunt-detected my-player-number 104)
+=>
+	(up-chat-data-to-self "f-siege-allowed: %d" g: f-siege-allowed)
+	(up-chat-data-to-self "f-archers-allowed : %d" g: f-archers-allowed)
+	(up-chat-data-to-self "f-monks-allowed %d" g: f-monks-allowed)
+	(up-chat-data-to-self "f-cavalry-allowed %d" g: f-cavalry-allowed)
+	(up-chat-data-to-self "f-infantry-allowed %d" g: f-infantry-allowed)
+	(up-chat-data-to-self "sn-minimum-number-hunters: %d" s: sn-minimum-number-hunters)
+	(up-chat-data-to-self "sn-maximum-hunt-drop-distance: %d" s: sn-maximum-hunt-drop-distance)
+	(acknowledge-taunt my-player-number 104)
+)
+
+
+(defrule
+	(taunt-detected my-player-number 105)
+=>
+	(up-chat-data-to-self "p-danger-x %d" g: p-danger-x)
+	(up-chat-data-to-self "p-danger-y %d" g: p-danger-y)
+	(up-chat-data-to-self "p-order-x %d" g: p-order-x)
+	(up-chat-data-to-self "p-order-y %d" g: p-order-x)
+	(up-chat-data-to-self "p-safety-x %d" g: p-safety-x)
+	(up-chat-data-to-self "p-safety-y %d" g: p-safety-y)
+	(up-chat-data-to-self "p-march-x %d" g: p-march-x)
+	(up-chat-data-to-self "p-march-y %d" g: p-march-y)
+	(acknowledge-taunt my-player-number 105)
+)
+(defrule
+	(taunt-detected my-player-number 106)
+=>
+	(up-chat-data-to-self "convert 1 %d" g: 211)
+	(up-chat-data-to-self "convert 2 %d" g: 212)
+	(up-chat-data-to-self "convert 3 %d" g: 213)
+	(up-chat-data-to-self "convert 4 %d" g: 214)
+	(up-chat-data-to-self "convert 5 %d" g: 215)
+	(up-chat-data-to-self "convert 6 %d" g: 216)
+	(up-chat-data-to-self "convert 7 %d" g: 217)
+	(up-chat-data-to-self "convert 8 %d" g: 218)
+	(acknowledge-taunt my-player-number 106)
+)
+
+
+(defrule
+	(taunt-detected my-player-number 107)
+=>
+	(up-chat-data-to-self "requested barracks %d" g: g-number-barracks)
+	(up-chat-data-to-self "requested monasteries %d" g: g-number-monasteries)
+	(up-chat-data-to-self "requested archery ranges %d" g: g-number-ranges)
+	(up-chat-data-to-self "requested siege workshops %d" g: g-number-siege-workshops)
+	(up-chat-data-to-self "requested stables %d" g: g-number-stables)
+	(up-chat-data-to-self "requested town centers %d" g: g-number-town-centers)
+	(up-chat-data-to-self "food-wood comparison %d" s: sn-food-wood-comparison)
+	(up-chat-data-to-self "wood-gold comparison %d" s: sn-wood-gold-comparison)
+	(up-chat-data-to-self "food-gold comparison %d" s: sn-food-gold-comparison)
+	(acknowledge-taunt my-player-number 107)
+)
+
+(defrule
+	(taunt-detected my-player-number 108)
+=>
+	(up-send-flare p-march-x)
+	(up-chat-data-to-self "ballistic enemies: %d" g: g-ballistic-enemies)
+	(up-chat-data-to-self "g-build %d" g: g-build)
+	(acknowledge-taunt my-player-number 108))
+(defrule
+	(taunt-detected my-player-number 255)
+=>
+	(fe-break-point 1 == 1 -1)
+	(acknowledge-taunt my-player-number 255)
+)
+
+
+(defrule
+	(timer-triggered t-4-sec)
+=>	
+	(enable-timer t-4-sec 4))
+(defrule
+	(timer-triggered t-11-sec)
+=>
+	(enable-timer t-11-sec 11))
+(defrule
+	(timer-triggered t-19-sec)
+=>
+	(enable-timer t-19-sec 19))
+(defrule
+	(timer-triggered t-29-sec)
+=>
+	(enable-timer t-29-sec 29))
+(defrule
+	(timer-triggered t-41-sec)
+=>
+;	(up-get-precise-time 0  500)
+	(enable-timer t-41-sec 41))
+
+(defrule
+	(true)
+=>
+	(up-get-precise-time g-lag-check g-lag-rest)
+
+	(up-modify-goal g-lag-rest g:- g-lag-monk)
+	(up-modify-goal g-lag-monk g:- g-lag-melee)
+	(up-modify-goal g-lag-melee g:- g-lag-ranged)
+	(up-modify-goal g-lag-ranged g:- g-lag-eco)
+
+	(up-get-precise-time g-lag-check  g-lag-check)
+)
+(defrule
+	(or	(and	(goal g-fifth-turn 2)
+			(up-compare-goal g-lag-check > 20))
+	(or	(goal g-lag-test 1)
+		(taunt-detected my-player-number 254)))
+=>
+	(chat-to-player my-player-number "----------------")
+	(up-chat-data-to-self "path check pass? %d" g: g-lag-test)
+	(up-chat-data-to-self "LAG LAG LAG %d" g: g-lag-check)
+	(up-chat-data-to-self "eco lag %d" g: g-lag-eco)
+	(up-chat-data-to-self "ranged lag %d" g: g-lag-ranged)
+	(up-chat-data-to-self "melee lag %d" g: g-lag-melee)
+	(up-chat-data-to-self "monk lag %d" g: g-lag-monk)
+	(up-chat-data-to-self "remaining lag %d" g: g-lag-rest)
+	(acknowledge-taunt my-player-number 254)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal g-lag-test 0)
+)
+
+(defrule
+	(population < 50)
+	(players-population every-ally < 50)
+	(players-population any-enemy > 150)
+=>
+	(chat-to-all "gg")
+	(resign)
+)
+;(defrule
+;	(true)
+;=>
+;	(up-full-reset-search)
+;	(up-find-local c: villager-class c: 1)
+;	(up-set-target-object search-local c: 0)
+;	(up-set-target-point 50)
+;	(up-get-object-data object-data-distance 20)
+;	(up-get-object-data object-data-move-x 55)
+;	(up-get-object-data object-data-move-y 56)
+;	(up-get-object-data object-data-point-x 66)
+;	(up-get-object-data object-data-point-y 67)
+;	(up-get-object-data object-data-speed 60)
+;	(up-get-object-data object-data-action 61)
+;	(up-get-object-data object-data-order 62)
+;	(up-get-object-data object-data-range 63)
+;	(up-get-object-data object-data-attacker-count 50)
+;	(up-get-object-data object-data-min-range 51)
+;	(up-get-point-distance 55 66 77)
+;	(up-get-point position-object p-x-1)
+;	(up-modify-goal p-self-x c:* 100)
+;	(up-modify-goal p-self-y c:* 100)
+;	(up-modify-goal p-x-1 g:* p-x-1)
+;	(up-modify-goal p-y-1 g:* p-y-1)
+;	(up-modify-goal p-self-x g:* p-self-x)
+;	(up-modify-goal p-self-y g:* p-self-y)
+;	(up-modify-goal 70 g:= 66)
+;	(up-modify-goal 70 g:min 80)
+;	(up-modify-goal 71 g:= 66)
+;	(up-modify-goal 71 g:max 80)
+;	(up-modify-goal 72 g:= 67)
+;	(up-modify-goal 72 g:min 81)
+;	(up-modify-goal 73 g:= 67)
+;	(up-modify-goal 73 g:max 81)
+;	(up-modify-goal g-math-9 g:- g-math-8)
+;	(up-modify-goal g-math-7 g:- g-math-6)
+;	(up-modify-goal g-math-9 g:* g-math-9)
+;	(up-modify-goal g-math-7 g:* g-math-7)
+;	(up-modify-goal g-math-9 g:+ g-math-7)
+;	(up-modify-goal g-math-9 c:/ 10000)
+;	(chat-to-player my-player-number "---------------")
+;	(up-chat-data-to-all "current x: %d" g: 66)
+;	(up-chat-data-to-all "current y: %d" g: 67)
+;	(up-chat-data-to-all "movement x: %d" g: 55)
+;	(up-chat-data-to-all "movement y: %d" g: 56)
+;	(up-chat-data-to-player my-player-number "speed: %d" g: 60)
+;	(up-chat-data-to-player my-player-number "action: %d" g: 61)
+;	(up-chat-data-to-player my-player-number "order: %d" g: 62)
+;	(up-chat-data-to-all "distance: %d" g: 77)
+;	(up-chat-data-to-all "attacker count: %d" g: 50)
+;	(up-chat-data-to-player my-player-number "min range: %d" g: 51)
+;	(up-chat-data-to-player my-player-number "object-data-distance: %d" g: g-math-1)
+;	(up-modify-goal g-math-3 g:* g-math-3)
+;	(up-modify-goal g-math-3 c:/ 10000)
+;	(up-chat-data-to-player my-player-number "precise distance SQUARED %d" g: g-math-3)
+;)
+

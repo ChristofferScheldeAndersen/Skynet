@@ -1,0 +1,436 @@
+(defconst object-data-distance 44)
+(defconst object-data-upgrade-type 82)
+(defconst search-order-none 0)
+(defconst search-order-asc 1)
+(defconst object-data-index -1)
+(defconst wood 1)
+(defconst explored-no 0)
+(defconst players-in-game 42)
+(defconst tree-class 915)
+
+(defconst gl-tree-cutting-start-x 605)
+(defconst gl-tree-cutting-start-y 606)
+(defconst gl-tree-cutting-point-x 607)
+(defconst gl-tree-cutting-point-y 608)
+(defconst gl-tree-cutting-destination-x 609)
+(defconst gl-tree-cutting-destination-y 610)
+(defconst gl-temp-goal-1 611)
+(defconst gl-temp-goal-2 612)
+(defconst gl-temp-goal-3 613)
+(defconst gl-temp-goal-4 614)
+(defconst gl-cycles 615)
+
+(defconst rocket-cart 1904)
+(defconst heavy-rocket-cart 1907)
+(defconst traction-trebuchet 1942)
+
+#load-if-defined MICHI-MAP ;you can comment this and the final "end-if" out at the bottom if you want to test this in a scenario first. This condition just stops this activating on non-Michi maps. 
+
+;I have tried to comment on this where possible. What this script does is take a starting co-ordinate and a destination co-ordinate then gradually moves a point from the start and destination, stopping when a tree is detected within a certain radius. Tree cutting units are selected and tasked with cutting down highlighted trees and then the point moves along to the next tree. This can be customised so your start and end points can be what you like, this is a simple example to have something functional if your AI cannot cut through trees at all.
+
+(defrule
+(up-players-in-game ally == 1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-local c: 128 c: 240)
+(up-remove-objects search-local 16 > 0)
+(up-remove-objects search-local 82 == 204)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-find-remote c: market c: 40)
+(up-clean-search search-remote 44 1)
+)
+
+(defrule
+(up-players-in-game ally == 1)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 0 gl-dot-x)
+(up-remove-objects search-local 23 g:== gl-dot-x)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(can-research ri-onager)
+=>
+(research ri-onager)
+)
+
+(defrule
+(can-research ri-heavy-rocket-cart)
+=>
+(research ri-heavy-rocket-cart)
+)
+
+(defrule
+(or(research-available ri-heavy-rocket-cart)
+(can-train 1907))
+(can-train mangonel-line)
+(unit-type-count rocket-cart-line < 1)
+=>
+(train rocket-cart-line)
+)
+
+(defrule
+(or(research-available ri-onager)
+(or(can-train onager)
+(can-train siege-onager)))
+(can-train mangonel-line)
+(unit-type-count mangonel-line < 1)
+=>
+(train mangonel-line)
+)
+
+(defrule
+(civ-selected khmer)
+(building-type-count castle > 0)
+(unit-type-count-total ballista-elephant < 1)
+;(stone-amount >= 200)
+(gold-amount < 200)
+(or(food-amount < 100)
+(gold-amount < 80))
+(can-sell-commodity wood)
+=>
+(sell-commodity wood)
+;(sell-commodity stone)
+)
+
+(defrule
+(civ-selected khmer)
+(building-type-count castle > 0)
+(unit-type-count-total ballista-elephant < 1)
+;(stone-amount >= 200)
+(gold-amount < 200)
+(or(food-amount < 100)
+(gold-amount < 80))
+(can-sell-commodity stone)
+=>
+(sell-commodity stone)
+;(sell-commodity stone)
+)
+
+(defrule
+(civ-selected khmer)
+(building-type-count castle > 0)
+(unit-type-count-total ballista-elephant < 1)
+(food-amount < 100)
+;(gold-amount >= 230)
+(can-buy-commodity food)
+=>
+(buy-commodity food)
+)
+
+(defrule
+(civ-selected khmer)
+(building-type-count castle > 0)
+;(unit-type-count-total ballista-elephant < 1)
+(food-amount < 100)
+(gold-amount >= 400)
+(can-buy-commodity food)
+(up-pending-objects c: ballista-elephant c:< 1)
+=>
+(buy-commodity food)
+)
+
+(defrule
+;(unit-type-count ballista-elephant < 4)
+(can-train ballista-elephant)
+=>
+(train ballista-elephant)
+)
+
+
+(defrule
+(unit-type-count trebuchet-set < 1)
+(can-train trebuchet)
+=>
+(train trebuchet)
+)
+
+(defrule
+(false)
+(game-time > 1500)
+=>
+(up-jump-rule 2)
+(disable-self)
+)
+
+(defrule
+(game-time > 750);900
+=>
+(up-jump-rule 1)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 12);11
+)
+
+(defrule
+(true)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-modify-goal gl-temp-goal-1 c:= 0)
+(up-modify-goal gl-temp-goal-2 c:= 0)
+(up-modify-goal gl-temp-goal-3 c:= 0)
+(up-modify-goal gl-temp-goal-4 c:= 0)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number < 9)
+(or(up-compare-sn sn-focus-player-number c:== my-player-number)
+(players-stance focus-player ally))
+=>
+(up-full-reset-search)
+(up-find-remote c: town-center c: 40);you could change this to villager-class if you want a little variance in starting cutting location.
+(up-clean-search search-remote 0 1)
+(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number < 9)
+(or(up-compare-sn sn-focus-player-number c:== my-player-number)
+(players-stance focus-player ally))
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object gl-temp-goal-1);we are storing co-ordinates in temp goals 1 and 2 and are going to be using temp goals 3 and 4 to add these co-ordinates together so we can average them out later for team games - so the team cuts once rather than makes several cuts.
+(up-modify-goal gl-temp-goal-3 g:+ gl-temp-goal-1)
+(up-modify-goal gl-temp-goal-4 g:+ gl-temp-goal-2)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-fact players-in-game ally gl-temp-goal-1);now that we are done using temp goal 1 above, we can use it for other things, in this case to store how many players we have.
+(up-modify-goal gl-temp-goal-1 c:max 1);this shouldn't do anything in practice, it just ensures we have nothing less than 1 stored here as we are about to do division.
+(up-modify-goal gl-temp-goal-3 g:/ gl-temp-goal-1)
+(up-modify-goal gl-temp-goal-4 g:/ gl-temp-goal-1)
+;(up-send-flare gl-temp-goal-3)
+;(up-chat-data-to-all "x: %d" g: gl-temp-goal-3)
+;(up-chat-data-to-all "y: %d" g: gl-temp-goal-4)
+;(up-chat-data-to-all "allies: %d" g: gl-temp-goal-1)
+(up-copy-point gl-tree-cutting-start-x gl-temp-goal-3); the two lines above average the co-ordinates so we know the centre point of all allied TCs - if 1v1 then this will just be the TC co-ordinates. We then copy it outside of our temporary goals as we want to keep these once figured out.
+(up-get-point position-center gl-temp-goal-3); now temp goals 3 and 4 have been backed up, we can use temp goals 3 and 4 for other calculations.
+(up-get-point-distance gl-temp-goal-3 gl-tree-cutting-start-x gl-temp-goal-2); Here we have got the co-ordinates of the map centre and worked out how far this is from our calculated team centre point, and we will store this distance in temp goal 2
+(up-modify-goal gl-temp-goal-1 c:= 0); We are going to use temp goal 1 as a counter. This will ensure that if the rule below goes wrong in any way, we don't freeze or crash the game!
+)
+
+(defrule; For the below rule, we are getting the map center co-ordinates and counting towards our team's centre until we hit a tile that is explored but doesn't have a tree - this will be the edge of the forest in the middle.
+(up-compare-goal gl-temp-goal-1 g:< gl-temp-goal-2)
+(or(up-point-explored gl-temp-goal-3 == explored-no)
+(up-point-contains gl-temp-goal-3 c: tree-class))
+=>
+(up-lerp-tiles gl-temp-goal-3 gl-tree-cutting-start-x c: 1)
+(up-modify-goal gl-temp-goal-1 c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(true)
+=>
+(up-copy-point gl-tree-cutting-start-x gl-temp-goal-3); We are copying this point because this has effectively moved our starting point forward next to the first tree we need to cut. If we didn't do this then our siege may cut trees in our own base first.
+)
+
+(defrule
+(true)
+=>
+(up-get-point position-center gl-tree-cutting-destination-x)
+(up-lerp-percent gl-tree-cutting-destination-x gl-tree-cutting-start-x c: -110); gl-tree-cutting-destination-x is where our path will cut to. In this case I have taken the co-ordinates of the center of the map and reflected the starting destination as we cannot see the enemy and can't guarantee the AI will know where to cut. In this case we get the co-ordiantes between all our team's TCs and cut through to the middle all the way to the other side. I have used -110% rather than -100% to allow us extra cutting distance in case the forest is thicker on the other side of the map. As long as the gl-tree-cutting-start-x is on your side of the map, this reflection technique will work.
+(up-get-point-distance gl-tree-cutting-destination-x gl-tree-cutting-start-x gl-dot-x)
+(up-get-point position-center gl-temp-goal-1)
+(up-modify-goal gl-temp-goal-3 g:= gl-tree-cutting-start-x)
+(up-modify-goal gl-temp-goal-3 g:- gl-temp-goal-1)
+(up-cross-tiles gl-tree-cutting-start-x gl-temp-goal-1 g: gl-temp-goal-3)
+(up-bound-precise-point gl-tree-cutting-start-x 0 c: 6)
+(up-modify-goal gl-temp-goal-3 c:* -1)
+(up-cross-tiles gl-tree-cutting-destination-x gl-temp-goal-1 g: gl-temp-goal-3)
+(up-bound-precise-point gl-tree-cutting-destination-x 0 c: 6)
+(up-copy-point gl-tree-cutting-point-x gl-tree-cutting-start-x); this puts our moving tree cutting point checker to the start
+(up-copy-point gl-temp-goal-3 gl-tree-cutting-start-x)
+(up-lerp-percent gl-temp-goal-3 gl-tree-cutting-destination-x c: 50)
+(up-modify-goal gl-temp-goal-1 c:= 0)
+;(up-send-flare gl-tree-cutting-start-x)
+;(up-send-flare gl-tree-cutting-destination-x)
+;(disable-self)
+)
+
+(defrule; For the below rule, we are getting the map center co-ordinates and counting towards our team's centre until we hit a tile that is explored but doesn't have a tree - this will be the edge of the forest in the middle.
+;(false)
+(up-compare-goal gl-temp-goal-1 < 50)
+(or(up-point-explored gl-temp-goal-3 == explored-no)
+(up-point-contains gl-temp-goal-3 c: tree-class))
+=>
+(up-lerp-tiles gl-temp-goal-3 gl-tree-cutting-destination-x c: -1)
+(up-modify-goal gl-temp-goal-1 c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(up-point-distance gl-temp-goal-3 gl-tree-cutting-destination-x c:== 0)
+=>
+(up-lerp-tiles gl-temp-goal-3 gl-self-x c: 1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false)
+(or(and(up-point-distance gl-temp-goal-3 gl-tree-cutting-destination-x g:< gl-dot-x)
+(up-compare-goal gl-dot-x < 300))
+(up-point-distance gl-temp-goal-3 gl-tree-cutting-destination-x c:< 45))
+(up-point-distance gl-temp-goal-3 gl-tree-cutting-destination-x c:!= 0)
+=>
+(up-lerp-tiles gl-tree-cutting-destination-x gl-temp-goal-3 c: -1)
+(up-jump-rule -1)
+)
+
+(defrule
+;(false)
+(true)
+=>
+(up-copy-point gl-tree-cutting-start-x gl-temp-goal-3)
+;(up-send-flare gl-tree-cutting-start-x)
+;(up-send-flare gl-tree-cutting-destination-x)
+)
+
+(defrule
+(not(civ-selected khmer))
+(not(goal military-mode assault))
+(up-point-distance gl-tree-cutting-point-x gl-tree-cutting-destination-x < 6); This ensures you skip this script when you don't want it active. For now I have put a rule that when we have cut close enough to our destination, we stop running the cut rules. You will likely want to add military checks or something similar to ensure you only cut when your AI feels ready to handle what might be on the other side. If you add more rules to this snippet then ensure you increase "(up-jump-rule 5)" by the number of rules you added.
+=>
+(up-jump-rule 7)
+)
+
+(defrule
+(or(up-compare-goal gl-tree-cutting-point-x < 0)
+(up-compare-goal gl-tree-cutting-point-y < 0))
+=>
+(up-copy-point gl-tree-cutting-point-x gl-tree-cutting-start-x); if something has gone horribly wrong this gets our moving tree cutting point back to the start. Right now this doesn't do anything in the game so you could remove it but this is handy if you decide you want to increase the width of the cut and revisit this.
+;(up-send-flare gl-tree-cutting-point-x)
+)
+
+(defrule
+(or(unit-type-count onager > 0)
+(or(unit-type-count siege-onager > 0)
+(or(unit-type-count trebuchet-set > 0)
+(or(unit-type-count ballista-elephant-line > 0)
+(or(unit-type-count heavy-rocket-cart > 0)
+(unit-type-count traction-trebuchet > 0))))))
+=>
+(up-full-reset-search)
+;(up-send-flare gl-tree-cutting-point-x)
+(up-find-local c: mangonel-line c: 10)
+(up-remove-objects search-local object-data-upgrade-type == mangonel)
+(up-find-local c: rocket-cart-line c: 10)
+(up-remove-objects search-local object-data-upgrade-type == rocket-cart)
+(up-find-local c: ballista-elephant-line c: 10)
+(up-find-local c: traction-trebuchet c: 10)
+(up-find-local c: 331 c: 10);331 are packed trebs
+(up-find-local c: 42 c: 10);42 are unpacked trebs
+(up-clean-search search-local object-data-index search-order-none)
+(up-set-target-point gl-tree-cutting-point-x)
+(up-filter-distance c: -1 c: 2); the 3 here is the radius of the area we are checking for trees around the moving point. The lower the number, the thinner the cut, the higher the number the wider the cut.
+(up-modify-sn sn-focus-player-number c:= 0)
+;(up-filter-status c: 3 c: 0);This filter status allows you to search for partially chopped trees, I have commented these rules out as ballista elephants can't cut partially chopped trees so will cause them to freeze. For other units this should work okay.
+;(up-find-resource c: wood c: 20)
+;(up-reset-filters)
+;(up-filter-distance c: -1 c: 3)
+(up-filter-status c: 2 c: 0);This searches for live trees. Note that live and partially downed trees need to be found seperately.
+(up-find-resource c: wood c: 20)
+(up-clean-search search-remote object-data-distance search-order-asc);we sort the trees by the ones closest to the point.
+(up-get-search-state gl-local-total)
+(up-copy-point gl-temp-goal-1 gl-tree-cutting-point-x); this just ensures the below rules fires correctly by keeping the distance between the point stored in temp goals 1 and 2, along with the tree cutting point to 0.
+)
+
+(defrule
+(or(unit-type-count onager > 0)
+(or(unit-type-count siege-onager > 0)
+(or(unit-type-count trebuchet-set > 0)
+(or(unit-type-count ballista-elephant-line > 0)
+(or(unit-type-count heavy-rocket-cart > 0)
+(unit-type-count traction-trebuchet > 0))))))
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-remote c: 0)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-temp-goal-1)
+)
+
+(defrule
+(or(unit-type-count onager > 0)
+(or(unit-type-count siege-onager > 0)
+(or(unit-type-count trebuchet-set > 0)
+(or(unit-type-count ballista-elephant-line > 0)
+(or(unit-type-count heavy-rocket-cart > 0)
+(unit-type-count traction-trebuchet > 0))))))
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-remote c: 0)
+(up-point-distance gl-temp-goal-1 gl-tree-cutting-point-x < 15); trebs can glitch if their targets are at their max distance, this ensures they move a bit closer first.
+=>
+;(up-remove-objects search-local object-data-index >= 1); 1 = the number of tree cutting units you want to actively cut trees. Increase this to have more tree cutting siege units.
+(up-target-objects 0 action-default -1 -1); the 1 after "objects" means the tree cutters will focus down one tree at a time, if you have more than 1 tree cutter and want more of an even spread of targets, change this 1 to 0.
+)
+
+(defrule
+(or(unit-type-count onager > 0)
+(or(unit-type-count siege-onager > 0)
+(or(unit-type-count trebuchet-set > 0)
+(or(unit-type-count ballista-elephant-line > 0)
+(or(unit-type-count heavy-rocket-cart > 0)
+(unit-type-count traction-trebuchet > 0))))))
+(up-compare-goal gl-local-total > 0)
+(or(up-point-distance gl-temp-goal-1 gl-tree-cutting-point-x >= 15)
+(not(up-set-target-object search-remote c: 0)))
+(or(up-point-distance gl-temp-goal-1 gl-tree-cutting-point-x >= 15)
+(up-point-explored gl-tree-cutting-point-x == explored-no))
+=>
+(up-remove-objects search-local object-data-index >= 1)
+(up-copy-point gl-temp-goal-3 gl-tree-cutting-point-x)
+(up-lerp-tiles gl-temp-goal-3 gl-tree-cutting-start-x c: 8);let's not get hit by our own onagers.
+(up-target-point gl-temp-goal-3 action-move -1 -1);if no tree is found but the point hasn't been explored, move one of the tree cutters towards the point to get a closer look.
+;(up-copy-point gl-tree-cutting-point-x gl-tree-cutting-start-x); we take this opportunity to move our tree checking point back to the start as it tends to wobble and skip trees if lerps go ahead in unexplored areas, this keeps the cut straight.
+)
+
+(defrule
+(or(unit-type-count onager > 0)
+(or(unit-type-count siege-onager > 0)
+(or(unit-type-count trebuchet-set > 0)
+(or(unit-type-count ballista-elephant-line > 0)
+(or(unit-type-count heavy-rocket-cart > 0)
+(unit-type-count traction-trebuchet > 0))))))
+(up-compare-goal gl-local-total > 0)
+(up-point-explored gl-tree-cutting-point-x != explored-no)
+(not(up-set-target-object search-remote c: 0))
+=>
+(up-lerp-tiles gl-tree-cutting-point-x gl-tree-cutting-destination-x c: 2); if we can see the point and no trees are found, we move the point 3 tiles towards the destination. I would keep this equal to your search radius as this way you will move relatively quickly but not miss any trees or move too far forward and risk being destroyed before you cut through. A higher number will result in a wobble in your cut but you'll get to your destination quicker. Any higher than double your search radius and you will likely skip trees and fail to cut through.
+;(up-send-flare gl-tree-cutting-point-x)
+)
+
+(defrule
+(up-modify-goal gl-cycles c:+ 1)
+(up-compare-goal gl-cycles >= 500);500
+=>
+(up-copy-point gl-tree-cutting-point-x gl-tree-cutting-start-x)
+(up-modify-goal gl-cycles c:= 0);this rule will move the tree checking point back to the start every 500 passes to help fix if any trees get skipped
+(chat-local-to-self "reseting tree sweep")
+)
+
+(defrule
+(unit-type-count ballista-elephant > 0)
+=>
+(up-copy-point gl-tree-cutting-point-x gl-tree-cutting-start-x)
+(up-modify-goal gl-cycles c:= 0);this rule will move the tree checking point back to the start every 500 passes to help fix if any trees get skipped
+(chat-local-to-self "reseting tree sweep")
+(disable-self)
+)
+
+#end-if

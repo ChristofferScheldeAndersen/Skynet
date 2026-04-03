@@ -1,0 +1,4716 @@
+(defrule
+(true)
+=>
+(set-goal gl-need-lumber-camp 0)
+(set-goal gl-need-gold-mining-camp 0)
+(set-goal gl-need-stone-mining-camp 0)
+(enable-timer res-loop-timer 5)
+(disable-self)
+)
+
+(defrule
+(true)
+;(up-compare-goal gl-chosen-tree-id == -1)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 200)
+(up-find-local c: lumber-camp c: 200)
+(up-find-local c: mule-cart c: 200)
+(up-filter-status c: 0 c: 0)
+(up-find-status-local c: town-center c: 200)
+(up-find-status-local c: lumber-camp c: 200)
+(up-find-local c: mule-cart c: 200)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-reset-search 0 0 1 1)
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(stance-toward focus-player enemy)
+=>
+(up-reset-filters)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 10)
+(up-find-remote c: -1 c: 40)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number >= 8)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-remote-total >= 2)
+=>
+(up-remove-objects search-local -1 == gl-current-list-number)
+;(up-get-search-state gl-local-total)
+(up-modify-goal gl-rule-loops c:- 1);changed from increase current list number to decrease rule loops
+(up-jump-rule -5)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number >= 8)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-remote-total < 2)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -6)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number >= 8)
+(up-compare-goal gl-current-list-number g:>= gl-rule-loops)
+=>
+(up-get-search-state gl-local-total)
+(up-reset-search 0 0 1 1)
+(up-reset-filters)
+(up-modify-sn sn-focus-player-number c:= 0)
+)
+
+(defrule
+(up-compare-goal gl-local-total < 1)
+(goal gl-need-lumber-camp 0)
+=>
+(set-goal gl-need-lumber-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-wood > 12)
+(up-compare-goal gl-local-total < 3)
+(goal gl-need-lumber-camp 0)
+=>
+(set-goal gl-need-lumber-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-wood > 24)
+(up-compare-goal gl-local-total < 4)
+(goal gl-need-lumber-camp 0)
+=>
+(set-goal gl-need-lumber-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-wood > 36)
+(up-compare-goal gl-local-total < 5)
+(goal gl-need-lumber-camp 0)
+=>
+(set-goal gl-need-lumber-camp 1)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+;(chat-to-all "res-loop")
+(up-modify-goal gl-wood-drop-off-count g:= gl-local-total)
+(up-modify-goal gl-rule-loops g:= gl-wood-drop-off-count)
+(up-modify-goal gl-current-list-number c:= 0)
+(up-modify-goal gl-shortest-tree-distance c:= 10000)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-chat-data-to-self "Wood drop off count %d" g: gl-wood-drop-off-count)
+(up-chat-data-to-self "Shortest tree distance %d" g: gl-shortest-tree-distance)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+;(chat-local-to-self "Current wood drop off found")
+(up-reset-filters);new
+(up-get-point position-object gl-current-wood-scan-point-x)
+(up-set-target-point gl-current-wood-scan-point-x)
+;(up-send-flare gl-current-wood-scan-point-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: 1 c: 20)
+(up-filter-status c: 3 c: 0)
+(up-find-resource c: wood c: 10);20
+(up-remove-objects search-remote 16 < 1)
+(up-remove-objects search-remote 32 >= 3)
+(up-clean-search search-remote 44 1)
+(up-remove-objects search-remote -1 > 0)
+(up-find-resource c: wood c: 10);20
+(up-reset-filters)
+(up-set-target-point gl-current-wood-scan-point-x)
+(up-filter-distance c: 1 c: 20)
+(up-filter-status c: 2 c: 0)
+(up-find-resource c: wood c: 500)
+(up-remove-objects search-remote 16 < 1)
+(up-remove-objects search-remote 32 >= 3)
+(up-clean-search search-remote 44 1)
+(up-remove-objects search-remote -1 > 0)
+(up-find-resource c: wood c: 500)
+(up-remove-objects search-remote 16 < 1)
+(up-remove-objects search-remote 32 >= 3)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+;(up-chat-data-to-self "Trees found %d" g: gl-remote-total)
+;(chat-local-to-self "Closest tree found")
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 44 g:< gl-shortest-tree-distance)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+;(chat-local-to-self "Shorter tree found")
+(up-get-object-data 44 gl-shortest-tree-distance)
+(up-get-object-data 0 gl-chosen-tree-id)
+;(up-chat-data-to-self "Shortest tree distance %d" g: gl-shortest-tree-distance)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+;(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+;(chat-local-to-self "Looping rule")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-reset-search 0 0 1 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-compare-goal gl-current-list-number g:>= gl-rule-loops)
+(up-set-target-by-id g: gl-chosen-tree-id)
+=>
+;(chat-local-to-self "Preparing flare")
+(up-get-point position-object gl-chosen-tree-location-x)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(false)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-get-point position-object gl-chosen-tree-location-x)
+;(up-send-flare gl-chosen-tree-location-x)
+;(up-chat-data-to-all "wood dist %d" s: sn-maximum-wood-drop-distance)
+)
+
+(defrule
+(false);we always want a tree to go to
+(up-object-data 0 g:== gl-chosen-tree-id)
+(or(up-object-data 32 >= 4)
+(up-object-data 16 < 1))
+;)
+=>
+;(chat-local-to-self "Sending flare")
+;(up-send-flare gl-chosen-tree-location-x)
+(up-modify-goal gl-chosen-tree-id c:= -1)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-compare-goal gl-shortest-tree-distance >= 5)
+(goal gl-need-lumber-camp 0)
+=>
+(set-goal gl-need-lumber-camp 1)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-chosen-tree-id == -1)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 200)
+(up-find-local c: lumber-camp c: 200)
+(up-filter-status c: 0 c: 0)
+(up-find-status-local c: town-center c: 200)
+(up-find-status-local c: lumber-camp c: 200)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-wood-drop-off-count g:= gl-local-total)
+(up-modify-goal gl-rule-loops g:= gl-wood-drop-off-count)
+(up-modify-goal gl-rule-loops c:- 1)
+(up-modify-goal gl-current-list-number c:= 0)
+(up-modify-goal gl-shortest-tree-distance c:= 10000)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-chat-data-to-self "Wood drop off count %d" g: gl-wood-drop-off-count)
+(up-chat-data-to-self "Shortest tree distance %d" g: gl-shortest-tree-distance)
+)
+
+(defrule
+(false)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Current wood drop off found")
+(up-reset-filters);new
+(up-get-point position-object gl-current-wood-scan-point-x)
+(up-set-target-point gl-current-wood-scan-point-x)
+(up-filter-distance c: -1 c: 8)
+(up-filter-status c: 2 c: 0)
+(up-find-resource c: wood c: 500)
+(up-remove-objects search-remote 32 >= 3)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(up-chat-data-to-self "Trees found %d" g: gl-remote-total)
+;(chat-local-to-self "Closest tree found")
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(false)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 44 g:< gl-shortest-tree-distance)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Shorter tree found")
+(up-get-object-data 44 gl-shortest-tree-distance)
+(up-get-object-data 0 gl-chosen-tree-id)
+;(up-chat-data-to-self "Shortest tree distance %d" g: gl-shortest-tree-distance)
+)
+
+(defrule
+(false)
+;(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Looping rule")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-reset-search 0 0 1 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-compare-goal gl-current-list-number g:> gl-rule-loops)
+=>
+;(chat-local-to-self "Preparing flare")
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-get-point position-object gl-chosen-tree-location-x)
+(up-send-flare gl-chosen-tree-location-x)
+)
+
+(defrule
+(false)
+(up-object-data 0 g:== gl-chosen-tree-id)
+(up-object-data 32 >= 3)
+=>
+;(chat-local-to-self "Sending flare")
+;(up-send-flare gl-chosen-tree-location-x)
+(up-modify-goal gl-chosen-tree-id c:= -1)
+)
+
+;;//// GOLD ////
+
+(defrule
+(true)
+;(up-compare-goal gl-chosen-gold-id == -1)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 200)
+(up-find-local c: mining-camp c: 200)
+(up-filter-status c: 0 c: 0)
+(up-find-status-local c: town-center c: 200)
+(up-find-status-local c: mining-camp c: 200)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-gold > 12)
+(up-compare-goal gl-local-total < 3)
+(goal gl-need-gold-mining-camp 0)
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-gold > 24)
+(up-compare-goal gl-local-total < 4)
+(goal gl-need-gold-mining-camp 0)
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-gold > 36)
+(up-compare-goal gl-local-total < 5)
+(goal gl-need-gold-mining-camp 0)
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-gold > 48)
+(up-compare-goal gl-local-total < 6)
+(goal gl-need-gold-mining-camp 0)
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-gold-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-gold-drop-off-count g:= gl-local-total)
+(up-modify-goal gl-rule-loops g:= gl-gold-drop-off-count)
+(up-modify-goal gl-rule-loops c:- 1)
+(up-modify-goal gl-current-list-number c:= 0)
+(up-modify-goal gl-shortest-gold-distance c:= 10000)
+)
+
+(defrule
+(false)
+;(up-compare-goal gl-chosen-gold-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-chat-data-to-self "Gold drop off count %d" g: gl-gold-drop-off-count)
+(up-chat-data-to-self "Shortest gold distance %d" g: gl-shortest-gold-distance)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-gold-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Current gold drop off found")
+(up-reset-filters);new
+(up-get-point position-object gl-current-gold-scan-point-x)
+(up-set-target-point gl-current-gold-scan-point-x)
+;(up-filter-distance c: -1 c: 8)
+(up-filter-status c: 3 c: 0)
+(up-find-resource c: gold c: 500)
+(up-remove-objects search-remote 32 >= 4)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-gold-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(up-chat-data-to-self "Gold found %d" g: gl-remote-total)
+;(chat-local-to-self "Closest gold found")
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-gold-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 44 g:< gl-shortest-gold-distance)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Shorter gold found")
+(up-get-object-data 44 gl-shortest-gold-distance)
+(up-get-object-data 0 gl-chosen-gold-id)
+;(up-chat-data-to-self "Shortest gold distance %d" g: gl-shortest-gold-distance)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-gold-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Looping rule")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-reset-search 0 0 1 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-compare-goal gl-chosen-gold-id != -1)
+(up-compare-goal gl-current-list-number g:> gl-rule-loops)
+=>
+;(chat-local-to-self "Preparing flare")
+(up-set-target-by-id g: gl-chosen-gold-id)
+(up-get-point position-object gl-chosen-gold-location-x)
+;(up-send-flare gl-chosen-gold-location-x)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-compare-goal gl-shortest-gold-distance >= 6)
+(goal gl-need-gold-mining-camp 0)
+=>
+(set-goal gl-need-gold-mining-camp 1)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-object-data 0 g:== gl-chosen-gold-id)
+(up-object-data 32 >= 4)
+=>
+;(chat-local-to-self "Sending flare")
+;(up-send-flare gl-chosen-gold-location-x)
+(up-modify-goal gl-chosen-gold-id c:= -1)
+)
+
+;//// STONE ////
+
+(defrule
+(true)
+;(up-compare-goal gl-chosen-stone-id == -1)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 200)
+(up-find-local c: mining-camp c: 200)
+(up-filter-status c: 0 c: 0)
+(up-find-status-local c: town-center c: 200)
+(up-find-status-local c: mining-camp c: 200)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-stone > 12)
+(up-compare-goal gl-local-total < 3)
+(goal gl-need-stone-mining-camp 0)
+=>
+(set-goal gl-need-stone-mining-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-stone > 24)
+(up-compare-goal gl-local-total < 4)
+(goal gl-need-stone-mining-camp 0)
+=>
+(set-goal gl-need-stone-mining-camp 1)
+)
+
+(defrule
+(or(current-age >= castle-age)
+(up-compare-const age-up-strategy == feudal-rush))
+(unit-type-count villager-stone > 36)
+(up-compare-goal gl-local-total < 5)
+(goal gl-need-stone-mining-camp 0)
+=>
+(set-goal gl-need-stone-mining-camp 1)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-stone-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-stone-drop-off-count g:= gl-local-total)
+(up-modify-goal gl-rule-loops g:= gl-stone-drop-off-count)
+(up-modify-goal gl-rule-loops c:- 1)
+(up-modify-goal gl-current-list-number c:= 0)
+(up-modify-goal gl-shortest-stone-distance c:= 10000)
+)
+
+(defrule
+(false)
+;(up-compare-goal gl-chosen-stone-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-chat-data-to-self "Stone drop off count %d" g: gl-stone-drop-off-count)
+(up-chat-data-to-self "Shortest stone distance %d" g: gl-shortest-stone-distance)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-stone-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Current stone drop off found")
+(up-reset-filters);new
+(up-get-point position-object gl-current-stone-scan-point-x)
+(up-set-target-point gl-current-stone-scan-point-x)
+;(up-filter-distance c: -1 c: 8)
+(up-filter-status c: 3 c: 0)
+(up-find-resource c: stone c: 500)
+(up-remove-objects search-remote 32 >= 4)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-stone-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(up-chat-data-to-self "Stone found %d" g: gl-remote-total)
+;(chat-local-to-self "Closest stone found")
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-stone-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 44 g:< gl-shortest-stone-distance)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Shorter stone found")
+(up-get-object-data 44 gl-shortest-stone-distance)
+(up-get-object-data 0 gl-chosen-stone-id)
+;(up-chat-data-to-self "Shortest stone distance %d" g: gl-shortest-stone-distance)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+;(up-compare-goal gl-chosen-stone-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:<= gl-rule-loops)
+=>
+;(chat-local-to-self "Looping rule")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-reset-search 0 0 1 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-compare-goal gl-chosen-stone-id != -1)
+(up-compare-goal gl-current-list-number g:> gl-rule-loops)
+=>
+;(chat-local-to-self "Preparing flare")
+(up-set-target-by-id g: gl-chosen-stone-id)
+(up-get-point position-object gl-chosen-stone-location-x)
+;(up-send-flare gl-chosen-stone-location-x)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-compare-goal gl-shortest-stone-distance >= 6)
+(goal gl-need-stone-mining-camp 0)
+=>
+(set-goal gl-need-stone-mining-camp 1)
+)
+
+(defrule
+(timer-triggered res-loop-timer)
+(up-object-data 0 g:== gl-chosen-stone-id)
+(up-object-data 32 >= 4)
+=>
+;(chat-local-to-self "Sending flare")
+;(up-send-flare gl-chosen-stone-location-x)
+(up-modify-goal gl-chosen-stone-id c:= -1)
+)
+
+(defrule
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+)
+
+(defrule
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+(up-set-target-object search-local c: 0)
+(game-time < 60)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 15)
+(up-find-remote c: 958 c: 500)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+(up-set-target-object search-local c: 0)
+(game-time > 60)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 5)
+(up-find-remote c: 958 c: 500)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+(up-set-target-object search-remote c: 0)
+(or(not(goal scout-goal -17))
+(not(goal active-scout-goal -17)))
+=>
+(up-modify-goal gl-saved-scout-goal g:= scout-goal)
+(up-modify-goal gl-saved-active-scout-goal g:= active-scout-goal)
+(up-modify-goal scout-goal c:= -17)
+(up-modify-goal active-scout-goal c:= -17)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(or(goal scout-goal -17)
+(goal active-scout-goal -17))
+=>
+(up-target-objects 1 action-move -1 -1)
+)
+
+(defrule
+(or(goal scout-goal -17)
+(goal active-scout-goal -17))
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-modify-goal scout-goal g:= gl-saved-scout-goal)
+;(up-modify-goal active-scout-goal g:= gl-saved-active-scout-goal)
+)
+
+(defrule
+(true)
+=>
+(up-store-map-name 0)
+;(disable-self)
+)
+
+(defrule
+;(false)
+(not(up-compare-text c: map-fencrazy >= 0))
+(not(civ-selected hun))
+(building-type-count-total house < 1)
+(up-pending-objects c: house < 1)
+=>
+(up-assign-builders c: house c: 3);-1
+(up-set-placement-data my-player-number villager c: 0)
+(up-build place-control 0 c: house)
+;(disable-self)
+)
+
+(defrule
+(false)
+(up-compare-text c: map-fencrazy >= 0)
+(not(civ-selected hun))
+(building-type-count-total house < 1)
+(up-pending-objects c: house < 1)
+=>
+(up-assign-builders c: house c: -1);-1
+(up-set-placement-data my-player-number villager c: 0)
+(up-build place-control 0 c: house)
+;(disable-self)
+)
+
+(defrule
+(not(civ-selected chinese))
+(not(map-type land-nomad))
+(building-type-count house < 1)
+(up-pending-objects c: house == 1)
+(unit-type-count villager-builder < 3)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 3)
+(up-remove-objects search-local 0 g:== gl-scout-id)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-status c: 0 c: 0)
+(up-find-status-remote c: house c: 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(false)
+(or(building-type-count house >= 1)
+(map-type land-nomad))
+(building-type-count town-center >= 1)
+(up-pending-objects c: house < 1)
+(housing-headroom < 4)
+(can-build house)
+(population < 15)
+=>
+(up-assign-builders c: house c: 1)
+(up-build 0 0 c: house)
+)
+
+(defrule
+(true)
+=>
+(set-goal gl-wood-drop-off 0)
+(disable-self)
+)
+
+(defrule
+(building-type-count town-center > 0)
+=>
+(up-get-point position-self gl-sheep-food-x)
+(up-get-point position-self gl-sheep-wait-x)
+(up-modify-goal gl-sheep-food-x c:- 1)
+(up-modify-goal gl-sheep-food-y c:+ 0)
+(up-modify-goal gl-sheep-wait-x c:+ 2);0
+(up-modify-goal gl-sheep-wait-y c:+ 2);3
+(up-modify-goal gl-min-wood-dist c:= -1)
+(up-modify-goal gl-max-wood-dist c:= 2)
+)
+
+(defrule
+(building-type-count-total town-center > 0)
+(building-type-count town-center < 1)
+=>
+(up-full-reset-search)
+(up-filter-status c: 0 c: 0)
+(up-find-status-local c: town-center c: 1)
+)
+
+(defrule
+(building-type-count-total town-center > 0)
+(building-type-count town-center < 1)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-full-reset-search)
+)
+
+(defrule
+(building-type-count town-center < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+;(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+)
+
+(defrule
+(building-type-count town-center < 1)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-sheep-food-x)
+(up-get-point position-object gl-sheep-wait-x)
+(up-modify-goal gl-sheep-food-x c:- 1)
+(up-modify-goal gl-sheep-food-y c:+ 0)
+(up-modify-goal gl-sheep-wait-x c:+ 2);0
+(up-modify-goal gl-sheep-wait-y c:+ 2);3
+(up-modify-goal gl-min-wood-dist c:= -1)
+(up-modify-goal gl-max-wood-dist c:= 2)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(set-strategic-number sn-focus-player-number 0);my-player-number
+(up-set-target-point gl-sheep-food-x)
+(up-filter-distance c: -1 c: 5)
+(up-filter-status c: 5 c: 0)
+(up-find-status-remote c: 958 c: 500)
+(up-remove-objects search-remote 16 < 15)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dead-sheep g:= gl-remote-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(set-strategic-number sn-focus-player-number 0);my-player-number
+(up-set-target-point gl-self-x);gl-sheep-food-x
+(up-filter-distance c: -1 c: 10);5
+(up-filter-status c: 5 c: 0)
+(up-find-status-remote c: 910 c: 500)
+(up-remove-objects search-remote 16 < 15)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dead-boar g:= gl-remote-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(set-strategic-number sn-focus-player-number 0);my-player-number
+(up-set-target-point gl-sheep-food-x)
+(up-filter-distance c: -1 c: 25);5
+(up-filter-status c: 5 c: 0)
+(up-find-status-remote c: 909 c: 500)
+;(up-remove-objects search-remote 16 < 15)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dead-deer g:= gl-remote-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(set-strategic-number sn-focus-player-number 0);my-player-number
+(up-set-target-point gl-self-x);gl-sheep-food-x
+(up-filter-distance c: -1 c: 25);5
+(up-filter-status c: 5 c: 0)
+(up-find-status-remote c: 958 c: 500)
+(up-remove-objects search-remote 44 > 10);5
+(up-find-status-remote c: 910 c: 500)
+(up-find-status-remote c: 909 c: 500)
+;(up-remove-objects search-remote 16 < 15)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dead-food g:= gl-remote-total)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-dead-food > 0)
+=>
+(up-chat-data-to-self "Dead sheep: %d" g: gl-dead-sheep)
+(up-chat-data-to-self "Dead boar: %d" g: gl-dead-boar)
+(up-chat-data-to-self "Dead deer: %d" g: gl-dead-deer)
+)
+
+(defrule
+(up-compare-goal gl-dead-food < 2)
+(up-compare-goal gl-total-food >= 9)
+=>
+;(chat-local-to-self "I see dead sheep")
+(up-jump-rule 1)
+)
+
+(defrule
+(up-compare-goal gl-dead-sheep > 0);dead food
+=>
+;(chat-local-to-self "I see dead sheep")
+(up-jump-rule 7);4
+)
+
+(defrule;manual move chosen sheep
+(true)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-filter-distance c: -1 c: 2)
+(up-find-local c: 958 c: 500)
+(up-remove-objects search-local 0 g:!= gl-chosen-sheep-id)
+(up-get-search-state gl-local-total)
+)
+
+(defrule;manual move chosen sheep
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-chosen-sheep-id != -1)
+=>
+;(chat-local-to-self "chosen sheep not in range")
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-find-local c: 958 c: 500)
+(up-clean-search search-local 46 1);44 normally but 46 is full distance
+(up-remove-objects search-local 0 g:!= gl-chosen-sheep-id)
+(up-get-search-state gl-local-total)
+)
+
+(defrule;manual move chosen sheep
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-chosen-sheep-id != -1)
+=>
+;(chat-local-to-self "moving chosen sheep")
+(up-target-point gl-sheep-food-x action-default -1 -1)
+(up-jump-rule 3)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-filter-distance c: -1 c: 2)
+(up-find-local c: 958 c: 500)
+(up-clean-search search-local 46 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-chosen-sheep-id == -1)
+=>
+;(chat-local-to-self "no sheep in range")
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-find-local c: 958 c: 500)
+(up-clean-search search-local 46 1);44 normally but 46 is full distance
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-chosen-sheep-id == -1)
+=>
+(up-get-object-data 0 gl-chosen-sheep-id)
+;(up-get-point position-object gl-dot-x)
+;(up-chat-data-to-self "sheep ID: %d" g: gl-chosen-sheep-id)
+;(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x) 
+(up-target-point gl-sheep-food-x action-default -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-find-local c: 958 c: 500)
+(up-clean-search search-local 46 1);44 normally but 46 is full distance
+(up-remove-objects search-local -1 == 0)
+(up-remove-objects search-local 0 g:== gl-chosen-sheep-id)
+(up-clean-search search-local 46 1);44 normally but 46 is full distance
+(up-get-search-state gl-local-total)
+(up-jump-rule 1)
+)
+
+(defrule
+(up-compare-goal gl-local-total <= 0)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-find-local c: 958 c: 500)
+(up-remove-objects search-local 0 g:== gl-chosen-sheep-id)
+(up-clean-search search-local 46 1);44 normally but 46 is full distance
+(up-set-target-point gl-sheep-wait-x);this and below 2 added for version 48
+(up-remove-objects search-local 46 < 3)
+(up-clean-search search-local 46 1);44 normally but 46 is full distance
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+(up-set-target-point gl-sheep-wait-x)
+(up-target-point gl-sheep-wait-x action-default -1 -1)
+)
+
+(defrule
+(true)
+;(false)
+=>
+(set-strategic-number sn-maximum-food-drop-distance -2);-2
+(set-strategic-number sn-maximum-hunt-drop-distance -2);-2
+(set-strategic-number sn-maximum-wood-drop-distance -2);-2
+(set-strategic-number sn-maximum-gold-drop-distance -2);-2
+(set-strategic-number sn-maximum-stone-drop-distance -2);-2
+(set-strategic-number sn-enable-boar-hunting 0)
+(set-strategic-number sn-initial-exploration-required 0)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(set-strategic-number sn-cap-civilian-builders 100)
+(set-strategic-number sn-cap-civilian-gatherers 0);100
+(set-strategic-number sn-percent-civilian-gatherers 0)
+(set-strategic-number sn-percent-civilian-explorers 0)
+;(set-strategic-number sn-number-explore-groups 1)
+;(set-strategic-number sn-camp-max-distance 18)
+;(set-strategic-number sn-allow-adjacent-dropsites 1)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 6 != -1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-store-map-name 0)
+;(disable-self)
+)
+
+(defrule
+(up-compare-goal gl-local-total >= 5)
+;(or(up-compare-goal gl-local-total >= 5)
+;(or(up-compare-text c: map-fencrazy >= 0)
+;(map-type nomad))
+(building-type-count-total town-center > 0)
+=>
+;(up-chat-data-to-self "food dist %d" s: sn-maximum-food-drop-distance)
+(set-strategic-number sn-maximum-food-drop-distance 30)
+(set-strategic-number sn-maximum-fish-boat-drop-distance -1)
+(set-strategic-number sn-maximum-hunt-drop-distance 12)
+(set-strategic-number sn-maximum-wood-drop-distance -1);30
+(set-strategic-number sn-maximum-gold-drop-distance 30)
+(set-strategic-number sn-maximum-stone-drop-distance 30)
+(set-strategic-number sn-cap-civilian-gatherers -1)
+;(up-chat-data-to-self "food dist %d" s: sn-maximum-food-drop-distance)
+;(disable-self)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+=>
+(set-strategic-number sn-maximum-food-drop-distance 12)
+(set-strategic-number sn-maximum-wood-drop-distance 8)
+(set-strategic-number sn-maximum-gold-drop-distance 6)
+(set-strategic-number sn-maximum-stone-drop-distance 6)
+;(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count villager gl-total-number-villagers)
+(up-modify-goal gl-desired-number-food g:= gl-total-number-villagers)
+(up-modify-goal gl-desired-number-wood g:= gl-total-number-villagers)
+(up-modify-goal gl-desired-number-gold g:= gl-total-number-villagers)
+(up-modify-goal gl-desired-number-stone g:= gl-total-number-villagers)
+(up-modify-goal gl-desired-number-food s:* sn-food-gatherer-percentage)
+(up-modify-goal gl-desired-number-wood s:* sn-wood-gatherer-percentage)
+(up-modify-goal gl-desired-number-gold s:* sn-gold-gatherer-percentage)
+(up-modify-goal gl-desired-number-stone s:* sn-stone-gatherer-percentage)
+(up-modify-goal gl-desired-number-food c:/ 100)
+(up-modify-goal gl-desired-number-wood c:/ 100)
+(up-modify-goal gl-desired-number-gold c:/ 100)
+(up-modify-goal gl-desired-number-stone c:/ 100)
+)
+
+(defrule
+(up-compare-flag gl-anti-lag-flag != anti-lag-level3);could this set be the problem?
+=>
+(up-full-reset-search)
+(up-find-local c: 581 c: 240)
+(up-find-local c: 579 c: 240)
+(up-remove-objects search-local 73 != -2)
+(up-clean-search search-local 0 1)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-full-reset-search)
+(up-find-local c: 581 c: 240)
+(up-find-local c: 579 c: 240)
+(up-remove-objects search-local 73 != -2)
+(up-clean-search search-local 0 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local g: gl-current-list-number)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-find-remote c: mining-camp c: 240)
+(up-find-remote c: town-center c: 240)
+(up-find-remote c: mule-cart c: 240)
+(up-clean-search search-local 46 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(up-target-objects 1 action-default -1 -1)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(true)
+=>
+(up-store-map-name 0)
+;(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 1)
+(disable-self)
+)
+
+(defrule
+;(unit-type-count-total villager >= 60); fixing 46
+;(or
+(up-compare-flag gl-anti-lag-flag == anti-lag-level3)
+;(up-compare-text c: map-fencrazy >= 0))
+=>
+(set-strategic-number sn-maximum-food-drop-distance 30);12
+(set-strategic-number sn-maximum-hunt-drop-distance -1);12
+(set-strategic-number sn-maximum-wood-drop-distance 30);12
+(set-strategic-number sn-maximum-gold-drop-distance 8);8
+(set-strategic-number sn-maximum-stone-drop-distance 8);8
+(set-strategic-number sn-cap-civilian-gatherers -1)
+(up-jump-direct g: gl-skip-villager-test)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 1)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 0 c: 1)
+)
+
+(defrule
+(up-compare-goal gl-dead-sheep < 1)
+(unit-type-count 958 < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 1)
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 0 c: 1)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 1)
+;(up-remove-objects search-local 23 == -1)
+(up-remove-objects search-local 23 g:== gl-chosen-sheep-id)
+(up-clean-search search-local 0 0)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+(up-create-group 0 0 c: 15)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:> gl-rule-loops)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 15)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:> gl-rule-loops)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-object-target-data 10 > 0)
+=>
+;(chat-local-to-self "sneaky shepherd found")
+(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(up-target-objects 0 action-stop -1 -1)
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 0 c: 1)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:> gl-rule-loops)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 2)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 2)
+(up-modify-group-flag 0 c: 2)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 590 c: 240)
+(up-find-local c: 592 c: 240)
+(up-remove-objects search-local 73 != 2)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 2);1
+(up-modify-group-flag 1 c: 2);1
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 216 c: 240)
+(up-find-local c: 122 c: 240)
+(up-remove-objects search-local 73 != 2)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 2);12
+(up-modify-group-flag 1 c: 2);12
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 354 c: 240)
+(up-find-local c: 120 c: 240)
+(up-remove-objects search-local 73 != 5);2
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 5)
+(up-modify-group-flag 1 c: 5)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 214 c: 240)
+(up-find-local c: 159 c: 240)
+(up-find-local c: 1891 c: 240);herders
+(up-find-local c: 1892 c: 240);herders
+(up-remove-objects search-local 73 != 4);2
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 4);12
+(up-modify-group-flag 1 c: 4)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 57 c: 240)
+(up-find-local c: 56 c: 240)
+(up-remove-objects search-local 73 != 6);2
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 6);12
+(up-modify-group-flag 1 c: 6)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 4)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 4)
+(up-modify-group-flag 0 c: 4)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 4)
+(up-remove-objects search-local 7 == 949)
+(up-remove-objects search-local 7 == 903)
+(up-create-group 0 0 c: 4)
+(up-modify-group-flag 0 c: 4)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 5)
+(up-remove-objects search-local 6 > -1)
+(up-remove-objects search-local 7 == 907)
+(up-remove-objects search-local 7 == 903)
+(up-create-group 0 0 c: 5)
+(up-modify-group-flag 0 c: 5)
+)
+
+(defrule
+(false);this might cause be causing issues for Khitans
+(sheep-and-forage-too-far)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 5)
+(up-create-group 0 0 c: 5)
+(up-modify-group-flag 0 c: 5)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 6)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 6)
+(up-modify-group-flag 0 c: 6)
+)
+
+(defrule
+(true)
+;(false)
+;(or(game-time < 10)
+;(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 7)
+(up-remove-objects search-local 6 > -1);trying to see if this can be done just by target object
+(up-remove-objects search-local 7 == 915);tree-class
+(up-remove-objects search-local 7 == 903);building-class
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 0 c: 7)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+;(false)
+;(or(game-time < 10)
+;(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 7)
+;(up-remove-objects search-local 6 > -1);trying to see if this can be done just by target object
+(up-remove-objects search-local 16 > 0)
+(up-remove-objects search-local 7 == 915);tree-class
+(up-remove-objects search-local 7 == 903);building-class
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 0 c: 7)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: 212 c: 240)
+(up-find-local c: 118 c: 240)
+(up-find-local c: 222 c: 240)
+(up-find-local c: 156 c: 240)
+(up-remove-objects search-local 73 != 7)
+(up-remove-objects search-local 6 > -1)
+(up-remove-objects search-local -1 > 1)
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-target-objects 1 action-default -1 -1)
+;(up-modify-goal gl-chosen-tree-id c:= -1)
+;(up-create-group 0 0 c: 7)
+;(up-modify-group-flag 0 c: 7)
+;(up-jump-rule -1)
+)
+
+(defrule
+(true)
+;(false)
+;(up-compare-goal gl-chosen-tree-id == -1)
+=>
+(up-full-reset-search)
+(up-find-local c: 212 c: 240)
+(up-find-local c: 118 c: 240)
+(up-find-local c: 222 c: 240)
+(up-find-local c: 156 c: 240)
+(up-remove-objects search-local 73 != 7)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 0 c: 7)
+)
+
+(defrule
+;(false)
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 216 c: 240)
+(up-find-local c: 122 c: 240)
+(up-find-local c: 354 c: 240)
+(up-find-local c: 120 c: 240)
+(up-find-local c: 214 c: 240)
+(up-find-local c: 259 c: 240)
+(up-find-local c: 1891 c: 240);herders
+(up-find-local c: 1892 c: 240);herders
+(up-find-local c: 590 c: 240)
+(up-find-local c: 592 c: 240)
+(up-find-local c: 57 c: 240)
+(up-find-local c: 56 c: 240)
+(up-find-local c: 581 c: 240)
+(up-find-local c: 579 c: 240)
+(up-find-local c: 220 c: 240)
+(up-find-local c: 124 c: 240)
+(up-remove-objects search-local 73 != 7)
+;(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 0 c: 7)
+)
+
+(defrule
+(true)
+;(false)
+;(or(game-time < 10)
+;(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 8)
+(up-remove-objects search-local 6 > -1);trying to see if this can be done just by target object
+(up-remove-objects search-local 7 == 932);gold-mine-class
+(up-remove-objects search-local 7 == 903);building-class
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 0 c: 8)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+;(false)
+;(or(game-time < 10)
+;(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 8)
+;(up-remove-objects search-local 6 > -1);trying to see if this can be done just by target object
+(up-remove-objects search-local 16 > 0)
+(up-remove-objects search-local 7 == 932);gold-mine-class
+(up-remove-objects search-local 7 == 903);building-class
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 0 c: 8)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 8)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 0 c: 8)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 216 c: 240)
+(up-find-local c: 122 c: 240)
+(up-find-local c: 354 c: 240)
+(up-find-local c: 120 c: 240)
+(up-find-local c: 214 c: 240)
+(up-find-local c: 259 c: 240)
+(up-find-local c: 1891 c: 240);herders
+(up-find-local c: 1892 c: 240);herders
+(up-find-local c: 590 c: 240)
+(up-find-local c: 592 c: 240)
+(up-find-local c: 57 c: 240)
+(up-find-local c: 56 c: 240)
+(up-find-local c: 218 c: 240)
+(up-find-local c: 123 c: 240)
+(up-find-local c: 220 c: 240)
+(up-find-local c: 124 c: 240)
+(up-remove-objects search-local 73 != 8)
+;(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 0 c: 8)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 8)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 0 c: 8)
+)
+
+(defrule
+(true)
+;(false)
+;(or(game-time < 10)
+;(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 10)
+(up-remove-objects search-local 6 > -1);trying to see if this can be done just by target object
+(up-remove-objects search-local 7 == 908);stone-mine-class
+(up-remove-objects search-local 7 == 903);building-class
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 0 c: 10)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+;(false)
+;(or(game-time < 10)
+;(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 10)
+;(up-remove-objects search-local 6 > -1);trying to see if this can be done just by target object
+(up-remove-objects search-local 16 > 0)
+(up-remove-objects search-local 7 == 908);stone-mine-class
+(up-remove-objects search-local 7 == 903);building-class
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 0 c: 10)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 10)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 0 c: 10)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: 216 c: 240)
+(up-find-local c: 122 c: 240)
+(up-find-local c: 354 c: 240)
+(up-find-local c: 120 c: 240)
+(up-find-local c: 214 c: 240)
+(up-find-local c: 259 c: 240)
+(up-find-local c: 1891 c: 240);herders
+(up-find-local c: 1892 c: 240);herders
+(up-find-local c: 590 c: 240)
+(up-find-local c: 592 c: 240)
+(up-find-local c: 57 c: 240)
+(up-find-local c: 56 c: 240)
+(up-find-local c: 218 c: 240)
+(up-find-local c: 123 c: 240)
+(up-find-local c: 581 c: 240)
+(up-find-local c: 579 c: 240)
+(up-remove-objects search-local 73 != 10)
+;(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 0 c: 10)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 11)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 11)
+(up-modify-group-flag 0 c: 11)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 12)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 12)
+(up-modify-group-flag 0 c: 12)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 13)
+(up-remove-objects search-local 6 > -1)
+(up-create-group 0 0 c: 13)
+(up-modify-group-flag 0 c: 13)
+)
+
+(defrule
+(true)
+=>
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:+ 12)
+)
+
+(defrule
+(true)
+=>
+(up-get-rule-id gl-vill-dist-reset)
+(up-modify-goal gl-vill-dist-reset c:+ 1)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 < 1)
+(up-remove-objects search-local 73 > 2)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-shepherds g:= gl-local-total)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-shepherds g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 4)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-farmers g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 5)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-gatherers g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 6)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-fishermen g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 7)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-lumberjacks g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 8)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-gold-miners g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 10)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-stone-miners g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 < 11)
+(up-remove-objects search-local 73 > 13)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-total-hunters g:= gl-local-total)
+)
+
+(defrule
+(true)
+=>
+;(up-get-fact unit-type-count villager-shepherd gl-total-shepherds)
+;(up-get-fact unit-type-count villager-hunter gl-total-hunters)
+;(up-get-fact unit-type-count villager-forager gl-total-gatherers)
+;(up-get-fact unit-type-count villager-fisherman gl-total-fishermen)
+;(up-get-fact unit-type-count villager-farmer gl-total-farmers)
+(up-modify-goal gl-total-food g:= gl-total-shepherds)
+(up-modify-goal gl-total-food g:+ gl-total-hunters)
+(up-modify-goal gl-total-food g:+ gl-total-gatherers)
+(up-modify-goal gl-total-food g:+ gl-total-fishermen)
+(up-modify-goal gl-total-food g:+ gl-total-farmers)
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+(up-jump-direct g: gl-hop-back)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 0 g:== gl-scout-id)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-by-id g: gl-chosen-tree-id)
+=>
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 1 c: 7)
+(up-target-objects 1 action-default -1 -1)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 1)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+(up-compare-goal gl-total-gold-miners g:< gl-desired-number-gold)
+(up-compare-goal gl-chosen-gold-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 0 g:== gl-scout-id)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-gold-miners g:< gl-desired-number-gold)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-by-id g: gl-chosen-gold-id)
+=>
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 1 c: 8)
+(up-target-objects 1 action-default -1 -1)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 1)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+(up-compare-goal gl-total-gold-miners g:< gl-desired-number-stone)
+(up-compare-goal gl-chosen-stone-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 0 g:== gl-scout-id)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-stone-miners g:< gl-desired-number-stone)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-by-id g: gl-chosen-stone-id)
+=>
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 1 c: 10)
+(up-target-objects 1 action-default -1 -1)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 1)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+(true)
+;(dropsite-min-distance deer-hunting < 7);6 ; this line is added in to allow excess idle vils to be retasked
+;(dropsite-min-distance deer-hunting > -1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != -2)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+(up-clean-search search-local 44 1)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+;(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "post deer rule firing")
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-total-gatherers < 3)
+(up-compare-goal gl-total-food >= 12)
+(up-set-target-object search-remote c: 0)
+(building-type-count-total mill > 0)
+;(up-compare-goal gl-dead-food < 2);3
+;(unit-type-count villager >= 15)
+=>
+;(up-reset-search 0 0 1 1)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 25);40 picks up allies so we need to reduce
+(up-filter-status c: 3 c: 0)
+(up-find-status-remote c: 907 c: 500)
+(up-clean-search search-remote 44 1);32
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-total-gatherers < 3)
+(up-compare-goal gl-total-food >= 12)
+(up-set-target-object search-remote c: 0)
+(building-type-count-total mill > 0)
+;(up-compare-goal gl-dead-food < 2);3
+;(unit-type-count villager >= 15)
+=>
+;(up-get-object-data 32 gl-taken-spaces)
+;(up-modify-goal gl-villager-maths c:= 5);8
+;(up-modify-goal gl-villager-maths g:- gl-taken-spaces)
+;(up-remove-objects search-local -1 g:>= gl-villager-maths)
+(up-remove-objects search-local -1 > 0);2
+(up-create-group 0 0 c: 5)
+(up-modify-group-flag 1 c: 5)
+(up-target-objects 1 action-default -1 -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "sending to berries")
+;(up-jump-rule -3)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 2)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:= gl-desired-number-food)
+(true)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+;(up-remove-objects search-local 73 > -1)
+(up-remove-objects search-local 73 > 6)
+;(up-find-local c: 214 c: 200);prioritising other food over farms
+;(up-find-local c: 259 c: 200);prioritising other food over farms
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "selecting lazy shepherds")
+;(up-chat-data-to-self "idle-shepherds: %d." g: gl-local-total)
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:= gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-villager-maths g:= gl-local-total)
+(up-modify-goal gl-villager-maths c:- 1)
+(up-remove-objects search-local 6 != -1)
+;(up-remove-objects search-local -1 != 0)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-villager-maths g:= gl-local-total)
+(up-modify-goal gl-villager-maths c:- 1)
+;(up-chat-data-to-self "idle-villagers: %d." g: gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+=>
+;(up-remove-objects search-local 6 != -1)
+;(up-remove-objects search-local -1 != 0)
+(do-nothing)
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(unit-type-count villager < 12)
+(up-compare-goal gl-dead-boar > 0)
+(up-compare-goal gl-chosen-boar-id != -1)
+(up-set-target-by-id g: gl-chosen-boar-id)
+(up-object-data 10 == 0)
+(up-object-data 32 < 8);6
+;(up-compare-goal gl-taken-spaces < 6)
+=>
+(up-get-object-data 32 gl-taken-spaces)
+(up-modify-goal gl-villager-maths c:= 8);6
+(up-modify-goal gl-villager-maths g:- gl-taken-spaces)
+(up-remove-objects search-local -1 >= gl-villager-maths)
+(up-create-group 0 0 c: 13)
+(up-modify-group-flag 1 c: 13)
+(up-target-objects 1 action-default -1 -1)
+(up-modify-goal gl-taken-spaces c:+ 1)
+(up-get-search-state gl-local-total)
+(up-jump-rule -3)
+;(up-jump-rule 12)
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(unit-type-count villager >= 12)
+(up-compare-goal gl-dead-boar > 0)
+(up-compare-goal gl-chosen-boar-id != -1)
+(up-set-target-by-id g: gl-chosen-boar-id)
+(up-object-data 10 == 0)
+(up-object-data 32 < 8)
+=>
+(up-get-object-data 32 gl-taken-spaces)
+(up-modify-goal gl-villager-maths c:= 8)
+(up-modify-goal gl-villager-maths g:- gl-taken-spaces)
+(up-remove-objects search-local -1 >= gl-villager-maths)
+(up-create-group 0 0 c: 13)
+(up-modify-group-flag 1 c: 13)
+(up-target-objects 1 action-default -1 -1)
+(up-get-search-state gl-local-total)
+;(up-chat-data-to-self "Allocating %d villagers to boar" g: gl-villager-maths)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 4)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(or(up-compare-goal gl-total-hunters < 6)
+(and(up-compare-goal gl-total-hunters < 11)
+(and(up-compare-goal gl-dead-boar > 0)
+(up-compare-goal gl-dead-deer > 0))))
+=>
+(set-strategic-number sn-focus-player-number 0);my-player-number
+(up-set-target-point gl-sheep-food-x)
+(up-filter-status c: 5 c: 0)
+(up-filter-distance c: -1 c: deer-distance);25
+;(up-find-status-remote c: 958 c: 500)
+(up-find-status-remote c: 909 c: 500)
+(up-remove-objects search-remote 32 > 6)
+(up-clean-search search-remote 44 1);16
+(up-get-search-state gl-local-total) 
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(or(up-compare-goal gl-total-hunters < 6)
+(and(up-compare-goal gl-total-hunters < 11)
+(and(up-compare-goal gl-dead-boar > 0)
+(up-compare-goal gl-dead-deer > 0))))
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 32 gl-taken-spaces)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-clean-search search-local 46 1)
+;(up-modify-goal gl-villager-maths c:= 8)
+;(up-modify-goal gl-villager-maths g:- gl-taken-spaces)
+;(up-remove-objects search-local -1 >= gl-villager-maths)
+(up-remove-objects search-local -1 > 0)
+(up-create-group 0 0 c: 12)
+(up-modify-group-flag 1 c: 12)
+(up-target-objects 0 action-default -1 -1)
+;(chat-local-to-self "move to dead sheep")
+(up-get-search-state gl-local-total)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 6)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(up-compare-goal gl-total-shepherds < 8)
+(up-compare-goal gl-local-total > 0)
+=>
+(set-strategic-number sn-focus-player-number 0);my-player-number
+(up-set-target-point gl-sheep-food-x)
+;(chat-local-to-self "scanning for dead sheep")
+(up-filter-status c: 5 c: 0)
+(up-filter-distance c: -1 c: 8);5
+(up-find-status-remote c: 958 c: 500)
+;(up-find-status-remote c: 909 c: 500)
+;(up-remove-objects search-remote 32 > 6)
+(up-clean-search search-remote 44 1);16
+(up-get-search-state gl-local-total) 
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(up-compare-goal gl-total-shepherds < 8)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 32 gl-taken-spaces)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-clean-search search-local 46 1)
+;(up-modify-goal gl-villager-maths c:= 8)
+;(up-modify-goal gl-villager-maths g:- gl-taken-spaces)
+;(up-remove-objects search-local -1 >= gl-villager-maths)
+(up-remove-objects search-local -1 > 0)
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 1 c: 1)
+(up-target-objects 0 action-default -1 -1)
+;(chat-local-to-self "move to dead sheep")
+(up-get-search-state gl-local-total)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 8)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 240)
+(up-find-local c: mill c: 240)
+(up-find-local c: mule-cart c: 240)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+=>
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+(up-modify-sn sn-focus-player-number c:= 0)
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-local g: gl-current-list-number)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: 2084 c: 500)
+(up-find-remote c: 2086 c: 500)
+(up-find-remote c: 2088 c: 500)
+(up-find-remote c: 2098 c: 500)
+(up-find-remote c: 2099 c: 500)
+(up-find-remote c: 2100 c: 500)
+(up-remove-objects search-remote 44 g:> gl-chicken-mill-distance);10
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 3);5
+(up-find-remote c: 909 c: 500)
+(up-remove-objects search-remote 32 > 2)
+(up-reset-filters)
+(up-get-search-state gl-local-total)
+;(up-modify-goal gl-current-list-number c:+ 1);removed for 46
+;(up-jump-rule -1);removed for 46
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+;(up-compare-goal gl-current-list-number g:>= gl-rule-loops)
+=>
+(up-reset-search 1 1 0 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false);testing for version 40
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-set-target-point gl-self-x)
+(up-find-remote c: 2084 c: 500)
+(up-find-remote c: 2086 c: 500)
+(up-find-remote c: 2088 c: 500)
+(up-find-remote c: 2098 c: 500)
+(up-find-remote c: 2099 c: 500)
+(up-find-remote c: 2100 c: 500)
+(up-remove-objects search-remote 44 g:> gl-chicken-mill-distance);10
+(up-filter-distance c: -1 c: 3);5
+(up-find-remote c: 909 c: 500)
+(up-remove-objects search-remote 32 > 2)
+(up-reset-filters)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-find-local c: villager-class c: 240)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+;;(up-find-local c: 216 c: 200)
+;;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-remove-objects search-local 73 == 4)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 == 10)
+(up-remove-objects search-local 73 == 11)
+(up-remove-objects search-local 73 == 12)
+(up-remove-objects search-local 73 == 13)
+(up-remove-objects search-local 32 > 0)
+(up-reset-search 1 0 0 0)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+;(up-compare-goal gl-dead-food < 2);changed for add on 3
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-local-total < 3)
+=>
+(up-find-local c: villager-class c: 240)
+;(up-remove-objects search-local 73 == 4)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 == 10)
+(up-remove-objects search-local 73 == 13)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+;;(up-find-local c: 216 c: 200)
+;;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(dropsite-min-distance deer-hunting < 7);6
+(dropsite-min-distance deer-hunting > -1)
+(up-compare-goal gl-dead-food < 4);was 2 changed for add on 3, then commented out - reupdated to 4
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-local-total >= 3)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x); chicken check
+(up-set-target-point gl-dot-x)
+(up-clean-search search-local 46 1);44
+(up-remove-objects search-local -1 > 2)
+(up-create-group 0 0 c: 11)
+(up-modify-group-flag 1 c: 11)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(true)
+=>
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 1)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-temp-x g:= gl-local-total)
+(up-modify-goal gl-local-total c:= 0)
+(up-modify-goal gl-remote-total c:= 0)
+)
+
+(defrule
+(true)
+;(dropsite-min-distance deer-hunting < 7);6 ; this line is added in to allow excess idle vils to be retasked
+;(dropsite-min-distance deer-hunting > -1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != -2)
+;(up-remove-objects search-local 73 > 1)
+;(up-remove-objects search-local 73 == 0)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+;(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "post deer rule firing")
+)
+
+(defrule
+(up-compare-goal gl-chosen-sheep-id > -1)
+(up-set-target-by-id g: gl-chosen-sheep-id)
+(or(up-object-data 32 >= 8)
+(or(up-compare-goal gl-temp-x >= 8)
+(or(up-object-data 20 c:!= my-player-number)
+(up-object-data 16 < 35))))
+(up-object-data 10 < 1)
+=>
+;(chat-local-to-self "resetting sheep ID")
+(up-modify-goal gl-chosen-sheep-id c:= -1)
+(up-jump-rule 5)
+)
+
+(defrule
+(up-compare-goal gl-chosen-sheep-id > -1)
+(up-set-target-by-id g: gl-chosen-sheep-id)
+(up-object-data 20 != my-player-number)
+(up-object-data 20 > 0)
+=>
+;(chat-local-to-self "resetting sheep ID2")
+(up-modify-goal gl-chosen-sheep-id c:= -1)
+(up-jump-rule 4)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-filter-distance c: -1 c: 2)
+(up-find-local c: 958 c: 500)
+(up-clean-search search-local 46 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total < 1)
+(up-compare-goal gl-chosen-sheep-id == -1)
+=>
+;(chat-local-to-self "no sheep in range")
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+(up-find-local c: 958 c: 500)
+(up-clean-search search-local 46 1);44 normally but 46 is full distance
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-chosen-sheep-id == -1)
+=>
+(up-get-object-data 0 gl-chosen-sheep-id)
+;(up-get-point position-object gl-dot-x)
+;(up-chat-data-to-self "sheep ID: %d" g: gl-chosen-sheep-id)
+;(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x) 
+(up-target-point gl-sheep-food-x action-default -1 -1)
+)
+
+(defrule
+(true)
+;(dropsite-min-distance deer-hunting < 7);6 ; this line is added in to allow excess idle vils to be retasked
+;(dropsite-min-distance deer-hunting > -1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != -2)
+;(up-remove-objects search-local 73 > 1)
+;(up-remove-objects search-local 73 == 0)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+;(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "post deer rule firing")
+)
+
+(defrule
+;(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:>= gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-sheep-id > -1)
+(up-set-target-by-id g: gl-chosen-sheep-id)
+;(up-object-data 10 > 0)
+=>
+(up-get-object-data 32 gl-taken-spaces)
+(up-modify-goal gl-villager-maths c:= 8)
+(up-modify-goal gl-villager-maths g:- gl-taken-spaces)
+(up-remove-objects search-local -1 g:>= gl-villager-maths)
+;(up-remove-objects search-local -1 > 0)
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 1 c: 1)
+(up-target-objects 1 action-default -1 -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "targeting chosen sheep")
+;(up-chat-data-to-self "target sheep ID: %d" g: gl-chosen-sheep-id)
+;(up-jump-rule -4)
+)
+
+(defrule
+(true)
+;(dropsite-min-distance deer-hunting < 7);6 ; this line is added in to allow excess idle vils to be retasked
+;(dropsite-min-distance deer-hunting > -1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+;(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "post deer rule firing")
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+;(up-compare-goal gl-chosen-sheep-id > -1)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+=>
+(up-get-fact idle-farm-count 0 gl-villager-maths)
+(up-reset-search 0 0 1 1)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-distance c: -1 c: 40)
+(up-find-remote c: farm c: 500)
+(up-find-remote c: 1893 c: 500)
+(up-find-remote c: 1897 c: 500)
+(up-remove-objects search-remote 32 > 0)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+;(up-compare-goal gl-chosen-sheep-id > -1)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+(civ-selected khitans)
+=>
+(up-reset-search 0 0 1 1)
+(up-find-remote c: 1893 c: 500)
+(up-find-remote c: 1897 c: 500)
+(up-remove-objects search-remote 73 > 0)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-remote-total c:* 2)
+(up-modify-goal gl-dot-x g:= gl-remote-total)
+(up-reset-search 0 0 1 1)
+(up-find-remote c: 1893 c: 500)
+(up-find-remote c: 1897 c: 500)
+(up-remove-objects search-remote 73 != 1)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-remote-total g:+ gl-dot-x)
+(up-reset-search 0 0 1 1)
+(up-find-remote c: 1893 c: 500)
+(up-find-remote c: 1897 c: 500)
+(up-remove-objects search-remote 73 > 1)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-remote-total g:>= gl-local-total)
+;(up-compare-goal gl-chosen-sheep-id > -1)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+=>
+(up-remove-objects search-remote -1 g:>= gl-local-total)
+(up-create-group 0 0 c: 4)
+(up-modify-group-flag 1 c: 4)
+(up-target-objects 0 action-default -1 -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "sending to farms 1")
+;(up-jump-rule -3)
+)
+
+(defrule
+(civ-selected khitans)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-remote-total g:< gl-local-total)
+;(up-compare-goal gl-chosen-sheep-id > -1)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+=>
+(up-modify-goal gl-remote-total c:= 1)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(or(up-compare-goal gl-remote-total g:< gl-local-total)
+(civ-selected khitans))
+;(up-compare-goal gl-chosen-sheep-id > -1)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+=>
+(up-remove-objects search-local -1 g:>= gl-remote-total)
+;(up-remove-objects search-local -1 c:>= 1)
+(up-create-group 0 0 c: 4)
+(up-modify-group-flag 1 c: 4)
+(up-target-objects 0 action-default -1 -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "sending to farms 2")
+;(up-jump-rule -4)
+)
+
+(defrule
+(true)
+;(dropsite-min-distance deer-hunting < 7);6 ; this line is added in to allow excess idle vils to be retasked
+;(dropsite-min-distance deer-hunting > -1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != -2)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+(up-clean-search search-local 44 1)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+;(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "post deer rule firing")
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+;(or(up-compare-goal gl-chosen-sheep-id == -1)
+;(unit-type-count villager-shepherd >= 12))
+(or(up-compare-goal gl-total-gatherers < 3)
+(or(and(up-compare-goal gl-dead-food < 2)
+(up-compare-goal gl-total-gatherers < 6))
+(or(up-compare-goal gl-dead-food < 1)
+(unit-type-count villager-shepherd >= 8))))
+(building-type-count-total mill > 0)
+;(up-compare-goal gl-dead-food < 2);3
+;(unit-type-count villager >= 15)
+=>
+;(up-reset-search 0 0 1 1)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 25);40
+(up-filter-status c: 3 c: 0)
+(up-find-status-remote c: 907 c: 500)
+(up-clean-search search-remote 32 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+;(or(up-compare-goal gl-chosen-sheep-id == -1)
+;(unit-type-count villager-shepherd >= 12))
+(or(up-compare-goal gl-total-gatherers < 3)
+(or(and(up-compare-goal gl-dead-food < 2)
+(up-compare-goal gl-total-gatherers < 6))
+(or(up-compare-goal gl-dead-food < 1)
+(unit-type-count villager-shepherd >= 8))))
+(up-set-target-object search-remote c: 0)
+(building-type-count-total mill > 0)
+;(up-compare-goal gl-dead-food < 2);3
+;(unit-type-count villager >= 15)
+=>
+;(up-get-object-data 32 gl-taken-spaces)
+;(up-modify-goal gl-villager-maths c:= 5);8
+;(up-modify-goal gl-villager-maths g:- gl-taken-spaces)
+;(up-remove-objects search-local -1 g:>= gl-villager-maths)
+(up-remove-objects search-local -1 > 0);2
+(up-create-group 0 0 c: 5)
+(up-modify-group-flag 1 c: 5)
+(up-target-objects 1 action-default -1 -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "sending to berries")
+;(up-jump-rule -3)
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:- 2)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 122 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 592 c: 200)
+(up-remove-objects search-local 1 == 218)
+(up-remove-objects search-local 1 == 123)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-clean-search search-local 0 1)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-villager-maths g:= gl-local-total)
+(up-modify-goal gl-villager-maths c:- 1)
+)
+
+(defrule
+(up-compare-goal gl-dead-food >= 1)
+=>
+;(chat-local-to-self "alternative food source search")
+(up-set-target-point gl-self-x);gl-sheep-food-x
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 20);8;5
+(up-filter-status c: 5 c: 0)
+;(up-find-status-remote c: 958 c: 200)
+(up-find-status-remote c: 909 c: 200)
+(up-remove-objects search-remote 32 >= 6)
+(up-find-status-remote c: 910 c: 200)
+(up-remove-objects search-remote 32 >= 8)
+(up-get-search-state gl-local-total)
+(up-clean-search search-remote 16 1);32 1
+)
+
+(defrule
+(up-compare-goal gl-remote-total > 0)
+=>
+;(chat-local-to-self "alternative food source found")
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-total-food < 9)
+(up-compare-goal gl-dead-food < 1)
+(or(up-object-target-data 0 g:== gl-chosen-sheep-id)
+(or(up-object-target-data 0 g:== gl-chosen-boar-id)
+(up-object-target-data 14 c:!= mill)))
+=>
+;(chat-local-to-self "villager-targeting chosen sheep")
+(up-remove-objects search-local -1 == 0)
+(up-get-search-state gl-local-total)
+(up-jump-rule -1)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-total-food >= 9)
+(up-compare-goal gl-dead-food < 2)
+(or(up-object-target-data 0 g:== gl-chosen-sheep-id)
+(or(up-object-target-data 0 g:== gl-chosen-boar-id)
+(up-object-target-data 14 c:!= mill)))
+=>
+;(chat-local-to-self "villager-targeting chosen sheep")
+(up-remove-objects search-local -1 == 0)
+(up-get-search-state gl-local-total)
+(up-jump-rule -1)
+)
+
+(defrule
+(false);testing to remove action-stop
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total > 0)
+;(up-object-target-data 0 g:!= gl-chosen-sheep-id)
+(up-object-target-data 14 c:== mill)
+(up-object-target-data 10 c:> 0)
+(up-compare-goal gl-total-food < 9)
+(up-compare-goal gl-dead-food >= 1)
+=>
+;(chat-local-to-self "trying to stop extra sheep kill")
+(up-target-objects 1 action-stop -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total > 0)
+;(up-object-target-data 0 g:!= gl-chosen-sheep-id);removing these as target should be dead boar
+;(up-object-target-data 14 c:== mill)
+;(up-object-target-data 10 c:> 0)
+(up-object-target-data 0 g:!= gl-chosen-boar-id)
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-total-food < 9)
+(up-compare-goal gl-dead-food >= 1)
+=>
+;(chat-local-to-self "retargeting to dead animal")
+(up-remove-objects search-local -1 != 0)
+(up-create-group 0 0 c: 12)
+(up-modify-group-flag 1 c: 12)
+(up-target-objects 1 action-default -1 -1)
+(up-get-search-state gl-local-total)
+(up-jump-rule -7)
+)
+
+(defrule
+(up-compare-goal gl-dead-food >= 1)
+=>
+;(chat-local-to-self "alternative food source search")
+(up-set-target-point gl-self-x);gl-sheep-food-x
+(up-modify-sn sn-focus-player-number c:= my-player-number);0
+(up-filter-distance c: -1 c: 8);5
+(up-filter-status c: 5 c: 0)
+(up-find-status-remote c: 958 c: 200)
+;(up-find-status-remote c: 909 c: 200)
+(up-remove-objects search-remote 32 >= 8);6
+;(up-find-status-remote c: 910 c: 200)
+;(up-remove-objects search-remote 32 >= 8)
+(up-get-search-state gl-local-total)
+(up-clean-search search-remote 16 1);32 1
+)
+
+(defrule
+(up-compare-goal gl-remote-total > 0);the freezing issue for 46 was around here
+=>
+;(chat-local-to-self "alternative food source found")
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-total-food < 9)
+(up-compare-goal gl-dead-food < 1)
+(or(up-object-target-data 0 g:== gl-chosen-sheep-id)
+(or(up-object-target-data 0 g:== gl-chosen-boar-id)
+(up-object-target-data 14 c:!= mill)))
+=>
+;(chat-local-to-self "villager-targeting chosen sheep")
+(up-remove-objects search-local -1 == 0)
+(up-get-search-state gl-local-total)
+(up-jump-rule -1)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-total-food >= 9)
+(up-compare-goal gl-dead-food < 2)
+(or(up-object-target-data 0 g:== gl-chosen-sheep-id)
+(or(up-object-target-data 0 g:== gl-chosen-boar-id)
+(up-object-target-data 14 c:!= mill)))
+=>
+;(chat-local-to-self "villager-targeting chosen sheep")
+(up-remove-objects search-local -1 == 0)
+(up-get-search-state gl-local-total)
+(up-jump-rule -1)
+)
+
+(defrule
+(false);testing to remove action-stop
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total > 0)
+;(up-object-target-data 0 g:!= gl-chosen-sheep-id)
+(up-object-target-data 14 c:== mill)
+(up-object-target-data 10 c:> 0)
+(up-compare-goal gl-total-food < 9)
+(up-compare-goal gl-dead-food >= 1)
+=>
+;(chat-local-to-self "trying to stop extra sheep kill")
+(up-target-objects 1 action-stop -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total > 0)
+;(up-object-target-data 0 g:!= gl-chosen-sheep-id);removing as target should be dead sheep
+;(up-object-target-data 14 c:== mill)
+;(up-object-target-data 10 c:> 0)
+(up-object-target-data 0 g:!= gl-chosen-boar-id)
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-total-food < 9)
+(up-compare-goal gl-dead-food >= 1)
+=>
+;(chat-local-to-self "retargeting to dead animal")
+(up-remove-objects search-local -1 != 0)
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 1 c: 1)
+(up-target-objects 1 action-default -1 -1)
+(up-get-search-state gl-local-total)
+(up-jump-rule -13);12
+)
+
+(defrule
+(false);testing to remove action-stop
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total > 0)
+;(up-object-target-data 0 g:!= gl-chosen-sheep-id)
+(up-object-target-data 14 c:== mill)
+(up-object-target-data 10 c:> 0)
+(up-object-target-data 0 g:!= gl-chosen-boar-id)
+(up-compare-goal gl-total-food >= 9)
+(up-compare-goal gl-dead-food >= 2)
+=>
+;(chat-local-to-self "trying to stop extra sheep kill")
+(up-target-objects 1 action-stop -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total > 0)
+;(up-object-target-data 0 g:!= gl-chosen-sheep-id)
+(up-object-target-data 14 c:== mill)
+(up-object-target-data 10 c:> 0)
+(up-object-target-data 0 g:!= gl-chosen-boar-id)
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-total-food >= 9)
+(up-compare-goal gl-dead-food >= 2)
+=>
+;(chat-local-to-self "retargeting to dead animal")
+(up-remove-objects search-local -1 != 0)
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 1 c: 1)
+(up-target-objects 1 action-default -1 -1)
+;(up-remove-objects search-local -1 == 0)
+(up-get-search-state gl-local-total)
+(up-jump-rule -15);14;-8
+)
+
+(defrule
+(false)
+(up-compare-goal gl-total-food g:== gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+=>
+(set-strategic-number sn-focus-player-number my-player-number)
+(up-filter-distance c: -1 c: 5)
+(up-filter-status c: 5 c: 0)
+(up-find-resource c: food c: 500)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-total-food g:== gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-target-objects 1 action-default -1 -1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total == 1)
+(up-compare-goal gl-total-food > 8)
+=>
+(up-modify-goal gl-chosen-sheep-id == -1)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-total-food g:== gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total >= 1)
+(up-compare-goal gl-total-food <= 8)
+=>
+(up-jump-rule 3)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-total-food g:== gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total >= 1)
+(or(up-compare-goal gl-remote-total >= 2)
+(up-compare-goal gl-total-food <= 8))
+=>
+(up-jump-rule 2)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-total-food g:== gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-reset-search 0 0 1 1)
+(up-reset-filters)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-filter-distance c: -1 c: 5)
+(up-find-remote c: 958 c: 500)
+(up-clean-search search-remote 44 1)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-total-food g:== gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-boar-found-state c:= 0)
+(disable-self)
+)
+
+(defrule
+;(false)
+(unit-type-count villager >= 9);7
+(or(unit-type-count villager-hunter < 1)
+(up-remaining-boar-amount < 135));175
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+=>
+;(chat-local-to-self "move to second boar")
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-find-local c: 216 c: 200)
+(up-find-local c: 122 c: 200)
+(up-find-local c: 590 c: 200)
+(up-find-local c: 592 c: 200)
+(up-find-local c: 214 c: 200)
+(up-find-local c: 259 c: 200)
+(up-find-local c: 1891 c: 240);herders
+(up-find-local c: 1892 c: 240);herders
+(up-find-local c: 57 c: 200)
+(up-find-local c: 56 c: 200)
+(up-find-local c: 354 c: 200)
+(up-find-local c: 120 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 10 < 25)
+(up-remove-objects search-local -1 > 0)
+)
+
+(defrule
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(or(up-compare-goal gl-boar-id-storage1 == -1)
+(up-compare-goal gl-boar-id-storage2 == -1))
+=>
+(up-modify-goal gl-temp-x c:= 0)
+)
+
+(defrule
+(false)
+(unit-type-count villager >= 9);7
+(or(unit-type-count villager-hunter < 1)
+(up-remaining-boar-amount < 135));175
+(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+(up-compare-goal gl-chosen-boar-id == -1)
+(up-compare-goal gl-temp-x < 32767)
+(up-set-target-by-id g: gl-temp-x)
+(or(up-object-data 1 == 48)
+(or(up-object-data 1 == 1139)
+(or(up-object-data 1 == 822)
+(or(up-object-data 1 == 1301)
+(up-object-data 1 == 2589)))))
+(up-object-data 44 < 30)
+(up-object-data 10 > 0)
+=>
+(up-get-object-data 8 gl-dot-x)
+(up-get-object-data 9 gl-dot-y)
+)
+
+(defrule
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(up-compare-goal gl-boar-id-storage1 == -1)
+(up-compare-goal gl-boar-id-storage2 == -1)
+(up-compare-goal gl-temp-x < 32767)
+(up-set-target-by-id g: gl-temp-x)
+(or(up-object-data 1 == 48)
+(or(up-object-data 1 == 1139)
+(or(up-object-data 1 == 822)
+(or(up-object-data 1 == 1301)
+(up-object-data 1 == 2589)))))
+(up-object-data 44 < 30)
+(up-object-data 10 > 0)
+;(up-point-explored gl-dot-x != 0)
+=>
+(up-modify-goal gl-boar-id-storage1 g:= gl-temp-x)
+)
+
+(defrule
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(up-compare-goal gl-boar-id-storage1 != -1)
+(up-compare-goal gl-boar-id-storage2 == -1)
+(up-compare-goal gl-temp-x g:!= gl-boar-id-storage1)
+(up-compare-goal gl-temp-x < 32767)
+(up-set-target-by-id g: gl-temp-x)
+(or(up-object-data 1 == 48)
+(or(up-object-data 1 == 1139)
+(or(up-object-data 1 == 822)
+(or(up-object-data 1 == 1301)
+(up-object-data 1 == 2589)))))
+(up-object-data 44 < 30)
+(up-object-data 10 > 0)
+;(up-point-explored gl-dot-x != 0)
+=>
+(up-modify-goal gl-boar-id-storage2 g:= gl-temp-x)
+)
+
+(defrule
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(or(up-compare-goal gl-boar-id-storage1 == -1)
+(up-compare-goal gl-boar-id-storage2 == -1))
+(up-compare-goal gl-temp-x < 32767)
+=>
+(up-modify-goal gl-temp-x c:+ 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(up-compare-goal gl-boar-id-storage1 != -1)
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(up-set-target-by-id g: gl-boar-id-storage1)
+=>
+(up-get-object-data 8 gl-dot-x)
+(up-get-object-data 9 gl-dot-y)
+)
+
+(defrule
+(up-compare-goal gl-boar-id-storage1 != -1)
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(up-set-target-by-id g: gl-boar-id-storage1)
+(up-point-explored gl-dot-x != 0)
+=>
+;(chat-local-to-self "first boar found")
+(up-modify-goal gl-boar-found-state c:+ 1)
+;(up-send-flare gl-dot-x)
+;(up-add-object-by-id search-remote g: gl-boar-id-storage1)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal gl-boar-id-storage2 != -1)
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(up-set-target-by-id g: gl-boar-id-storage2)
+=>
+(up-get-object-data 8 gl-dot-x)
+(up-get-object-data 9 gl-dot-y)
+)
+
+(defrule
+(up-compare-goal gl-boar-id-storage2 != -1)
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(up-set-target-by-id g: gl-boar-id-storage2)
+(up-point-explored gl-dot-x != 0)
+=>
+;(chat-local-to-self "second boar found")
+(up-modify-goal gl-boar-found-state c:+ 2)
+;(up-send-flare gl-dot-x)
+;(up-add-object-by-id search-remote g: gl-boar-id-storage2)
+(disable-self)
+)
+
+(defrule
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(or(up-compare-goal gl-boar-found-state c:== 1)
+(up-compare-goal gl-boar-found-state c:== 3))
+(up-set-target-by-id g: gl-boar-id-storage1)
+(up-object-data 10 > 0)
+=>
+(up-add-object-by-id search-remote g: gl-boar-id-storage1)
+)
+
+(defrule
+;(unit-type-count villager >= 9);7
+;(or(unit-type-count villager-hunter < 1)
+;(up-remaining-boar-amount < 135));175
+;(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+;(up-compare-goal gl-chosen-boar-id == -1)
+(or(up-compare-goal gl-boar-found-state c:== 2)
+(up-compare-goal gl-boar-found-state c:== 3))
+(up-set-target-by-id g: gl-boar-id-storage2)
+(up-object-data 10 > 0)
+=>
+(up-add-object-by-id search-remote g: gl-boar-id-storage2)
+)
+
+(defrule
+(up-compare-goal gl-boar-id-storage1 != -1)
+(up-compare-goal gl-boar-id-storage2 != -1)
+(up-compare-goal gl-boar-found-state == 3)
+=>
+;(chat-local-to-self "both boars found")
+(disable-self)
+)
+
+;(defrule
+;(true)
+;=>
+;(up-chat-data-to-self "boar 1: %d" g: gl-boar-id-storage1)
+;(up-chat-data-to-self "boar 2: %d" g: gl-boar-id-storage2)
+;)
+
+(defrule
+;(false)
+(unit-type-count villager >= 9);7
+(or(unit-type-count villager-hunter < 1)
+(up-remaining-boar-amount < 135));175
+(up-set-target-object search-local c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+=>
+;(chat-local-to-self "move to second boar")
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: 0 c: 30)
+(up-find-remote c: 1301 c: 200)
+(up-find-remote c: 822 c: 200)
+(up-find-remote c: 1139 c: 200)
+(up-find-remote c: 48 c: 200)
+(up-find-remote c: 2589 c: 200)
+(up-remove-objects search-remote 16 < 135);175
+(up-clean-search search-remote 44 1)
+)
+
+(defrule
+;(false)
+(unit-type-count villager >= 9);7
+(or(unit-type-count villager-hunter < 1)
+(up-remaining-boar-amount < 135));175
+(up-set-target-object search-remote c: 0)
+(dropsite-min-distance live-boar < 30)
+(dropsite-min-distance live-boar > -1)
+=>
+(up-get-object-data 0 gl-chosen-boar-id)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(unit-type-count villager >= 12);9
+(or(unit-type-count villager-hunter < 1)
+(up-remaining-boar-amount < 135));175
+(up-compare-goal gl-remote-total == 0)
+(dropsite-min-distance live-boar < 8);30
+(dropsite-min-distance live-boar > -1)
+=>
+(do-nothing)
+;(set-strategic-number sn-enable-boar-hunting 2)
+;(set-strategic-number sn-maximum-hunt-drop-distance 30)
+;(set-strategic-number sn-minimum-boar-hunt-group-size 1)
+;(set-strategic-number sn-minimum-boar-lure-group-size 1)
+)
+
+(defrule
+(unit-type-count villager-hunter >= 1)
+(up-set-target-by-id g: gl-chosen-boar-id)
+(dropsite-min-distance live-boar < 30);30
+(dropsite-min-distance live-boar > -1)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 8)
+(up-find-remote c: 48 c: 40)
+(up-find-remote c: 822 c: 40)
+(up-find-remote c: 1301 c: 40)
+(up-find-remote c: 1139 c: 40)
+(up-find-remote c: 2589 c: 40)
+(up-remove-objects search-remote 0 g:!= gl-chosen-boar-id)
+(up-remove-objects search-remote 32 >= 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(unit-type-count villager-hunter >= 1)
+(up-set-target-by-id g: gl-chosen-boar-id)
+(up-compare-goal gl-remote-total == 1)
+(dropsite-min-distance live-boar < 30);30
+(dropsite-min-distance live-boar > -1)
+=>
+(up-reset-filters)
+(up-filter-distance c: -1 c: 20)
+(up-set-target-point gl-self-x)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 == 5)
+(up-remove-objects search-local 73 == 6)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 == 10)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 112 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 32 > 0)
+(up-clean-search search-local 44 1)
+(up-remove-objects search-local -1 > 4)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(unit-type-count villager-hunter >= 1)
+(up-set-target-by-id g: gl-chosen-boar-id)
+(up-compare-goal gl-remote-total == 1)
+(up-compare-goal gl-local-total < 3)
+(dropsite-min-distance live-boar < 30);30
+(dropsite-min-distance live-boar > -1)
+=>
+(up-reset-search 1 1 0 0)
+;(up-find-local c: 218 c: 200)
+;(up-find-local c: 123 c: 200)
+(up-clean-search search-local 16 1)
+(up-remove-objects search-local -1 > 2)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 == 10)
+;(up-find-local c: 216 c: 200)
+;(up-find-local c: 112 c: 200)
+;(up-find-local c: 590 c: 200)
+;(up-find-local c: 592 c: 200)
+;(up-find-local c: 354 c: 200)
+;(up-find-local c: 120 c: 200)
+;(up-find-local c: 57 c: 200)
+;(up-find-local c: 56 c: 200)
+;(up-find-local c: 214 c: 200)
+;(up-find-local c: 259 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 32 > 0)
+(up-clean-search search-local 44 1)
+(up-remove-objects search-local -1 > 4)
+)
+
+(defrule
+(unit-type-count villager-hunter >= 1)
+(up-set-target-by-id g: gl-chosen-boar-id)
+(up-compare-goal gl-remote-total == 1)
+(dropsite-min-distance live-boar < 30);30
+(dropsite-min-distance live-boar > -1)
+=>
+(up-create-group 0 0 c: 13)
+(up-modify-group-flag 1 c: 13)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 20)
+(up-filter-status c: 5 c: 0)
+(up-find-status-remote c: 910 c: 200)
+(up-find-status-remote c: 909 c: 200)
+(up-find-status-remote c: 958 c: 200)
+(up-remove-objects search-remote 32 >= 8)
+(up-get-search-state gl-local-total)
+(up-clean-search search-remote 32 1)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-chosen-food-id)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-remote-total < 1)
+(up-compare-goal gl-total-shepherds < 14)
+(up-compare-goal gl-dead-food < 2)
+(or(up-compare-goal gl-total-shepherds > 8)
+(up-compare-goal gl-chosen-sheep-id == -1))
+=>
+(up-full-reset-search)
+(up-set-target-point gl-sheep-food-x)
+;(up-send-flare gl-sheep-food-x)
+(up-filter-distance c: -1 c: 5)
+(up-find-local c: 958 c: 200)
+(up-clean-search search-local 46 1);44
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-total-shepherds < 14)
+(up-compare-goal gl-dead-food < 2)
+(or(up-compare-goal gl-total-shepherds > 8)
+(up-compare-goal gl-chosen-sheep-id == -1))
+=>
+(up-set-target-object search-local c: 0)
+(up-get-object-data 0 gl-chosen-food-id)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+;(up-compare-goal gl-local-total < 1);edit above 2 rules to add shepherd check
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-latest-dock-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 10);20
+(up-filter-status c: 5 c: 1)
+(up-find-status-remote c: 933 c: 200)
+(up-remove-objects search-remote 32 >= 3)
+(up-reset-filters)
+(up-set-target-point gl-self-x)
+(up-filter-distance c: -1 c: 20)
+(up-filter-status c: 3 c: 0)
+(up-find-remote c: 907 c: 500)
+(up-get-search-state gl-local-total)
+(up-clean-search search-remote 32 1)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-chosen-food-id)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: -1 c: 20); should this be 20?
+(up-find-local c: farm c: 500)
+;(up-find-local c: 1893 c: 500)
+;(up-find-local c: 1897 c: 500)
+;(up-remove-objects search-remote 73 > 1)
+(up-remove-objects search-local 32 > 0)
+(up-get-search-state gl-local-total)
+(up-clean-search search-remote 44 1)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-set-target-object search-local c: 0)
+(up-get-object-data 0 gl-chosen-food-id)
+)
+
+(defrule
+(building-type-count town-center > 0)
+(up-compare-goal gl-chosen-food-id == -1)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-filter-distance c: -1 c: 10)
+(up-filter-status c: 2 c: 0)
+(up-find-resource c: food c: 40)
+(up-reset-filters)
+(up-filter-distance c: -1 c: 10)
+(up-filter-status c: 3 c: 0)
+(up-find-resource c: food c: 40)
+(up-clean-search search-remote 44 1)
+)
+
+(defrule
+(building-type-count town-center > 0)
+(up-compare-goal gl-chosen-food-id == -1)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 0 gl-chosen-food-id)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id != -1)
+=>
+;(up-chat-data-to-self "food chosen %d" g: gl-chosen-food-id)
+(up-set-target-by-id g: gl-chosen-food-id)
+(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+(up-compare-goal gl-total-gold-miners g:> gl-desired-number-gold)
+;(up-object-type-count c: villager-gold g:> gl-desired-number-gold)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+;(up-remove-objects search-local 73 == 0)
+;(up-remove-objects search-local 73 == 1)
+;(up-remove-objects search-local 73 == 2)
+;(up-remove-objects search-local 73 == 3)
+;(up-remove-objects search-local 73 == 4)
+;(up-remove-objects search-local 73 == 5)
+;(up-remove-objects search-local 73 == 6)
+;(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 < 8)
+(up-remove-objects search-local 73 > 8)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 >= 1)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-gold-miners g:> gl-desired-number-gold)
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-gold g:> gl-desired-number-gold)
+;(up-object-type-count c: villager-gold g:< gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-food-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-food-id)
+(up-create-group 0 0 c: 2)
+(up-modify-group-flag 1 c: 2)
+(up-modify-goal gl-total-gold-miners c:- 1)
+(up-modify-goal gl-total-food c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-total-gold-miners g:> gl-desired-number-gold)
+;(up-object-type-count c: villager-gold g:> gl-desired-number-gold)
+;(up-object-type-count c: villager-wood g:< gl-desired-number-wood)
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 1 c: 7)
+(up-modify-goal gl-total-gold-miners c:- 1)
+(up-modify-goal gl-total-lumberjacks c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -3)
+)
+
+(defrule
+;(up-object-type-count c: villager-gold g:> gl-desired-number-gold)
+(up-compare-goal gl-total-gold-miners g:> gl-desired-number-gold)
+(up-compare-goal gl-total-stone-miners g:< gl-desired-number-stone)
+;(up-object-type-count c: villager-wood g:< gl-desired-number-stone)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-stone-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-stone-id)
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 1 c: 10)
+(up-modify-goal gl-total-gold-miners c:- 1)
+(up-modify-goal gl-total-stone-miners c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -4)
+)
+
+(defrule
+(up-compare-goal gl-total-gold-miners g:> gl-desired-number-gold)
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-gold g:> gl-desired-number-gold)
+;(up-object-type-count c: villager-gold g:< gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-create-group 0 0 c: 2)
+(up-modify-group-flag 1 c: 2)
+(up-modify-goal gl-total-gold-miners c:- 1)
+(up-modify-goal gl-total-food c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -5)
+)
+
+(defrule
+;(up-object-type-count c: villager-stone g:> gl-desired-number-stone)
+(up-compare-goal gl-total-stone-miners g:> gl-desired-number-stone)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+;(up-remove-objects search-local 73 == 0)
+;(up-remove-objects search-local 73 == 1)
+;(up-remove-objects search-local 73 == 2)
+;(up-remove-objects search-local 73 == 3)
+;(up-remove-objects search-local 73 == 4)
+;(up-remove-objects search-local 73 == 5)
+;(up-remove-objects search-local 73 == 6)
+;(up-remove-objects search-local 73 == 7)
+;(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 < 10)
+(up-remove-objects search-local 73 > 10)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 >= 1)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(up-object-type-count c: villager-stone g:> gl-desired-number-stone)
+(up-compare-goal gl-total-stone-miners g:> gl-desired-number-stone)
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(up-object-type-count c: villager-gold g:< gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-food-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-food-id)
+(up-create-group 0 0 c: 2)
+(up-modify-group-flag 1 c: 2)
+(up-modify-goal gl-total-stone-miners c:- 1)
+(up-modify-goal gl-total-food c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -2)
+)
+
+(defrule
+;(up-object-type-count c: villager-stone g:> gl-desired-number-stone)
+(up-compare-goal gl-total-stone-miners g:> gl-desired-number-stone)
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+;(up-object-type-count c: villager-stone g:< gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 1 c: 7)
+(up-modify-goal gl-total-stone-miners c:- 1)
+(up-modify-goal gl-total-lumberjacks c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -3)
+)
+
+(defrule
+;(up-object-type-count c: villager-stone g:> gl-desired-number-stone)
+(up-compare-goal gl-total-stone-miners g:> gl-desired-number-stone)
+(up-compare-goal gl-total-gold-miners g:< gl-desired-number-gold)
+;(up-object-type-count c: villager-stone g:< gl-desired-number-gold)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-gold-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-gold-id)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 1 c: 8)
+(up-modify-goal gl-total-stone-miners c:- 1)
+(up-modify-goal gl-total-gold-miners c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -4)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:> gl-desired-number-wood)
+;(or(up-object-type-count c: villager-gold g:< gl-desired-number-gold)
+(or(up-compare-goal gl-total-gold-miners g:< gl-desired-number-gold)
+(up-compare-goal gl-total-stone-miners g:< gl-desired-number-stone))
+;(up-object-type-count c: villager-stone g:< gl-desired-number-stone))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+;(up-remove-objects search-local 73 == 0)
+;(up-remove-objects search-local 73 == 1)
+;(up-remove-objects search-local 73 == 2)
+;(up-remove-objects search-local 73 == 3)
+;(up-remove-objects search-local 73 == 4)
+;(up-remove-objects search-local 73 == 5)
+;(up-remove-objects search-local 73 == 6)
+(up-remove-objects search-local 73 < 7)
+(up-remove-objects search-local 73 > 7)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 >= 1)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:> gl-desired-number-wood)
+(up-compare-goal gl-total-gold-miners g:< gl-desired-number-gold)
+;(up-object-type-count c: villager-gold g:< gl-desired-number-gold)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-gold-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-gold-id)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 1 c: 8)
+(up-modify-goal gl-total-lumberjacks c:- 1)
+(up-modify-goal gl-total-gold-miners c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:> gl-desired-number-wood)
+(up-compare-goal gl-total-stone-miners g:< gl-desired-number-stone)
+;(up-object-type-count c: villager-stone g:< gl-desired-number-stone)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-stone-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-stone-id)
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 1 c: 10)
+(up-modify-goal gl-total-lumberjacks c:- 1)
+(up-modify-goal gl-total-stone-miners c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -3)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:> gl-desired-number-wood)
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+;(or(up-compare-goal gl-dead-food > 0)
+;(or(unit-type-count 958 > 0)
+;(or(up-compare-goal gl-remote-total > 0)
+;(idle-farm-count > 0))))
+;(up-compare-goal gl-local-total > 0)
+(building-type-count town-center > 0)
+(up-compare-goal gl-chosen-food-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+;(up-remove-objects search-local 73 == 0)
+;(up-remove-objects search-local 73 == 1)
+;(up-remove-objects search-local 73 == 2)
+;(up-remove-objects search-local 73 == 3)
+;(up-remove-objects search-local 73 == 4)
+;(up-remove-objects search-local 73 == 5)
+;(up-remove-objects search-local 73 == 6)
+(up-remove-objects search-local 73 < 7)
+(up-remove-objects search-local 73 > 7)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-status c: 3 c: 0)
+(up-find-status-remote c: 907 c: 200)
+(up-remove-objects search-local 16 >= 1)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(false);testing to stop lumber stutter
+(up-compare-goal gl-total-lumberjacks g:> gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:> gl-desired-number-wood)
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+(building-type-count town-center > 0)
+(up-compare-goal gl-chosen-food-id != -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-set-target-by-id g: gl-chosen-food-id)
+(up-create-group 0 0 c: 2);2
+(up-modify-group-flag 1 c: 2);2
+(up-modify-goal gl-total-lumberjacks c:- 1)
+(up-modify-goal gl-total-food c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -2)
+;(up-chat-data-to-self "sending vils to food %d" g: gl-chosen-food-id)
+;(up-get-point position-object gl-dot-x)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:> gl-desired-number-food)
+;(or(up-object-type-count c: villager-gold g:< gl-desired-number-gold)
+(or(up-compare-goal gl-total-gold-miners g:< gl-desired-number-gold)
+(up-compare-goal gl-total-stone-miners g:< gl-desired-number-stone))
+;(up-object-type-count c: villager-stone g:< gl-desired-number-stone))
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 < 1)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 == 9)
+(up-remove-objects search-local 73 == 10)
+(up-remove-objects search-local 73 > 13)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 >= 1)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:> gl-desired-number-food)
+(up-compare-goal gl-total-gold-miners g:< gl-desired-number-gold)
+;(up-object-type-count c: villager-gold g:< gl-desired-number-gold)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-gold-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-gold-id)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 1 c: 8)
+(up-modify-goal gl-total-food c:- 1)
+(up-modify-goal gl-total-gold-miners c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:> gl-desired-number-food)
+;(up-object-type-count c: villager-stone g:< gl-desired-number-stone)
+(up-compare-goal gl-total-stone-miners g:< gl-desired-number-stone)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-stone-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-stone-id)
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 1 c: 10)
+(up-modify-goal gl-total-food c:- 1)
+(up-modify-goal gl-total-stone-miners c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -3)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:> gl-desired-number-food)
+;(up-object-type-count c: villager-wood g:< gl-desired-number-wood)
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 < 1)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 == 9)
+(up-remove-objects search-local 73 == 10)
+(up-remove-objects search-local 73 > 13)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 >= 1)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:> gl-desired-number-food)
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:< gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 1 c: 7)
+(up-modify-goal gl-total-food c:- 1)
+(up-modify-goal gl-total-lumberjacks c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:<= gl-desired-number-wood)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: 218 c: 200)
+(up-find-local c: 123 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:<= gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(true)
+;(false)
+=>
+(enable-timer timer-switch-tree 15)
+(disable-self)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-full-reset-search)
+;(up-find-local c: 218 c: 200)
+;(up-find-local c: 123 c: 200)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 7)
+(up-remove-objects search-local 72 == 5122)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 == 0);removing to see if idle lumberjacks retask
+(up-remove-objects search-local 16 >= 10)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+(up-compare-goal gl-chosen-tree-id != -1)
+;(up-group-size c: 7 > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-full-reset-search)
+;(up-find-local c: 218 c: 200)
+;(up-find-local c: 123 c: 200)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 != 7)
+(up-remove-objects search-local 72 == 5122)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 == 0)
+(up-remove-objects search-local 16 >= 10)
+(up-clean-search search-local 0 1)
+(up-set-target-object search-local g: gl-current-list-number)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-distance c: -1 c: 6)
+(up-find-remote c: town-center c: 10)
+(up-find-remote c: lumber-camp c: 30)
+(up-find-remote c: mule-cart c: 30)
+(up-clean-search search-remote 44 1)
+;(up-find-resource c: wood c: 500)
+;(up-filter-status c: 3 c: 0)
+;(up-find-status-remote c: wood c: 500)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+(up-compare-goal gl-chosen-tree-id != -1)
+;(up-group-size c: 7 > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-remote-total < 1)
+(up-set-target-by-id g: gl-chosen-tree-id)
+=>
+(up-reset-search 0 0 1 1)
+;(up-full-reset-search)
+;(up-set-group search-local c: 7)
+(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(up-target-objects 1 action-default -1 -1)
+(up-modify-goal gl-current-list-number c:+ 1)
+;(up-modify-goal gl-current-list-number g:= gl-rule-loops)
+(up-jump-rule -2)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+;(up-compare-goal gl-chosen-tree-id != -1)
+;(up-group-size c: 7 > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(timer-triggered timer-switch-tree)
+;(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(enable-timer timer-switch-tree 15)
+)
+
+(defrule
+(up-object-type-count c: villager-wood g:< gl-desired-number-wood);true
+(up-compare-goal gl-chosen-tree-id != -1)
+;(unit-type-count villager-builder < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-object-type-count c: villager-wood g:< gl-desired-number-wood);true
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-compare-goal gl-local-total > 0)
+;(unit-type-count villager-builder < 1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 1 c: 7)
+(up-target-objects 1 action-default -1 -1)
+;(up-jump-rule -6)
+)
+
+(defrule
+(up-object-type-count c: villager-gold g:= gl-desired-number-gold)
+(up-compare-goal gl-chosen-gold-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: 581 c: 200)
+(up-find-local c: 579 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-object-type-count c: villager-gold g:= gl-desired-number-gold)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-gold-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-gold-id)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 1 c: 8)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(up-object-type-count c: villager-gold g:< gl-desired-number-gold);true
+(up-compare-goal gl-chosen-gold-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-object-type-count c: villager-gold g:< gl-desired-number-gold);true
+(up-compare-goal gl-chosen-gold-id != -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-set-target-by-id g: gl-chosen-gold-id)
+(up-create-group 0 0 c: 8)
+(up-modify-group-flag 1 c: 8)
+(up-target-objects 1 action-default -1 -1)
+;(up-jump-rule -6)
+)
+
+(defrule
+(up-object-type-count c: villager-stone g:== gl-desired-number-stone)
+(up-compare-goal gl-chosen-stone-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: 220 c: 200)
+(up-find-local c: 124 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-object-type-count c: villager-stone g:== gl-desired-number-stone)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-stone-id != -1)
+=>
+(up-set-target-by-id g: gl-chosen-stone-id)
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 1 c: 10)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(up-object-type-count c: villager-stone g:< gl-desired-number-stone);true
+(up-compare-goal gl-chosen-stone-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-object-type-count c: villager-stone g:< gl-desired-number-stone);true
+(up-compare-goal gl-chosen-stone-id != -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-set-target-by-id g: gl-chosen-stone-id)
+(up-create-group 0 0 c: 10)
+(up-modify-group-flag 1 c: 10)
+(up-target-objects 1 action-default -1 -1)
+;(up-jump-rule -6)
+)
+
+(defrule
+(up-object-type-count c: villager-wood g:< gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-set-target-by-id g: gl-chosen-tree-id)
+=>
+(up-remove-objects search-local -1 != 0)
+;(up-filter-status c: 2 c: 0)
+;(up-find-resource c: wood c: 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(false)
+(up-object-type-count c: villager-wood g:= gl-desired-number-wood)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-remove-objects search-local -1 != 0)
+(up-filter-status c: 2 c: 0)
+(up-find-resource c: wood c: 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:> gl-desired-number-food)
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:< gl-desired-number-wood)
+(up-compare-goal gl-chosen-tree-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 < 0)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-remove-objects search-local 73 == 9)
+(up-remove-objects search-local 73 == 10)
+(up-find-local c: 590 c: 200)
+(up-find-local c: 592 c: 200)
+(up-find-local c: 354 c: 200)
+(up-find-local c: 120 c: 200)
+(up-find-local c: 57 c: 200)
+(up-find-local c: 56 c: 200)
+(up-find-local c: 214 c: 200)
+(up-find-local c: 259 c: 200)
+(up-find-local c: 1891 c: 240);herders
+(up-find-local c: 1892 c: 240);herders
+(up-find-local c: 216 c: 200)
+(up-find-local c: 122 c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 16 >= 1)
+(up-remove-objects search-local -1 != 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:> gl-desired-number-food)
+(up-compare-goal gl-total-lumberjacks g:< gl-desired-number-wood)
+;(up-object-type-count c: villager-wood g:< gl-desired-number-wood)
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-by-id g: gl-chosen-tree-id)
+=>
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 1 c: 7)
+(up-modify-goal gl-total-food c:- 1)
+(up-modify-goal gl-total-lumberjacks c:+ 1)
+(up-target-objects 1 action-default -1 -1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+(unit-type-count villager-forager > 12);8
+;(unit-type-count villager-builder < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 500)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 6 > -1)
+;(up-find-local c: 354 c: 500);removing because this retasks berry gatherers too much
+;(up-find-local c: 120 c: 500)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+)
+
+(defrule
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+;(unit-type-count villager-forager > 12);8
+;(unit-type-count villager-builder < 1)
+=>
+(up-get-fact idle-farm-count 0 gl-villager-maths)
+(up-reset-search 0 0 1 1)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-range c: -1 c: 40)
+(up-find-remote c: farm c: 500)
+(up-find-remote c: 1893 c: 500)
+(up-find-remote c: 1897 c: 500)
+(up-remove-objects search-remote 32 > 0)
+(up-remove-objects search-remote 73 > 1)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+;(up-compare-goal gl-chosen-sheep-id > -1)
+;(unit-type-count villager-forager > 12);8
+;(unit-type-count villager-builder < 1)
+(or(idle-farm-count > 0)
+(fe-idle-pasture-count > 0))
+=>
+(up-remove-objects search-local -1 > 0)
+(up-target-objects 0 action-default -1 -1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "sending to farms")
+)
+
+(defrule
+(not(up-compare-flag gl-anti-lag-flag == anti-lag-level3))
+;(up-compare-goal gl-total-food g:< gl-desired-number-food);true;this may need to come back in if lag rule 4 is active
+;(up-compare-goal gl-dead-food < 1)
+;(idle-farm-count < 1)
+;(unit-type-count 958 < 1)
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-chosen-tree-id != -1)
+;(unit-type-count villager-builder < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+;(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(not(up-compare-flag gl-anti-lag-flag == anti-lag-level3))
+;(up-compare-goal gl-total-food g:< gl-desired-number-food);true
+;(up-compare-goal gl-dead-food < 1)
+;(idle-farm-count < 1)
+;(unit-type-count 958 < 1)
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-compare-goal gl-local-total > 0)
+;(unit-type-count villager-builder < 1)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-target-objects 1 action-default -1 -1)
+;(up-jump-rule -6)
+)
+
+(defrule
+(not(up-compare-flag gl-anti-lag-flag == anti-lag-level3))
+;(up-compare-goal gl-total-food g:< gl-desired-number-food);true
+;(up-compare-goal gl-dead-food < 1)
+;(idle-farm-count < 1)
+;(unit-type-count 958 < 1)
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+;(unit-type-count villager-builder < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 73 != -2)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+;(up-remove-objects search-local -1 > 0)
+(up-set-target-point gl-self-x)
+;(up-send-flare gl-current-wood-scan-point-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+;(up-filter-distance c: 1 c: 20)
+(up-filter-status c: 3 c: 0)
+(up-find-resource c: wood c: 10);20
+(up-remove-objects search-remote 16 < 1)
+(up-remove-objects search-remote 32 >= 3)
+(up-clean-search search-remote 44 1)
+(up-remove-objects search-remote -1 > 0)
+(up-find-resource c: wood c: 10);20
+(up-reset-filters)
+(up-set-target-point gl-self-x)
+;(up-filter-distance c: 1 c: 20)
+(up-filter-status c: 2 c: 0)
+(up-find-resource c: wood c: 500)
+(up-remove-objects search-remote 16 < 1)
+(up-remove-objects search-remote 32 >= 3)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+(up-find-resource c: wood c: 500)
+(up-remove-objects search-remote 16 < 1)
+(up-remove-objects search-remote 32 >= 3)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(not(up-compare-flag gl-anti-lag-flag == anti-lag-level3))
+;(up-compare-goal gl-total-food g:< gl-desired-number-food);true
+;(up-compare-goal gl-dead-food < 1)
+;(idle-farm-count < 1)
+;(unit-type-count 958 < 1)
+(up-compare-goal gl-chosen-food-id == -1)
+(up-compare-goal gl-chosen-tree-id == -1)
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-remote c: 0)
+;(unit-type-count villager-builder < 1)
+=>
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-total-food g:< gl-desired-number-food)
+(up-compare-goal gl-chosen-food-id != -1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 73 >= 0)
+(up-remove-objects search-local 6 != -1)
+(up-clean-search search-local 0 0)
+(up-remove-objects search-local -1 > 0)
+(up-set-target-by-id g: gl-chosen-food-id)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(up-compare-goal gl-chosen-food-id != -1)
+=>
+(up-modify-goal gl-chosen-food-id c:= -1)
+)
+
+(defrule
+(false);testing to stop lumber stutter
+(true);true
+;(up-compare-goal gl-dead-food < 1)
+;(idle-farm-count < 1)
+;(unit-type-count 958 < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 200)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-remove-objects search-local 6 > -1)
+;(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false);testing to stop lumber stutter
+(true);true
+(up-compare-goal gl-chosen-tree-id != -1)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-set-target-by-id g: gl-chosen-tree-id)
+(up-target-objects 1 action-default -1 -1)
+;(up-jump-rule -6)
+)
+
+(defrule
+(not(up-set-target-by-id g: gl-chosen-boar-id))
+=>
+(up-modify-goal gl-chosen-boar-id c:= -1)
+)
+
+(defrule
+(up-set-target-by-id g: gl-chosen-boar-id)
+(up-object-data 10 c:< 1)
+=>
+(up-modify-goal gl-chosen-boar-id c:= -1)
+)
+
+(defrule
+(true)
+=>
+(up-get-rule-id gl-skip-villager-test)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 5)
+)
+
+(defrule
+(true)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number < 9)
+(not(players-stance focus-player enemy))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+=>
+(up-set-target-point gl-self-x)
+(up-find-remote c: lumber-camp c: 40)
+(up-find-remote c: mining-camp c: 40)
+(up-find-remote c: mill c: 40)
+(up-set-target-point gl-raid-target-x)
+(up-remove-objects search-remote 44 < 10)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(true)
+=>
+(up-set-target-point gl-self-x)
+(up-get-search-state gl-local-total)
+(up-clean-search search-remote 44 1)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-clean-search search-local 44 1)
+(up-remove-objects search-local -1 >= 4)
+(up-target-objects 1 action-default -1 -1)
+)
+
+;rules for villager defence was here
+
+(defrule
+(false)
+(up-compare-goal 10 > mc-equal)
+(timer-triggered mini-raid-timer)
+(goal military-mode raid)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-full-reset-search)
+(up-set-target-point gl-raid-target-x)
+(up-filter-distance c: 10 c: 24)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+(up-compare-goal 10 > mc-equal)
+(timer-triggered mini-raid-timer)
+(goal military-mode raid)
+(current-age < castle-age)
+(up-compare-goal gl-local-total < 4)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-full-reset-search)
+(up-find-local c: villager-class c: 240)
+(up-get-point-distance gl-raid-target-x gl-self-x gl-dot-x)
+(up-modify-goal gl-dot-x c:+ 7);8 distance allowed behind TC
+(up-set-target-point gl-raid-target-x)
+(up-filter-distance c: 8 c: 24);10 24
+(up-clean-search search-local 44 1)
+(up-remove-objects search-local -1 > 3)
+(up-remove-objects search-local 0 g:== gl-scout-id);remove scout
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+(up-compare-goal 10 > mc-equal)
+(timer-triggered mini-raid-timer)
+(goal military-mode raid)
+(current-age < castle-age)
+(up-compare-sn sn-focus-player-number < 9)
+(not(players-stance focus-player enemy))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(false)
+(up-compare-goal 10 > mc-equal)
+(timer-triggered mini-raid-timer)
+(goal military-mode raid)
+(current-age < castle-age)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+=>
+(up-find-remote c: 952 c: 40)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-get-search-state gl-local-total)
+(up-jump-rule -2)
+)
+
+(defrule
+(false)
+(up-compare-goal 10 > mc-equal)
+(timer-triggered mini-raid-timer)
+(goal military-mode raid)
+(current-age < castle-age)
+(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-remote-total < 3)
+=>
+(up-set-target-point gl-self-x)
+(up-remove-objects search-remote 44 g:>= gl-dot-x)
+(up-clean-search search-remote 44 2)
+)
+
+(defrule
+(false)
+(up-compare-goal 10 > mc-equal)
+(timer-triggered mini-raid-timer)
+(goal military-mode raid)
+(current-age < castle-age)
+(up-set-target-object search-remote c: 0)
+(or(up-resource-amount 228 < 3)
+(up-resource-amount 229 < 3))
+=>
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(true)
+=>
+(up-get-rule-id gl-hop-back)
+(up-modify-goal gl-hop-back c:+ 1)
+(up-jump-direct g: gl-vill-dist-reset)
+)
+
+(defrule
+(false)
+(true)
+=>
+(up-chat-data-to-self "Food %d" g: gl-desired-number-food)
+(up-chat-data-to-self "Wood %d" g: gl-desired-number-wood)
+(up-chat-data-to-self "Gold %d" g: gl-desired-number-gold)
+(up-chat-data-to-self "Stone %d" g: gl-desired-number-stone)
+)
+
+(defrule
+(false)
+(or(unit-type-count 1893 > 0)
+(unit-type-count 1897 > 0))
+=>
+(up-full-reset-search)
+;(up-find-local c: 1891 c: 240)
+;(up-find-local c: 1892 c: 240)
+(up-find-local c: 1893 c: 240)
+(up-find-local c: 1897 c: 240)
+)
+
+(defrule
+(false)
+(or(unit-type-count 1893 > 0)
+(unit-type-count 1897 > 0))
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-dot-x)
+(up-send-flare gl-dot-x)
+;(up-get-object-target-data 0 gl-temp-x)
+;(up-set-target-by-id g: gl-temp-x)
+(up-get-object-data 5 gl-temp-y)
+(up-chat-data-to-self "data a %d" g: gl-temp-y)
+(up-get-object-data 6 gl-temp-y)
+(up-chat-data-to-self "data b %d" g: gl-temp-y)
+(up-get-object-data 7 gl-temp-y)
+(up-chat-data-to-self "data c %d" g: gl-temp-y)
+(up-get-object-data 14 gl-temp-y)
+(up-chat-data-to-self "data d %d" g: gl-temp-y)
+;(up-chat-data-to-self "assigned object %d" g: gl-dot-y)
+)
+
+;(defrule
+;(true)
+;=>
+;(up-modify-sn sn-profiling-threshold c:= 2000)
+;(disable-self)
+;)

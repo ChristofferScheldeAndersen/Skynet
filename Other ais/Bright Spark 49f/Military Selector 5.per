@@ -1,0 +1,2178 @@
+(defconst militiaman-votes 250)
+(defconst spearman-votes 251)
+(defconst archer-votes 252)
+(defconst skirmisher-votes 253)
+(defconst cavalry-archer-votes 254)
+(defconst scout-cavalry-votes 255)
+(defconst knight-votes 256)
+(defconst camel-votes 257)
+(defconst battle-elephant-votes 258)
+(defconst monk-votes 259)
+(defconst eagle-warrior-votes 260)
+(defconst hand-cannoneer-votes 261)
+(defconst scorpion-votes 262)
+(defconst genitour-votes 263)
+(defconst mangonel-votes 264)
+(defconst elephant-archer-votes 265)
+(defconst condottiero-votes 266)
+
+(defconst galley-votes 267)
+(defconst fire-ship-votes 268)
+(defconst demo-ship-votes 269)
+(defconst turtle-ship-votes 270)
+(defconst longboat-votes 271)
+(defconst caravel-votes 272)
+(defconst thirisadai-votes 273)
+(defconst fire-lancer-votes 274)
+(defconst champi-scout-votes 564)
+(defconst my-special-unit-votes 568)
+(defconst hulk-votes 569)
+
+(defconst gl-chosen-military-votes 281)
+(defconst gl-supporting-military-votes 282)
+
+(defconst building-type-goal2 197)
+(defconst supporting-military-unit 198)
+(defconst building-type-goal 199)
+(defconst chosen-military-unit 200)
+(defconst chosen-barracks-unit 201)
+(defconst chosen-archery-range-unit 202)
+(defconst chosen-stable-unit 203)
+(defconst chosen-siege-workshop-unit 204)
+(defconst chosen-dock-unit 215)
+
+(defconst military-voting-timer 16)
+(defconst voting-time 5);30
+
+(defrule
+(true)
+=>
+(enable-timer military-voting-timer voting-time)
+(disable-self)
+)
+
+(defrule
+(timer-triggered military-voting-timer)
+=>
+(enable-timer military-voting-timer voting-time)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dot-x g:= militiaman-votes)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dot-x g:max spearman-votes)
+(up-modify-goal gl-dot-x g:max fire-lancer-votes)
+(up-modify-goal gl-dot-x g:max champi-scout-votes)
+(up-modify-goal gl-dot-x g:max archer-votes)
+(up-modify-goal gl-dot-x g:max skirmisher-votes)
+(up-modify-goal gl-dot-x g:max cavalry-archer-votes)
+(up-modify-goal gl-dot-x g:max scout-cavalry-votes)
+(up-modify-goal gl-dot-x g:max knight-votes)
+(up-modify-goal gl-dot-x g:max camel-votes)
+(up-modify-goal gl-dot-x g:max battle-elephant-votes)
+(up-modify-goal gl-dot-x g:max monk-votes)
+(up-modify-goal gl-dot-x g:max eagle-warrior-votes)
+(up-modify-goal gl-dot-x g:max hand-cannoneer-votes)
+(up-modify-goal gl-dot-x g:max genitour-votes)
+(up-modify-goal gl-dot-x g:max mangonel-votes)
+(up-modify-goal gl-dot-x g:max mounted-trebuchet-votes)
+(up-modify-goal gl-dot-x g:max elephant-archer-votes)
+(up-modify-goal gl-dot-x g:max condottiero-votes)
+(up-modify-goal gl-dot-x g:max my-special-unit-votes)
+)
+
+(defrule
+(up-compare-goal militiaman-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal militiaman-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal spearman-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal spearman-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal fire-lancer-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal fire-lancer-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal champi-scout-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal champi-scout-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal archer-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal archer-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal skirmisher-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal skirmisher-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal cavalry-archer-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal cavalry-archer-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal scout-cavalry-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal scout-cavalry-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal knight-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal knight-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal camel-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal camel-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal battle-elephant-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal battle-elephant-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal monk-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal monk-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal eagle-warrior-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal eagle-warrior-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal hand-cannoneer-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal hand-cannoneer-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal genitour-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal genitour-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal mangonel-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal mangonel-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal mounted-trebuchet-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal mounted-trebuchet-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal elephant-archer-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal elephant-archer-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal condottiero-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal condottiero-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal my-special-unit-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal my-special-unit-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal galley-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal galley-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal fire-ship-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal fire-ship-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal demo-ship-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal demo-ship-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal hulk-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal hulk-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal turtle-ship-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal turtle-ship-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal longboat-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal longboat-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal caravel-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal caravel-votes g:+ gl-dot-y)
+)
+
+(defrule
+(up-compare-goal thirisadai-votes g:== gl-dot-x)
+=>
+(generate-random-number 8)
+(up-get-fact 33 0 gl-dot-y)
+(up-modify-goal gl-dot-y c:- 4)
+(up-modify-goal thirisadai-votes g:+ gl-dot-y)
+)
+
+(defrule 
+(not(goal chosen-military-unit militiaman-line))
+(up-compare-goal militiaman-votes g:> spearman-votes)
+(up-compare-goal militiaman-votes g:> fire-lancer-votes)
+(up-compare-goal militiaman-votes g:> champi-scout-votes)
+(up-compare-goal militiaman-votes g:> archer-votes)
+(up-compare-goal militiaman-votes g:> skirmisher-votes)
+(up-compare-goal militiaman-votes g:> cavalry-archer-votes)
+(up-compare-goal militiaman-votes g:> scout-cavalry-votes)
+(up-compare-goal militiaman-votes g:> knight-votes)
+(up-compare-goal militiaman-votes g:> camel-votes)
+(up-compare-goal militiaman-votes g:> battle-elephant-votes)
+(up-compare-goal militiaman-votes g:> monk-votes)
+(up-compare-goal militiaman-votes g:> eagle-warrior-votes)
+(up-compare-goal militiaman-votes g:> hand-cannoneer-votes)
+(up-compare-goal militiaman-votes g:> scorpion-votes)
+(up-compare-goal militiaman-votes g:> genitour-votes)
+(up-compare-goal militiaman-votes g:> mangonel-votes)
+(up-compare-goal militiaman-votes g:> mounted-trebuchet-votes)
+(up-compare-goal militiaman-votes g:> elephant-archer-votes)
+(up-compare-goal militiaman-votes g:> condottiero-votes)
+(up-compare-goal militiaman-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit militiaman-line)
+;(chat-local-to-self "Preferred unit is now militiaman")
+)
+
+(defrule 
+(not(goal chosen-military-unit spearman-line))
+(up-compare-goal spearman-votes g:> militiaman-votes)
+(up-compare-goal spearman-votes g:> fire-lancer-votes)
+(up-compare-goal spearman-votes g:> champi-scout-votes)
+(up-compare-goal spearman-votes g:> archer-votes)
+(up-compare-goal spearman-votes g:> skirmisher-votes)
+(up-compare-goal spearman-votes g:> cavalry-archer-votes)
+(up-compare-goal spearman-votes g:> scout-cavalry-votes)
+(up-compare-goal spearman-votes g:> knight-votes)
+(up-compare-goal spearman-votes g:> camel-votes)
+(up-compare-goal spearman-votes g:> battle-elephant-votes)
+(up-compare-goal spearman-votes g:> monk-votes)
+(up-compare-goal spearman-votes g:> eagle-warrior-votes)
+(up-compare-goal spearman-votes g:> hand-cannoneer-votes)
+(up-compare-goal spearman-votes g:> scorpion-votes)
+(up-compare-goal spearman-votes g:> genitour-votes)
+(up-compare-goal spearman-votes g:> mangonel-votes)
+(up-compare-goal spearman-votes g:> mounted-trebuchet-votes)
+(up-compare-goal spearman-votes g:> elephant-archer-votes)
+(up-compare-goal spearman-votes g:> condottiero-votes)
+(up-compare-goal spearman-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit spearman-line)
+;(chat-local-to-self "Preferred unit is now spearmen")
+)
+
+(defrule 
+(not(goal chosen-military-unit fire-lancer-line))
+(up-compare-goal fire-lancer-votes g:> militiaman-votes)
+(up-compare-goal fire-lancer-votes g:> champi-scout-votes)
+(up-compare-goal fire-lancer-votes g:> archer-votes)
+(up-compare-goal fire-lancer-votes g:> skirmisher-votes)
+(up-compare-goal fire-lancer-votes g:> cavalry-archer-votes)
+(up-compare-goal fire-lancer-votes g:> scout-cavalry-votes)
+(up-compare-goal fire-lancer-votes g:> knight-votes)
+(up-compare-goal fire-lancer-votes g:> camel-votes)
+(up-compare-goal fire-lancer-votes g:> battle-elephant-votes)
+(up-compare-goal fire-lancer-votes g:> monk-votes)
+(up-compare-goal fire-lancer-votes g:> eagle-warrior-votes)
+(up-compare-goal fire-lancer-votes g:> hand-cannoneer-votes)
+(up-compare-goal fire-lancer-votes g:> scorpion-votes)
+(up-compare-goal fire-lancer-votes g:> genitour-votes)
+(up-compare-goal fire-lancer-votes g:> mangonel-votes)
+(up-compare-goal fire-lancer-votes g:> mounted-trebuchet-votes)
+(up-compare-goal fire-lancer-votes g:> elephant-archer-votes)
+(up-compare-goal fire-lancer-votes g:> condottiero-votes)
+(up-compare-goal fire-lancer-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit fire-lancer-line)
+;(chat-local-to-self "Preferred unit is now fire-lancer")
+)
+
+(defrule 
+(not(goal chosen-military-unit champi-scout-line))
+(up-compare-goal champi-scout-votes g:> militiaman-votes)
+(up-compare-goal champi-scout-votes g:> fire-lancer-votes)
+(up-compare-goal champi-scout-votes g:> archer-votes)
+(up-compare-goal champi-scout-votes g:> skirmisher-votes)
+(up-compare-goal champi-scout-votes g:> cavalry-archer-votes)
+(up-compare-goal champi-scout-votes g:> scout-cavalry-votes)
+(up-compare-goal champi-scout-votes g:> knight-votes)
+(up-compare-goal champi-scout-votes g:> camel-votes)
+(up-compare-goal champi-scout-votes g:> battle-elephant-votes)
+(up-compare-goal champi-scout-votes g:> monk-votes)
+(up-compare-goal champi-scout-votes g:> eagle-warrior-votes)
+(up-compare-goal champi-scout-votes g:> hand-cannoneer-votes)
+(up-compare-goal champi-scout-votes g:> scorpion-votes)
+(up-compare-goal champi-scout-votes g:> genitour-votes)
+(up-compare-goal champi-scout-votes g:> mangonel-votes)
+(up-compare-goal champi-scout-votes g:> mounted-trebuchet-votes)
+(up-compare-goal champi-scout-votes g:> elephant-archer-votes)
+(up-compare-goal champi-scout-votes g:> condottiero-votes)
+(up-compare-goal champi-scout-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit champi-scout-line)
+;(chat-local-to-self "Preferred unit is now champi")
+)
+
+(defrule 
+(not(goal chosen-military-unit archer-line))
+(up-compare-goal archer-votes g:> spearman-votes)
+(up-compare-goal archer-votes g:> fire-lancer-votes)
+(up-compare-goal archer-votes g:> champi-scout-votes)
+(up-compare-goal archer-votes g:> militiaman-votes)
+(up-compare-goal archer-votes g:> skirmisher-votes)
+(up-compare-goal archer-votes g:> cavalry-archer-votes)
+(up-compare-goal archer-votes g:> scout-cavalry-votes)
+(up-compare-goal archer-votes g:> knight-votes)
+(up-compare-goal archer-votes g:> camel-votes)
+(up-compare-goal archer-votes g:> battle-elephant-votes)
+(up-compare-goal archer-votes g:> monk-votes)
+(up-compare-goal archer-votes g:> eagle-warrior-votes)
+(up-compare-goal archer-votes g:> hand-cannoneer-votes)
+(up-compare-goal archer-votes g:> scorpion-votes)
+(up-compare-goal archer-votes g:> genitour-votes)
+(up-compare-goal archer-votes g:> mangonel-votes)
+(up-compare-goal archer-votes g:> mounted-trebuchet-votes)
+(up-compare-goal archer-votes g:> elephant-archer-votes)
+(up-compare-goal archer-votes g:> condottiero-votes)
+(up-compare-goal archer-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit archer-line)
+;(chat-local-to-self "Preferred unit is now archers")
+)
+
+(defrule 
+(not(goal chosen-military-unit skirmisher-line))
+(up-compare-goal skirmisher-votes g:> spearman-votes)
+(up-compare-goal skirmisher-votes g:> fire-lancer-votes)
+(up-compare-goal skirmisher-votes g:> champi-scout-votes)
+(up-compare-goal skirmisher-votes g:> archer-votes)
+(up-compare-goal skirmisher-votes g:> militiaman-votes)
+(up-compare-goal skirmisher-votes g:> cavalry-archer-votes)
+(up-compare-goal skirmisher-votes g:> scout-cavalry-votes)
+(up-compare-goal skirmisher-votes g:> knight-votes)
+(up-compare-goal skirmisher-votes g:> camel-votes)
+(up-compare-goal skirmisher-votes g:> battle-elephant-votes)
+(up-compare-goal skirmisher-votes g:> monk-votes)
+(up-compare-goal skirmisher-votes g:> eagle-warrior-votes)
+(up-compare-goal skirmisher-votes g:> hand-cannoneer-votes)
+(up-compare-goal skirmisher-votes g:> scorpion-votes)
+(up-compare-goal skirmisher-votes g:> genitour-votes)
+(up-compare-goal skirmisher-votes g:> mangonel-votes)
+(up-compare-goal skirmisher-votes g:> mounted-trebuchet-votes)
+(up-compare-goal skirmisher-votes g:> elephant-archer-votes)
+(up-compare-goal skirmisher-votes g:> condottiero-votes)
+(up-compare-goal skirmisher-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit skirmisher-line)
+;(chat-local-to-self "Preferred unit is now skirmishers")
+)
+
+(defrule 
+(not(goal chosen-military-unit cavalry-archer-line))
+(up-compare-goal cavalry-archer-votes g:> spearman-votes)
+(up-compare-goal cavalry-archer-votes g:> fire-lancer-votes)
+(up-compare-goal cavalry-archer-votes g:> champi-scout-votes)
+(up-compare-goal cavalry-archer-votes g:> archer-votes)
+(up-compare-goal cavalry-archer-votes g:> skirmisher-votes)
+(up-compare-goal cavalry-archer-votes g:> militiaman-votes)
+(up-compare-goal cavalry-archer-votes g:> scout-cavalry-votes)
+(up-compare-goal cavalry-archer-votes g:> knight-votes)
+(up-compare-goal cavalry-archer-votes g:> camel-votes)
+(up-compare-goal cavalry-archer-votes g:> battle-elephant-votes)
+(up-compare-goal cavalry-archer-votes g:> monk-votes)
+(up-compare-goal cavalry-archer-votes g:> eagle-warrior-votes)
+(up-compare-goal cavalry-archer-votes g:> hand-cannoneer-votes)
+(up-compare-goal cavalry-archer-votes g:> scorpion-votes)
+(up-compare-goal cavalry-archer-votes g:> genitour-votes)
+(up-compare-goal cavalry-archer-votes g:> mangonel-votes)
+(up-compare-goal cavalry-archer-votes g:> mounted-trebuchet-votes)
+(up-compare-goal cavalry-archer-votes g:> elephant-archer-votes)
+(up-compare-goal cavalry-archer-votes g:> condottiero-votes)
+(up-compare-goal cavalry-archer-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit cavalry-archer-line)
+;(chat-local-to-self "Preferred unit is now cav archers")
+)
+
+(defrule 
+(not(goal chosen-military-unit elephant-archer-line))
+(up-compare-goal elephant-archer-votes g:> spearman-votes)
+(up-compare-goal elephant-archer-votes g:> fire-lancer-votes)
+(up-compare-goal elephant-archer-votes g:> champi-scout-votes)
+(up-compare-goal elephant-archer-votes g:> archer-votes)
+(up-compare-goal elephant-archer-votes g:> skirmisher-votes)
+(up-compare-goal elephant-archer-votes g:> militiaman-votes)
+(up-compare-goal elephant-archer-votes g:> scout-cavalry-votes)
+(up-compare-goal elephant-archer-votes g:> knight-votes)
+(up-compare-goal elephant-archer-votes g:> camel-votes)
+(up-compare-goal elephant-archer-votes g:> battle-elephant-votes)
+(up-compare-goal elephant-archer-votes g:> monk-votes)
+(up-compare-goal elephant-archer-votes g:> eagle-warrior-votes)
+(up-compare-goal elephant-archer-votes g:> hand-cannoneer-votes)
+(up-compare-goal elephant-archer-votes g:> scorpion-votes)
+(up-compare-goal elephant-archer-votes g:> genitour-votes)
+(up-compare-goal elephant-archer-votes g:> mangonel-votes)
+(up-compare-goal elephant-archer-votes g:> mounted-trebuchet-votes)
+(up-compare-goal elephant-archer-votes g:> cavalry-archer-votes)
+(up-compare-goal elephant-archer-votes g:> condottiero-votes)
+(up-compare-goal elephant-archer-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit elephant-archer-line)
+;(chat-local-to-self "Preferred unit is now elephant archers")
+)
+
+(defrule 
+(not(goal chosen-military-unit scout-cavalry-line))
+(up-compare-goal scout-cavalry-votes g:> spearman-votes)
+(up-compare-goal scout-cavalry-votes g:> fire-lancer-votes)
+(up-compare-goal scout-cavalry-votes g:> champi-scout-votes)
+(up-compare-goal scout-cavalry-votes g:> archer-votes)
+(up-compare-goal scout-cavalry-votes g:> skirmisher-votes)
+(up-compare-goal scout-cavalry-votes g:> cavalry-archer-votes)
+(up-compare-goal scout-cavalry-votes g:> militiaman-votes)
+(up-compare-goal scout-cavalry-votes g:> knight-votes)
+(up-compare-goal scout-cavalry-votes g:> camel-votes)
+(up-compare-goal scout-cavalry-votes g:> battle-elephant-votes)
+(up-compare-goal scout-cavalry-votes g:> monk-votes)
+(up-compare-goal scout-cavalry-votes g:> eagle-warrior-votes)
+(up-compare-goal scout-cavalry-votes g:> hand-cannoneer-votes)
+(up-compare-goal scout-cavalry-votes g:> scorpion-votes)
+(up-compare-goal scout-cavalry-votes g:> genitour-votes)
+(up-compare-goal scout-cavalry-votes g:> mangonel-votes)
+(up-compare-goal scout-cavalry-votes g:> mounted-trebuchet-votes)
+(up-compare-goal scout-cavalry-votes g:> elephant-archer-votes)
+(up-compare-goal scout-cavalry-votes g:> condottiero-votes)
+(up-compare-goal scout-cavalry-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit scout-cavalry-line)
+;(chat-local-to-self "Preferred unit is now scout cav")
+)
+
+(defrule 
+(not(goal chosen-military-unit knight-line))
+(up-compare-goal knight-votes g:> spearman-votes)
+(up-compare-goal knight-votes g:> fire-lancer-votes)
+(up-compare-goal knight-votes g:> champi-scout-votes)
+(up-compare-goal knight-votes g:> archer-votes)
+(up-compare-goal knight-votes g:> skirmisher-votes)
+(up-compare-goal knight-votes g:> cavalry-archer-votes)
+(up-compare-goal knight-votes g:> scout-cavalry-votes)
+(up-compare-goal knight-votes g:> militiaman-votes)
+(up-compare-goal knight-votes g:> camel-votes)
+(up-compare-goal knight-votes g:> battle-elephant-votes)
+(up-compare-goal knight-votes g:> monk-votes)
+(up-compare-goal knight-votes g:> eagle-warrior-votes)
+(up-compare-goal knight-votes g:> hand-cannoneer-votes)
+(up-compare-goal knight-votes g:> scorpion-votes)
+(up-compare-goal knight-votes g:> genitour-votes)
+(up-compare-goal knight-votes g:> mangonel-votes)
+(up-compare-goal knight-votes g:> mounted-trebuchet-votes)
+(up-compare-goal knight-votes g:> elephant-archer-votes)
+(up-compare-goal knight-votes g:> condottiero-votes)
+(up-compare-goal knight-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit knight-line)
+;(chat-local-to-self "Preferred unit is now knights")
+)
+
+(defrule 
+(not(goal chosen-military-unit camel-line))
+(up-compare-goal camel-votes g:> spearman-votes)
+(up-compare-goal camel-votes g:> fire-lancer-votes)
+(up-compare-goal camel-votes g:> champi-scout-votes)
+(up-compare-goal camel-votes g:> archer-votes)
+(up-compare-goal camel-votes g:> skirmisher-votes)
+(up-compare-goal camel-votes g:> cavalry-archer-votes)
+(up-compare-goal camel-votes g:> scout-cavalry-votes)
+(up-compare-goal camel-votes g:> knight-votes)
+(up-compare-goal camel-votes g:> militiaman-votes)
+(up-compare-goal camel-votes g:> battle-elephant-votes)
+(up-compare-goal camel-votes g:> monk-votes)
+(up-compare-goal camel-votes g:> eagle-warrior-votes)
+(up-compare-goal camel-votes g:> hand-cannoneer-votes)
+(up-compare-goal camel-votes g:> scorpion-votes)
+(up-compare-goal camel-votes g:> genitour-votes)
+(up-compare-goal camel-votes g:> mangonel-votes)
+(up-compare-goal camel-votes g:> mounted-trebuchet-votes)
+(up-compare-goal camel-votes g:> elephant-archer-votes)
+(up-compare-goal camel-votes g:> condottiero-votes)
+(up-compare-goal camel-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit camel-line)
+;(chat-local-to-self "Preferred unit is now camels")
+)
+
+(defrule 
+(not(goal chosen-military-unit battle-elephant-line))
+(up-compare-goal battle-elephant-votes g:> spearman-votes)
+(up-compare-goal battle-elephant-votes g:> fire-lancer-votes)
+(up-compare-goal battle-elephant-votes g:> champi-scout-votes)
+(up-compare-goal battle-elephant-votes g:> archer-votes)
+(up-compare-goal battle-elephant-votes g:> skirmisher-votes)
+(up-compare-goal battle-elephant-votes g:> cavalry-archer-votes)
+(up-compare-goal battle-elephant-votes g:> scout-cavalry-votes)
+(up-compare-goal battle-elephant-votes g:> knight-votes)
+(up-compare-goal battle-elephant-votes g:> camel-votes)
+(up-compare-goal battle-elephant-votes g:> militiaman-votes)
+(up-compare-goal battle-elephant-votes g:> monk-votes)
+(up-compare-goal battle-elephant-votes g:> eagle-warrior-votes)
+(up-compare-goal battle-elephant-votes g:> hand-cannoneer-votes)
+(up-compare-goal battle-elephant-votes g:> scorpion-votes)
+(up-compare-goal battle-elephant-votes g:> genitour-votes)
+(up-compare-goal battle-elephant-votes g:> mangonel-votes)
+(up-compare-goal battle-elephant-votes g:> mounted-trebuchet-votes)
+(up-compare-goal battle-elephant-votes g:> elephant-archer-votes)
+(up-compare-goal battle-elephant-votes g:> condottiero-votes)
+(up-compare-goal battle-elephant-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit battle-elephant-line)
+;(chat-local-to-self "Preferred unit is now elephants")
+)
+
+(defrule 
+(not(goal chosen-military-unit monk))
+(up-compare-goal monk-votes g:> spearman-votes)
+(up-compare-goal monk-votes g:> fire-lancer-votes)
+(up-compare-goal monk-votes g:> champi-scout-votes)
+(up-compare-goal monk-votes g:> archer-votes)
+(up-compare-goal monk-votes g:> skirmisher-votes)
+(up-compare-goal monk-votes g:> cavalry-archer-votes)
+(up-compare-goal monk-votes g:> scout-cavalry-votes)
+(up-compare-goal monk-votes g:> knight-votes)
+(up-compare-goal monk-votes g:> camel-votes)
+(up-compare-goal monk-votes g:> battle-elephant-votes)
+(up-compare-goal monk-votes g:> militiaman-votes)
+(up-compare-goal monk-votes g:> eagle-warrior-votes)
+(up-compare-goal monk-votes g:> hand-cannoneer-votes)
+(up-compare-goal monk-votes g:> scorpion-votes)
+(up-compare-goal monk-votes g:> genitour-votes)
+(up-compare-goal monk-votes g:> mangonel-votes)
+(up-compare-goal monk-votes g:> mounted-trebuchet-votes)
+(up-compare-goal monk-votes g:> elephant-archer-votes)
+(up-compare-goal monk-votes g:> condottiero-votes)
+(up-compare-goal monk-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit monk)
+;(chat-local-to-self "Preferred unit is now monks")
+)
+
+(defrule 
+(not(goal chosen-military-unit eagle-warrior-line))
+(up-compare-goal eagle-warrior-votes g:> spearman-votes)
+(up-compare-goal eagle-warrior-votes g:> fire-lancer-votes)
+(up-compare-goal eagle-warrior-votes g:> champi-scout-votes)
+(up-compare-goal eagle-warrior-votes g:> archer-votes)
+(up-compare-goal eagle-warrior-votes g:> skirmisher-votes)
+(up-compare-goal eagle-warrior-votes g:> cavalry-archer-votes)
+(up-compare-goal eagle-warrior-votes g:> scout-cavalry-votes)
+(up-compare-goal eagle-warrior-votes g:> knight-votes)
+(up-compare-goal eagle-warrior-votes g:> camel-votes)
+(up-compare-goal eagle-warrior-votes g:> battle-elephant-votes)
+(up-compare-goal eagle-warrior-votes g:> monk-votes)
+(up-compare-goal eagle-warrior-votes g:> militiaman-votes)
+(up-compare-goal eagle-warrior-votes g:> hand-cannoneer-votes)
+(up-compare-goal eagle-warrior-votes g:> scorpion-votes)
+(up-compare-goal eagle-warrior-votes g:> genitour-votes)
+(up-compare-goal eagle-warrior-votes g:> mangonel-votes)
+(up-compare-goal eagle-warrior-votes g:> mounted-trebuchet-votes)
+(up-compare-goal eagle-warrior-votes g:> elephant-archer-votes)
+(up-compare-goal eagle-warrior-votes g:> condottiero-votes)
+(up-compare-goal eagle-warrior-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit eagle-warrior-line)
+;(chat-local-to-self "Preferred unit is now eagles")
+)
+
+(defrule 
+(not(goal chosen-military-unit hand-cannoneer))
+(up-compare-goal hand-cannoneer-votes g:> spearman-votes)
+(up-compare-goal hand-cannoneer-votes g:> fire-lancer-votes)
+(up-compare-goal hand-cannoneer-votes g:> champi-scout-votes)
+(up-compare-goal hand-cannoneer-votes g:> archer-votes)
+(up-compare-goal hand-cannoneer-votes g:> skirmisher-votes)
+(up-compare-goal hand-cannoneer-votes g:> cavalry-archer-votes)
+(up-compare-goal hand-cannoneer-votes g:> scout-cavalry-votes)
+(up-compare-goal hand-cannoneer-votes g:> knight-votes)
+(up-compare-goal hand-cannoneer-votes g:> camel-votes)
+(up-compare-goal hand-cannoneer-votes g:> battle-elephant-votes)
+(up-compare-goal hand-cannoneer-votes g:> monk-votes)
+(up-compare-goal hand-cannoneer-votes g:> eagle-warrior-votes)
+(up-compare-goal hand-cannoneer-votes g:> militiaman-votes)
+(up-compare-goal hand-cannoneer-votes g:> scorpion-votes)
+(up-compare-goal hand-cannoneer-votes g:> genitour-votes)
+(up-compare-goal hand-cannoneer-votes g:> mangonel-votes)
+(up-compare-goal hand-cannoneer-votes g:> mounted-trebuchet-votes)
+(up-compare-goal hand-cannoneer-votes g:> elephant-archer-votes)
+(up-compare-goal hand-cannoneer-votes g:> condottiero-votes)
+(up-compare-goal hand-cannoneer-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit hand-cannoneer)
+;(chat-local-to-self "Preferred unit is now hand-cannoneers")
+)
+
+(defrule 
+(not(goal chosen-military-unit scorpion-line))
+(up-compare-goal scorpion-votes g:> spearman-votes)
+(up-compare-goal scorpion-votes g:> fire-lancer-votes)
+(up-compare-goal scorpion-votes g:> champi-scout-votes)
+(up-compare-goal scorpion-votes g:> archer-votes)
+(up-compare-goal scorpion-votes g:> skirmisher-votes)
+(up-compare-goal scorpion-votes g:> cavalry-archer-votes)
+(up-compare-goal scorpion-votes g:> scout-cavalry-votes)
+(up-compare-goal scorpion-votes g:> knight-votes)
+(up-compare-goal scorpion-votes g:> camel-votes)
+(up-compare-goal scorpion-votes g:> battle-elephant-votes)
+(up-compare-goal scorpion-votes g:> monk-votes)
+(up-compare-goal scorpion-votes g:> eagle-warrior-votes)
+(up-compare-goal scorpion-votes g:> hand-cannoneer-votes)
+(up-compare-goal scorpion-votes g:> militiaman-votes)
+(up-compare-goal scorpion-votes g:> genitour-votes)
+(up-compare-goal scorpion-votes g:> mangonel-votes)
+(up-compare-goal scorpion-votes g:> mounted-trebuchet-votes)
+(up-compare-goal scorpion-votes g:> elephant-archer-votes)
+(up-compare-goal scorpion-votes g:> condottiero-votes)
+(up-compare-goal scorpion-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit scorpion-line)
+;(chat-local-to-self "Preferred unit is now scorpions")
+)
+
+(defrule 
+(not(goal chosen-military-unit genitour-line))
+(up-compare-goal genitour-votes g:> spearman-votes)
+(up-compare-goal genitour-votes g:> fire-lancer-votes)
+(up-compare-goal genitour-votes g:> champi-scout-votes)
+(up-compare-goal genitour-votes g:> archer-votes)
+(up-compare-goal genitour-votes g:> skirmisher-votes)
+(up-compare-goal genitour-votes g:> cavalry-archer-votes)
+(up-compare-goal genitour-votes g:> scout-cavalry-votes)
+(up-compare-goal genitour-votes g:> knight-votes)
+(up-compare-goal genitour-votes g:> camel-votes)
+(up-compare-goal genitour-votes g:> battle-elephant-votes)
+(up-compare-goal genitour-votes g:> monk-votes)
+(up-compare-goal genitour-votes g:> eagle-warrior-votes)
+(up-compare-goal genitour-votes g:> hand-cannoneer-votes)
+(up-compare-goal genitour-votes g:> scorpion-votes)
+(up-compare-goal genitour-votes g:> militiaman-votes)
+(up-compare-goal genitour-votes g:> mangonel-votes)
+(up-compare-goal genitour-votes g:> mounted-trebuchet-votes)
+(up-compare-goal genitour-votes g:> elephant-archer-votes)
+(up-compare-goal genitour-votes g:> condottiero-votes)
+(up-compare-goal genitour-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit genitour-line)
+;(chat-local-to-self "Preferred unit is now genitours")
+)
+
+(defrule 
+(not(goal chosen-military-unit mangonel-line))
+(up-compare-goal mangonel-votes g:> spearman-votes)
+(up-compare-goal mangonel-votes g:> fire-lancer-votes)
+(up-compare-goal mangonel-votes g:> champi-scout-votes)
+(up-compare-goal mangonel-votes g:> archer-votes)
+(up-compare-goal mangonel-votes g:> skirmisher-votes)
+(up-compare-goal mangonel-votes g:> cavalry-archer-votes)
+(up-compare-goal mangonel-votes g:> scout-cavalry-votes)
+(up-compare-goal mangonel-votes g:> knight-votes)
+(up-compare-goal mangonel-votes g:> camel-votes)
+(up-compare-goal mangonel-votes g:> battle-elephant-votes)
+(up-compare-goal mangonel-votes g:> monk-votes)
+(up-compare-goal mangonel-votes g:> eagle-warrior-votes)
+(up-compare-goal mangonel-votes g:> hand-cannoneer-votes)
+(up-compare-goal mangonel-votes g:> scorpion-votes)
+(up-compare-goal mangonel-votes g:> genitour-votes)
+(up-compare-goal mangonel-votes g:> militiaman-votes)
+(up-compare-goal mangonel-votes g:> mounted-trebuchet-votes)
+(up-compare-goal mangonel-votes g:> elephant-archer-votes)
+(up-compare-goal mangonel-votes g:> condottiero-votes)
+(up-compare-goal mangonel-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit mangonel-line)
+;(chat-local-to-self "Preferred unit is now mangonels")
+)
+
+(defrule 
+(not(goal chosen-military-unit mounted-trebuchet))
+(up-compare-goal mounted-trebuchet-votes g:> spearman-votes)
+(up-compare-goal mounted-trebuchet-votes g:> fire-lancer-votes)
+(up-compare-goal mounted-trebuchet-votes g:> champi-scout-votes)
+(up-compare-goal mounted-trebuchet-votes g:> archer-votes)
+(up-compare-goal mounted-trebuchet-votes g:> skirmisher-votes)
+(up-compare-goal mounted-trebuchet-votes g:> cavalry-archer-votes)
+(up-compare-goal mounted-trebuchet-votes g:> scout-cavalry-votes)
+(up-compare-goal mounted-trebuchet-votes g:> knight-votes)
+(up-compare-goal mounted-trebuchet-votes g:> camel-votes)
+(up-compare-goal mounted-trebuchet-votes g:> battle-elephant-votes)
+(up-compare-goal mounted-trebuchet-votes g:> monk-votes)
+(up-compare-goal mounted-trebuchet-votes g:> eagle-warrior-votes)
+(up-compare-goal mounted-trebuchet-votes g:> hand-cannoneer-votes)
+(up-compare-goal mounted-trebuchet-votes g:> scorpion-votes)
+(up-compare-goal mounted-trebuchet-votes g:> genitour-votes)
+(up-compare-goal mounted-trebuchet-votes g:> militiaman-votes)
+(up-compare-goal mounted-trebuchet-votes g:> mangonel-votes)
+(up-compare-goal mounted-trebuchet-votes g:> elephant-archer-votes)
+(up-compare-goal mounted-trebuchet-votes g:> condottiero-votes)
+(up-compare-goal mounted-trebuchet-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit mounted-trebuchet)
+;(chat-local-to-self "Preferred unit is now mounted trebuchets")
+)
+
+(defrule 
+(not(goal chosen-military-unit condottiero))
+(up-compare-goal condottiero-votes g:> spearman-votes)
+(up-compare-goal condottiero-votes g:> fire-lancer-votes)
+(up-compare-goal condottiero-votes g:> champi-scout-votes)
+(up-compare-goal condottiero-votes g:> archer-votes)
+(up-compare-goal condottiero-votes g:> skirmisher-votes)
+(up-compare-goal condottiero-votes g:> cavalry-archer-votes)
+(up-compare-goal condottiero-votes g:> scout-cavalry-votes)
+(up-compare-goal condottiero-votes g:> knight-votes)
+(up-compare-goal condottiero-votes g:> camel-votes)
+(up-compare-goal condottiero-votes g:> battle-elephant-votes)
+(up-compare-goal condottiero-votes g:> monk-votes)
+(up-compare-goal condottiero-votes g:> eagle-warrior-votes)
+(up-compare-goal condottiero-votes g:> hand-cannoneer-votes)
+(up-compare-goal condottiero-votes g:> scorpion-votes)
+(up-compare-goal condottiero-votes g:> genitour-votes)
+(up-compare-goal condottiero-votes g:> mangonel-votes)
+(up-compare-goal condottiero-votes g:> mounted-trebuchet-votes)
+(up-compare-goal condottiero-votes g:> elephant-archer-votes)
+(up-compare-goal condottiero-votes g:> militiaman-votes)
+(up-compare-goal condottiero-votes g:> my-special-unit-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit condottiero)
+;(chat-local-to-self "Preferred unit is now condottiero")
+)
+
+(defrule 
+(not(goal chosen-military-unit my-special-unit))
+(up-compare-goal my-special-unit-votes g:> spearman-votes)
+(up-compare-goal my-special-unit-votes g:> fire-lancer-votes)
+(up-compare-goal my-special-unit-votes g:> champi-scout-votes)
+(up-compare-goal my-special-unit-votes g:> archer-votes)
+(up-compare-goal my-special-unit-votes g:> skirmisher-votes)
+(up-compare-goal my-special-unit-votes g:> cavalry-archer-votes)
+(up-compare-goal my-special-unit-votes g:> scout-cavalry-votes)
+(up-compare-goal my-special-unit-votes g:> knight-votes)
+(up-compare-goal my-special-unit-votes g:> camel-votes)
+(up-compare-goal my-special-unit-votes g:> battle-elephant-votes)
+(up-compare-goal my-special-unit-votes g:> monk-votes)
+(up-compare-goal my-special-unit-votes g:> eagle-warrior-votes)
+(up-compare-goal my-special-unit-votes g:> hand-cannoneer-votes)
+(up-compare-goal my-special-unit-votes g:> scorpion-votes)
+(up-compare-goal my-special-unit-votes g:> genitour-votes)
+(up-compare-goal my-special-unit-votes g:> mangonel-votes)
+(up-compare-goal my-special-unit-votes g:> mounted-trebuchet-votes)
+(up-compare-goal my-special-unit-votes g:> elephant-archer-votes)
+(up-compare-goal my-special-unit-votes g:> militiaman-votes)
+(up-compare-goal my-special-unit-votes g:> condottiero-votes)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(set-goal chosen-military-unit my-special-unit)
+;(chat-local-to-self "Preferred unit is now my-special-unit")
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == fast-imp)
+(current-age < imperial-age)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+)
+
+(defrule
+(or(up-compare-goal gl-game-strategy == castle-military)
+(up-compare-goal gl-game-strategy == boom))
+(current-age == castle-age)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == castle-drop)
+;(current-age == castle-age)
+=>
+(up-modify-goal chosen-military-unit c:= my-unique-unit)
+(up-modify-goal supporting-military-unit c:= my-unique-unit)
+(set-goal building-type-goal castle)
+(set-goal building-type-goal2 castle)
+)
+
+(defrule
+(goal chosen-military-unit militiaman-line)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(goal chosen-military-unit militiaman-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= militiaman-votes)
+)
+
+(defrule
+(goal supporting-military-unit militiaman-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= militiaman-votes)
+)
+
+(defrule
+(goal chosen-military-unit spearman-line)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(goal chosen-military-unit spearman-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= spearman-votes)
+)
+
+(defrule
+(goal supporting-military-unit spearman-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= spearman-votes)
+)
+
+(defrule
+(goal chosen-military-unit eagle-warrior-line)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(goal chosen-military-unit eagle-warrior-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= eagle-warrior-votes)
+)
+
+(defrule
+(goal supporting-military-unit eagle-warrior-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= eagle-warrior-votes)
+)
+
+(defrule
+(goal chosen-military-unit condottiero)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(goal chosen-military-unit condottiero)
+=>
+(up-modify-goal gl-chosen-military-votes g:= condottiero-votes)
+)
+
+(defrule
+(goal supporting-military-unit condottiero)
+=>
+(up-modify-goal gl-supporting-military-votes g:= condottiero-votes)
+)
+
+(defrule
+(goal chosen-military-unit champi-scout-line)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(goal chosen-military-unit champi-scout-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= champi-scout-votes)
+)
+
+(defrule
+(goal supporting-military-unit champi-scout-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= champi-scout-votes)
+)
+
+(defrule
+(goal chosen-military-unit fire-lancer-line)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(goal chosen-military-unit fire-lancer-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= fire-lancer-votes)
+)
+
+(defrule
+(goal supporting-military-unit fire-lancer-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= fire-lancer-votes)
+)
+
+(defrule
+(goal chosen-military-unit archer-line)
+(not(goal building-type-goal archery-range))
+=>
+(set-goal building-type-goal archery-range)
+)
+
+(defrule
+(goal chosen-military-unit archer-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= archer-votes)
+)
+
+(defrule
+(goal supporting-military-unit archer-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= archer-votes)
+)
+
+(defrule
+(goal chosen-military-unit skirmisher-line)
+(not(goal building-type-goal archery-range))
+=>
+(set-goal building-type-goal archery-range)
+)
+
+(defrule
+(goal chosen-military-unit skirmisher-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= skirmisher-votes)
+)
+
+(defrule
+(goal supporting-military-unit skirmisher-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= skirmisher-votes)
+)
+
+(defrule
+(goal chosen-military-unit cavalry-archer-line)
+(not(goal building-type-goal archery-range))
+=>
+(set-goal building-type-goal archery-range)
+)
+
+(defrule
+(goal chosen-military-unit cavalry-archer-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= cavalry-archer-votes)
+)
+
+(defrule
+(goal supporting-military-unit cavalry-archer-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= cavalry-archer-votes)
+)
+
+(defrule
+(goal chosen-military-unit genitour-line)
+(not(goal building-type-goal archery-range))
+=>
+(set-goal building-type-goal archery-range)
+)
+
+(defrule
+(goal chosen-military-unit genitour-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= genitour-votes)
+)
+
+(defrule
+(goal supporting-military-unit genitour-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= genitour-votes)
+)
+
+(defrule
+(goal chosen-military-unit elephant-archer-line)
+(not(goal building-type-goal archery-range))
+=>
+(set-goal building-type-goal archery-range)
+)
+
+(defrule
+(goal chosen-military-unit elephant-archer-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= elephant-archer-votes)
+)
+
+(defrule
+(goal supporting-military-unit elephant-archer-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= elephant-archer-votes)
+)
+
+(defrule
+(goal chosen-military-unit hand-cannoneer)
+(not(goal building-type-goal archery-range))
+=>
+(set-goal building-type-goal archery-range)
+)
+
+(defrule
+(goal chosen-military-unit hand-cannoneer)
+=>
+(up-modify-goal gl-chosen-military-votes g:= hand-cannoneer-votes)
+)
+
+(defrule
+(goal supporting-military-unit hand-cannoneer)
+=>
+(up-modify-goal gl-supporting-military-votes g:= hand-cannoneer-votes)
+)
+
+(defrule
+(goal chosen-military-unit monk)
+(not(goal building-type-goal monastery))
+=>
+(set-goal building-type-goal monastery)
+)
+
+(defrule
+(goal chosen-military-unit monk)
+=>
+(up-modify-goal gl-chosen-military-votes g:= monk-votes)
+)
+
+(defrule
+(goal supporting-military-unit monk)
+=>
+(up-modify-goal gl-supporting-military-votes g:= monk-votes)
+)
+
+(defrule
+(goal chosen-military-unit scout-cavalry-line)
+(not(goal building-type-goal stable))
+=>
+(set-goal building-type-goal stable)
+)
+
+(defrule
+(goal chosen-military-unit scout-cavalry-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= scout-cavalry-votes)
+)
+
+(defrule
+(goal supporting-military-unit scout-cavalry-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= scout-cavalry-votes)
+)
+
+(defrule
+(goal chosen-military-unit knight-line)
+(not(goal building-type-goal stable))
+=>
+(set-goal building-type-goal stable)
+)
+
+(defrule
+(goal chosen-military-unit knight-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= knight-votes)
+)
+
+(defrule
+(goal supporting-military-unit knight-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= knight-votes)
+)
+
+(defrule
+(goal chosen-military-unit camel-line)
+(not(goal building-type-goal stable))
+=>
+(set-goal building-type-goal stable)
+)
+
+(defrule
+(goal chosen-military-unit camel-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= camel-votes)
+)
+
+(defrule
+(goal supporting-military-unit camel-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= camel-votes)
+)
+
+(defrule
+(goal chosen-military-unit battle-elephant-line)
+(not(goal building-type-goal stable))
+=>
+(set-goal building-type-goal stable)
+)
+
+(defrule
+(goal chosen-military-unit battle-elephant-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= battle-elephant-votes)
+)
+
+(defrule
+(goal supporting-military-unit battle-elephant-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= battle-elephant-votes)
+)
+
+(defrule
+(goal chosen-military-unit scorpion-line)
+(not(goal building-type-goal siege-workshop))
+=>
+(set-goal building-type-goal siege-workshop)
+)
+
+(defrule
+(goal chosen-military-unit scorpion-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= scorpion-votes)
+)
+
+(defrule
+(goal supporting-military-unit scorpion-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= scorpion-votes)
+)
+
+(defrule
+(goal chosen-military-unit mangonel-line)
+(not(goal building-type-goal siege-workshop))
+=>
+(set-goal building-type-goal siege-workshop)
+)
+
+(defrule
+(goal chosen-military-unit mangonel-line)
+=>
+(up-modify-goal gl-chosen-military-votes g:= mangonel-votes)
+)
+
+(defrule
+(goal supporting-military-unit mangonel-line)
+=>
+(up-modify-goal gl-supporting-military-votes g:= mangonel-votes)
+)
+
+(defrule
+(goal chosen-military-unit mounted-trebuchet)
+(not(goal building-type-goal siege-workshop))
+=>
+(set-goal building-type-goal siege-workshop)
+)
+
+(defrule
+(goal chosen-military-unit mounted-trebuchet)
+=>
+(up-modify-goal gl-chosen-military-votes g:= mounted-trebuchet-votes)
+)
+
+(defrule
+(goal supporting-military-unit mounted-trebuchet)
+=>
+(up-modify-goal gl-supporting-military-votes g:= mounted-trebuchet-votes)
+)
+
+(defrule
+(goal chosen-military-unit my-special-unit)
+(not(goal building-type-goal siege-workshop))
+=>
+(set-goal building-type-goal siege-workshop)
+)
+
+(defrule
+(civ-selected mapuche)
+(goal chosen-military-unit my-special-unit)
+(not(goal building-type-goal archery-range))
+=>
+(set-goal building-type-goal archery-range)
+)
+
+(defrule
+(civ-selected muisca)
+(goal chosen-military-unit my-special-unit)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(civ-selected tupi)
+(goal chosen-military-unit my-special-unit)
+(not(goal building-type-goal barracks))
+=>
+(set-goal building-type-goal barracks)
+)
+
+(defrule
+(goal supporting-military-unit my-special-unit)
+=>
+(up-modify-goal gl-supporting-military-votes g:= my-special-unit-votes)
+)
+
+(defrule
+(not(goal chosen-military-unit mangonel-line))
+(not(goal chosen-military-unit mounted-trebuchet))
+(up-compare-goal gl-supporting-military-votes < 1)
+=>
+(up-modify-goal supporting-military-unit g:= chosen-military-unit)
+)
+
+(defrule
+(goal supporting-military-unit militiaman-line)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(goal supporting-military-unit spearman-line)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(goal supporting-military-unit eagle-warrior-line)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(goal supporting-military-unit condottiero)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(goal supporting-military-unit champi-scout-line)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(goal supporting-military-unit fire-lancer-line)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(goal supporting-military-unit archer-line)
+(not(goal building-type-goal2 archery-range))
+=>
+(set-goal building-type-goal2 archery-range)
+)
+
+(defrule
+(goal supporting-military-unit skirmisher-line)
+(not(goal building-type-goal2 archery-range))
+=>
+(set-goal building-type-goal2 archery-range)
+)
+
+(defrule
+(goal supporting-military-unit cavalry-archer-line)
+(not(goal building-type-goal2 archery-range))
+=>
+(set-goal building-type-goal2 archery-range)
+)
+
+(defrule
+(goal supporting-military-unit genitour-line)
+(not(goal building-type-goal2 archery-range))
+=>
+(set-goal building-type-goal2 archery-range)
+)
+
+(defrule
+(goal supporting-military-unit elephant-archer-line)
+(not(goal building-type-goal2 archery-range))
+=>
+(set-goal building-type-goal2 archery-range)
+)
+
+(defrule
+(goal supporting-military-unit hand-cannoneer)
+(not(goal building-type-goal2 archery-range))
+=>
+(set-goal building-type-goal2 archery-range)
+)
+
+(defrule
+(goal supporting-military-unit monk)
+(not(goal building-type-goal2 monastery))
+=>
+(set-goal building-type-goal2 monastery)
+)
+
+(defrule
+(goal supporting-military-unit scout-cavalry-line)
+(not(goal building-type-goal2 stable))
+=>
+(set-goal building-type-goal2 stable)
+)
+
+(defrule
+(goal supporting-military-unit knight-line)
+(not(goal building-type-goal2 stable))
+=>
+(set-goal building-type-goal2 stable)
+)
+
+(defrule
+(goal supporting-military-unit camel-line)
+(not(goal building-type-goal2 stable))
+=>
+(set-goal building-type-goal2 stable)
+)
+
+(defrule
+(goal supporting-military-unit battle-elephant-line)
+(not(goal building-type-goal2 stable))
+=>
+(set-goal building-type-goal2 stable)
+)
+
+(defrule
+(goal supporting-military-unit scorpion-line)
+(not(goal building-type-goal2 siege-workshop))
+=>
+(set-goal building-type-goal2 siege-workshop)
+)
+
+(defrule
+(goal supporting-military-unit mangonel-line)
+(not(goal building-type-goal2 siege-workshop))
+=>
+(set-goal building-type-goal2 siege-workshop)
+)
+
+(defrule
+(goal supporting-military-unit mounted-trebuchet)
+(not(goal building-type-goal2 siege-workshop))
+=>
+(set-goal building-type-goal2 siege-workshop)
+)
+
+(defrule
+(civ-selected mapuche)
+(goal supporting-military-unit my-special-unit)
+(not(goal building-type-goal2 archery-range))
+=>
+(set-goal building-type-goal2 archery-range)
+)
+
+(defrule
+(civ-selected muisca)
+(goal supporting-military-unit my-special-unit)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(civ-selected tupi)
+(goal supporting-military-unit my-special-unit)
+(not(goal building-type-goal2 barracks))
+=>
+(set-goal building-type-goal2 barracks)
+)
+
+(defrule
+(true)
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades on)
+(disable-self)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit militiaman-line)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit spearman-line)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit eagle-warrior-line)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit archer-line)
+(not(goal research-archer-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit skirmisher-line)
+(not(goal research-archer-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit hand-cannoneer)
+(not(goal research-archer-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades on)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit cavalry-archer-line)
+(not(goal research-archer-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades on)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit monk)
+(not(goal research-monk-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades on)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit scout-cavalry-line)
+(not(goal research-cavalry-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit knight-line)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit camel-line)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit battle-elephant-line)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades on)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades off)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit scorpion-line)
+(not(goal research-siege-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(false)
+(goal chosen-military-unit mangonel-line)
+(not(goal research-siege-upgrades on))
+=>
+(set-goal research-infantry-upgrades off)
+(set-goal research-archer-upgrades off)
+(set-goal research-cavalry-upgrades off)
+(set-goal research-cavalry-archer-upgrades off)
+(set-goal research-siege-upgrades on)
+(set-goal research-monk-upgrades off)
+)
+
+(defrule
+(true)
+=>
+(set-goal chosen-barracks-unit spearman-line)
+(disable-self)
+)
+
+(defrule 
+(not(goal chosen-barracks-unit militiaman-line))
+(up-compare-goal militiaman-votes g:> spearman-votes)
+(up-compare-goal militiaman-votes g:> eagle-warrior-votes)
+(up-compare-goal militiaman-votes g:> condottiero-votes)
+(up-compare-goal militiaman-votes g:> fire-lancer-votes)
+(up-compare-goal militiaman-votes g:> champi-scout-votes)
+=>
+(set-goal chosen-barracks-unit militiaman-line)
+)
+
+(defrule 
+(not(goal chosen-barracks-unit spearman-line))
+(up-compare-goal spearman-votes g:> militiaman-votes)
+(up-compare-goal spearman-votes g:> eagle-warrior-votes)
+(up-compare-goal spearman-votes g:> condottiero-votes)
+(up-compare-goal spearman-votes g:> fire-lancer-votes)
+(up-compare-goal spearman-votes g:> champi-scout-votes)
+=>
+(set-goal chosen-barracks-unit spearman-line)
+)
+
+(defrule 
+(not(goal chosen-barracks-unit eagle-warrior-line))
+(up-compare-goal eagle-warrior-votes g:> militiaman-votes)
+(up-compare-goal eagle-warrior-votes g:> spearman-votes)
+(up-compare-goal eagle-warrior-votes g:> condottiero-votes)
+(up-compare-goal eagle-warrior-votes g:> fire-lancer-votes)
+(up-compare-goal eagle-warrior-votes g:> champi-scout-votes)
+=>
+(set-goal chosen-barracks-unit eagle-warrior-line)
+)
+
+(defrule 
+(not(goal chosen-barracks-unit condottiero))
+(up-compare-goal condottiero-votes g:> militiaman-votes)
+(up-compare-goal condottiero-votes g:> spearman-votes)
+(up-compare-goal condottiero-votes g:> eagle-warrior-votes)
+(up-compare-goal condottiero-votes g:> fire-lancer-votes)
+(up-compare-goal condottiero-votes g:> champi-scout-votes)
+=>
+(set-goal chosen-barracks-unit condottiero)
+)
+
+(defrule 
+(not(goal chosen-barracks-unit fire-lancer-line))
+(up-compare-goal fire-lancer-votes g:> militiaman-votes)
+(up-compare-goal fire-lancer-votes g:> spearman-votes)
+(up-compare-goal fire-lancer-votes g:> eagle-warrior-votes)
+(up-compare-goal fire-lancer-votes g:> condottiero-votes)
+(up-compare-goal fire-lancer-votes g:> champi-scout-votes)
+=>
+(set-goal chosen-barracks-unit fire-lancer-line)
+)
+
+(defrule 
+(not(goal chosen-barracks-unit champi-scout-line))
+(up-compare-goal champi-scout-votes g:> militiaman-votes)
+(up-compare-goal champi-scout-votes g:> spearman-votes)
+(up-compare-goal champi-scout-votes g:> eagle-warrior-votes)
+(up-compare-goal champi-scout-votes g:> condottiero-votes)
+(up-compare-goal champi-scout-votes g:> fire-lancer-votes)
+=>
+(set-goal chosen-barracks-unit champi-scout-line)
+)
+
+(defrule 
+(not(goal chosen-archery-range-unit archer-line))
+(up-compare-goal archer-votes g:> skirmisher-votes)
+(up-compare-goal archer-votes g:> cavalry-archer-votes)
+(up-compare-goal archer-votes g:> hand-cannoneer-votes)
+(up-compare-goal archer-votes g:> genitour-votes)
+(up-compare-goal archer-votes g:> elephant-archer-votes)
+=>
+(set-goal chosen-archery-range-unit archer-line)
+)
+
+(defrule 
+(not(goal chosen-archery-range-unit skirmisher-line))
+(up-compare-goal skirmisher-votes g:> archer-votes)
+(up-compare-goal skirmisher-votes g:> cavalry-archer-votes)
+(up-compare-goal skirmisher-votes g:> hand-cannoneer-votes)
+(up-compare-goal skirmisher-votes g:> genitour-votes)
+(up-compare-goal skirmisher-votes g:> elephant-archer-votes)
+=>
+(set-goal chosen-archery-range-unit skirmisher-line)
+)
+
+(defrule 
+(not(goal chosen-archery-range-unit cavalry-archer-line))
+(up-compare-goal cavalry-archer-votes g:> skirmisher-votes)
+(up-compare-goal cavalry-archer-votes g:> archer-votes)
+(up-compare-goal cavalry-archer-votes g:> hand-cannoneer-votes)
+(up-compare-goal cavalry-archer-votes g:> genitour-votes)
+(up-compare-goal cavalry-archer-votes g:> elephant-archer-votes)
+=>
+(set-goal chosen-archery-range-unit cavalry-archer-line)
+)
+
+(defrule 
+(not(goal chosen-archery-range-unit hand-cannoneer))
+(up-compare-goal hand-cannoneer-votes g:> skirmisher-votes)
+(up-compare-goal hand-cannoneer-votes g:> cavalry-archer-votes)
+(up-compare-goal hand-cannoneer-votes g:> archer-votes)
+(up-compare-goal hand-cannoneer-votes g:> genitour-votes)
+(up-compare-goal hand-cannoneer-votes g:> elephant-archer-votes)
+=>
+(set-goal chosen-archery-range-unit hand-cannoneer)
+)
+
+(defrule 
+(not(goal chosen-archery-range-unit hand-cannoneer))
+(up-compare-goal genitour-votes g:> skirmisher-votes)
+(up-compare-goal genitour-votes g:> cavalry-archer-votes)
+(up-compare-goal genitour-votes g:> archer-votes)
+(up-compare-goal genitour-votes g:> hand-cannoneer-votes)
+(up-compare-goal genitour-votes g:> elephant-archer-votes)
+=>
+(set-goal chosen-archery-range-unit genitour)
+)
+
+(defrule 
+(not(goal chosen-archery-range-unit hand-cannoneer))
+(up-compare-goal elephant-archer-votes g:> skirmisher-votes)
+(up-compare-goal elephant-archer-votes g:> cavalry-archer-votes)
+(up-compare-goal elephant-archer-votes g:> archer-votes)
+(up-compare-goal elephant-archer-votes g:> genitour-votes)
+(up-compare-goal elephant-archer-votes g:> hand-cannoneer-votes)
+=>
+(set-goal chosen-archery-range-unit elephant-archer)
+)
+
+(defrule 
+(not(goal chosen-stable-unit scout-cavalry-line))
+(up-compare-goal scout-cavalry-votes g:> knight-votes)
+(up-compare-goal scout-cavalry-votes g:> camel-votes)
+(up-compare-goal scout-cavalry-votes g:> battle-elephant-votes)
+=>
+(set-goal chosen-stable-unit scout-cavalry-line)
+)
+
+(defrule 
+(not(goal chosen-stable-unit knight-line))
+(up-compare-goal knight-votes g:> scout-cavalry-votes)
+(up-compare-goal knight-votes g:> camel-votes)
+(up-compare-goal knight-votes g:> battle-elephant-votes)
+=>
+(set-goal chosen-stable-unit knight-line)
+)
+
+(defrule 
+(not(goal chosen-stable-unit camel-line))
+(up-compare-goal camel-votes g:> knight-votes)
+(up-compare-goal camel-votes g:> scout-cavalry-votes)
+(up-compare-goal camel-votes g:> battle-elephant-votes)
+=>
+(set-goal chosen-stable-unit camel-line)
+)
+
+(defrule 
+(not(goal chosen-stable-unit battle-elephant-line))
+(up-compare-goal battle-elephant-votes g:> knight-votes)
+(up-compare-goal battle-elephant-votes g:> scout-cavalry-votes)
+(up-compare-goal battle-elephant-votes g:> camel-votes)
+=>
+(set-goal chosen-stable-unit battle-elephant-line)
+)
+
+(defrule 
+(not(goal chosen-siege-workshop-unit scorpion-line))
+(up-compare-goal scorpion-votes g:> mangonel-votes)
+(up-compare-goal scorpion-votes g:> mounted-trebuchet-votes)
+=>
+(set-goal chosen-siege-workshop-unit scorpion-line)
+)
+
+(defrule 
+(not(goal chosen-siege-workshop-unit mangonel-line))
+(up-compare-goal mangonel-votes g:> scorpion-votes)
+(up-compare-goal mangonel-votes g:> mounted-trebuchet-votes)
+=>
+(set-goal chosen-siege-workshop-unit mangonel-line)
+)
+
+(defrule 
+(not(goal chosen-siege-workshop-unit mounted-trebuchet))
+(up-compare-goal mounted-trebuchet-votes g:> scorpion-votes)
+(up-compare-goal mounted-trebuchet-votes g:> mangonel-votes)
+=>
+(set-goal chosen-siege-workshop-unit mounted-trebuchet)
+)
+
+(defrule
+(unit-type-count militiaman-line >= 10)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+)
+
+(defrule
+(unit-type-count spearman-line >= 10)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+)
+
+(defrule
+(unit-type-count eagle-warrior-line >= 10)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+)
+
+(defrule
+(unit-type-count condottiero >= 10)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+)
+
+(defrule
+(unit-type-count fire-lancer-line >= 10)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+)
+
+(defrule
+(unit-type-count champi-scout-line >= 10)
+(not(goal research-infantry-upgrades on))
+=>
+(set-goal research-infantry-upgrades on)
+)
+
+(defrule
+(unit-type-count archer-line >= 10)
+(not(goal research-archer-upgrades on))
+=>
+(set-goal research-archer-upgrades on)
+)
+
+(defrule
+(unit-type-count skirmisher-line >= 10)
+(not(goal research-archer-upgrades on))
+=>
+(set-goal research-archer-upgrades on)
+)
+
+(defrule
+(unit-type-count cavalry-archer-line >= 10)
+(not(goal research-cavalry-archer-upgrades on))
+=>
+(set-goal research-cavalry-archer-upgrades on)
+)
+
+(defrule
+(unit-type-count genitour-line >= 10)
+(not(goal research-cavalry-archer-upgrades on))
+=>
+(set-goal research-cavalry-archer-upgrades on)
+)
+
+(defrule
+(unit-type-count hand-cannoneer >= 10)
+(not(goal research-archer-upgrades on))
+=>
+(set-goal research-archer-upgrades on)
+)
+
+(defrule
+(unit-type-count scout-cavalry-line >= 10)
+(not(goal research-cavalry-upgrades on))
+=>
+(set-goal research-cavalry-upgrades on)
+)
+
+(defrule
+(unit-type-count knight-line >= 10)
+(not(goal research-cavalry-upgrades on))
+=>
+(set-goal research-cavalry-upgrades on)
+)
+
+(defrule
+(unit-type-count camel-line >= 10)
+(not(goal research-cavalry-upgrades on))
+=>
+(set-goal research-cavalry-upgrades on)
+)
+
+(defrule
+(unit-type-count battle-elephant-line >= 10)
+(not(goal research-cavalry-upgrades on))
+=>
+(set-goal research-cavalry-upgrades on)
+)
+
+(defrule
+(unit-type-count scorpion-line >= 10)
+(not(goal research-siege-upgrades on))
+=>
+(set-goal research-siege-upgrades on)
+)
+
+(defrule
+(unit-type-count mangonel-line >= 10)
+(not(goal research-siege-upgrades on))
+=>
+(set-goal research-siege-upgrades on)
+)
+
+(defrule
+(unit-type-count monk >= 10)
+(not(goal research-monk-upgrades on))
+=>
+(set-goal research-monk-upgrades on)
+)
+
+(defrule
+(up-compare-goal chosen-dock-unit < 1)
+(up-compare-goal chosen-dock-unit >= -1)
+=>
+(set-goal chosen-dock-unit preferred-boat)
+)
+
+(defrule 
+(not(goal chosen-dock-unit galley-line))
+(up-compare-goal galley-votes g:> fire-ship-votes)
+(up-compare-goal galley-votes g:> hulk-votes)
+(up-compare-goal galley-votes g:> demo-ship-votes)
+(up-compare-goal galley-votes g:> turtle-ship-votes)
+(up-compare-goal galley-votes g:> longboat-votes)
+(up-compare-goal galley-votes g:> caravel-votes)
+(up-compare-goal galley-votes g:> thirisadai-votes)
+=>
+(set-goal chosen-dock-unit galley-line)
+;(chat-local-to-self "chosen ship is galley")
+)
+
+(defrule 
+(not(goal chosen-dock-unit fire-ship-line))
+(up-compare-goal fire-ship-votes g:> galley-votes)
+(up-compare-goal fire-ship-votes g:> hulk-votes)
+(up-compare-goal fire-ship-votes g:> demo-ship-votes)
+(up-compare-goal fire-ship-votes g:> turtle-ship-votes)
+(up-compare-goal fire-ship-votes g:> longboat-votes)
+(up-compare-goal fire-ship-votes g:> caravel-votes)
+(up-compare-goal fire-ship-votes g:> thirisadai-votes)
+=>
+(set-goal chosen-dock-unit fire-ship-line)
+;(chat-local-to-self "chosen ship is fire ship")
+)
+
+(defrule 
+(not(goal chosen-dock-unit hulk-line))
+(up-compare-goal hulk-votes g:> galley-votes)
+(up-compare-goal hulk-votes g:> fire-ship-votes)
+(up-compare-goal hulk-votes g:> demo-ship-votes)
+(up-compare-goal hulk-votes g:> turtle-ship-votes)
+(up-compare-goal hulk-votes g:> longboat-votes)
+(up-compare-goal hulk-votes g:> caravel-votes)
+(up-compare-goal hulk-votes g:> thirisadai-votes)
+=>
+(set-goal chosen-dock-unit hulk-line)
+;(chat-local-to-self "chosen ship is hulk")
+)
+
+(defrule 
+(not(goal chosen-dock-unit demolition-ship-line))
+(up-compare-goal demo-ship-votes g:> fire-ship-votes)
+(up-compare-goal demo-ship-votes g:> galley-votes)
+(up-compare-goal demo-ship-votes g:> hulk-votes)
+(up-compare-goal demo-ship-votes g:> turtle-ship-votes)
+(up-compare-goal demo-ship-votes g:> longboat-votes)
+(up-compare-goal demo-ship-votes g:> caravel-votes)
+(up-compare-goal demo-ship-votes g:> thirisadai-votes)
+=>
+(set-goal chosen-dock-unit demolition-ship-line)
+;(chat-local-to-self "chosen ship is demo ship")
+)
+
+(defrule 
+(not(goal chosen-dock-unit turtle-ship-line))
+(up-compare-goal turtle-ship-votes g:> fire-ship-votes)
+(up-compare-goal turtle-ship-votes g:> hulk-votes)
+(up-compare-goal turtle-ship-votes g:> demo-ship-votes)
+(up-compare-goal turtle-ship-votes g:> galley-votes)
+(up-compare-goal turtle-ship-votes g:> longboat-votes)
+(up-compare-goal turtle-ship-votes g:> caravel-votes)
+(up-compare-goal turtle-ship-votes g:> thirisadai-votes)
+=>
+(set-goal chosen-dock-unit turtle-ship-line)
+;(chat-local-to-self "chosen ship is turtle ship")
+)
+
+(defrule 
+(not(goal chosen-dock-unit longboat-line))
+(up-compare-goal longboat-votes g:> fire-ship-votes)
+(up-compare-goal longboat-votes g:> hulk-votes)
+(up-compare-goal longboat-votes g:> demo-ship-votes)
+(up-compare-goal longboat-votes g:> turtle-ship-votes)
+(up-compare-goal longboat-votes g:> galley-votes)
+(up-compare-goal longboat-votes g:> caravel-votes)
+(up-compare-goal longboat-votes g:> thirisadai-votes)
+=>
+(set-goal chosen-dock-unit longboat-line)
+;(chat-local-to-self "chosen ship is longboat")
+)
+
+(defrule 
+(not(goal chosen-dock-unit caravel-line))
+(up-compare-goal caravel-votes g:> fire-ship-votes)
+(up-compare-goal caravel-votes g:> hulk-votes)
+(up-compare-goal caravel-votes g:> demo-ship-votes)
+(up-compare-goal caravel-votes g:> turtle-ship-votes)
+(up-compare-goal caravel-votes g:> longboat-votes)
+(up-compare-goal caravel-votes g:> galley-votes)
+(up-compare-goal caravel-votes g:> thirisadai-votes)
+=>
+(set-goal chosen-dock-unit caravel-line)
+;(chat-local-to-self "chosen ship is caravel")
+)
+
+(defrule 
+(not(goal chosen-dock-unit thirisadai))
+(up-compare-goal thirisadai-votes g:> fire-ship-votes)
+(up-compare-goal thirisadai-votes g:> hulk-votes)
+(up-compare-goal thirisadai-votes g:> demo-ship-votes)
+(up-compare-goal thirisadai-votes g:> turtle-ship-votes)
+(up-compare-goal thirisadai-votes g:> longboat-votes)
+(up-compare-goal thirisadai-votes g:> galley-votes)
+(up-compare-goal thirisadai-votes g:> galley-votes)
+=>
+(set-goal chosen-dock-unit thirisadai)
+;(chat-local-to-self "chosen ship is thirisadai")
+)

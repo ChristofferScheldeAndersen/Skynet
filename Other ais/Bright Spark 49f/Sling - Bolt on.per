@@ -1,0 +1,403 @@
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-double-bit-axe)
+=>
+(research ri-double-bit-axe)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-bow-saw)
+=>
+(research ri-bow-saw)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-horse-collar)
+=>
+(research ri-horse-collar)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-heavy-plow)
+=>
+(research ri-heavy-plow)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-gold-mining)
+=>
+(research ri-gold-mining)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-gold-shaft-mining)
+=>
+(research ri-gold-shaft-mining)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-stone-mining)
+=>
+(research ri-stone-mining)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-wheel-barrow)
+=>
+(research ri-wheel-barrow)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(can-research ri-hand-cart)
+=>
+(research ri-hand-cart)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+;(up-allied-goal any-ally gl-game-strategy == boom)
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+;(up-allied-goal any-ally gl-game-strategy == boom)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+(or(and(up-allied-goal focus-player gl-game-strategy != boom)
+(up-allied-goal focus-player gl-game-strategy != castle-drop))
+(and(players-unit-type-count focus-player villager >= 120)
+(players-current-age == focus-player imperial-age)))
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+;(up-allied-goal any-ally gl-game-strategy == boom)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+(or(and(up-allied-goal focus-player gl-game-strategy != boom)
+(up-allied-goal focus-player gl-game-strategy != castle-drop))
+(and(players-unit-type-count focus-player villager >= 120)
+(players-current-age == focus-player imperial-age)))
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+;(up-allied-goal any-ally gl-game-strategy == boom)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+(or(and(up-allied-goal focus-player gl-game-strategy != boom)
+(up-allied-goal focus-player gl-game-strategy != castle-drop))
+(and(players-unit-type-count focus-player villager >= 120)
+(players-current-age == focus-player imperial-age)))
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+;(up-allied-goal any-ally gl-game-strategy == boom)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+(or(and(up-allied-goal focus-player gl-game-strategy != boom)
+(up-allied-goal focus-player gl-game-strategy != castle-drop))
+(and(players-unit-type-count focus-player villager >= 120)
+(players-current-age == focus-player imperial-age)))
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+;(up-allied-goal any-ally gl-game-strategy == boom)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+(or(and(up-allied-goal focus-player gl-game-strategy != boom)
+(up-allied-goal focus-player gl-game-strategy != castle-drop))
+(and(players-unit-type-count focus-player villager >= 120)
+(players-current-age == focus-player imperial-age)))
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(or(up-allied-goal focus-player gl-game-strategy == boom)
+(up-allied-goal focus-player gl-game-strategy == castle-drop))
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+(not(players-unit-type-count focus-player villager >= 120))
+(not(players-current-age focus-player == imperial-age))
+=>
+(up-jump-rule 7)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+=>
+;(up-find-player ally find-closest gl-sling-target)
+(up-get-fact-max any-ally 20 0 gl-sling-target)
+(up-get-player-fact this-any-ally 22 0 gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == pocket)
+(up-allied-goal focus-player gl-game-strategy == slinger)
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == pocket)
+(up-allied-goal focus-player gl-game-strategy == slinger)
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == pocket)
+(up-allied-goal focus-player gl-game-strategy == slinger)
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == pocket)
+(up-allied-goal focus-player gl-game-strategy == slinger)
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == pocket)
+(up-allied-goal focus-player gl-game-strategy == slinger)
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == pocket)
+(up-allied-goal focus-player gl-game-strategy == slinger)
+=>
+(up-find-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-find-next-player ally find-closest gl-sling-target)
+(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+)
+
+;(defrule
+;(up-compare-goal gl-game-strategy == slinger)
+;=>
+;(up-modify-sn sn-focus-player-number g:= gl-sling-target)
+;(up-chat-to-data-to-allies "Focus Player %d" s: sn-focus-player-number)
+;)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+;(up-allied-goal focus-player gl-position-line == flank)
+=>
+(release-escrow food)
+(release-escrow wood)
+(release-escrow gold)
+(release-escrow stone)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == flank)
+;(players-current-age focus-player < castle-age)
+(food-amount >= 200)
+(up-allied-resource-amount focus-player food < 1000)
+(building-type-count market >= 1)
+(up-allied-goal focus-player gl-game-strategy != slinger)
+=>
+(tribute-to-player focus-player food 100)
+;(up-jump-rule -1)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == flank)
+;(players-current-age focus-player < castle-age)
+(wood-amount >= 130)
+(up-allied-resource-amount focus-player wood < 1000)
+(building-type-count market >= 1)
+(up-allied-goal focus-player gl-game-strategy != slinger)
+=>
+(tribute-to-player focus-player wood 100)
+;(up-jump-rule -1)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == flank)
+;(players-current-age focus-player < castle-age)
+(gold-amount >= 130)
+(up-allied-resource-amount focus-player gold < 1000)
+(building-type-count market >= 1)
+(up-allied-goal focus-player gl-game-strategy != slinger)
+=>
+(tribute-to-player focus-player gold 100)
+;(up-jump-rule -1)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(or(players-building-type-count focus-player town-center > 0)
+(players-unit-type-count focus-player villager > 0))
+;(up-allied-goal focus-player gl-position-line == flank)
+;(players-current-age focus-player < castle-age)
+(stone-amount >= 130)
+(up-allied-resource-amount focus-player stone < 1000)
+(building-type-count market >= 1)
+(up-allied-goal focus-player gl-game-strategy != slinger)
+=>
+(tribute-to-player focus-player stone 100)
+;(up-jump-rule -1)
+)
+
+(defrule
+(false); removing temp for 45
+(up-compare-goal gl-game-strategy == flush)
+(current-age == feudal-age)
+(or(up-compare-goal 10 >= mc-v-high)
+(game-time >= castle-age-up-time))
+(up-compare-goal gl-position-line == flank)
+(up-allied-goal any-ally gl-game-strategy == castle-military)
+(or(up-allied-goal this-any-ally gl-starting-game-strategy == castle-military)
+(up-allied-goal every-ally gl-starting-game-strategy == flush))
+(up-players-in-game ally == 3)
+=>
+(chat-to-allies "I'm switching to sling the fast castler!")
+(up-modify-goal gl-game-strategy c:= slinger)
+(up-modify-goal halt-production c:= off)
+)
+
+(defrule
+(false); removing temp for 45
+(up-compare-goal gl-game-strategy == slinger)
+(up-compare-goal gl-starting-game-strategy == flush)
+(players-current-age any-ally >= castle-age)
+(players-current-age-time this-any-ally > 180)
+(or(up-allied-goal this-any-ally gl-starting-game-strategy == castle-military)
+(up-allied-goal every-ally gl-starting-game-strategy == flush))
+(up-players-in-game ally == 3)
+=>
+(chat-to-allies "I'm switching to castle age!")
+(up-modify-goal gl-game-strategy c:= castle-military)
+(up-modify-goal halt-production c:= on)
+)
+
+(defrule
+(false); removing temp for 45
+(up-compare-goal gl-game-strategy == flush)
+(current-age == feudal-age)
+(or(up-compare-goal 10 >= mc-v-high)
+(game-time >= castle-age-up-time))
+(up-compare-goal gl-position-line == flank)
+(up-allied-goal any-ally gl-game-strategy == boom)
+(players-current-age this-any-ally < imperial-age)
+(up-players-in-game ally == 4)
+=>
+(chat-to-allies "I'm switching to sling the boomer!")
+(up-modify-goal gl-game-strategy c:= slinger)
+(up-modify-goal halt-production c:= off)
+)
+
+(defrule
+(false); removing temp for 45
+(up-compare-goal gl-starting-game-strategy == flush)
+(up-compare-goal gl-game-strategy == slinger)
+(current-age == feudal-age)
+(up-compare-goal gl-position-line == flank)
+(up-allied-goal any-ally gl-game-strategy == boom)
+(players-current-age this-any-ally >= imperial-age)
+(up-players-in-game ally == 4)
+=>
+(chat-to-allies "I'm switching back to aggression!")
+(up-modify-goal gl-game-strategy c:= flush)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == slinger)
+(current-age == castle-age)
+=>
+(up-modify-goal gl-game-strategy c:= castle-military)
+)
+

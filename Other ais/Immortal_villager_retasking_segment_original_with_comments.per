@@ -1,0 +1,1268 @@
+	(defconst stance-ignore -1)
+	(defconst _false 0)
+	(defconst _true 1)
+	(defconst mill 68)
+	(defconst town-center 109)
+	(defconst lumber-camp 562)
+	(defconst mule-cart 1808)
+	(defconst class-villager 904)
+	(defconst class-farm 949)
+	(defconst food 0)
+	(defconst wood 1)
+	(defconst stone 2)
+	(defconst gold 3)
+	(defconst idle-farm-count 4)
+	(defconst building-type-count-total 29)
+	(defconst random-number 33)
+	(defconst formation-ignore -1)
+	(defconst lid_villager-shepherd 5496)
+	(defconst lid_villager-farmer 5123)
+	(defconst lid_villager-forager 5402)
+	(defconst lid_villager-lumberjack 5125)
+	(defconst lid_villager-gold-miner 5482)
+	(defconst lid_villager-stone-miner 5126)
+	(defconst object_data-index -1)
+	(defconst object_data-unique-id 0)
+	(defconst object_data-class-id 2)
+	(defconst object_data-garrison-count 18)
+	(defconst object_data-player 20)
+	(defconst object_data-tasks-count 32)
+	(defconst object_data-distance 44)
+	(defconst object_data-precise-distance 45)
+	(defconst object_data-full-distance 46)
+	(defconst object_data-move-x 50)
+	(defconst object_data-move-y 51)
+	(defconst object_data-gather-type 71)
+	(defconst object_data-villager-type 72)
+	(defconst object_data-tag 73)
+	(defconst list-active 0)
+	(defconst status-pending 0)
+	(defconst status-ready 2)
+	(defconst status-resource 3)
+	(defconst status-down 4)
+	(defconst status-gather 5)
+	(defconst position-curr-object 12)
+	(defconst amount-food 0)
+	(defconst amount-wood 1)
+	(defconst amount-stone 2)
+	(defconst amount-gold 3)
+	(defconst search_order-ascending 1)
+	(defconst search-local 1)
+	(defconst search-remote 2)
+	(defconst sn-keystates 312)
+	(defconst action-default 0)
+	(defconst action-unload 9)
+	(defconst timer-triggered 1)
+	(defconst timer-running 2)
+	(defconst ___ra1___ 2)
+	(defconst _true_ 6)
+	(defconst vec41 45)
+	(defconst vec41_F 45)
+	(defconst vec41_S 47)
+	(defconst vec46_W 79)
+	(defconst boolvar498 227)
+	(defconst boolvar499 227)
+	(defconst var174 27)
+	(defconst var175 28)
+	(defconst var176 29)
+	(defconst var177 32)
+	(defconst var178 33)
+	(defconst var179 36)
+	(defconst var180 34)
+	(defconst var181 35)
+	(defconst var182 37)
+	(defconst var183 38)
+	(defconst var184 23)
+	(defconst var185 39)
+	(defconst var186 40)
+	(defconst varTmp5402 415)
+	(defconst vec2Tmp674 416)
+	(defconst varTmp5403 418)
+	(defconst varTmp5404 419)
+	(defconst vec2Tmp675 421)
+	(defconst vec2Tmp675_x 421)
+	(defconst vec2Tmp675_y 422)
+	(defconst vec2Tmp676 423)
+	(defconst varTmp5405 425)
+	(defconst varTmp5406 426)
+	(defconst var3859 427)
+	(defconst varTmp5407 428)
+	(defconst varTmp5408 415)
+	(defconst var3860 421)
+	(defconst var3861 422)
+	(defconst var3862 420)
+	(defconst varTmp5409 423)
+	(defconst varTmp5410 424)
+	(defconst varTmp5411 429)
+	(defconst varTmp5412 430)
+	(defconst vec2Tmp677 432)
+	(defconst var3863 433)
+	(defconst varTmp5413 434)
+	(defconst varTmp5414 435)
+	(defconst var3864 429)
+	(defconst var3865 431)
+	(defconst varTmp5415 432)
+	(defconst varTmp5416 434)
+	(defconst varTmp5417 435)
+	(defconst varTmp5418 432)
+	(defconst varTmp5419 434)
+	(defconst vec2Tmp678 423)
+	(defconst varTmp5420 429)
+	(defconst var3866 420)
+	(defconst var3867 420)
+	(defconst varTmp5421 420)
+	(defconst var3868 420)
+	(defconst var3869 420)
+	(defconst vec2Tmp679 429)
+	(defconst vec2Tmp679_x 429)
+	(defconst vec2648 431)
+	(defconst vec2648_y 432)
+	(defconst vec2649 433)
+	(defconst vec2649_x 433)
+	(defconst vec2650 435)
+	(defconst vec2650_y 436)
+	(defconst varTmp5422 420)
+	(defconst var3922 26)
+	(defconst varTmp5532 415)
+
+	; Rule #3408
+	; Purpose: Abort early when food retasking is blocked by the idle-farm check or when no valid villager ID was supplied.
+	(defrule
+		(up-modify-goal varTmp5402 s:= 71)
+		(up-modify-goal varTmp5402 c:/ 70)
+		(or (and (and (up-compare-goal var174 c:== food)
+					(up-compare-flag boolvar499 c:== 1048576))
+				(idle-farm-count g:<= varTmp5402))
+			(up-compare-goal var175 c:< 0))
+		=>
+		(up-modify-goal var186 c:= -1)
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3409
+	; Purpose: Mark wood retasking as structure-constrained when lumber-camp support is missing.
+	(defrule
+		(up-compare-sn 71 c:< 30)
+		(or (building-type-count-total mule-cart c:== 0)
+			(up-compare-goal vec46_W c:== 0))
+		(building-type-count-total lumber-camp c:== 0)
+		=>
+		(up-modify-goal var179 c:= 1))
+
+	; Rule #3410
+	; Purpose: Initialize the resource-balance weight for food retasking.
+	(defrule
+		(up-compare-goal var174 c:== food)
+		(up-compare-goal var181 c:== -1)
+		=>
+		(up-modify-goal var181 c:= 1))
+
+	; Rule #3411
+	; Purpose: Initialize the resource-balance weight for wood retasking.
+	(defrule
+		(up-compare-goal var174 c:== wood)
+		(up-compare-goal var181 c:== -1)
+		=>
+		(up-modify-goal var181 c:= 7))
+
+	; Rule #3412
+	; Purpose: Initialize the resource-balance weight for stone retasking.
+	(defrule
+		(up-compare-goal var174 c:== stone)
+		(up-compare-goal var181 c:== -1)
+		=>
+		(up-modify-goal var181 c:= 1))
+
+	; Rule #3413
+	; Purpose: Initialize the resource-balance weight for gold retasking.
+	(defrule
+		(up-compare-goal var174 c:== gold)
+		(up-compare-goal var181 c:== -1)
+		=>
+		(up-modify-goal var181 c:= 1))
+
+	; Rule #3414
+	; Purpose: Load the chosen villager's current state and initialize temporary values used by the rest of the retask search.
+	(defrule
+		(up-modify-goal var186 c:= 0)
+		=>
+		(up-set-target-by-id g: var175)
+		(up-get-point position-curr-object vec2Tmp674)
+		(up-get-object-data object_data-villager-type varTmp5403)
+		(up-get-object-data object_data-gather-type varTmp5404)
+		(up-get-object-data object_data-move-x vec2Tmp675_x)
+		(up-get-object-data object_data-move-y vec2Tmp675_y)
+		(up-get-point position-curr-object vec2Tmp676)
+		(up-get-point-distance vec2Tmp676 vec2Tmp675 varTmp5405)
+		(up-get-object-data object_data-tag varTmp5406)
+		(up-modify-goal var3859 c:= 1)
+		(up-modify-goal varTmp5407 c:= 1)
+		(up-modify-goal varTmp5407 g:+ var174))
+
+	; Rule #3415
+	; Purpose: Reject villagers whose tag makes them ineligible for this retask routine.
+	(defrule
+		(nor (and (up-compare-goal varTmp5406 c:>= 1)
+				(up-compare-goal varTmp5406 c:<= 4))
+			(up-compare-goal varTmp5406 c:<= -1))
+		=>
+		(up-chat-data-to-all "!! ERROR: vill to be reassigned is not allowable %d" g: varTmp5406)
+		(up-modify-goal var186 c:= -2)
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3416
+	; Purpose: Allow farmers to count as already-good food workers over a larger distance before forcing a retask.
+	(defrule
+		(up-compare-goal var185 c:== 0)
+		(up-compare-goal var174 c:== food)
+		(up-compare-goal varTmp5403 c:== lid_villager-farmer)
+		=>
+		(up-modify-goal var177 c:max 32))
+
+	; Rule #3417
+	; Purpose: Allow an already-food villager to stay put during the active timer window unless the mismatch is meaningful.
+	(defrule
+		(up-compare-goal var185 c:== 0)
+		(up-compare-goal var174 c:== food)
+		(up-compare-goal varTmp5404 c:== food)
+		(up-timer-status 15 c:== timer-running)
+		=>
+		(up-modify-goal var177 c:max 28))
+
+	; Rule #3418
+	; Purpose: Allow foragers to count as already-good food workers with a smaller tolerance window.
+	(defrule
+		(up-compare-goal var185 c:== 0)
+		(up-compare-goal var174 c:== food)
+		(up-compare-goal varTmp5403 c:== lid_villager-forager)
+		=>
+		(up-modify-goal var177 c:max 22))
+
+	; Rule #3419
+	; Purpose: Normalize farmer, forager, and shepherd roles into the shared food category for later comparisons.
+	(defrule
+		(or (or (up-compare-goal varTmp5403 c:== lid_villager-farmer)
+				(up-compare-goal varTmp5403 c:== lid_villager-forager))
+			(up-compare-goal varTmp5403 c:== lid_villager-shepherd))
+		=>
+		(up-modify-goal varTmp5404 c:= food))
+
+	; Rule #3420
+	; Purpose: Normalize lumberjacks into the shared wood category for later comparisons.
+	(defrule
+		(up-compare-goal varTmp5403 c:== lid_villager-lumberjack)
+		=>
+		(up-modify-goal varTmp5404 c:= wood))
+
+	; Rule #3421
+	; Purpose: Normalize stone miners into the shared stone category for later comparisons.
+	(defrule
+		(up-compare-goal varTmp5403 c:== lid_villager-stone-miner)
+		=>
+		(up-modify-goal varTmp5404 c:= stone))
+
+	; Rule #3422
+	; Purpose: Normalize gold miners into the shared gold category for later comparisons.
+	(defrule
+		(up-compare-goal varTmp5403 c:== lid_villager-gold-miner)
+		=>
+		(up-modify-goal varTmp5404 c:= gold))
+
+	; Rule #3423
+	; Purpose: Abort same-resource retasking when the villager is already close enough to a suitable target.
+	(defrule
+		(up-compare-goal var177 c:> 0)
+		(up-compare-goal varTmp5404 g:== var174)
+		(up-compare-goal varTmp5405 g:< var177)
+		=>
+		(up-modify-goal var186 c:= -3)
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3424
+	; Purpose: Seed the local search state with the villager currently being reconsidered.
+	(defrule
+		(true)
+		=>
+		(up-reset-search _true _true _false _false)
+		(up-add-object-by-id search-local g: var175))
+
+	; Rule #3425
+	; Purpose: Skip group retagging if the villager already belongs to the desired work bucket.
+	(defrule
+		(up-compare-goal varTmp5407 g:== varTmp5406)
+		=>
+		(up-jump-direct c: 3430))
+
+	; Rule #3426
+	; Purpose: Recreate work group 1 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 1)
+		=>
+		(up-create-group 0 0 c: 1)
+		(up-modify-group-flag _true c: 1)
+		(up-reset-group c: 1))
+
+	; Rule #3427
+	; Purpose: Recreate work group 2 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 2)
+		=>
+		(up-create-group 0 0 c: 2)
+		(up-modify-group-flag _true c: 2)
+		(up-reset-group c: 2))
+
+	; Rule #3428
+	; Purpose: Recreate work group 3 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 3)
+		=>
+		(up-create-group 0 0 c: 3)
+		(up-modify-group-flag _true c: 3)
+		(up-reset-group c: 3))
+
+	; Rule #3429
+	; Purpose: Recreate work group 4 so the villager can be reassigned into the correct bucket.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 4)
+		=>
+		(up-create-group 0 0 c: 4)
+		(up-modify-group-flag _true c: 4)
+		(up-reset-group c: 4))
+
+	; Rule #3430
+	; Purpose: Derive the first local search radius from the villager's current movement distance and the configured limits.
+	(defrule
+		(up-modify-goal varTmp5408 g:= varTmp5405)
+		(up-modify-goal varTmp5408 g:/ var178)
+		(up-modify-goal varTmp5408 g:min var176)
+		(up-compare-goal var178 c:<= 0)
+		=>
+		(up-modify-goal varTmp5408 g:= var176))
+
+	; Rule #3431
+	; Purpose: Start a local anchor search around the villager using the computed search radius.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-set-precise-target-point vec2Tmp674)
+		(up-filter-distance c: -1 g: varTmp5408))
+
+	; Rule #3432
+	; Purpose: Search town-center and mining-dropoff anchors for stone and gold retasking.
+	(defrule
+		(or (up-compare-goal var174 c:== stone)
+			(up-compare-goal var174 c:== gold))
+		=>
+		(up-find-local c: town-center c: 240)
+		(up-find-local s: 171 c: 240)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local s: 171 c: 240)
+		(up-modify-goal var3859 c:= 3))
+
+	; Rule #3433
+	; Purpose: Use the town center as a wood fallback anchor when normal wood dropoff support is unavailable.
+	(defrule
+		(or (up-compare-flag boolvar498 c:== 524288)
+			(up-compare-goal var179 c:== 1))
+		(up-compare-goal var174 c:== wood)
+		=>
+		(up-find-local c: town-center c: 240))
+
+	; Rule #3434
+	; Purpose: Search lumber-camp anchors for normal wood retasking.
+	(defrule
+		(up-compare-goal var174 c:== wood)
+		=>
+		(up-find-local s: 170 c: 240)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local s: 170 c: 240))
+
+	; Rule #3435
+	; Purpose: Search for available farms as the first local anchors for food retasking.
+	(defrule
+		(up-compare-goal var174 c:== food)
+		=>
+		(up-find-local c: class-farm c: 240)
+		(up-remove-objects search-local object_data-tasks-count c:> 0))
+
+	; Rule #3436
+	; Purpose: Skip the broader food-anchor path when the current food situation calls for the alternate branch instead.
+	(defrule
+		(nand (and (up-compare-goal var174 c:== food)
+				(or (up-compare-flag boolvar499 c:!= 1048576)
+					(up-compare-goal var185 c:== 1)))
+			(up-compare-goal var184 c:!= 1))
+		=>
+		(up-jump-direct c: 3439))
+
+	; Rule #3437
+	; Purpose: Search town-center and mill anchors for food retasking and switch to the food-specific task limit.
+	(defrule
+		(true)
+		=>
+		(up-find-local c: town-center c: 240)
+		(up-find-local c: mill c: 240)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: mill c: 240)
+		(up-modify-goal var3859 c:= 4))
+
+	; Rule #3438
+	; Purpose: Relax the allowed task congestion when the economy is small or the food retask is forced.
+	(defrule
+		(or (up-compare-sn 71 c:<= 18)
+			(up-compare-goal var185 c:== 1))
+		=>
+		(up-modify-goal var3859 c:= 6))
+
+	; Rule #3439
+	; Purpose: Clean the local anchor list and reset the variables that track the best anchor candidate.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-local object_data-tag c:== 4)
+		(up-remove-objects search-local object_data-tag c:== 3)
+		(up-remove-objects search-local object_data-tag c:== 2)
+		(up-remove-objects search-local object_data-tag c:== 1)
+		(up-reset-filters)
+		(up-modify-goal var3862 c:= 0)
+		(up-modify-goal var3860 c:= -1)
+		(up-modify-goal var3861 c:= 2147483647)
+		(up-get-search-state vec41))
+
+	; Rule #3440
+	; Purpose: Exit the local-anchor loop once every candidate anchor has been evaluated.
+	(defrule
+		(up-compare-goal var3862 g:>= vec41_F)
+		=>
+		(up-jump-direct c: 3454))
+
+	; Rule #3441
+	; Purpose: Load the next local anchor and initialize the scoring context for evaluating it.
+	(defrule
+		(true)
+		=>
+		(up-set-target-object search-local g: var3862)
+		(up-modify-goal var3862 c:+ 1)
+		(up-get-object-data object_data-unique-id varTmp5409)
+		(up-reset-filters)
+		(up-set-precise-target-point vec2Tmp674)
+		(up-get-object-data object_data-distance varTmp5410)
+		(up-get-object-data object_data-class-id varTmp5411)
+		(up-modify-goal varTmp5412 g:= varTmp5411)
+		(up-modify-goal varTmp5412 c:- class-farm)
+		(up-modify-goal varTmp5412 g:* varTmp5412)
+		(up-modify-goal varTmp5412 c:min 1)
+		(up-get-point position-curr-object vec2Tmp677)
+		(up-set-precise-target-point vec2Tmp677)
+		(up-modify-goal var3863 c:= -4))
+
+	; Rule #3442
+	; Purpose: Penalize crowded farm anchors so food retasks prefer less-contested farming spots.
+	(defrule
+		(up-compare-goal varTmp5412 c:== 1)
+		=>
+		(up-reset-search _false _false _true _true)
+		(up-filter-distance c: -1 c: 9)
+		(up-find-remote c: class-villager c: 40)
+		(up-modify-goal varTmp5413 g:= var174)
+		(up-modify-goal varTmp5413 c:+ 1)
+		(up-remove-objects search-remote object_data-tag g:!= varTmp5413)
+		(up-remove-objects search-remote object_data-villager-type c:== lid_villager-farmer)
+		(up-get-search-state vec41)
+		(up-modify-goal var3863 g:= vec41_S)
+		(up-modify-goal varTmp5414 g:= var3863)
+		(up-modify-goal varTmp5414 g:- var180)
+		(up-modify-goal varTmp5414 c:max 0)
+		(up-modify-goal varTmp5414 c:* 300)
+		(up-modify-goal var3863 g:+ varTmp5414))
+
+	; Rule #3443
+	; Purpose: Initialize scoring terms for the current anchor and skip farm-only logic when the anchor is not a farm.
+	(defrule
+		(up-modify-goal var3864 c:= 0)
+		(up-modify-goal var3865 c:= 1)
+		(up-compare-goal varTmp5412 c:!= 1)
+		=>
+		(up-jump-direct c: 3451))
+
+	; Rule #3444
+	; Purpose: Search nearby resource nodes around the current anchor candidate.
+	(defrule
+		(true)
+		=>
+		(up-reset-search _false _false _true _true)
+		(up-filter-distance c: -1 g: var182))
+
+	; Rule #3445
+	; Purpose: Collect nearby food targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal var174 c:== food)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct c: 3449))
+
+	; Rule #3446
+	; Purpose: Collect nearby wood targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal var174 c:== wood)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct c: 3449))
+
+	; Rule #3447
+	; Purpose: Collect nearby stone targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal var174 c:== stone)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct c: 3449))
+
+	; Rule #3448
+	; Purpose: Collect nearby gold targets for the current anchor candidate.
+	(defrule
+		(up-compare-goal var174 c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+	; Rule #3449
+	; Purpose: Filter the resource list around the anchor and compute the crowding component of its score.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object_data-player c:== my-player-number)
+		(up-remove-objects search-remote object_data-class-id c:== class-farm)
+		(up-remove-objects search-remote object_data-tasks-count g:> var3859)
+		(up-get-search-state vec41)
+		(up-modify-goal var3864 g:= vec41_S)
+		(up-modify-goal varTmp5415 g:= var181)
+		(up-modify-goal varTmp5415 g:- var3864)
+		(up-modify-goal varTmp5415 c:max 0)
+		(up-modify-goal varTmp5415 c:* 300)
+		(up-modify-goal varTmp5416 g:= var181)
+		(up-modify-goal varTmp5416 c:+ 4)
+		(up-modify-goal varTmp5416 c:min 26)
+		(up-modify-goal varTmp5416 g:min var3864)
+		(up-modify-goal varTmp5416 c:/ 2)
+		(up-modify-goal varTmp5416 g:- varTmp5415)
+		(up-modify-goal var3864 g:= varTmp5416))
+
+	; Rule #3450
+	; Purpose: Convert the closest resource distance into a score term for the current anchor.
+	(defrule
+		(up-compare-goal vec41_S c:!= 0)
+		=>
+		(up-clean-search search-remote object_data-full-distance search_order-ascending)
+		(up-set-target-object search-remote c: 0)
+		(up-get-object-data object_data-distance varTmp5417)
+		(up-modify-goal varTmp5417 c:- 2)
+		(up-modify-goal varTmp5417 c:max 0)
+		(up-modify-goal var3865 g:= varTmp5417))
+
+	; Rule #3451
+	; Purpose: Rescale scoring when the routine is in the special forced-food branch.
+	(defrule
+		(up-compare-goal var185 c:== 1)
+		=>
+		(up-modify-goal varTmp5410 c:* 3)
+		(up-modify-goal var3863 c:/ 6))
+
+	; Rule #3452
+	; Purpose: Update the remembered best anchor when the current anchor scores better than the previous best.
+	(defrule
+		(up-modify-goal varTmp5418 g:= var3863)
+		(up-modify-goal varTmp5418 c:* 6)
+		(up-modify-goal varTmp5419 g:= var3865)
+		(up-modify-goal varTmp5419 c:* 3)
+		(up-modify-goal varTmp5419 g:+ varTmp5410)
+		(up-modify-goal varTmp5419 g:+ varTmp5418)
+		(up-modify-goal varTmp5419 g:- var3864)
+		(up-compare-goal varTmp5419 g:< var3861)
+		=>
+		(up-modify-goal var3861 g:= varTmp5419)
+		(up-modify-goal var3860 g:= varTmp5409))
+
+	; Rule #3453
+	; Purpose: Loop back to evaluate the next local anchor candidate.
+	(defrule
+		(true)
+		=>
+		(up-jump-direct c: 3440))
+
+	; Rule #3454
+	; Purpose: Finalize the local-anchor pass and snapshot its search state.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state vec41))
+
+	; Rule #3455
+	; Purpose: Jump to the fallback path when no usable anchor/resource combination was found.
+	(defrule
+		(nand (up-compare-goal vec41_F c:!= 0)
+			(up-compare-goal var3860 c:!= -1))
+		=>
+		(up-jump-direct c: 3503))
+
+	; Rule #3456
+	; Purpose: Prepare a direct retask around the best anchor that was selected by scoring.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-add-object-by-id search-local g: var175)
+		(up-set-target-by-id g: var3860)
+		(up-get-point position-curr-object vec2Tmp678)
+		(up-set-precise-target-point vec2Tmp678)
+		(up-get-object-data object_data-class-id varTmp5420))
+
+	; Rule #3457
+	; Purpose: Branch away from the immediate farm-handling path when the chosen anchor is not a farm.
+	(defrule
+		(up-compare-goal varTmp5420 c:!= class-farm)
+		=>
+		(up-jump-direct c: 3464))
+
+	; Rule #3458
+	; Purpose: Issue the immediate retask order for the successful farm-based choice.
+	(defrule
+		(true)
+		=>
+		(up-modify-sn sn-keystates c:= 2)
+		(up-target-objects _true action-default formation-ignore stance-ignore)
+		(up-modify-sn sn-keystates c:= 0)
+		(up-remove-objects search-local object_data-tag g:== varTmp5407))
+
+	; Rule #3459
+	; Purpose: Recreate work group 1 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 1)
+		=>
+		(up-create-group 0 0 c: 1)
+		(up-modify-group-flag _true c: 1)
+		(up-reset-group c: 1))
+
+	; Rule #3460
+	; Purpose: Recreate work group 2 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 2)
+		=>
+		(up-create-group 0 0 c: 2)
+		(up-modify-group-flag _true c: 2)
+		(up-reset-group c: 2))
+
+	; Rule #3461
+	; Purpose: Recreate work group 3 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 3)
+		=>
+		(up-create-group 0 0 c: 3)
+		(up-modify-group-flag _true c: 3)
+		(up-reset-group c: 3))
+
+	; Rule #3462
+	; Purpose: Recreate work group 4 after a successful immediate farm retask.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 4)
+		=>
+		(up-create-group 0 0 c: 4)
+		(up-modify-group-flag _true c: 4)
+		(up-reset-group c: 4))
+
+	; Rule #3463
+	; Purpose: Return after a successful immediate farm retask.
+	(defrule
+		(true)
+		=>
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3464
+	; Purpose: Roll a random value used to decide how strict the next nearby-resource pass should be.
+	(defrule
+		(true)
+		=>
+		(generate-random-number 2147483647)
+		(up-get-fact random-number 0 var3866)
+		(up-modify-goal var3866 c:+ -1)
+		(up-modify-goal var3866 c:mod 1000))
+
+	; Rule #3465
+	; Purpose: Skip the nearby quick-retask path unless the villager is close enough and suitable for that shortcut.
+	(defrule
+		(nand (and (and (up-compare-goal varTmp5405 c:<= 4)
+					(up-compare-goal var3866 c:<= 500))
+				(up-compare-goal varTmp5404 g:== var174))
+			(up-compare-goal var174 c:!= wood))
+		=>
+		(up-jump-direct c: 3474))
+
+	; Rule #3466
+	; Purpose: Restrict the next search pass to a very small radius around the villager.
+	(defrule
+		(true)
+		=>
+		(up-set-precise-target-point vec2Tmp674)
+		(up-filter-distance c: -1 c: 3))
+
+	; Rule #3467
+	; Purpose: Search for very nearby food targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal var174 c:== food)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct c: 3471))
+
+	; Rule #3468
+	; Purpose: Search for very nearby wood targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal var174 c:== wood)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct c: 3471))
+
+	; Rule #3469
+	; Purpose: Search for very nearby stone targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal var174 c:== stone)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct c: 3471))
+
+	; Rule #3470
+	; Purpose: Search for very nearby gold targets in the quick-retask pass.
+	(defrule
+		(up-compare-goal var174 c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+	; Rule #3471
+	; Purpose: Clean the quick-retask candidate list and randomize how strict the congestion filter will be.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object_data-class-id c:== class-farm)
+		(generate-random-number 2147483647)
+		(up-get-fact random-number 0 var3867)
+		(up-modify-goal var3867 c:+ -1)
+		(up-modify-goal var3867 c:mod 1000))
+
+	; Rule #3472
+	; Purpose: Sometimes require fully free nearby nodes so quick retasks do not pile onto busy targets.
+	(defrule
+		(up-compare-goal var3867 c:<= 500)
+		=>
+		(up-remove-objects search-remote object_data-tasks-count c:> 0))
+
+	; Rule #3473
+	; Purpose: Recenter the comparison point on the chosen anchor before the next pass continues.
+	(defrule
+		(true)
+		=>
+		(up-set-precise-target-point vec2Tmp678))
+
+	; Rule #3474
+	; Purpose: Snapshot the quick-retask search state after the nearby search pass.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state vec41))
+
+	; Rule #3475
+	; Purpose: Skip ahead when the quick-retask pass already found usable targets.
+	(defrule
+		(up-compare-goal vec41_S c:!= 0)
+		=>
+		(up-jump-direct c: 3495))
+
+	; Rule #3476
+	; Purpose: Slightly widen the search radius for a broader second-pass resource scan.
+	(defrule
+		(up-modify-goal varTmp5421 g:= var182)
+		=>
+		(up-modify-goal varTmp5421 c:+ 2)
+		(up-filter-distance c: -1 g: varTmp5421))
+
+	; Rule #3477
+	; Purpose: Search for food targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal var174 c:== food)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct c: 3481))
+
+	; Rule #3478
+	; Purpose: Search for wood targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal var174 c:== wood)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct c: 3481))
+
+	; Rule #3479
+	; Purpose: Search for stone targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal var174 c:== stone)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct c: 3481))
+
+	; Rule #3480
+	; Purpose: Search for gold targets in the wider second-pass scan.
+	(defrule
+		(up-compare-goal var174 c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+	; Rule #3481
+	; Purpose: Filter the second-pass resource list and randomize how aggressively busy nodes are removed.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object_data-class-id c:== class-farm)
+		(up-remove-objects search-remote object_data-tasks-count c:> 1)
+		(generate-random-number 2147483647)
+		(up-get-fact random-number 0 var3868)
+		(up-modify-goal var3868 c:+ -1)
+		(up-modify-goal var3868 c:mod 1000))
+
+	; Rule #3482
+	; Purpose: Sometimes tighten the second-pass filter so only completely free targets remain.
+	(defrule
+		(up-compare-goal var3868 c:<= 200)
+		=>
+		(up-remove-objects search-remote object_data-tasks-count c:> 0))
+
+	; Rule #3483
+	; Purpose: Apply the current congestion threshold and record how many second-pass targets survived.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object_data-tasks-count g:> var3859)
+		(up-get-search-state vec41)
+		(up-modify-goal var3869 g:= vec41_S))
+
+	; Rule #3484
+	; Purpose: Move on when the second-pass search found no viable targets.
+	(defrule
+		(up-compare-goal var3869 c:<= 0)
+		=>
+		(up-jump-direct c: 3488))
+
+	; Rule #3485
+	; Purpose: Inspect each surviving second-pass target and build nearby probe points for validation.
+	(defrule
+		(up-modify-goal var3869 c:- 1)
+		=>
+		(up-set-target-object search-remote g: var3869)
+		(up-get-point position-curr-object vec2Tmp679)
+		(up-copy-point vec2648 vec2Tmp679)
+		(up-copy-point vec2649 vec2Tmp679)
+		(up-copy-point vec2650 vec2Tmp679)
+		(up-modify-goal vec2Tmp679_x c:+ 1)
+		(up-modify-goal vec2648_y c:+ 1)
+		(up-modify-goal vec2649_x c:- 1)
+		(up-modify-goal vec2650_y c:- 1))
+
+	; Rule #3486
+	; Purpose: Discard second-pass targets whose surrounding tiles fail the routine's buildability/pathing checks.
+	(defrule
+		(nor (not (up-can-build 0 s: 113))
+			(or (or (or (up-can-build-line _true_ vec2Tmp679 s: 113)
+						(up-can-build-line _true_ vec2648 s: 113))
+					(up-can-build-line _true_ vec2649 s: 113))
+				(up-can-build-line _true_ vec2650 s: 113)))
+		=>
+		(up-remove-objects search-remote object_data-index g:== var3869))
+
+	; Rule #3487
+	; Purpose: Continue iterating through the remaining second-pass targets.
+	(defrule
+		(true)
+		=>
+		(up-jump-direct c: 3484))
+
+	; Rule #3488
+	; Purpose: Snapshot the candidate list after obstruction filtering.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state vec41))
+
+	; Rule #3489
+	; Purpose: Skip to final selection when valid targets remain after obstruction filtering.
+	(defrule
+		(up-compare-goal vec41_S c:!= 0)
+		=>
+		(up-jump-direct c: 3494))
+
+	; Rule #3490
+	; Purpose: Run a final broad food search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal var174 c:== food)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct c: 3494))
+
+	; Rule #3491
+	; Purpose: Run a final broad wood search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal var174 c:== wood)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct c: 3494))
+
+	; Rule #3492
+	; Purpose: Run a final broad stone search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal var174 c:== stone)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct c: 3494))
+
+	; Rule #3493
+	; Purpose: Run a final broad gold search when earlier passes did not settle on a target.
+	(defrule
+		(up-compare-goal var174 c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+	; Rule #3494
+	; Purpose: Relax the congestion threshold by one final step before the last selection.
+	(defrule
+		(up-modify-goal varTmp5422 g:= var3859)
+		=>
+		(up-modify-goal varTmp5422 c:+ 1)
+		(up-remove-objects search-remote object_data-tasks-count g:> varTmp5422))
+
+	; Rule #3495
+	; Purpose: Snapshot the final candidate list before dispatching the villager.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state vec41))
+
+	; Rule #3496
+	; Purpose: Abort with a hard failure code when no final target exists.
+	(defrule
+		(up-compare-goal vec41_S c:== 0)
+		=>
+		(up-modify-goal var186 c:= -4)
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3497
+	; Purpose: Dispatch the villager to the chosen target and remove its old work-tag membership.
+	(defrule
+		(true)
+		=>
+		(up-clean-search search-remote object_data-precise-distance search_order-ascending)
+		(up-set-target-object search-remote c: 0)
+		(up-modify-sn sn-keystates c:= 2)
+		(up-target-objects _true action-default formation-ignore stance-ignore)
+		(up-modify-sn sn-keystates c:= 0)
+		(up-remove-objects search-local object_data-tag g:== varTmp5407))
+
+	; Rule #3498
+	; Purpose: Recreate work group 1 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 1)
+		=>
+		(up-create-group 0 0 c: 1)
+		(up-modify-group-flag _true c: 1)
+		(up-reset-group c: 1))
+
+	; Rule #3499
+	; Purpose: Recreate work group 2 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 2)
+		=>
+		(up-create-group 0 0 c: 2)
+		(up-modify-group-flag _true c: 2)
+		(up-reset-group c: 2))
+
+	; Rule #3500
+	; Purpose: Recreate work group 3 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 3)
+		=>
+		(up-create-group 0 0 c: 3)
+		(up-modify-group-flag _true c: 3)
+		(up-reset-group c: 3))
+
+	; Rule #3501
+	; Purpose: Recreate work group 4 after a successful normal dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 4)
+		=>
+		(up-create-group 0 0 c: 4)
+		(up-modify-group-flag _true c: 4)
+		(up-reset-group c: 4))
+
+	; Rule #3502
+	; Purpose: Return after a successful normal dispatch.
+	(defrule
+		(true)
+		=>
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3503
+	; Purpose: Abort when no fallback anchor survived the earlier anchor-selection phase.
+	(defrule
+		(up-compare-goal var183 c:== 0)
+		=>
+		(up-modify-goal var186 c:= -5)
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3504
+	; Purpose: Check whether the required dropoff/building support exists before trying the structure-based fallback search.
+	(defrule
+		(nor (or (and (up-object-type-count-total s: 171 c:== 0)
+					(or (up-compare-sn 484 c:== stone)
+						(up-compare-sn 484 c:== gold)))
+				(and (up-object-type-count-total s: 170 c:== 0)
+					(up-compare-sn 484 c:== wood)))
+			(and (building-type-count-total mill c:== 0)
+				(up-compare-sn 484 c:== food)))
+		=>
+		(up-jump-direct c: 3518))
+
+	; Rule #3505
+	; Purpose: Set up the structure-based fallback search around the chosen fallback anchor.
+	(defrule
+		(true)
+		=>
+		(up-set-target-by-id g: var3860)
+		(up-full-reset-search)
+		(up-add-object-by-id search-local g: var175)
+		(up-set-precise-target-point vec2Tmp674)
+		(up-filter-distance c: -1 g: var176))
+
+	; Rule #3506
+	; Purpose: Search for food targets around the fallback anchor.
+	(defrule
+		(up-compare-goal var174 c:== food)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-gather c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: amount-food c: 40)
+		(up-jump-direct c: 3510))
+
+	; Rule #3507
+	; Purpose: Search for wood targets around the fallback anchor.
+	(defrule
+		(up-compare-goal var174 c:== wood)
+		=>
+		(up-filter-status c: status-ready c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-wood c: 40)
+		(up-jump-direct c: 3510))
+
+	; Rule #3508
+	; Purpose: Search for stone targets around the fallback anchor.
+	(defrule
+		(up-compare-goal var174 c:== stone)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-stone c: 40)
+		(up-jump-direct c: 3510))
+
+	; Rule #3509
+	; Purpose: Search for gold targets around the fallback anchor.
+	(defrule
+		(up-compare-goal var174 c:== gold)
+		=>
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: amount-gold c: 40))
+
+	; Rule #3510
+	; Purpose: Filter and sort fallback targets around the structure anchor.
+	(defrule
+		(true)
+		=>
+		(up-remove-objects search-remote object_data-class-id c:== class-farm)
+		(up-remove-objects search-remote object_data-tasks-count g:> var3859)
+		(up-clean-search search-remote object_data-precise-distance search_order-ascending)
+		(up-get-search-state vec41))
+
+	; Rule #3511
+	; Purpose: Abandon the structure-based fallback when it still finds no resource target.
+	(defrule
+		(up-compare-goal vec41_S c:== 0)
+		=>
+		(up-jump-direct c: 3518))
+
+	; Rule #3512
+	; Purpose: Dispatch the villager using the structure-based fallback target and clear its old tag.
+	(defrule
+		(true)
+		=>
+		(up-modify-sn sn-keystates c:= 2)
+		(up-target-objects _true action-default formation-ignore stance-ignore)
+		(up-modify-sn sn-keystates c:= 0)
+		(up-remove-objects search-local object_data-tag g:== varTmp5407))
+
+	; Rule #3513
+	; Purpose: Recreate work group 1 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 1)
+		=>
+		(up-create-group 0 0 c: 1)
+		(up-modify-group-flag _true c: 1)
+		(up-reset-group c: 1))
+
+	; Rule #3514
+	; Purpose: Recreate work group 2 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 2)
+		=>
+		(up-create-group 0 0 c: 2)
+		(up-modify-group-flag _true c: 2)
+		(up-reset-group c: 2))
+
+	; Rule #3515
+	; Purpose: Recreate work group 3 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 3)
+		=>
+		(up-create-group 0 0 c: 3)
+		(up-modify-group-flag _true c: 3)
+		(up-reset-group c: 3))
+
+	; Rule #3516
+	; Purpose: Recreate work group 4 after a successful fallback dispatch.
+	(defrule
+		(up-compare-goal varTmp5407 c:== 4)
+		=>
+		(up-create-group 0 0 c: 4)
+		(up-modify-group-flag _true c: 4)
+		(up-reset-group c: 4))
+
+	; Rule #3517
+	; Purpose: Return after a successful fallback dispatch.
+	(defrule
+		(true)
+		=>
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3518
+	; Purpose: Set the final failure code for retask attempts that found no workable destination.
+	(defrule
+		(up-modify-goal var186 c:= -6)
+		=>
+		(up-jump-direct g: ___ra1___))
+
+	; Rule #3519
+	; Purpose: Gate the special unload-support branch so it only runs for the intended SN 82 state.
+	(defrule
+		(up-modify-goal varTmp5532 c:= 3)
+		(up-modify-goal varTmp5532 g:+ var3922)
+		(up-compare-sn 82 g:!= varTmp5532)
+		=>
+		(up-jump-direct c: 3531))
+
+	; Rule #3520
+	; Purpose: Search for town centers that still have garrisoned villagers for the unload-support cleanup.
+	(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: town-center c: 240)
+		(up-remove-objects search-local object_data-garrison-count c:== 0)
+		(up-remove-objects search-local object_data-index c:>= 1))
+
+	; Rule #3521
+	; Purpose: When the unload timer fires, order the unload and clear the temporary unload state.
+	(defrule
+		(up-timer-status 46 c:== timer-triggered)
+		=>
+		(up-modify-sn 82 c:= 0)
+		(up-target-point 0 action-unload formation-ignore stance-ignore)
+		(up-reset-search _true _true _false _false)
+		(disable-timer 46))
+
+	; Rule #3522
+	; Purpose: Start the unload timer when unload support is pending but not yet running.
+	(defrule
+		(up-timer-status 46 c:!= timer-running)
+		=>
+		(up-set-timer c: 46 c: 8))
+
+	; Rule #3523
+	; Purpose: Snapshot the unload-support search state.
+	(defrule
+		(true)
+		=>
+		(up-get-search-state vec41))
+
+	; Rule #3524
+	; Purpose: Skip the unload-support action when no eligible garrisoned town center exists.
+	(defrule
+		(up-compare-goal vec41_F c:== 0)
+		=>
+		(up-jump-direct c: 3531))
+
+	; Rule #3525
+	; Purpose: Select the first eligible garrisoned town center for the unload-support action.
+	(defrule
+		(true)
+		=>
+		(up-set-target-object search-local c: 0))
+
+	; Rule #3526
+	; Purpose: Shorten the unload timer once a valid town center has already been selected.
+	(defrule
+		(up-timer-status 46 c:!= timer-running)
+		=>
+		(up-set-timer c: 46 c: 4))

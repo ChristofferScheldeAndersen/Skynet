@@ -1,0 +1,517 @@
+
+(defrule
+	(player-in-game any-ally)
+	(player-valid 3)
+=>
+	(set-goal check-goal 0)
+	(up-get-rule-id g-jump-direct-1)
+	(generate-random-number 3)
+)
+(defrule
+	(player-in-game any-ally)
+	(player-valid 4)
+=>
+	(generate-random-number 4)
+)
+(defrule
+	(player-in-game any-ally)
+	(player-valid 5)
+=>
+	(generate-random-number 5)
+)
+(defrule
+	(player-in-game any-ally)
+	(player-valid 6)
+=>
+	(generate-random-number 6)
+)
+(defrule
+	(player-in-game any-ally)
+	(player-valid 7)
+=>
+	(generate-random-number 7)
+)
+(defrule
+	(player-in-game any-ally)
+	(player-valid 8)
+=>
+	(generate-random-number 8)
+)
+(defrule
+	(player-in-game any-ally)
+=>
+	(up-get-fact random-number 0 g-math-1)
+	(up-modify-sn sn-focus-player-number g:= g-math-1)
+	(up-modify-goal tribute-food-buffer g:= g-food-available)
+	(up-modify-goal tribute-wood-buffer g:= g-wood-available)
+	(up-modify-goal tribute-stone-buffer g:= g-stone-available)
+	(up-modify-goal tribute-gold-buffer g:= g-gold-available)
+	(up-modify-goal tribute-food-buffer c:- 1750)
+	(up-modify-goal tribute-wood-buffer c:- 1750)
+	(up-modify-goal tribute-stone-buffer c:- 1750)
+	(up-modify-goal tribute-gold-buffer c:- 1750)
+)
+
+(defrule
+	(player-in-game any-ally)
+	(research-completed ri-coinage)
+=>
+	(up-modify-goal tribute-food-buffer c:+ 360)
+	(up-modify-goal tribute-wood-buffer c:+ 360)
+	(up-modify-goal tribute-stone-buffer c:+ 360)
+	(up-modify-goal tribute-gold-buffer c:+ 360)
+)
+
+(defrule
+	(player-in-game any-ally)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(up-allied-goal focus-player ally-id-goal == ally-ares-goal)
+=>
+	(up-modify-goal tribute-food-buffer c:+ 425)
+	(up-modify-goal tribute-wood-buffer c:+ 425)
+	(up-modify-goal tribute-stone-buffer c:+ 425)
+	(up-modify-goal tribute-gold-buffer c:+ 425)
+)
+
+(defrule
+	(player-in-game any-ally)
+	(research-completed ri-banking)
+=>
+	(up-modify-goal tribute-food-buffer c:+ 750)
+	(up-modify-goal tribute-wood-buffer c:+ 750)
+	(up-modify-goal tribute-stone-buffer c:+ 750)
+	(up-modify-goal tribute-gold-buffer c:+ 750)
+)
+
+(defrule
+	(goal g-ally-trade NoBanking)
+	(research-completed ri-banking)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(up-allied-goal focus-player ally-id-goal == ally-ares-goal)
+	(or	(and	(up-allied-goal focus-player g-ally-trade == BankingGuilds)
+			(goal g-ally-trade BankingAllyGuilds))
+	(or	(and	(up-allied-goal focus-player g-ally-trade == SaracenBanking)
+			(goal g-ally-trade BankingAllySaracen))
+	(or	(and	(up-allied-goal focus-player g-ally-trade == BankingAllyGuilds)
+			(goal g-ally-trade BankingGuilds))
+		(and	(up-allied-goal focus-player g-ally-trade == BankingAllySaracen)
+			(goal g-ally-trade SaracenBanking)))))
+=>
+	(up-modify-goal tribute-food-buffer c:+ 150)
+	(up-modify-goal tribute-wood-buffer c:+ 150)
+	(up-modify-goal tribute-stone-buffer c:+ 150)
+	(up-modify-goal tribute-gold-buffer c:+ 150))
+
+(defrule
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(unit-type-count-total villager == 0)
+	(building-type-count town-center == 0)
+=>
+	(up-modify-goal tribute-food-buffer c:+ 2000)
+	(up-modify-goal tribute-stone-buffer c:+ 2000)
+)
+
+(defrule
+	(housing-headroom < 2)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(unit-type-count-total villager == 0)
+	(building-type-count town-center == 0)
+=>
+	(up-modify-goal tribute-gold-buffer c:+ 2000)
+	(up-modify-goal tribute-wood-buffer c:+ 2000)
+)
+
+(defrule
+	(food-amount > 300)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(building-type-count market > 0)
+	(players-building-type-count focus-player town-center > 0)
+	(up-allied-resource-amount focus-player food g:< tribute-food-buffer)
+=>
+	(set-goal check-goal 1)
+	(tribute-to-player focus-player food 200)
+	(up-modify-goal g-food-available c:- 200)
+	(chat-to-player focus-player "Eat"))
+
+(defrule
+	(wood-amount > 400)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(building-type-count market > 0)
+	(up-allied-resource-amount focus-player wood g:< tribute-wood-buffer)
+	(players-unit-type-count focus-player villager-class > 0)
+=>
+	(set-goal check-goal 1)
+	(tribute-to-player focus-player wood 200)
+	(up-modify-goal g-wood-available c:- 200)
+	(chat-to-player focus-player "Build"))
+
+(defrule
+	(gold-amount > 400)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(building-type-count market > 0)
+	(players-building-type-count focus-player market > 0)
+	(players-unit-type-count focus-player villager-class > 5)
+	(up-allied-resource-amount focus-player gold g:< tribute-gold-buffer)
+=>
+	(set-goal check-goal 1)
+	(tribute-to-player focus-player gold 200)
+	(up-modify-goal g-gold-available c:- 200)
+	(chat-to-player focus-player "Shop"))
+
+(defrule
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(research-completed ri-banking)
+	(building-type-count market > 0)
+	(up-allied-resource-amount focus-player stone < 100)
+	(players-unit-type-count focus-player villager-class > 0)
+	(up-compare-goal g-stone-available >= 200)
+	(stone-amount >= 200)
+=>
+	(set-goal check-goal 1)
+	(tribute-to-player focus-player stone 100)
+	(up-modify-goal g-stone-available c:- 100)
+	(chat-to-player focus-player "Carry"))
+(defrule
+	(player-in-game any-ally)
+	(building-type-count market > 0)
+	(player-valid 3)
+	(goal check-goal 1)
+=>
+	(up-jump-direct g: g-jump-direct-1)
+)
+
+(defrule
+	(game-time > 8)
+	(goal ally-ares-goal no)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(up-allied-goal focus-player ally-id-goal == ally-ares-goal)
+=>
+	(set-goal ally-ares-goal yes)
+	(chat-to-player focus-player "Hello brother"))
+
+(defrule
+	(goal g-ally-trade NoBanking)
+	(research-completed ri-banking)
+	(not (research-completed ri-guilds))
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(building-type-count market > 0)
+	(players-building-type-count focus-player town-center > 0)
+	(players-building-type-count focus-player market > 0)
+	(up-allied-goal focus-player ally-id-goal == ally-ares-goal)
+	(or	(up-allied-goal focus-player g-ally-trade == BankingGuilds)
+		(up-allied-goal focus-player g-ally-trade == SaracenBanking))
+	(nor	(research-completed ri-grand-trunk-road)
+		(civ-selected saracen))
+=>
+	(set-goal g-ally-trade BankingAllyGuilds)
+)
+
+(defrule
+	(building-type-count town-center > 0)
+	(building-type-count market > 0)
+	(or	(goal g-ally-trade NoBanking)
+		(goal g-ally-trade BankingAllyGuilds))
+	(research-completed ri-banking)
+	(research-completed ri-guilds)
+=>
+	(set-goal g-ally-trade BankingGuilds)
+)
+
+(defrule
+	(building-type-count town-center > 0)
+	(building-type-count market > 0)
+	(not	(goal g-ally-trade SaracenBanking))
+	(or	(research-completed ri-grand-trunk-road)
+		(civ-selected saracen))
+	(research-completed ri-banking)
+=>
+	(set-goal g-ally-trade SaracenBanking)
+)
+
+(defrule
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+	(building-type-count market > 0)
+	(players-building-type-count focus-player town-center > 0)
+	(players-building-type-count focus-player market > 0)
+	(up-allied-goal focus-player g-ally-trade == SaracenBanking)
+	(up-allied-goal focus-player ally-id-goal == ally-ares-goal)
+	(not	(goal g-ally-trade BankingAllySaracen))
+	(nor	(research-completed ri-grand-trunk-road)
+		(civ-selected saracen))
+	(research-completed ri-banking)
+=>
+	(set-goal g-ally-trade BankingAllySaracen)
+)
+
+(defrule
+	(or	(goal g-ally-trade SaracenBanking)
+		(goal g-ally-trade BankingGuilds))
+	(or	(building-type-count market == 0)
+		(building-type-count town-center == 0))
+=>
+	(chat-to-allies "207 lost my market")
+	(set-goal g-ally-trade NoBanking)
+)
+(defrule
+	(taunt-detected any-computer-ally 207)
+=>
+	(set-goal g-ally-trade NoBanking)
+	(chat-to-player this-any-computer-ally "Ok, resetting goals")
+	(acknowledge-taunt this-any-computer-ally 207)
+)
+
+; ===== SURPLUS =====
+(defconst mkt-sell-food 2200)
+(defconst mkt-sell-wood 2500)
+(defconst mkt-sell-stone 1300)
+
+; ===== SHORTAGE =====
+(defconst mkt-buy-food 650)
+(defconst mkt-buy-wood 500)
+(defconst mkt-buy-stone 350)
+
+; ===== GOLD CONTROL =====
+(defconst mkt-gold-buffer 900)
+(defconst mkt-gold-heavy 1600)
+
+; ===== PRICE LIMITS =====
+(defconst mkt-min-sell-food 45)
+(defconst mkt-min-sell-wood 50)
+(defconst mkt-min-sell-stone 130)
+
+(defconst mkt-max-buy-food 80)
+(defconst mkt-max-buy-wood 80)
+(defconst mkt-max-buy-stone 270)
+
+(defrule
+	(true)
+=>
+	(set-goal check-goal 0)
+	; resources
+	(up-get-fact food-amount 0 g-math-1)
+	(up-get-fact wood-amount 0 g-math-2)
+	(up-get-fact gold-amount 0 g-math-3)
+
+	; prices
+	(up-get-fact commodity-selling-price food g-math-6)
+	(up-get-fact commodity-selling-price wood g-math-7)
+
+	; g-math-4 = F
+	(up-modify-goal g-math-4 g:= g-math-1)
+
+	; g-math-4 = F - G
+	(up-modify-goal g-math-4 g:- g-math-3)
+
+	; g-math-4 = 100(F-G)
+	(up-modify-goal g-math-4 c:* 100)
+
+	; g-math-5 = price + 100
+	(up-modify-goal g-math-5 g:= g-math-6)
+	(up-modify-goal g-math-5 c:+ 100)
+
+	; food_sell = result
+	(up-modify-goal g-math-4 g:/ g-math-5)
+
+	; g-math-8 = W
+	(up-modify-goal g-math-8 g:= g-math-2)
+
+	; g-math-8 = W - G
+	(up-modify-goal g-math-8 g:- g-math-3)
+
+	; g-math-8 = 100(W-G)
+	(up-modify-goal g-math-8 c:* 100)
+
+	; g-math-9 = wood price + 100
+	(up-modify-goal g-math-9 g:= g-math-7)
+	(up-modify-goal g-math-9 c:+ 100)
+
+	; wood_sell result
+	(up-modify-goal g-math-8 g:/ g-math-9)
+)
+
+(defrule
+	(or	(goal g-ally-trade BankingAllySaracen)
+		(goal g-ally-trade BankingAllyGuilds))
+=>
+	(up-jump-rule 15))
+(defrule
+	(food-amount < 50)
+	(or	(gold-amount > 250)
+		(unit-type-count villager < 9))
+	(building-type-count town-center > 0)
+	(can-buy-commodity food)
+=>
+	(chat-local-to-self "MARKET EMERGENCY FOOD")
+	(up-buy-commodity c: food c: 200)
+)
+
+(defrule
+	(goal check-goal 0)
+	(food-amount g:> g-math-3)
+	(up-compare-goal g-math-4 > 100)
+	(commodity-selling-price food > 60)
+	(food-amount > 1400)
+=>
+	(up-sell-commodity c: food g: g-math-4)
+	(set-goal check-goal 1)
+	(chat-local-to-self "good price gold")
+)
+
+(defrule
+	(wood-amount < 200)
+	(gold-amount > 500)
+	(can-buy-commodity wood)
+	(unit-type-count villager > 0)
+=>
+	(chat-local-to-self "MARKET EMERGENCY WOOD")
+	(up-buy-commodity c: wood c: 200)
+)
+
+(defrule
+	(building-type-count-total town-center == 0)
+	(unit-type-count villager > 0)
+	(stone-amount < 100)
+	(wood-amount >= 275)
+	(can-buy-commodity stone)
+=>
+	(chat-local-to-self "MARKET TC RECOVERY")
+	(buy-commodity stone)
+)
+
+(defrule
+	(unit-type-count villager > 0)
+	(gold-amount > mkt-gold-buffer)
+	(wood-amount < mkt-buy-wood)
+	(commodity-buying-price wood < mkt-max-buy-wood)
+	(can-buy-commodity wood)
+=>
+	(chat-local-to-self "MARKET BUY WOOD")
+	(up-buy-commodity c: wood c: 300)
+)
+
+(defrule
+	(building-type-count town-center > 0)
+	(gold-amount > mkt-gold-buffer)
+	(food-amount < mkt-buy-food)
+	(commodity-buying-price food < mkt-max-buy-food)
+	(can-buy-commodity food)
+=>
+	(chat-local-to-self "MARKET BUY FOOD")
+	(up-buy-commodity c: food c: 300)
+)
+
+(defrule
+	(unit-type-count villager > 0)
+	(gold-amount > mkt-gold-heavy)
+	(stone-amount < mkt-buy-stone)
+	(commodity-buying-price stone < mkt-max-buy-stone)
+	(can-buy-commodity stone)
+=>
+	(chat-local-to-self "MARKET BUY STONE")
+	(up-buy-commodity c: stone c: 200)
+)
+
+(defrule
+	(unit-type-count villager > 0)
+	(goal check-goal 0)
+	(food-amount > 4000)
+	(gold-amount < 2000)
+	(can-sell-commodity food)
+=>
+	(set-goal check-goal 1)
+	(chat-local-to-self "MARKET FOOD OVERFLOW")
+	(up-sell-commodity c: food g: g-math-4)
+)
+
+(defrule
+	(unit-type-count villager > 0)
+	(goal check-goal 0)
+	(food-amount g:> g-math-3)
+	(food-amount > mkt-sell-food)
+	(commodity-selling-price food > mkt-min-sell-food)
+	(up-compare-goal g-math-4 > 100)
+	(can-sell-commodity food)
+=>
+	(set-goal check-goal 1)
+	(chat-local-to-self "MARKET SELL FOOD")
+	(up-sell-commodity c: food g: g-math-4)
+)
+
+(defrule
+	(building-type-count town-center > 0)
+	(goal check-goal 0)
+	(wood-amount g:> g-math-3)
+	(wood-amount > mkt-sell-wood)
+	(commodity-selling-price wood > mkt-min-sell-wood)
+	(up-compare-goal g-math-8 > 100)
+	(can-sell-commodity wood)
+=>
+	(set-goal check-goal 1)
+	(chat-local-to-self "MARKET SELL WOOD")
+	(up-sell-commodity c: wood g: g-math-8)
+)
+
+(defrule
+	(building-type-count town-center > 0)
+	(stone-amount > mkt-sell-stone)
+	(commodity-selling-price stone > mkt-min-sell-stone)
+	(can-sell-commodity stone)
+=>
+	(chat-local-to-self "MARKET SELL STONE")
+	(up-sell-commodity c: stone c: 200)
+)
+
+
+
+(defrule
+	(building-type-count town-center > 0)
+	(goal check-goal 0)
+	(wood-amount > 4200)
+	(gold-amount < 1800)
+	(can-sell-commodity wood)
+=>
+	(set-goal check-goal 1)
+	(chat-local-to-self "MARKET WOOD OVERFLOW")
+	(up-sell-commodity c: wood g: g-math-8)
+)
+
+(defrule
+	(building-type-count town-center > 0)
+	(gold-amount < 1000)
+	(stone-amount > 2200)
+	(can-sell-commodity stone)
+=>
+	(chat-local-to-self "MARKET STONE OVERFLOW")
+	(up-sell-commodity c: stone c: 400)
+)
+
+(defrule
+	(building-type-count town-center > 0)
+	(gold-amount > 3500)
+	(food-amount < 1000)
+	(can-buy-commodity food)
+=>
+	(chat-local-to-self "MARKET GOLD BALANCE FOOD")
+	(up-buy-commodity c: food c: 500)
+)
+
+(defrule
+	(unit-type-count villager > 0)
+	(gold-amount > 3500)
+	(wood-amount < 1000)
+	(can-buy-commodity wood)
+=>
+	(chat-local-to-self "MARKET GOLD BALANCE WOOD")
+	(up-buy-commodity c: wood c: 500)
+)

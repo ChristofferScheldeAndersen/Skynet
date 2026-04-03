@@ -1,0 +1,5689 @@
+(defconst gl-siege-wall-target-id 322)
+
+(defconst gl-enemytc-x 324)
+(defconst gl-enemytc-y 325)
+(defconst gl-lockenemytc-x 326)
+(defconst gl-lockenemytc-y 327)
+(defconst gl-enemylc-x 328)
+(defconst gl-enemylc-y 329)
+(defconst gl-enemygm-x 330)
+(defconst gl-enemygm-y 331)
+(defconst raid-phase 336)
+
+(defconst gl-walls-x 332)
+(defconst gl-walls-y 333)
+(defconst gl-walle-x 334)
+(defconst gl-walle-y 335)
+
+(defconst gl-lead-siege-x 292)
+(defconst gl-lead-siege-y 293)
+(defconst gl-direct-distance 294)
+(defconst gl-reinforce-x 296)
+(defconst gl-reinforce-y 297)
+(defconst gl-station-x 298)
+(defconst gl-station-y 299)
+(defconst gl-my-flared-x 496)
+(defconst gl-my-flared-y 497)
+(defconst gl-flared-x 498)
+(defconst gl-flared-y 499)
+
+(defconst raid-phase-timer 31)
+(defconst assault-timer 32)
+(defconst defend-timer 33)
+(defconst go-home-timer 34)
+(defconst alarm-timer 35)
+(defconst shield-timer 36)
+(defconst assault-guard-timer 37)
+(defconst navy-timer 38)
+
+#load-if-defined ARENA-MAP
+
+(defrule
+;(players-building-type-count target-player wall-class >= 10)
+(goal gl-siege-wall-target-id -1)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: wall-class c: 500)
+(up-find-remote c: gate-class c: 500)
+(up-set-target-point gl-centre-x)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(players-building-type-count target-player wall-class >= 10)
+(goal gl-siege-wall-target-id -1)
+(up-compare-goal gl-remote-total >= 15)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 0 gl-siege-wall-target-id)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal gl-siege-wall-target-id != -1)
+(not(up-set-target-by-id g: gl-siege-wall-target-id))
+=>
+(up-modify-goal gl-siege-wall-target-id c:= -1)
+(enable-timer assault-timer 0)
+(chat-local-to-self "wall breached")
+)
+
+(defrule
+(false)
+(up-compare-goal gl-siege-wall-target-id != -1)
+=>
+(up-set-target-by-id g: gl-siege-wall-target-id)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-siege-wall-target-id != -1)
+(up-object-data 10 <= 0)
+=>
+(up-modify-goal gl-siege-wall-target-id c:= -1)
+(chat-local-to-self "wall breached")
+)
+
+(defrule
+(false)
+(up-compare-goal gl-siege-wall-target-id != -1)
+=>
+(up-full-reset-search)
+(up-add-object-by-id search-remote g: gl-siege-wall-target-id)
+(up-remove-objects search-remote 10 <= 0)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-siege-wall-target-id != -1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-modify-goal gl-siege-wall-target-id c:= -1)
+(chat-local-to-self "wall breached")
+)
+
+(defrule
+(false)
+(up-compare-goal gl-siege-wall-target-id != -1)
+=>
+(chat-local-to-self "breach spot located")
+(up-set-target-by-id g: gl-siege-wall-target-id)
+(up-get-point position-object gl-dot-x)
+(up-send-flare gl-dot-x)
+)
+
+#end-if
+
+(defrule
+(true)
+=>
+(up-modify-sn sn-disable-defend-groups c:= 1);7
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-get-point position-self gl-station-x)
+(enable-timer alarm-timer 10)
+(disable-self)
+)
+
+(defrule
+(false)
+(goal military-mode shield)
+(not(up-timer-status go-home-timer == timer-running))
+=>
+(enable-timer go-home-timer 30)
+)
+
+(defrule
+(goal military-mode shield)
+(timer-triggered go-home-timer)
+;(unit-type-count 274 == 0)
+=>
+(disable-timer go-home-timer)
+(up-modify-goal gl-shield-target c:= -1)
+(set-goal military-mode hold)
+(chat-local-to-self "switching away from shield mode")
+;(disable-self)
+)
+
+(defrule
+(not(goal military-mode shield))
+(timer-triggered go-home-timer)
+=>
+(disable-timer go-home-timer)
+)
+
+(defrule
+;(false)
+;(unit-type-count 274 > 0)
+;(or(not(goal military-mode raid))
+(current-age == feudal-age)
+(not(goal military-mode raid))
+(not(goal military-mode shield))
+(not(goal military-mode assault))
+(military-population > 5)
+;(up-enemy-units-in-town < 2)
+(not(town-under-attack))
+(taunt-detected any-ally 48)
+=>
+;(up-find-flare gl-flared-x)
+(acknowledge-taunt this-any-ally 48)
+(up-get-player-fact this-any-ally 36 gl-self-x gl-flared-x)
+(up-get-player-fact this-any-ally 36 gl-self-y gl-flared-y)
+(up-get-player-fact this-any-ally 22 0 gl-shield-target)
+(set-goal military-mode shield)
+(enable-timer go-home-timer 30);120 90
+)
+
+(defrule
+;(false)
+;(unit-type-count 274 > 0)
+;(or(not(goal military-mode raid))
+(current-age >= castle-age)
+(not(goal military-mode raid));changed since raiding updated
+(not(goal military-mode shield))
+(not(goal military-mode assault))
+(military-population > 5)
+;(up-enemy-units-in-town < 2)
+(not(town-under-attack))
+(taunt-detected any-ally 48)
+=>
+;(up-find-flare gl-flared-x)
+(acknowledge-taunt this-any-ally 48)
+(up-get-player-fact this-any-ally 36 gl-self-x gl-attacked-location-x);gl-flared-x
+(up-get-player-fact this-any-ally 36 gl-self-y gl-attacked-location-y);gl-flared-y
+(up-get-player-fact this-any-ally 22 0 gl-shield-target)
+(set-goal military-mode shield)
+(enable-timer go-home-timer 30);120 90
+)
+
+(defrule
+(goal military-mode shield)
+(up-compare-goal gl-flared-x == -1)
+(up-compare-goal gl-flared-y == -1)
+(up-compare-goal gl-shield-target c:!= my-player-number)
+=>
+(up-modify-sn sn-focus-player-number g:= gl-shield-target)
+(up-get-point position-focus gl-flared-x)
+)
+
+(defrule
+(current-age >= castle-age)
+;(not(goal military-mode assault))
+(military-population > 5)
+(taunt-detected my-player-number 48)
+=>
+;(up-find-flare gl-flared-x)
+(acknowledge-taunt my-player-number 48)
+(up-get-player-fact my-player-number 36 gl-self-x gl-flared-x)
+(up-get-player-fact my-player-number 36 gl-self-y gl-flared-y)
+(up-modify-goal gl-shield-target c:= my-player-number)
+(set-goal military-mode shield)
+(enable-timer go-home-timer 30);120 90
+)
+
+(defrule
+(goal military-mode shield)
+(up-compare-goal gl-flared-x == -1)
+(up-compare-goal gl-flared-y == -1)
+(up-compare-goal gl-shield-target c:== my-player-number)
+=>
+(up-full-reset-search)
+(up-find-local c: castle c: 1)
+(up-find-local c: villager c: 1)
+(up-find-local c: -1 c: 1)
+)
+
+(defrule
+(goal military-mode shield)
+(up-compare-goal gl-flared-x == -1)
+(up-compare-goal gl-flared-y == -1)
+(up-compare-goal gl-shield-target c:== my-player-number)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-flared-x)
+)
+
+(defrule
+(up-compare-goal gl-shield-target > 0)
+=>
+(up-modify-sn sn-focus-player-number g:= gl-shield-target)
+)
+
+(defrule
+(up-compare-goal gl-shield-target > 0)
+(taunt-detected focus-player 48)
+=>
+(acknowledge-taunt focus-player 48)
+(enable-timer go-home-timer 30)
+)
+
+(defrule
+(timer-triggered alarm-timer)
+;(town-under-attack)
+;(up-compare-goal 10 < mc-equal)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-filter-distance c: 0 s: sn-maximum-town-size);25
+(up-filter-include 4 -1 -1 -1)
+(up-find-local c: -1 c: 500)
+(up-remove-objects search-local 2 == 903) ;remove buildings
+(up-remove-objects search-local 2 == 952)
+(up-remove-objects search-local 2 == villager-class)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 1 enemy)
+(player-in-game 1)
+=>
+(set-strategic-number sn-focus-player-number 1)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 2 enemy)
+(player-in-game 2)
+=>
+(set-strategic-number sn-focus-player-number 2)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 3 enemy)
+(player-in-game 3)
+=>
+(set-strategic-number sn-focus-player-number 3)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 4 enemy)
+(player-in-game 4)
+=>
+(set-strategic-number sn-focus-player-number 4)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 5 enemy)
+(player-in-game 5)
+=>
+(set-strategic-number sn-focus-player-number 5)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 6 enemy)
+(player-in-game 6)
+=>
+(set-strategic-number sn-focus-player-number 6)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 7 enemy)
+(player-in-game 7)
+=>
+(set-strategic-number sn-focus-player-number 7)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 8 enemy)
+(player-in-game 8)
+=>
+(set-strategic-number sn-focus-player-number 8)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 903) ;remove buildings
+(up-remove-objects search-remote 2 == 952) ;remove buildings
+(up-remove-objects search-local 2 == villager-class)
+(up-clean-search search-remote 44 1)
+;(up-remove-objects search-remote -1 > 0);0
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+=>
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-station-x)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(town-under-attack)
+(timer-triggered alarm-timer)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-copy-point gl-station-x gl-mining-core-x)
+(up-bound-point gl-station-x gl-station-x)
+)
+
+(defrule
+(false);swapping for hold micro
+;(true);stopping patrol going too far
+(or(up-compare-goal gl-station-x < 0)
+(up-point-distance gl-self-x gl-station-x > 30));30
+=>
+(up-lerp-tiles gl-self-x gl-station-x c: 30)
+(up-copy-point gl-station-x gl-self-x)
+(up-get-point position-self gl-self-x)
+)
+
+(defrule
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+=>
+;(up-clean-search search-remote 44 1)
+;(up-set-target-object search-remote c: 0)
+;(up-get-point position-object gl-my-flared-x)
+(up-copy-point gl-my-flared-x gl-station-x)
+)
+
+(defrule
+(false);true
+=>
+(up-copy-point gl-station-x house-wall-corner2-x); This will override the hold location to front of base.
+)
+
+(defrule
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies "/48")
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 1)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-blue)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 2)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-red)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 3)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-green)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 4)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-yellow)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 5)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-cyan)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 6)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-purple)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 7)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-grey)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(goal my-colour-id 8)
+;(up-players-in-game ally > 1)
+(up-compare-goal gl-remote-total >= 5)
+(or(up-compare-goal gl-local-total g:< gl-remote-total)
+(military-population < 5))
+(timer-triggered alarm-timer)
+(up-compare-goal gl-my-flared-x >= 0)
+(up-compare-goal gl-alarm-timer-cycles == 1)
+(up-point-distance gl-self-x gl-my-flared-x < 30)
+=>
+(chat-to-allies taunt-help-orange)
+;(up-send-flare gl-self-x)
+)
+
+(defrule
+(timer-triggered alarm-timer)
+=>
+(enable-timer alarm-timer 10)
+(up-modify-goal gl-alarm-timer-cycles c:+ 1)
+)
+
+(defrule
+(or(up-compare-goal gl-alarm-timer-cycles > 30)
+(or(up-compare-goal gl-alarm-timer-cycles < 0)
+(and(up-compare-goal gl-local-total g:> gl-remote-total)
+(military-population >= 10))))
+=>
+(up-modify-goal gl-alarm-timer-cycles c:= 0)
+)
+
+(defrule
+(false)
+=>
+(set-goal military-mode assault)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(enable-timer navy-timer 10);20
+(disable-self)
+)
+
+(defrule
+(goal military-mode assault)
+(up-timer-status assault-timer == 0)
+=>
+(enable-timer assault-timer 20);10
+)
+
+(defrule
+(goal military-mode assault)
+(up-timer-status assault-guard-timer == 0)
+=>
+(enable-timer assault-guard-timer 5);disabled after arena tourney
+(disable-self)
+)
+
+(defrule
+(goal military-mode hold)
+(current-age >= feudal-age)
+=>
+(enable-timer defend-timer 1)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal raid-phase < 1)
+(goal military-mode raid)
+=>
+(set-goal raid-phase 1)
+;(up-chat-data-to-self "Raid Phase %d." g: raid-phase)
+(enable-timer raid-phase-timer 90)
+(disable-self)
+)
+
+(defrule
+(timer-triggered raid-phase-timer)
+(up-compare-goal raid-phase == 1)
+=>
+(set-goal raid-phase 2)
+;(up-chat-data-to-self "Raid Phase %d." g: raid-phase)
+(set-goal active-military-mode hold)
+(enable-timer raid-phase-timer 90)
+)
+
+(defrule
+(timer-triggered raid-phase-timer)
+(up-compare-goal raid-phase == 2)
+=>
+(set-goal raid-phase 3)
+;(up-chat-data-to-self "Raid Phase %d." g: raid-phase)
+(set-goal active-military-mode hold)
+(enable-timer raid-phase-timer 90)
+)
+
+(defrule;38
+(timer-triggered raid-phase-timer)
+(up-compare-goal raid-phase == 3)
+=>
+(set-goal raid-phase 1)
+;(up-chat-data-to-self "Raid Phase %d." g: raid-phase)
+(set-goal active-military-mode hold)
+(enable-timer raid-phase-timer 90)
+)
+
+(load "Bright Spark 49f\Raiding Micro 10 - Add On");159 (197)
+
+(load "Bright Spark 49f\Hold Micro 4 - Add On")
+
+(defrule
+(players-building-type-count target-player mining-camp > 0)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: mining-camp c: 1)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-enemygm-x)
+)
+
+(defrule
+(false)
+(goal raid-phase 1)
+(goal active-military-mode raid)
+(players-building-type-count target-player town-center > 0)
+(up-pending-objects c: watch-tower-line < 1)
+=>
+(up-build-line gl-enemytc-x gl-enemytc-x c: watch-tower-line)
+(up-assign-builders c: watch-tower-line c: 3)
+)
+
+(defrule
+(false)
+(goal raid-phase 2)
+(goal active-military-mode raid)
+(players-building-type-count target-player town-center > 0)
+(up-pending-objects c: watch-tower-line < 1)
+=>
+(up-build-line gl-enemylc-x gl-enemylc-x c: watch-tower-line)
+(up-assign-builders c: watch-tower-line c: 3)
+)
+
+(defrule
+(false)
+(goal raid-phase 3)
+(goal active-military-mode raid)
+(players-building-type-count target-player town-center > 0)
+(up-pending-objects c: watch-tower-line < 1)
+=>
+(up-build-line gl-enemygm-x gl-enemygm-x c: watch-tower-line)
+(up-assign-builders c: watch-tower-line c: 3)
+)
+
+(defrule
+(false)
+(true)
+=>
+(up-get-point position-center gl-walls-x)
+(up-get-point position-center gl-walle-x)
+(set-goal gl-walls-y 0)
+(set-goal gl-walle-y 120)
+(up-build-line gl-walls-x gl-walle-x c: palisade-wall)
+;(disable-self)
+)
+
+(defrule
+(false)
+(timer-triggered 1)
+=>
+(enable-timer 1 120)
+)
+
+(defrule
+(goal military-mode retreat)
+(not(goal active-military-mode retreat))
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-home-x)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-target-point gl-home-x action-move -1 stance-no-attack)
+;(set-goal active-military-mode retreat)
+)
+
+(defrule
+(goal military-mode retreat)
+(not(goal active-military-mode retreat))
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-home-x)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-target-point gl-home-x action-move -1 stance-no-attack)
+(set-goal active-military-mode retreat)
+)
+
+(defrule
+(goal military-mode regroup)
+(up-compare-goal active-military-mode c:!= regroup)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-lockenemytc-x)
+(up-filter-distance c: -1 c: 8)
+(up-get-point position-self gl-home-x)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-target-point gl-home-x action-move -1 stance-no-attack)
+;(set-goal active-military-mode retreat)
+)
+
+(defrule
+(goal military-mode regroup)
+(up-compare-goal active-military-mode c:!= regroup)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-lockenemytc-x)
+(up-filter-distance c: -1 c: 8)
+(up-get-point position-self gl-home-x)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-target-point gl-home-x action-move -1 stance-no-attack)
+(set-goal active-military-mode regroup)
+)
+
+(defrule
+;(false); swapping for hold micro
+(current-age > dark-age)
+(timer-triggered navy-timer)
+(goal military-mode hold)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+;(up-modify-sn sn-focus-player-number c:= 2)
+(up-find-local c: 922 c: 500)
+;(up-find-remote c: 921 c: 500)
+;(up-find-remote c: 920 c: 500)
+;(up-find-remote c: dock c: 500)
+;(up-find-remote c: 922 c: 500)
+;(up-remove-objects search-remote 35 != 1)
+;(up-remove-objects search-remote 20 == my-player-number)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(false); swapping for hold micro
+(current-age > dark-age)
+(timer-triggered navy-timer)
+(goal military-mode hold)
+(up-compare-goal gl-local-total >= 1)
+;(up-compare-goal gl-remote-total >= 1)
+=>
+(up-target-point gl-attacked-location-x action-patrol -1 stance-defensive)
+;(up-target-objects 0 action-patrol -1 stance-defensive);def
+)
+
+(defrule
+;(false); swapping for hold micro
+(current-age > dark-age)
+(timer-triggered navy-timer)
+(goal military-mode shield)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+;(up-modify-sn sn-focus-player-number c:= 2)
+(up-find-local c: 922 c: 500)
+;(up-find-remote c: 921 c: 500)
+;(up-find-remote c: 920 c: 500)
+;(up-find-remote c: dock c: 500)
+;(up-find-remote c: 922 c: 500)
+;(up-remove-objects search-remote 35 != 1)
+;(up-remove-objects search-remote 20 == my-player-number)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+;(false); swapping for hold micro
+(current-age > dark-age)
+(timer-triggered navy-timer)
+(goal military-mode shield)
+(up-compare-goal gl-local-total >= 1)
+;(up-compare-goal gl-remote-total >= 1)
+=>
+(up-target-point gl-flared-x action-patrol -1 stance-defensive)
+;(up-target-objects 0 action-patrol -1 stance-defensive);def
+)
+
+
+(defrule
+(false); swapping for hold micro
+(current-age > dark-age)
+(timer-triggered defend-timer)
+(goal military-mode hold)
+(not(town-under-attack))
+;(not(goal active-military-mode hold))
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-target-point gl-station-x action-patrol -1 stance-aggressive);def
+)
+
+(defrule
+(false); swapping for hold micro
+(current-age > dark-age)
+(goal military-mode hold)
+(not(town-under-attack))
+;(not(goal active-military-mode hold))
+(timer-triggered defend-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: monk c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-remove-objects search-local 6 == 731)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-target-point gl-station-x action-patrol -1 stance-aggressive);def
+;(set-strategic-number sn-task-ungrouped-soldiers 1)
+;(set-strategic-number sn-maximum-patrol-distance 6)
+;(set-strategic-number sn-sentry-distance 6)
+;(set-goal active-military-mode hold)
+;(enable-timer defend-timer 20)
+)
+
+(defrule
+(false); swapping for hold micro
+(current-age > dark-age)
+(goal military-mode hold)
+(not(town-under-attack))
+;(not(goal active-military-mode hold))
+(timer-triggered defend-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-local c: 944 c: 500)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-target-point gl-station-x action-patrol -1 stance-aggressive);def
+;(set-strategic-number sn-task-ungrouped-soldiers 1)
+;(set-strategic-number sn-maximum-patrol-distance 6)
+;(set-strategic-number sn-sentry-distance 6)
+;(set-goal active-military-mode hold)
+;(enable-timer defend-timer 20)
+)
+
+(defrule
+(false); swapping for hold micro
+(goal military-mode hold)
+(timer-triggered defend-timer)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-local c: villager-class c: 240)
+(up-clean-search search-local 44 1)
+(up-create-group 0 0 c: 8)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "villager defense 1")
+)
+
+(defrule
+(false); swapping for hold micro
+(goal military-mode hold)
+(timer-triggered defend-timer)
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-rule-loops g: gl-local-total)
+(up-modify-goal gl-current-list-number c: 0)
+;(chat-local-to-self "villager defense 2")
+)
+
+(defrule
+(false); swapping for hold micro
+(goal military-mode hold)
+(timer-triggered defend-timer)
+(up-group-size c: 8 > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 8)
+;(chat-local-to-self "villager defense 3")
+)
+
+(defrule
+(false); swapping for hold micro
+(goal military-mode hold)
+(timer-triggered defend-timer)
+(up-group-size c: 8 > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-local g: gl-current-list-number)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(up-filter-distance c: 0 c: 6)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: battering-ram-line c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+;(chat-local-to-self "villager defense 4")
+)
+
+(defrule
+(false); swapping for hold micro
+(goal military-mode hold)
+(timer-triggered defend-timer)
+(up-group-size c: 8 > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+;(chat-local-to-self "villager defense 5")
+)
+
+(defrule
+(false); swapping for hold micro
+(goal military-mode hold)
+(timer-triggered defend-timer)
+(up-group-size c: 8 > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -4)
+;(chat-local-to-self "villager defense 6")
+)
+
+(defrule
+(false); swapping for hold micro
+(goal military-mode hold)
+(timer-triggered defend-timer)
+(up-compare-goal gl-current-list-number g:>= gl-rule-loops)
+=>
+(up-full-reset-search)
+(up-create-group 0 0 c: 8)
+;(chat-local-to-self "villager defense 7")
+)
+
+(defrule
+(false); swapping for hold micro
+(current-age > dark-age)
+(goal military-mode hold)
+(not(goal active-military-mode hold))
+=>
+(up-full-reset-search)
+(up-set-attack-stance 906 c: 0)
+(up-set-attack-stance 900 c: 0)
+(up-set-attack-stance scorpion-line c: 0)
+(up-set-attack-stance mangonel-line c: 0)
+(up-set-attack-stance 944 c: 0)
+(up-set-attack-stance pref-siege-castle c: 0)
+(up-set-attack-stance pref-siege-imperial c: 0)
+(up-set-attack-stance trebuchet c: 0)
+(up-set-attack-stance petard c: stance-stand-ground)
+(up-set-attack-stance 954 c: 0)
+(up-set-attack-stance 912 c: 0)
+(up-set-attack-stance 947 c: 0)
+(up-set-attack-stance 936 c: 0)
+(up-set-attack-stance 923 c: 0)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-timer))
+=>
+(up-full-reset-search)
+(up-set-attack-stance 906 c: stance-defensive)
+(up-set-attack-stance 900 c: stance-defensive);0
+(up-set-attack-stance scorpion-line c: stance-defensive)
+(up-set-attack-stance mangonel-line c: 0)
+(up-set-attack-stance 944 c: 0)
+;(up-set-attack-stance pref-siege-castle c: 0)
+;(up-set-attack-stance pref-siege-imperial c: 0)
+;(up-set-attack-stance trebuchet c: 0)
+(up-set-attack-stance petard c: stance-stand-ground)
+;(up-set-attack-stance 954 c: 0)
+(up-set-attack-stance 912 c: stance-defensive);0
+(up-set-attack-stance 947 c: stance-defensive);0
+(up-set-attack-stance 936 c: stance-defensive)
+(up-set-attack-stance 923 c: stance-defensive)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode hold)
+;(not(goal active-military-mode hold))
+=>
+(set-goal active-military-mode hold)
+)
+
+(defrule
+(goal military-mode shield)
+=>
+(enable-timer shield-timer 1)
+(disable-self)
+)
+
+(load "Bright Spark 49f\Shield Micro - Add On 2")
+
+(defrule
+(false) ;removing old shield rules
+(timer-triggered shield-timer)
+;(town-under-attack)
+;(up-compare-goal 10 < mc-equal)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-flared-x)
+(up-filter-distance c: 0 c: 20);10
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 1 enemy)
+=>
+(set-strategic-number sn-focus-player-number 1)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 2 enemy)
+=>
+(set-strategic-number sn-focus-player-number 2)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 3 enemy)
+=>
+(set-strategic-number sn-focus-player-number 3)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 4 enemy)
+=>
+(set-strategic-number sn-focus-player-number 4)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 5 enemy)
+=>
+(set-strategic-number sn-focus-player-number 5)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 6 enemy)
+=>
+(set-strategic-number sn-focus-player-number 6)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 7 enemy)
+=>
+(set-strategic-number sn-focus-player-number 7)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+;(up-compare-goal 10 < mc-equal)
+(stance-toward 8 enemy)
+=>
+(set-strategic-number sn-focus-player-number 8)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false) ;removing old shield rules
+;(town-under-attack)
+(timer-triggered shield-timer)
+=>
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-reinforce-x)
+)
+
+(defrule
+(false) ;removing old shield rules
+(up-compare-goal gl-reinforce-x < 0);testing to see if the below line works better
+;(timer-triggered shield-timer)
+=>
+(up-copy-point gl-reinforce-x gl-flared-x)
+)
+
+(defrule
+(false) ;removing old shield rules
+(current-age > dark-age)
+(timer-triggered shield-timer)
+(goal military-mode shield)
+;(not(town-under-attack))
+;(not(goal active-military-mode shield))
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-target-point gl-reinforce-x action-patrol -1 stance-aggressive);19
+)
+
+(defrule
+(false) ;removing old shield rules
+(current-age > dark-age)
+(goal military-mode shield)
+;(not(town-under-attack))
+;(not(goal active-military-mode shield))
+(timer-triggered shield-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-remove-objects search-local 6 == 731)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-target-point gl-reinforce-x action-patrol -1 stance-aggressive);19
+;(enable-timer defend-timer 20)
+)
+
+(defrule
+(false) ;removing old shield rules
+(current-age > dark-age)
+(goal military-mode shield)
+;(not(town-under-attack))
+;(not(goal active-military-mode shield))
+(timer-triggered shield-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: hussite-wagon-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-local c: 944 c: 500)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-target-point gl-reinforce-x action-patrol -1 stance-aggressive);19
+;(enable-timer defend-timer 20)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode shield)
+;(not(goal active-military-mode hold))
+=>
+(set-goal active-military-mode shield)
+)
+
+(defrule
+(timer-triggered shield-timer)
+(up-compare-flag gl-anti-lag-flag c:!= anti-lag-level4)
+=>
+(enable-timer shield-timer 1)
+)
+
+(defrule
+(timer-triggered shield-timer)
+(up-compare-flag gl-anti-lag-flag c:== anti-lag-level4)
+=>
+(enable-timer shield-timer 20)
+)
+
+(defrule
+(timer-triggered defend-timer)
+(up-compare-flag gl-anti-lag-flag c:!= anti-lag-level4)
+=>
+(enable-timer defend-timer 1)
+)
+
+(defrule
+(timer-triggered defend-timer)
+(up-compare-flag gl-anti-lag-flag c:== anti-lag-level4)
+=>
+(enable-timer defend-timer 20)
+)
+
+(defrule
+(false)
+(up-compare-sn sn-task-ungrouped-soldiers c:== 1)
+(not(goal military-mode hold))
+=>
+(set-strategic-number sn-task-ungrouped-soldiers 0)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered navy-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+;(players-building-type-count target-player castle < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: 922 c: 500)
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered navy-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(or(not(player-in-game focus-player))
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(players-stance focus-player ally)))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered navy-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+;(players-building-type-count target-player castle < 1)
+=>
+(up-find-remote c: 922 c: 500)
+(up-find-remote c: 921 c: 500)
+(up-find-remote c: 920 c: 500)
+(up-find-remote c: dock c: 500)
+(up-set-target-point gl-home-x)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-clean-search search-remote 44 1)
+(up-remove-objects search-remote -1 > 0)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered navy-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+;(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-target-point gl-transport-drop-off-x 19 -1 -1)
+(up-jump-rule 1)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered navy-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+;(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered navy-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+;(up-compare-sn sn-target-player-number != 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered assault-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+=>
+(up-full-reset-search)
+(up-find-local c: cannon-galleon-line c: 500)
+(up-find-local c: dromon c: 500)
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered assault-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(or(not(player-in-game focus-player))
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(players-stance focus-player ally)))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered assault-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: castle c: 500)
+(up-find-remote c: krepost c: 500)
+(up-find-remote c: donjon c: 500)
+(up-find-remote c: 952 c: 500)
+(up-find-remote c: dock c: 500)
+(up-find-remote c: 331 c: 500)
+(up-find-remote c: 42 c: 500)
+(up-find-remote c: 1942 c: 500)
+(up-find-remote c: mangonel-line c: 500)
+(up-find-remote c: rocket-cart-line c: 500)
+(up-find-remote c: monk c: 500)
+(up-find-remote c: missionary c: 500)
+(up-find-remote c: bombard-cannon-line c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(current-age > dark-age)
+(or(and(goal military-mode assault)
+(timer-triggered navy-timer))
+(and(goal military-mode raid)
+(timer-triggered navy-timer)))
+(up-set-target-object search-remote c: 0)
+=>
+(up-target-objects 1 action-default -1 -1);patrol
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-reset-group c: 9)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: battering-ram-line c: 500)
+(up-find-local c: bombard-cannon-line c: 500)
+(up-find-local c: petard c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-remove-objects search-local 73 == 1)
+(up-remove-objects search-local 73 == 2)
+(up-remove-objects search-local 73 == 3)
+(up-remove-objects search-local 73 == 4)
+(up-remove-objects search-local 73 == 5)
+(up-remove-objects search-local 73 == 6)
+(up-remove-objects search-local 73 == 7)
+(up-remove-objects search-local 73 == 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+(up-create-group 0 0 c: 9)
+;(up-modify-group-flag 1 c: 9)
+)
+
+(defrule
+(false);is this blocking the rest of the assault code?
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(false);is this blocking the rest of the assault code?
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+(up-find-local c: pref-siege-castle c: 500)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+;(up-find-local c: scorpion-line c: 500)
+(up-find-local c: hussite-wagon-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: pref-siege-imperial c: 500)
+(up-find-remote c: trebuchet c: 500)
+(up-find-remote c: traction-trebuchet c: 500)
+(up-find-remote c: pref-siege-castle c: 500)
+(up-clean-search search-remote 44 2)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: -5)
+;(up-send-flare gl-dot-x)
+;(up-target-point gl-dot-x 19 -1 -1)
+(up-target-objects 1 19 -1 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-remove-objects search-local 1 == archer)
+(up-remove-objects search-local 1 == skirmisher)
+(up-remove-objects search-local 73 == 0)
+;(up-remove-objects search-local 6 == 731)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: pref-siege-imperial c: 500)
+(up-find-remote c: trebuchet c: 500)
+(up-find-remote c: pref-siege-castle c: 500)
+(up-clean-search search-remote 44 2)
+(up-set-target-object search-remote c: 0)
+;(up-target-point gl-dot-x 19 -1 -1)
+(up-target-objects 1 19 -1 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-remove-objects search-local 1 == cavalry-archer)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: pref-siege-imperial c: 500)
+(up-find-remote c: trebuchet c: 500)
+(up-find-remote c: pref-siege-castle c: 500)
+(up-clean-search search-remote 44 2)
+(up-set-target-object search-remote c: 0)
+;(up-target-point gl-dot-x 19 -1 -1)
+(up-target-objects 1 19 -1 -1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+;(up-find-local c: scorpion-line c: 500)
+(up-find-local c: hussite-wagon-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: pref-siege-imperial c: 500)
+(up-find-remote c: trebuchet c: 500)
+(up-find-remote c: pref-siege-castle c: 500)
+(up-clean-search search-remote 44 2)
+(up-set-target-object search-remote c: 0)
+;(up-target-point gl-dot-x 19 -1 -1)
+(up-target-objects 1 19 -1 -1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-remove-objects search-local 1 == cavalry-archer)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: pref-siege-imperial c: 500)
+(up-find-remote c: trebuchet c: 500)
+(up-find-remote c: pref-siege-castle c: 500)
+(up-clean-search search-remote 44 2)
+(up-set-target-object search-remote c: 0)
+;(up-target-point gl-dot-x 19 -1 -1)
+(up-target-objects 1 19 -1 -1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 944 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-remove-objects search-local 1 == archer)
+(up-remove-objects search-local 1 == skirmisher)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: pref-siege-imperial c: 500)
+(up-find-remote c: trebuchet c: 500)
+(up-find-remote c: pref-siege-castle c: 500)
+(up-clean-search search-remote 44 2)
+(up-set-target-object search-remote c: 0)
+;(up-target-point gl-dot-x 19 -1 -1)
+(up-target-objects 1 19 -1 -1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+(up-find-local c: 918 c: 500)
+(up-remove-objects search-local 73 == 0)
+;(up-remove-objects search-local 6 == 731)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-find-remote c: pref-siege-imperial c: 500)
+(up-find-remote c: trebuchet c: 500)
+(up-find-remote c: pref-siege-castle c: 500)
+(up-clean-search search-remote 44 2)
+(up-set-target-object search-remote c: 0)
+;(up-target-point gl-dot-x action-patrol 7 -1)
+(up-target-objects 1 19 7 -1);action-patrol
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-siege-wall-target-id != -1)
+=>
+(up-add-object-by-id search-remote g: gl-siege-wall-target-id)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: 952 c: 500)
+(up-find-remote c: wonder c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-siege-wall-target-id != -1)
+=>
+(up-add-object-by-id search-remote g: gl-siege-wall-target-id)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-reset-filters)
+(up-filter-distance c: -1 c: 10)
+(up-find-remote c: mangonel-line c: 500)
+(up-find-remote c: battering-ram-line c: 500)
+(up-find-remote c: rocket-cart-line c: 500)
+(up-find-remote c: traction-trebuchet c: 500)
+(up-find-remote c: bombard-cannon-line c: 500)
+(up-find-remote c: hussite-wagon-line c: 500)
+(up-find-remote c: 331 c: 500)
+(up-find-remote c: 42 c: 500)
+(up-reset-filters)
+(up-filter-distance c: -1 c: 30)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: 952 c: 500)
+(up-find-remote c: wonder c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type one")
+(up-reset-filters)
+(up-jump-rule 103)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target one")
+(up-reset-filters)
+(up-jump-rule 102)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: barracks c: 500)
+(up-find-remote c: archery-range c: 500)
+(up-find-remote c: stable c: 500)
+(up-find-remote c: siege-workshop c: 500)
+(up-find-remote c: monastery c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: feitoria c: 500)
+;(up-find-remote c: gate-class c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: barracks c: 500)
+(up-find-remote c: archery-range c: 500)
+(up-find-remote c: stable c: 500)
+(up-find-remote c: siege-workshop c: 500)
+(up-find-remote c: monastery c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: feitoria c: 500)
+;(up-find-remote c: gate-class c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type two")
+(up-reset-filters)
+(up-jump-rule 89)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target two")
+(up-reset-filters)
+(up-jump-rule 88)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+;(up-find-remote c: house c: 500)
+;(up-find-remote c: lumber-camp c: 500)
+;(up-find-remote c: mining-camp c: 500)
+;(up-find-remote c: university c: 500)
+;(up-find-remote c: dock c: 500)
+;(up-find-remote c: mill c: 500)
+;(up-find-remote c: blacksmith c: 500)
+(do-nothing)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+;(up-find-remote c: house c: 500)
+;(up-find-remote c: lumber-camp c: 500)
+;(up-find-remote c: mining-camp c: 500)
+;(up-find-remote c: university c: 500)
+;(up-find-remote c: dock c: 500)
+;(up-find-remote c: mill c: 500)
+;(up-find-remote c: blacksmith c: 500)
+(do-nothing)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type three")
+(up-reset-filters)
+(up-jump-rule 75)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target three")
+(up-reset-filters)
+(up-jump-rule 74)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+;(up-find-remote c: -1 c: 500)
+(do-nothing)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 30)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+;(up-find-remote c: -1 c: 500)
+(do-nothing)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type four")
+(up-reset-filters)
+(up-jump-rule 61)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target four")
+(up-reset-filters)
+(up-jump-rule 60)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-siege-wall-target-id != -1)
+=>
+(up-add-object-by-id search-remote g: gl-siege-wall-target-id)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: 952 c: 500)
+(up-find-remote c: wonder c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+=>
+(up-full-reset-search)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-siege-wall-target-id != -1)
+=>
+(up-add-object-by-id search-remote g: gl-siege-wall-target-id)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-reset-filters)
+(up-filter-distance c: -1 c: 10)
+(up-find-remote c: mangonel-line c: 500)
+(up-find-remote c: battering-ram-line c: 500)
+(up-find-remote c: rocket-cart-line c: 500)
+(up-find-remote c: traction-trebuchet c: 500)
+(up-find-remote c: hussite-wagon-line c: 500)
+(up-find-remote c: bombard-cannon-line c: 500)
+(up-find-remote c: 331 c: 500)
+(up-find-remote c: 42 c: 500)
+(up-reset-filters)
+(up-filter-distance c: -1 c: 30)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: 952 c: 500)
+(up-find-remote c: wonder c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type one")
+(up-reset-filters)
+(up-jump-rule 43)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target one")
+(up-reset-filters)
+(up-jump-rule 42)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: barracks c: 500)
+(up-find-remote c: archery-range c: 500)
+(up-find-remote c: stable c: 500)
+(up-find-remote c: siege-workshop c: 500)
+(up-find-remote c: monastery c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: feitoria c: 500)
+;(up-find-remote c: gate-class c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: barracks c: 500)
+(up-find-remote c: archery-range c: 500)
+(up-find-remote c: stable c: 500)
+(up-find-remote c: siege-workshop c: 500)
+(up-find-remote c: monastery c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: feitoria c: 500)
+;(up-find-remote c: gate-class c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type two")
+(up-reset-filters)
+(up-jump-rule 29)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target two")
+(up-reset-filters)
+(up-jump-rule 28)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: house c: 500)
+(up-find-remote c: lumber-camp c: 500)
+(up-find-remote c: mining-camp c: 500)
+(up-find-remote c: university c: 500)
+(up-find-remote c: dock c: 500)
+(up-find-remote c: mill c: 500)
+(up-find-remote c: blacksmith c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: house c: 500)
+(up-find-remote c: lumber-camp c: 500)
+(up-find-remote c: mining-camp c: 500)
+(up-find-remote c: university c: 500)
+(up-find-remote c: dock c: 500)
+(up-find-remote c: mill c: 500)
+(up-find-remote c: blacksmith c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type three")
+(up-reset-filters)
+(up-jump-rule 15)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target three")
+(up-reset-filters)
+(up-jump-rule 14)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 -1)
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(players-building-type-count target-player town-center < 1)
+;(players-building-type-count target-player castle < 1)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+(players-stance focus-player enemy)
+(player-in-game focus-player)
+=>
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-focus-player-number != 0)
+(up-compare-sn sn-focus-player-number >= 9)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 3)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-lead-siege-x)
+(up-get-point-distance gl-dot-x gl-lead-siege-x gl-direct-distance)
+(up-modify-goal gl-direct-distance c:+ 8)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:<= gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-default -1 stance-defensive)
+;(chat-local-to-self "hone in target type four")
+(up-reset-filters)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-path-distance gl-dot-x 1 g:> gl-direct-distance)
+=>
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-assault-target)
+(up-target-objects 1 action-patrol -1 stance-aggressive)
+;(chat-local-to-self "Patrolling to target four")
+(up-reset-filters)
+)
+
+(defrule
+(population < max-population-limit)
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(research-completed ri-dry-dock)
+=>
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer);editing for 50
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 48 == 0);we need a copy of this for if no enemy target has been seen on another island...
+(unit-type-count transport-ship > 0)
+(research-completed ri-dry-dock)
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 15 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-object gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total == 0)
+;(up-object-data 48 == 0);copy
+(unit-type-count transport-ship > 0)
+(research-completed ri-dry-dock)
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 15 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-enemy gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(unit-type-count transport-ship > 0)
+(research-completed ri-dry-dock)
+=>
+(up-reset-search 1 1 1 1)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-garrison c: -1 c: 14)
+(up-find-local c: transport-ship c: 500)
+(up-find-remote c: dock c: 500)
+(up-remove-objects search-remote 20 == my-player-number);?
+(up-target-objects 0 action-move -1 -1)
+(up-reset-filters)
+;(chat-local-to-self "recalling transport ships")
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(not(research-completed ri-dry-dock))
+(research-completed ri-careening)
+=>
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 48 == 0);we need a copy of this for if no enemy target has been seen on another island...
+(unit-type-count transport-ship > 0)
+(not(research-completed ri-dry-dock))
+(research-completed ri-careening)
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 10 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-object gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total == 0)
+;(up-object-data 48 == 0);copy
+(unit-type-count transport-ship > 0)
+(not(research-completed ri-dry-dock))
+(research-completed ri-careening)
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 10 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-enemy gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(unit-type-count transport-ship > 0)
+(not(research-completed ri-dry-dock))
+(research-completed ri-careening)
+=>
+(up-reset-search 1 1 1 1)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-garrison c: -1 c: 9)
+(up-find-local c: transport-ship c: 500)
+(up-find-remote c: dock c: 500)
+(up-remove-objects search-remote 20 == my-player-number);?
+(up-target-objects 0 action-move -1 -1)
+(up-reset-filters)
+;(chat-local-to-self "recalling transport ships")
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(not(research-completed ri-dry-dock))
+(not(research-completed ri-careening))
+=>
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 48 == 0);we need a copy of this for if no enemy target has been seen on another island...
+(unit-type-count transport-ship > 0)
+(not(research-completed ri-dry-dock))
+(not(research-completed ri-careening))
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 5 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-object gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total == 0)
+;(up-object-data 48 == 0);copy
+(unit-type-count transport-ship > 0)
+(not(research-completed ri-dry-dock))
+(not(research-completed ri-careening))
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 5 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-enemy gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population < max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(unit-type-count transport-ship > 0)
+(not(research-completed ri-dry-dock))
+(not(research-completed ri-careening))
+=>
+(up-reset-search 1 1 1 1)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-garrison c: -1 c: 4)
+(up-find-local c: transport-ship c: 500)
+(up-find-remote c: dock c: 500)
+(up-remove-objects search-remote 20 == my-player-number);?
+(up-target-objects 0 action-move -1 -1)
+(up-reset-filters)
+;(chat-local-to-self "recalling transport ships")
+)
+
+(defrule
+(population >= max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(not(research-completed ri-dry-dock))
+(not(research-completed ri-careening))
+=>
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(population >= max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 48 == 0);we need a copy of this for if no enemy target has been seen on another island...
+(unit-type-count transport-ship > 0)
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 1 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-object gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-transport-ship-attack == 1)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+;(false)
+(up-compare-goal gl-transport-ship-attack != 1)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(unit-type-count transport-ship > 0)
+=>
+(up-reset-search 1 1 1 1)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+;(up-filter-garrison c: -1 c: 4)
+(up-find-local c: transport-ship c: 500)
+;(up-find-remote c: dock c: 500)
+(up-filter-include 4 -1 -1 -1)
+(up-find-remote c: -1 c: 500)
+;(up-remove-objects search-remote 20 == my-player-number);?
+(up-remove-objects search-remote 2 == 922)
+(up-remove-objects search-remote 48 != 1)
+(up-set-target-point gl-self-x)
+(up-clean-search search-remote 44 2)
+(up-remove-objects search-remote -1 > 0)
+(up-target-objects 0 action-move -1 -1)
+(up-reset-filters)
+;(chat-local-to-self "recalling transport ships")
+)
+
+(defrule
+(up-compare-goal gl-transport-ship-attack == 1)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-compare-sn sn-target-player-number != 0)
+;(up-compare-goal gl-remote-total > 0)
+;(up-object-data 48 == 0);we need a copy of this for if no enemy target has been seen on another island...
+(unit-type-count transport-ship > 0)
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 1 c: -1)
+(up-find-local c: transport-ship c: 500)
+;(up-get-point position-enemy gl-dot-x)
+;(up-lerp-tiles gl-dot-x gl-self-x c: 10)
+;(up-send-flare gl-dot-x)
+;(up-target-point gl-dot-x action-unload -1 -1)
+(up-target-point gl-transport-drop-off-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population >= max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+(up-compare-goal gl-remote-total == 0)
+;(up-object-data 48 == 0);copy
+(unit-type-count transport-ship > 0)
+=>
+(up-reset-search 1 1 0 0)
+(up-filter-garrison c: 1 c: -1)
+(up-find-local c: transport-ship c: 500)
+(up-get-point position-enemy gl-dot-x)
+(up-target-point gl-dot-x action-unload -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(population >= max-population-limit)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(unit-type-count transport-ship > 0)
+=>
+(up-reset-search 1 1 1 1)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-filter-garrison c: -1 c: 0)
+(up-find-local c: transport-ship c: 500)
+(up-find-remote c: dock c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-target-objects 0 action-move -1 -1)
+(up-reset-filters)
+;(chat-local-to-self "recalling transport ships")
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+(players-building-type-count target-player town-center < 1)
+(players-building-type-count target-player castle < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: hussite-wagon-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+(players-building-type-count target-player town-center < 1)
+(players-building-type-count target-player castle < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: -1 c: 500)
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-target-player-number != 0)
+(players-building-type-count target-player town-center < 1)
+(players-building-type-count target-player castle < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-remove-objects search-local 1 == archer)
+(up-remove-objects search-local 1 == skirmisher)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: -1 c: 500)
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-guard-timer))
+=>
+(up-full-reset-search)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 2)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-guard-timer))
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-dot-x)
+;(up-get-object-data 50 gl-temp-x)
+;(up-get-object-data 51 gl-temp-y)
+(up-lerp-tiles gl-dot-x gl-self-x c: -5)
+(up-set-target-point gl-dot-x)
+;(chat-local-to-self "catching up with siege")
+;(up-send-flare gl-dot-x)
+(up-jump-rule 1)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 5)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-guard-timer))
+=>
+(up-full-reset-search)
+(up-filter-distance c: 15 c: -1)
+(up-find-local c: 906 c: 240)
+;(chat-local-to-self "catching up siege")
+(up-target-point gl-dot-x action-default 7 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-guard-timer))
+=>
+(up-full-reset-search)
+(up-filter-distance c: 12 c: -1)
+(up-find-local c: 900 c: 240)
+(up-remove-objects search-local 1 == archer)
+(up-remove-objects search-local 1 == skirmisher)
+(up-find-local c: 944 c: 240)
+;(chat-local-to-self "catching up siege")
+(up-target-point gl-dot-x action-default 7 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-guard-timer))
+=>
+(up-full-reset-search)
+(up-filter-distance c: 15 c: -1)
+(up-find-local c: 912 c: 240)
+(up-find-local c: 923 c: 240)
+(up-find-local c: 936 c: 240)
+(up-find-local c: 936 c: 240)
+(up-remove-objects search-local 1 == cavalry-archer)
+;(up-send-flare gl-dot-x)
+(up-target-point gl-dot-x action-default 7 -1)
+)
+
+(defrule
+(false);removing so siege units shoot as soon as they can.
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-guard-timer))
+=>
+(up-full-reset-search)
+(up-filter-distance c: 15 c: -1)
+;(up-find-local c: scorpion-line c: 240)
+(up-find-local c: mangonel-line c: 240)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-local c: hussite-wagon-line c: 240)
+(up-target-point gl-dot-x action-default 7 -1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(or(not(goal active-military-mode assault))
+(timer-triggered assault-timer))
+=>
+(up-full-reset-search)
+(up-filter-distance c: 10 c: -1)
+(up-find-local c: monk c: 240)
+(up-remove-objects search-local -1 == 0)
+(up-remove-objects search-local 6 == 731);test to collect relics
+(up-remove-objects search-local 5 == 631)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-target-point gl-dot-x action-default 7 -1)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal military-mode assault)
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-jump-rule 75)
+)
+
+(defrule
+(goal military-mode assault)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(goal military-mode assault)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-full-reset-search)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: 952 c: 500)
+(up-find-remote c: wonder c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(goal military-mode assault)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-full-reset-search)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: 952 c: 500)
+(up-find-remote c: wonder c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal military-mode assault)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-full-reset-search)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: hussite-wagon-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal military-mode assault)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-full-reset-search)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal military-mode assault)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(set-goal active-military-mode assault)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: hussite-wagon-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+)
+
+(defrule
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: watch-tower-line c: 500)
+(up-find-remote c: bombard-tower c: 500)
+(up-find-remote c: market c: 500)
+(up-find-remote c: wonder c: 500)
+(up-find-remote c: monastery c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-default -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+;(up-filter-include -1 -1 706 -1)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+=>
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: trebuchet c: 500)
+(up-find-local c: 954 c: 500)
+(up-find-local c: pref-siege-castle c: 500)
+(up-get-point position-enemy gl-dot-x)
+(up-target-point gl-dot-x action-patrol -1 -1)
+(chat-local-to-self "searching for enemy")
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: scorpion-line c: 500)
+(up-find-local c: hussite-wagon-line c: 500)
+(up-find-local c: mangonel-line c: 500)
+(up-find-local c: rocket-cart-line c: 500)
+(up-find-remote c: -1 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 923 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(false)
+(current-age > dark-age)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number >= 8)
+=>
+(up-modify-sn sn-focus-player-number == 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(not(stance-toward focus-player enemy))
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-full-reset-search)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 918 c: 500)
+(up-find-local c: 944 c: 500)
+(up-remove-objects search-local 73 == 0)
+(up-find-remote c: -1 c: 500)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(false)
+(goal active-military-mode assault)
+(timer-triggered assault-timer)
+(players-building-type-count every-enemy town-center < 1)
+(players-building-type-count every-enemy castle < 1)
+=>
+(up-set-target-point gl-home-x)
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-target-objects 1 action-patrol -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(map-type custom_map)
+=>
+(up-jump-rule 7)
+)
+
+(defrule
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number s: sn-target-player-number)
+(up-find-remote c: town-center c: 500)
+(up-find-remote c: castle c: 500)
+(up-find-remote c: house c: 500)
+(up-find-remote c: barracks c: 500)
+(up-find-remote c: farm c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+(up-set-target-object search-remote c: 0)
+=>
+;(up-get-point position-object gl-dot-x)
+(up-get-point position-enemy gl-dot-x)
+(up-find-local c: villager c: 1)
+)
+
+(defrule
+(or(goal military-mode assault)
+(goal military-mode raid))
+(or(timer-triggered assault-timer)
+(not(goal active-military-mode assault)))
+(up-compare-goal gl-remote-total >= 1)
+(up-set-target-object search-local c: 0)
+(up-path-distance gl-dot-x 0 < 2000)
+=>
+(up-jump-rule 4)
+)
+
+(defrule
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+;(up-compare-goal gl-remote-total > 0)
+(unit-type-count transport-ship > 0)
+(research-completed ri-dry-dock)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 913 c: 500)
+(up-find-local c: 923 c: 500)
+(up-find-local c: 935 c: 500)
+(up-find-local c: 944 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 955 c: 500)
+(up-find-local c: 918 c: 500)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-filter-garrison c: -1 c: 19)
+(up-find-remote c: 920 c: 500)
+(up-remove-objects search-local 48 == 0)
+(up-target-objects 0 action-garrison -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+;(up-compare-goal gl-remote-total > 0)
+(unit-type-count transport-ship > 0)
+(not(research-completed ri-dry-dock))
+(research-completed ri-careening)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 913 c: 500)
+(up-find-local c: 923 c: 500)
+(up-find-local c: 935 c: 500)
+(up-find-local c: 944 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 955 c: 500)
+(up-find-local c: 918 c: 500)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-filter-garrison c: -1 c: 19)
+(up-find-remote c: 920 c: 500)
+(up-remove-objects search-local 48 == 0)
+(up-target-objects 0 action-garrison -1 -1)
+(up-reset-filters)
+)
+
+(defrule
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+;(up-compare-goal gl-remote-total > 0)
+(unit-type-count transport-ship > 0)
+;(not(research-completed ri-dry-dock))
+;(not(research-completed ri-careening))
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 913 c: 500)
+(up-find-local c: 923 c: 500)
+(up-find-local c: 935 c: 500)
+(up-find-local c: 944 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 955 c: 500)
+(up-find-local c: 918 c: 500)
+(up-remove-objects search-local 2 == villager-class)
+(up-remove-objects search-local 6 == 704)
+(up-remove-objects search-local 5 == 604)
+(up-filter-garrison c: -1 c: 19)
+(up-find-remote c: 920 c: 500)
+(up-remove-objects search-local 48 == 0)
+(up-target-objects 0 action-garrison -1 -1)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 1 c: 7)
+;(chat-local-to-self "boarding")
+(up-reset-filters)
+)
+
+(defrule
+(population >= max-population-limit)
+(up-idle-unit-count idle-type-villager >= 20)
+(or(goal military-mode assault)
+(goal military-mode raid))
+;(or(timer-triggered assault-timer)
+;(not(goal active-military-mode assault)))
+;(up-compare-sn sn-target-player-number != 0)
+;(up-compare-goal gl-remote-total > 0)
+(unit-type-count transport-ship > 0)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-find-local c: villager-class c: 500)
+(up-remove-objects search-local 48 == 0)
+(up-remove-objects search-local 6 == -1)
+(up-filter-garrison c: -1 c: -1)
+(up-find-remote c: 920 c: 500)
+(up-remove-objects search-local 48 == 0)
+(up-target-objects 0 action-garrison -1 -1)
+)
+
+(defrule
+(goal military-mode assault)
+(not(goal active-military-mode assault))
+=>
+(set-goal active-military-mode assault)
+;(chat-local-to-self "assault ongoing")
+)
+
+(defrule
+(goal military-mode assault)
+(timer-triggered assault-guard-timer)
+=>
+;(do-nothing);disabled after arena tourney
+(enable-timer assault-guard-timer 5);disabled after arena tourney
+)
+
+(defrule
+(timer-triggered assault-timer)
+(not(goal military-mode assault))
+(not(goal military-mode all-out-attack))
+=>
+(disable-timer assault-timer)
+(up-reset-attack-now)
+;(chat-local-to-self "ending assault")
+)
+
+(defrule
+(false)
+(goal military-mode assault)
+=>
+(chat-local-to-self "Military Mode Assault")
+)
+
+(defrule
+(false)
+(goal military-mode hold)
+=>
+(chat-local-to-self "Military Mode Hold")
+)
+
+(defrule
+(false)
+(goal military-mode raid)
+=>
+(chat-local-to-self "Military Mode Raid")
+)
+
+(defrule
+(false)
+(goal military-mode shield)
+=>
+(chat-local-to-self "Military Mode Shield")
+)
+
+(defrule
+(false)
+(goal military-mode retreat)
+=>
+(chat-local-to-self "Military Mode Retreat")
+)
+
+(defrule
+(false)
+(goal military-mode regroup)
+=>
+(chat-local-to-self "Military Mode Regroup")
+)
+
+#load-if-defined ARENA-MAP
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: castle c: 500)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-modify-goal gl-rule-loops g:= gl-remote-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 9)
+(up-find-local c: pref-siege-castle c: 240)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 900 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 12)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 906 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 12)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 936 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 12)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 918 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 12)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 912 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 12)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: scorpion-line c: 240)
+(up-find-local c: mangonel-line c: 240)
+(up-find-local c: rocket-cart-line c: 500)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 12)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 923 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 12)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-reset-search 1 1 0 0)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -8)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: town-center c: 500)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-modify-goal gl-rule-loops g:= gl-remote-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 8)
+(up-find-local c: pref-siege-castle c: 240)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 900 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 10)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 906 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 10)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 936 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 10)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 918 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 10)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 912 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 10)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: scorpion-line c: 240)
+(up-find-local c: mangonel-line c: 240)
+(up-find-local c: rocket-cart-line c: 500)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 10)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+(up-compare-goal gl-local-total < 1)
+=>
+(up-find-local c: 923 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 10)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(false); clashes with new assault micro
+(goal active-military-mode assault)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-reset-search 1 1 0 0)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -8)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: 658 c: 500)
+(up-find-remote c: 656 c: 500)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+=>
+(up-modify-goal gl-rule-loops g:= gl-remote-total)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: -1 c: 8)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-find-local c: 900 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 9)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-find-local c: 936 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 9)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-find-local c: 918 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 9)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-find-local c: 944 c: 240)
+(up-get-point position-object gl-temp-x)
+(up-lerp-tiles gl-temp-x gl-self-x c: 9)
+(up-target-point gl-temp-x action-default 7 -1)
+(up-reset-search 1 1 0 0)
+)
+
+(defrule
+(or(players-unit-type-count target-player 658 > 0)
+(players-unit-type-count target-player 656 > 0))
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote g: gl-current-list-number)
+=>
+(up-reset-search 1 1 0 0)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -5)
+)
+
+#end-if
+
+(defrule
+(timer-triggered navy-timer)
+(unit-type-count transport-ship > 0)
+=>
+(up-full-reset-search)
+(up-find-local c: transport-ship c: 240)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-current-list-number c:= 0)
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+(up-modify-goal gl-dot-x c:= 0)
+)
+
+(defrule
+(timer-triggered navy-timer)
+(unit-type-count transport-ship > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-local g: gl-current-list-number)
+=>
+(up-get-object-data 18 gl-dot-y)
+(up-modify-goal gl-dot-x g:+ gl-dot-y)
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(timer-triggered navy-timer)
+(unit-type-count transport-ship > 0)
+(up-compare-goal gl-dot-x < 5)
+(up-compare-goal gl-transport-ship-attack == 1)
+=>
+(up-modify-goal gl-transport-ship-attack c:= 0)
+)
+
+(defrule
+(timer-triggered navy-timer)
+(unit-type-count transport-ship > 0)
+(up-compare-goal gl-dot-x >= 8)
+(up-compare-goal gl-transport-ship-attack < 1)
+=>
+(up-modify-goal gl-transport-ship-attack c:= 1)
+(chat-local-to-self "send forward the transports!")
+)
+
+(defrule
+;(or
+(timer-triggered navy-timer)
+;(timer-triggered mini-raid-timer))
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-find-local c: pref-siege-castle c: 500)
+(up-find-local c: pref-siege-imperial c: 500)
+(up-find-local c: 900 c: 500)
+(up-find-local c: 906 c: 500)
+(up-find-local c: 912 c: 500)
+(up-find-local c: 936 c: 500)
+(up-find-local c: 913 c: 500)
+(up-find-local c: 923 c: 500)
+(up-find-local c: 935 c: 500)
+(up-find-local c: 944 c: 500)
+(up-find-local c: 947 c: 500)
+(up-find-local c: 955 c: 500)
+(up-find-local c: 918 c: 500)
+(up-remove-objects search-local 2 == villager-class)
+(up-remove-objects search-local 73 != 7)
+(up-create-group 0 0 c: 7)
+(up-modify-group-flag 0 c: 7)
+)
+
+(defrule
+(true)
+=>
+;(up-get-point position-self gl-transport-drop-off-x)
+(up-get-point position-custom gl-temp-x);position-flank
+(up-get-point position-self gl-dot-x)
+(up-lerp-percent gl-dot-x gl-temp-x c: 70);60
+(up-copy-point gl-transport-drop-off-x gl-dot-x)
+)
+
+(defrule
+(true)
+=>
+(up-lerp-tiles gl-dot-x gl-temp-x c: 1)
+(up-copy-point gl-transport-drop-off-x gl-dot-x)
+)
+
+(defrule
+(up-point-explored gl-dot-x == 0)
+(up-point-distance gl-temp-x gl-dot-x >= 15)
+=>
+(up-jump-rule -2)
+)
+
+(defrule
+(or(up-point-terrain gl-dot-x == 1)
+(or(up-point-terrain gl-dot-x == 2)
+(or(up-point-terrain gl-dot-x == 15)
+(or(up-point-terrain gl-dot-x == 22)
+(or(up-point-terrain gl-dot-x == 23)
+(or(up-point-terrain gl-dot-x == 57)
+(or(up-point-terrain gl-dot-x == 58)
+(or(up-point-terrain gl-dot-x == 59)
+(or(up-point-terrain gl-dot-x == 95)
+(or(up-point-terrain gl-dot-x == 96)
+(or(up-point-terrain gl-dot-x == 114)
+(or(up-point-terrain gl-dot-x == 115)
+(up-point-terrain gl-dot-x == 116)))))))))))))
+(up-point-distance gl-temp-x gl-dot-x >= 1)
+;(up-point-distance gl-self-x gl-dot-x < 10)
+=>
+(up-jump-rule -3)
+)
+
+(defrule
+;(false)
+;(true)
+(timer-triggered navy-timer)
+=>
+(up-lerp-tiles gl-dot-x gl-temp-x c: 2);3
+(up-copy-point gl-transport-drop-off-x gl-dot-x)
+;(up-send-flare gl-transport-drop-off-x)
+;(up-get-point-terrain gl-dot-x gl-dot-x)
+;(up-chat-data-to-all "terrain %d" g: gl-dot-x)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: dock c: 240)
+(up-clean-search search-local 0 2)
+(up-get-point position-self gl-latest-dock-x)
+)
+
+(defrule
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object gl-latest-dock-x)
+)
+
+(defrule
+(timer-triggered navy-timer)
+=>
+(enable-timer navy-timer 20);10
+)

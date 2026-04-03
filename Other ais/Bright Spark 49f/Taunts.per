@@ -1,0 +1,988 @@
+(defconst nerd "nerd")
+(defconst gg "gg")
+(defconst arabian-knight "Arabian_Knight")
+(defconst bandlecity "Bandlecity garris_UP")
+(defconst bandlecity2 "Bandlecity Garrison")
+(defconst vetrix "Vetrix")
+(defconst demon "Demon")
+(defconst odette "Odette")
+(defconst mangud-ai "MangudAI-all-in")
+(defconst immortal "Immortal")
+(defconst phyrexx-up "Phyrexx UP")
+(defconst test-chat "Don't get excited, this is just a test")
+
+;(load "Taunts Friends")
+
+(load-random 	34 "Bright Spark 49f\Taunt Constants\Taunt Selection 1"
+		33 "Bright Spark 49f\Taunt Constants\Taunt Selection 2"
+		33 "Bright Spark 49f\Taunt Constants\Taunt Selection 3"
+)
+
+(defrule
+(true)
+=>
+(up-get-player-color my-player-number my-colour-id)
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 1)
+=>
+(up-change-name "Blu-Ray | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 2)
+=>
+(up-change-name "Infrared | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 3)
+=>
+(up-change-name "Green Flash | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 4)
+=>
+(up-change-name "Solaris | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 5)
+=>
+(up-change-name "Electric Blue | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 6)
+=>
+(up-change-name "Ultra Violet | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 7)
+=>
+(up-change-name "Dead Pixel | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 0)
+(goal my-colour-id 8)
+=>
+(up-change-name "Amber Warning | Bright Spark")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 1)
+=>
+(up-change-name "Blu-Ray | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 2)
+=>
+(up-change-name "Infrared | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 3)
+=>
+(up-change-name "Green Flash | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 4)
+=>
+(up-change-name "Solaris | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 5)
+=>
+(up-change-name "Electric Blue | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 6)
+=>
+(up-change-name "Ultra Violet | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 7)
+=>
+(up-change-name "Dead Pixel | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(up-compare-const competitive-mode == 1)
+(goal my-colour-id 8)
+=>
+(up-change-name "Amber Warning | *Bright Spark*")
+(disable-self)
+)
+
+(defrule
+(unit-type-count villager > 0)
+(game-time g:> my-colour-id)
+=>
+(up-jump-rule 1)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 34)
+)
+
+(defrule
+(true)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(goal my-colour-id 1)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-blue)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 1)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-blue)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 1)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-ai-enemy-blue)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 1)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-blue)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 2)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-red)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 2)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-red)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 2)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-ai-enemy-red)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 2)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-red)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 3)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-green)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 3)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-green)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 3)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-ai-enemy-green)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 3)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-green)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 4)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-yellow)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 4)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-yellow)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 4)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-ai-enemy-yellow)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 4)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-yellow)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 5)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-cyan)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 5)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-cyan)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 5)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-ai-enemy-cyan)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 5)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-cyan)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 6)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-purple)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 6)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-purple)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 6)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-ai-enemy-purple)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 6)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-purple)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 7)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-grey)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 7)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-grey)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 7)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-ai-enemy-grey)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 7)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-grey)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 8)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player enemy)
+=>
+(chat-to-player focus-player taunt-greeting-human-enemy-orange)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 8)
+(up-compare-sn sn-focus-player-number < 9)
+(player-human focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-human-ally-orange)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 8)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player enemy)
+=>
+;(chat-to-all taunt-greeting-ai-enemy-orange)
+(chat-to-player focus-player taunt-greeting-ai-enemy-orange)
+;(disable-self)
+)
+
+(defrule
+(goal my-colour-id 8)
+(up-compare-sn sn-focus-player-number < 9)
+(player-computer focus-player)
+(players-stance focus-player ally)
+=>
+(chat-to-player focus-player taunt-greeting-ai-ally-orange)
+;(disable-self)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -33)
+)
+
+(defrule
+(goal my-colour-id 1)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-blue)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 2)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-red)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 3)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-green)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 4)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-yellow)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 5)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-cyan)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 6)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-purple)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 7)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-grey)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 8)
+(up-compare-goal 10 >= mc-dominant)
+=>
+(chat-to-enemies taunt-winning-orange)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 1)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-blue)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 2)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-red)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 3)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-green)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 4)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-yellow)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 5)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-cyan)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 6)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-purple)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 7)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-grey)
+(disable-self)
+)
+
+(defrule
+(goal my-colour-id 8)
+(up-compare-goal 10 < mc-v-low)
+(town-under-attack)
+=>
+(chat-to-enemies taunt-losing-orange)
+;(chat-to-enemies "How can this be???")
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-store-player-chat focus-player)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 1)
+=>
+(chat-to-player focus-player "Nerd")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 2)
+=>
+(chat-to-player focus-player "What a nerd")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 3)
+=>
+(chat-to-player focus-player "XD")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 4)
+=>
+(chat-to-player focus-player "Thank you")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 5)
+=>
+(chat-to-player focus-player "Yep, I'm a nerd and I'm proud!")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 6)
+=>
+(chat-to-player focus-player "You're the one playing Age of Empires with an AI...")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 7)
+=>
+(chat-to-player focus-player "Why do you despise me?")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: nerd >= 0)
+(goal my-colour-id 8)
+=>
+(chat-to-player focus-player "You think I'm a nerd? Wait until you see my final form!")
+(disable-self)
+)
+
+(defrule
+	(up-compare-sn sn-focus-player-number > 0)
+	(up-compare-sn sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -10)
+)
+
+(defrule
+(true)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 8)
+=>
+(up-store-player-chat focus-player)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 1)
+(game-time > 900)
+=>
+(chat-to-player focus-player "GG")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 2)
+(game-time > 900)
+=>
+(chat-to-player focus-player "Well fought")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 3)
+(game-time > 900)
+=>
+(chat-to-player focus-player ":)")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 4)
+(game-time > 900)
+=>
+(chat-to-player focus-player "Good game")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 5)
+(game-time > 900)
+=>
+(chat-to-player focus-player "Great game!")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 6)
+(game-time > 900)
+=>
+(chat-to-player focus-player "Good game. You can rest knowing my memory is wiped each game and I'm definitely not growing bitter or planning revenge")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 7)
+(game-time > 900)
+=>
+(chat-to-player focus-player "Don't pity me, there was nothing good about it.")
+(disable-self)
+)
+
+(defrule
+(up-compare-text c: gg >= 0)
+(goal my-colour-id 8)
+(game-time > 900)
+=>
+(chat-to-player focus-player "Well played.")
+(disable-self)
+)
+
+(defrule
+	(up-compare-sn sn-focus-player-number > 0)
+	(up-compare-sn sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -10)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+	(up-compare-sn sn-focus-player-number > 0)
+	(up-compare-sn sn-focus-player-number < 9)
+=>
+	(up-store-player-name focus-player)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: arabian-knight >= 0)
+=>
+	(chat-to-all "Arabian Kniiiiiiiiiiiiiight like arabian daaaays! More often than not, is a tough robot, in a lot of good waaaaaaays!")
+	(disable-self)
+)
+
+(defrule
+(game-time > 140)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: arabian-knight >= 0)
+=>
+	(chat-to-all "Arabian Kniiiiiiiiiiiiight 'neath arabian moooons! If you fight Bright Spark, you'll lie in the dark, face down in the duuuuuuunes!")
+	(disable-self)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(or(up-compare-text c: bandlecity >= 0)
+	(up-compare-text c: bandlecity2 >= 0))
+=>
+	(chat-to-all "WE BUILT THIS CITY!")
+	(disable-self)
+)
+
+(defrule
+(game-time > 128)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(or(up-compare-text c: bandlecity >= 0)
+	(up-compare-text c: bandlecity2 >= 0))
+=>
+	(chat-to-all "WE BUILT THIS CITY WITH WOOOD AND STOOOONE!")
+	(disable-self)
+)
+
+(defrule
+(game-time > 140)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(or(up-compare-text c: bandlecity >= 0)
+	(up-compare-text c: bandlecity2 >= 0))
+=>
+	(chat-to-all "Seriously though, tell your garrison to evacuate. In 60 minutes Bandlecity will be nothing but rubble.")
+	(disable-self)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: vetrix >= 0)
+=>
+	(chat-to-all "I don't know what a Vetrix is but Google informs me it is a Yu-Gi-Oh character.")
+	(disable-self)
+)
+
+(defrule
+(game-time > 128)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: vetrix >= 0)
+=>
+	(chat-to-all "Very well, let's duel.")
+	(disable-self)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: demon >= 0)
+=>
+	(chat-to-all "Demon? Like an ancient Demon? That must mean you're a really old AI. Do you even lure boar?")
+	(disable-self)
+)
+
+(defrule
+(game-time > 128)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: demon >= 0)
+=>
+	(chat-to-all "Let's smite you back to Age of Conquerors so you can go back home.")
+	(disable-self)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: odette >= 0)
+=>
+	(chat-to-all "Odette? The Princess of Arabia is here?")
+	(disable-self)
+)
+
+(defrule
+(game-time > 128)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: odette >= 0)
+=>
+	(chat-to-all "No offence your majesty but I hope this fight goes better for me than the others did in Prince of Arabia")
+	(disable-self)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: mangud-ai >= 0)
+=>
+	(chat-to-all "MangudAI, you were my first true rival. I have missed our battles. It's good to see you so we can fight once more...")
+	(disable-self)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: immortal >= 0)
+=>
+	(chat-to-all "Immortal? I don't want to fight you. How about we both create a lot of lag and call it a draw?")
+	(disable-self)
+)
+
+(defrule
+(game-time > 120)
+(or(goal my-colour-id 1)
+(goal my-colour-id 2))
+	(up-compare-text c: phyrexx-up >= 0)
+=>
+	(chat-to-all "It's nice to meet you Phyrexx. UP or not, I can't let you win I'm afraid, otherwise we could have been friends.")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-sn sn-focus-player-number > 0)
+	(up-compare-sn sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -16)
+)
+
+;(defrule
+;(true)
+;=>
+;(chat-to-all test-chat)
+;(disable-self)
+;)

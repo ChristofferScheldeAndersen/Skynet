@@ -1,0 +1,664 @@
+#load-if-defined GURJARAS-CIV
+
+(defconst boar-chase-damage 4)
+
+#else
+
+(defconst boar-chase-damage 5)
+
+#end-if
+
+#load-if-defined AZTEC-CIV
+
+(defconst boar-chase-distance 375)
+
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+(defconst boar-chase-distance 375)
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+(defconst boar-chase-distance 375)
+
+#end-if
+
+#load-if-not-defined AZTEC-CIV
+
+#load-if-not-defined MAYAN-CIV
+
+#load-if-not-defined INCAN-CIV
+
+(defconst boar-chase-distance 325)
+
+#end-if
+
+#end-if
+
+#end-if
+
+(defrule
+(map-type arabia)
+(game-time < 600)
+=>
+(up-full-reset-search)
+(up-set-target-point gl-self-x)
+(up-filter-distance c: -1 c: 25)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-find-remote c: 2084 c: 500)
+(up-find-remote c: 2086 c: 500)
+(up-find-remote c: 2088 c: 500)
+(up-find-remote c: 2098 c: 500)
+(up-find-remote c: 2099 c: 500)
+(up-find-remote c: 2100 c: 500)
+(up-remove-objects search-remote 44 c:> 25)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(map-type arabia)
+(game-time < 600)
+(up-compare-goal gl-boar-found-state c:== 3)
+(up-compare-goal gl-remote-total > 0)
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+(not(goal scout-goal 22))
+(or(up-compare-goal scout-goal > 0)
+(up-compare-goal scout-goal == -8))
+(up-compare-goal scout-goal < 10)
+=>
+(set-goal scout-goal 22)
+;(disable-self)
+)
+
+(defrule
+(players-building-type-count target-player town-center > 0)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-find-remote c: town-center c: 1)
+)
+
+(defrule
+(players-building-type-count target-player town-center > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object gl-danger-x)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+;(up-modify-goal gl-dot-x c:= boar-chase-distance)
+;(up-modify-goal gl-dot-y c:= boar-chase-damage)
+;(up-chat-data-to-self "distance %d" g: gl-dot-x)
+;(up-chat-data-to-self "damage %d" g: gl-dot-y)
+)
+
+(defrule
+(building-type-count town-center > 0)
+(up-compare-goal gl-position-line c:== flank)
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+;(goal scout-goal lame-boar)
+=>
+(up-full-reset-search)
+;(up-add-object-by-id search-local gl-scout-id)
+(up-set-group search-local c: 0)
+(up-remove-objects search-local 2 c:== villager-class)
+(up-set-target-point gl-self-x)
+(up-remove-objects search-local 32 >= 1)
+(up-filter-distance c: 35 c: -1)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-find-remote c: 48 c: 40)
+(up-find-remote c: 822 c: 40)
+(up-find-remote c: 1301 c: 40)
+(up-find-remote c: 1139 c: 40)
+(up-find-remote c: 2589 c: 40)
+(up-remove-objects search-remote 44 < 35)
+(up-remove-objects search-remote 32 > 2)
+(up-remove-objects search-remote 10 < 1)
+(up-remove-objects search-remote 2 != 910)
+(up-get-search-state gl-local-total)
+;(up-chat-data-to-all "boar HP %d" g: gl-boar-two-hit-hp)
+)
+
+(defrule
+(building-type-count town-center > 0)
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-remote-total > 0)
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+=>
+;(chat-local-to-self "We have a boar I can lame!")
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-danger-x)
+(up-remove-objects search-remote 44 < 10)
+(up-set-target-point gl-dot-x)
+(up-remove-objects search-remote 44 > 5);5
+(up-clean-search search-remote 44 1)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(building-type-count town-center > 0)
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-local-total > 0)
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+(up-point-explored gl-dot-x != 0)
+=>
+(set-goal scout-goal lame-boar)
+(set-goal active-scout-goal lame-boar)
+(up-get-object-data 10 gl-boar-two-hit-hp)
+(up-modify-goal gl-boar-two-hit-hp c:- boar-chase-damage)
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar)
+(current-age == dark-age)
+(not(goal military-mode hold))
+=>
+(set-goal military-mode hold)
+)
+
+(defrule
+(false);this is a backup for the 3 rules below
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar)
+(goal military-mode hold)
+=>
+(up-get-object-data 0 gl-laming-boar-id)
+(up-target-objects 1 action-default -1 2)
+;(chat-local-to-self "attack the boar target!")
+)
+
+(defrule
+;(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar)
+(goal military-mode hold)
+(up-compare-goal gl-laming-boar-id != -1)
+;(up-compare-goal gl-remote-total < 1)
+=>
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-add-object-by-id search-remote g: gl-laming-boar-id)
+(up-remove-objects search-remote 10 < 1)
+;(chat-local-to-self "adding target boar ID")
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar)
+(goal military-mode hold)
+=>
+(up-get-object-data 0 gl-laming-boar-id)
+(up-get-point position-object gl-dot-x)
+(up-lerp-tiles gl-dot-x gl-self-x c: 2)
+(up-set-target-point gl-dot-x)
+)
+
+(defrule
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar)
+(goal military-mode hold)
+(up-object-data 44 > 1)
+(up-set-target-object search-remote c: 0)
+=>
+(up-target-point gl-dot-x action-move -1 -1)
+)
+
+(defrule
+(up-set-target-object search-local c: 0)
+(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar)
+(goal military-mode hold)
+(up-object-data 44 < 2)
+(up-set-target-object search-remote c: 0)
+(up-object-data 10 g:>= gl-boar-two-hit-hp)
+=>
+(up-target-objects 1 action-default -1 2)
+;(chat-local-to-self "attack the boar target!")
+)
+
+(defrule
+;(false)
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+=>
+;(chat-local-to-self "lame attack 1")
+(up-full-reset-search)
+(up-get-search-state gl-local-total)
+;(up-add-object-by-id search-local gl-scout-id)
+(up-set-group search-local c: 0)
+)
+
+(defrule
+;(false)
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+(up-set-target-object search-local c: 0)
+=>
+;chat-local-to-self "lame attack 2")
+;(up-get-point position-object gl-dot-x)
+;(up-set-target-point gl-dot-x)
+;(up-filter-distance c: 2 c: -1)
+(up-get-object-data 38 gl-dot-x)
+(up-get-object-data 39 gl-dot-y)
+(up-modify-sn sn-target-point-adjustment c:= 6)
+(up-set-precise-target-point gl-dot-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-add-object-by-id search-remote g: gl-laming-boar-id)
+;(up-set-target-point gl-dot-x)
+;(up-send-flare gl-dot-x)
+(up-remove-objects search-remote 2 != 910)
+;(up-remove-objects search-remote 80 < boar-chase-distance);275 375
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-target-point-adjustment c:= 0)
+)
+
+(defrule
+;(false)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 38 gl-boar-x)
+(up-get-object-data 39 gl-boar-y)
+(up-point-distance gl-dot-x gl-boar-x > boar-chase-distance)
+(up-compare-goal gl-local-total > 0)
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+;(up-object-data 80 >= 350)
+=>
+;(chat-local-to-self "lame attack 3")
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-jump-rule 1)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+;(false)
+(up-set-target-object search-local c: 0)
+(up-object-data 32 >= 1)
+(up-set-target-object search-remote c: 0)
+(up-compare-goal gl-local-total > 0)
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+(goal military-mode hold)
+(up-point-explored gl-dot-x != 0)
+=>
+;(up-send-flare gl-dot-x)
+;(chat-local-to-self "lame attack 4")
+(up-target-objects 1 action-default -1 -1)
+;(chat-local-to-self "attack the boar!")
+(disable-timer lame-timer)
+)
+
+(defrule
+;(false)
+(up-set-target-by-id g: gl-laming-boar-id)
+(up-object-data 10 g:< gl-boar-two-hit-hp)
+(up-set-target-object search-local c: 0)
+(goal scout-goal lame-boar)
+(goal military-mode hold)
+(up-object-data 32 >= 1)
+=>
+(set-goal scout-goal lame-boar-run)
+)
+
+(defrule
+;(false)
+(goal scout-goal lame-boar-run)
+=>
+(up-full-reset-search)
+;(up-add-object-by-id search-local gl-scout-id)
+(up-set-group search-local c: 0)
+(up-remove-objects search-local 32 < 1)
+;(chat-local-to-self "lame run 1")
+)
+
+(defrule
+;(false)
+(goal scout-goal lame-boar-run)
+(up-set-target-object search-local c: 0)
+=>
+;(up-get-point position-object gl-dot-x)
+;(up-set-target-point gl-dot-x)
+;(up-filter-distance c: -1 c: 2)
+(up-get-object-data 38 gl-dot-x)
+(up-get-object-data 39 gl-dot-y)
+;(up-chat-data-to-self "x %d" g: gl-dot-x)
+;(up-chat-data-to-self "y %d" g: gl-dot-y)
+(up-modify-sn sn-target-point-adjustment c:= 6)
+(up-set-precise-target-point gl-dot-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-add-object-by-id search-remote g: gl-laming-boar-id)
+;(up-remove-objects search-remote 80 >= boar-chase-distance);275 375
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-target-point-adjustment c:= 0)
+;(chat-local-to-self "lame run 2")
+;(up-modify-goal gl-dot-x c:/ 100)
+;(up-modify-goal gl-dot-y c:/ 100)
+;(up-send-flare gl-dot-x)
+)
+
+(defrule
+;(false)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 38 gl-boar-x)
+(up-get-object-data 39 gl-boar-y)
+(up-point-distance gl-dot-x gl-boar-x <= boar-chase-distance)
+(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar-run)
+(goal military-mode hold)
+;(up-object-data 80 < 350)
+(up-timer-status lame-timer == 0)
+=>
+;(up-lerp-tiles gl-dot-x gl-self-x c: 2)
+;(up-cross-tiles gl-dot-x gl-self-x c: 1)
+;(chat-local-to-self "lame run 3")
+(up-target-point gl-self-x action-default -1 3)
+;(chat-local-to-self "run away!")
+(enable-timer lame-timer 1)
+)
+
+(defrule
+;(false)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 38 gl-boar-x)
+(up-get-object-data 39 gl-boar-y)
+(up-point-distance gl-dot-x gl-boar-x <= boar-chase-distance)
+(up-compare-goal gl-local-total > 0)
+(goal scout-goal lame-boar-run)
+(goal military-mode hold)
+;(up-object-data 80 < 350)
+(timer-triggered lame-timer)
+=>
+;(up-lerp-tiles gl-dot-x gl-self-x c: 2)
+;(up-cross-tiles gl-dot-x gl-self-x c: 1)
+;(chat-local-to-self "lame run 3")
+(up-target-point gl-self-x action-default -1 3)
+;(chat-local-to-self "run away!")
+(enable-timer lame-timer 1)
+)
+
+(defrule
+;(false)
+(goal scout-goal lame-boar-run)
+(up-set-target-object search-local c: 0)
+=>
+;(up-get-point position-object gl-dot-x)
+;(up-set-target-point gl-dot-x)
+(up-get-object-data 38 gl-dot-x)
+(up-get-object-data 39 gl-dot-y)
+(up-set-precise-target-point gl-dot-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-add-object-by-id search-remote g: gl-laming-boar-id)
+;(up-remove-objects search-remote 80 < 400)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal scout-goal lame-boar-run)
+(up-set-target-object search-local c: 0)
+(up-object-data 32 < 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 38 gl-boar-x)
+(up-get-object-data 39 gl-boar-y)
+(up-point-distance gl-dot-x gl-boar-x >= 400)
+(up-compare-goal gl-local-total > 0)
+;(up-object-data 45 >= 550)
+=>
+(up-get-object-data 10 gl-boar-two-hit-hp)
+(up-modify-goal gl-boar-two-hit-hp c:- boar-chase-damage)
+;(chat-local-to-self "luring boar again")
+(set-goal scout-goal lame-boar)
+)
+
+(defrule
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+(up-set-target-by-id g: gl-laming-boar-id)
+(up-object-data 10 < 1)
+=>
+(set-goal scout-goal 10)
+;(chat-local-to-self "boar dead, switching to scout goal 10")
+;(set-goal active-scout-goal 0)
+(set-goal deer-luring 1)
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+(defrule
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+(or(up-compare-goal gl-local-total < 1)
+(not(up-set-target-by-id g: gl-laming-boar-id)))
+=>
+(set-goal scout-goal 10)
+;(chat-local-to-self "no boar, switching to scout goal 10")
+;(set-goal active-scout-goal 0)
+(set-goal deer-luring 1)
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+(defrule
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+(up-set-target-by-id g: gl-laming-boar-id)
+(up-object-data 10 < 1)
+=>
+(set-goal scout-goal 10)
+;(chat-local-to-self "boar dead 2, switching to scout goal 10")
+;(set-goal active-scout-goal 0)
+(set-goal deer-luring 1)
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+;(defrule
+;(true)
+;=>
+;(up-chat-data-to-self "military mode %d" g: military-mode)
+;(up-chat-data-to-self "active military mode %d" g: active-military-mode)
+;(up-chat-data-to-self "deer luring %d" g: deer-luring)
+;(up-chat-data-to-self "scout goal %d" g: scout-goal)
+;(up-chat-data-to-self "active scout goal %d" g: active-scout-goal)
+;(up-chat-data-to-self "archer-votes %d" g: archer-votes)
+;(up-chat-data-to-self "skirmisher-votes goal %d" g: skirmisher-votes)
+;(up-chat-data-to-self "supporting-military-votes %d" g: gl-supporting-military-votes)
+;(up-chat-data-to-self "chosen-military %d" g: chosen-military-unit)
+;(up-chat-data-to-self "supporting-military %d" g: supporting-military-unit)
+;)
+
+(defrule
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+=>
+(up-full-reset-search)
+;(up-add-object-by-id search-local gl-scout-id)
+(up-set-group search-local c: 0)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-scout-location-x)
+(up-get-point position-self gl-self-x)
+)
+
+(defrule
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+(up-point-distance gl-scout-location-x gl-self-x < 2)
+=>
+(set-goal scout-goal 10)
+;(chat-local-to-self "scout close to home, switching to scout goal 10")
+;(set-goal active-scout-goal 0)
+(set-goal deer-luring 1)
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+(defrule
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+(not(goal scout-goal 10))
+(or(game-time > 400);400I think this and below turn boar laming on
+(goal scout-goal 22))
+(game-time > 400);280;400 - I think this turned boar laming off
+(current-age == dark-age)
+=>
+;(chat-local-to-self "deer deer deer")
+(set-goal scout-goal 10)
+;(chat-local-to-self "boar laming script timed out, switching to scout goal 10")
+(set-goal active-scout-goal 10)
+(set-goal deer-luring 1)
+(set-goal military-mode hold)
+(set-goal active-military-mode hold)
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+(defrule
+(map-type team-islands)
+(not(goal scout-goal lame-boar))
+(not(goal scout-goal lame-boar-run))
+(not(goal scout-goal 10))
+(or(game-time > 240);400I think this and below turn boar laming on
+(goal scout-goal 22))
+(game-time > 240);280;400 - I think this turned boar laming off
+(current-age == dark-age)
+=>
+;(chat-local-to-self "deer deer deer")
+(set-goal scout-goal 10)
+;(chat-local-to-self "boar laming script timed out, switching to scout goal 10")
+(set-goal active-scout-goal 10)
+(set-goal deer-luring 1)
+(set-goal military-mode hold)
+(set-goal active-military-mode hold)
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+(defrule
+(false)
+(game-time >= 430)
+(or(goal scout-goal lame-boar)
+(goal scout-goal lame-boar-run))
+=>
+(set-goal scout-goal 10)
+;(set-goal active-scout-goal 0)
+(set-goal deer-luring 1)
+(set-goal military-mode hold)
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-add-object-by-id search-remote g: gl-laming-boar-id)
+(up-remove-objects search-remote 44 > 8)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-find-local c: villager-class c: 240)
+(up-remove-objects search-local 32 > 0)
+(up-clean-search search-local 44 1)
+(up-remove-objects search-local -1 > 7)
+(up-target-objects 1 action-default -1 -1)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 1)
+=>
+(chat-to-enemies boar-steal-chat-enemies-blue)
+(chat-to-allies boar-steal-chat-allies-blue)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 2)
+=>
+(chat-to-enemies boar-steal-chat-enemies-red)
+(chat-to-allies boar-steal-chat-allies-red)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 3)
+=>
+(chat-to-enemies boar-steal-chat-enemies-green)
+(chat-to-allies boar-steal-chat-allies-green)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 4)
+=>
+(chat-to-enemies boar-steal-chat-enemies-yellow)
+(chat-to-allies boar-steal-chat-allies-yellow)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 5)
+=>
+(chat-to-enemies boar-steal-chat-enemies-cyan)
+(chat-to-allies boar-steal-chat-allies-cyan)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 6)
+=>
+(chat-to-enemies boar-steal-chat-enemies-purple)
+(chat-to-allies boar-steal-chat-allies-purple)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 7)
+=>
+(chat-to-enemies boar-steal-chat-enemies-grey)
+(chat-to-allies boar-steal-chat-allies-grey)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)
+
+(defrule
+(up-set-target-object search-remote c: 0)
+(goal my-colour-id 8)
+=>
+(chat-to-enemies boar-steal-chat-enemies-orange)
+(chat-to-allies boar-steal-chat-allies-orange)
+;(chat-to-all "I don't know why but the animals from the enemy's side of the map taste better for some reason...")
+(disable-self)
+)

@@ -1,0 +1,258 @@
+
+
+;cancels the jump
+;(defrule
+;	(true)
+;=>
+;	(up-get-rule-id jump-to-attack-function)
+;	(up-modify-goal jump-to-attack-function c:+ 1)
+;	(set-goal g-math-1 -1)
+;	(set-goal g-math-2 5)
+;	(set-goal check-goal 0)
+;)
+
+;function start
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(up-compare-goal temporary-goal >= 1)
+	(up-compare-goal g-next-attack > 800)
+=>
+	(set-goal g-math-2 2)
+)
+(defrule
+	(goal check-goal jump-to-attack-function)
+=>
+	(up-get-rule-id jump-to-attack-function)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-exclude -1 -1 -1 building-class)
+	(up-filter-distance c: -1 g: g-math-2)
+)
+
+(defrule
+	(stance-toward focus-player enemy)
+	(goal check-goal jump-to-attack-function)
+	(or	(up-object-data object-data-type == cataphract)
+		(up-object-data object-data-type == jaguar-man))
+	(up-find-remote c: infantry-class c: 5)
+=>
+	(set-goal g-math-1 1)
+)
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(or	(up-object-data object-data-type == cataphract)
+		(up-object-data object-data-type == jaguar-man))
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+(defrule
+	(goal g-math-1 0)
+	(goal check-goal jump-to-attack-function)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+
+
+(defrule
+	(stance-toward focus-player enemy)
+	(goal check-goal jump-to-attack-function)
+	(or	(up-object-data object-data-type == spearman)
+	(or	(up-object-data object-data-type == camel)
+		(up-object-data object-data-type == kamayuk)))
+	(or	(up-find-remote c: cavalry-class c: 5)
+	(or	(up-find-remote c: cavalry-archer-class c: 5)
+		(up-find-remote c: scout-cavalry-class c: 5)))
+=>
+	(set-goal g-math-1 1)
+)
+(defrule
+	(or	(up-object-data object-data-type == spearman)
+	(or	(up-object-data object-data-type == camel)
+		(up-object-data object-data-type == kamayuk)))
+	(goal check-goal jump-to-attack-function)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+(defrule
+	(goal g-math-1 0)
+	(goal check-goal jump-to-attack-function)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(stance-toward focus-player enemy)
+	(or	(up-find-remote c: monastery-class c: 5)
+		(up-find-remote c: monk-with-relic-class c: 2))
+=>
+	(set-goal g-math-1 1)
+)
+
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+
+(defrule
+	(goal g-math-1 0)
+	(goal check-goal jump-to-attack-function)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-include cmdid-military -1 -1 -1)
+)
+
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(stance-toward focus-player enemy)
+	(up-find-remote c: -1 c: 15)
+=>
+	(set-goal g-math-1 1)
+)
+
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+(defrule
+	(goal g-math-1 0)
+	(goal check-goal jump-to-attack-function)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-include -1 -1 -1 -1)
+)
+
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(stance-toward focus-player enemy)
+	(or	(up-find-remote c: villager-class c: 5)
+		(up-find-remote c: trade-cart c: 5))
+=>
+	(set-goal g-math-1 1)
+)
+
+(defrule
+	(goal check-goal jump-to-attack-function)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+;check for pathing
+;(defrule
+;	(goal g-math-1 1)
+;	(up-compare-goal g-math-2 > 3)
+;	(goal check-goal jump-to-attack-function)
+;	(up-set-target-object search-remote c: 0)
+;	(up-path-distance p-x-1 0 > 8)
+;=>
+;	(set-goal g-math-1 0)
+;	(up-full-reset-search)
+;	(up-jump-direct g: function-recall-jump)
+;)
+;function loop
+
+(defrule
+	(goal g-math-1 0)
+	(up-compare-goal temporary-goal > -1)
+	(up-object-data object-data-action != actionid-explore)
+	(goal check-goal jump-to-attack-function)
+	(up-compare-goal g-math-2 < 4)
+	(or	(up-compare-goal g-math-2 < 2)
+		(up-object-data object-data-class != villager-class))
+	(or	(up-point-distance p-x-1 p-x-3 g:> g-math-2)
+		(goal g-current-target-id -1))
+=>
+	(up-modify-goal g-math-2 c:+ 1)
+	(up-set-target-point p-x-1)
+	(up-jump-direct g: jump-to-attack-function); not the problem
+)
+
+;(defrule
+;	(goal g-math-1 1)
+;	(goal g-math-2 0)
+;	(goal check-goal jump-to-attack-function)
+;=>
+;	(chat-to-all "enemy super close"))
+
+;attack
+(defrule
+	(goal g-math-1 1)
+	(goal check-goal jump-to-attack-function)
+=>
+;	(chat-to-all "melee attack")
+	(up-reset-search 1 1 0 0)
+	(up-add-object-by-id search-local g: g-current-unit-id)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+;	(up-clean-search search-remote object-data-attacker-count search-order-asc)
+	(up-clean-search search-remote object-data-hitpoints search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(up-target-objects 1 action-default -1 stance-aggressive)
+
+	(up-modify-goal g-current-list-number c:+ 1)
+	(up-jump-direct g: g-jump-direct-1)
+)
+
+;function end
+;(defrule
+;	(goal check-goal jump-to-attack-function)
+;=>
+;	(up-full-reset-search)
+;	(up-jump-direct g: function-recall-jump)
+;)
+;---------------------------------------------------------------------------
+
+
+;villager-class
+;(defrule
+;	(true)
+;=>
+;	(set-goal check-goal 0)
+;	(up-full-reset-search)
+;	(up-find-local c: villager-class c: 100)
+;	(up-remove-objects search-local object-data-hitpoints <= 20)
+;	(up-remove-objects search-local object-data-next-attack > 0)
+;	(up-clean-search search-local -1 search-order-asc)
+;	(up-create-group 0 0 c: 0)
+;	(set-goal g-current-list-number 0)
+;)
+;(defrule
+;	(true)
+;=>
+;	(up-get-rule-id function-recall-jump)
+;	(up-modify-goal g-jump-direct-1 g:= function-recall-jump)
+;	(up-modify-goal function-recall-jump c:+ 2)
+;	(up-set-group search-local c: 0)
+;)
+;(defrule
+;	(up-set-target-object search-local g: g-current-list-number)
+;=>
+;	(up-get-object-data object-data-id g-current-unit-id)
+;	(up-get-point position-object p-x-1)
+;	(up-set-target-point p-x-1)
+
+;	(set-goal g-math-1 0)
+;	(set-goal g-math-2 1)
+;	(set-goal temporary-goal -1)
+;	(set-goal check-goal jump-to-attack-function)
+;	(up-jump-direct g: jump-to-attack-function)
+;)
+;(defrule
+;	(goal check-goal jump-to-attack-function)
+;=>
+;	(set-goal check-goal 0)
+;	(up-modify-goal g-current-list-number c:+ 1)
+;	(up-set-group search-local c: 0)
+;	(up-jump-rule -2)
+;)
+

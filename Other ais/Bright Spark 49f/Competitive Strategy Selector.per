@@ -1,0 +1,422 @@
+(defconst is-flank 0)
+(defconst is-pocket 1)
+
+#load-if-defined UP-POCKET-POSITION
+
+(defconst my-position is-pocket)
+
+#else
+
+(defconst my-position is-flank)
+
+#end-if
+
+(defrule
+(or(up-compare-const my-position == is-flank)
+(up-players-in-game ally < 3))
+=>
+(up-modify-goal gl-feudal-rush-score c:= 1000)
+)
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-military-score c:= 1000)
+)
+
+#load-if-defined ARMENIANS-CIV
+
+#end-if
+
+#load-if-defined AZTEC-CIV
+
+#end-if
+
+#load-if-defined BENGALIS-CIV
+
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+#end-if
+
+#load-if-defined BOHEMIANS-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined BRITON-CIV
+
+#end-if
+
+#load-if-defined BULGARIANS-CIV
+
+#end-if
+
+#load-if-defined BURGUNDIANS-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-sling-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+#end-if
+
+#load-if-defined CUMANS-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-sling-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+#end-if
+
+#load-if-defined GEORGIANS-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+(defrule
+(up-players-in-game ally < 3)
+=>
+(up-modify-goal gl-drush-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined GURJARAS-CIV
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+(defrule
+(up-players-in-game ally < 3)
+(current-age == dark-age)
+=>
+(up-modify-goal gl-drush-score c:= 2000)
+)
+
+(defrule
+(up-players-in-game ally < 3)
+(or(current-age > dark-age)
+(or(players-building-type-count any-enemy palisade-wall >= 30)
+(players-building-type-count any-enemy watch-tower-line >= 4)))
+=>
+(up-modify-goal gl-drush-score c:= -2000)
+(up-modify-goal gl-castle-military-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-sling-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+#end-if
+
+#load-if-defined JURCHENS-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined KHITANS-CIV
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+#end-if
+
+#load-if-defined LITHUANIANS-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined MALAY-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+#end-if
+
+#load-if-defined MAPUCHE-CIV
+
+(defrule
+(up-players-in-game ally < 3)
+(current-age == dark-age)
+=>
+(up-modify-goal gl-drush-score c:= 2000)
+)
+
+(defrule
+(up-players-in-game ally < 3)
+(or(current-age > dark-age)
+(or(players-building-type-count any-enemy palisade-wall >= 30)
+(players-building-type-count any-enemy watch-tower-line >= 4)))
+=>
+(up-modify-goal gl-drush-score c:= -2000)
+(up-modify-goal gl-castle-military-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+#end-if
+
+#load-if-defined MUISCA-CIV
+
+(defrule
+(up-players-in-game ally < 3)
+(current-age == dark-age)
+=>
+(up-modify-goal gl-drush-score c:= 2000)
+)
+
+(defrule
+(up-players-in-game ally < 3)
+(or(current-age > dark-age)
+(or(players-building-type-count any-enemy palisade-wall >= 30)
+(players-building-type-count any-enemy watch-tower-line >= 4)))
+=>
+(up-modify-goal gl-drush-score c:= -2000)
+(up-modify-goal gl-castle-military-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+
+#end-if
+
+#load-if-defined POLES-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+#end-if
+
+#load-if-defined ROMANS-CIV
+
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+#end-if
+
+#load-if-defined SHU-CIV
+
+#end-if
+
+#load-if-defined SICILIANS-CIV
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined TATARS-CIV
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+#end-if
+
+#load-if-defined TUPI-CIV
+
+(defrule
+(up-players-in-game ally < 3)
+(current-age == dark-age)
+=>
+(up-modify-goal gl-drush-score c:= 2000)
+)
+
+(defrule
+(up-players-in-game ally < 3)
+(or(current-age > dark-age)
+(or(players-building-type-count any-enemy palisade-wall >= 30)
+(players-building-type-count any-enemy watch-tower-line >= 4)))
+=>
+(up-modify-goal gl-drush-score c:= -2000)
+(up-modify-goal gl-castle-military-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+(defrule
+(map-type arena)
+=>
+(up-modify-goal gl-fast-imp-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+
+#end-if
+
+#load-if-defined VIKING-CIV
+
+#end-if
+
+#load-if-defined WEI-CIV
+
+(defrule
+(up-compare-const my-position == is-pocket)
+(up-players-in-game ally >= 3)
+=>
+(up-modify-goal gl-castle-drop-score c:= 2000)
+)
+
+#end-if
+
+#load-if-defined WU-CIV
+
+#end-if
+
+(defrule
+(map-type arena)
+=>
+(up-modify-goal gl-castle-drop-score c:= 3000)
+)

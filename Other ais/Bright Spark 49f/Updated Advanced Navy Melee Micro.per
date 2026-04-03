@@ -1,0 +1,912 @@
+(defrule
+(false)
+(not(goal military-mode assault))
+=>
+(set-goal military-mode assault)
+(up-chat-data-to-self "assault %d" g: military-mode)
+)
+
+(defrule
+(or(and(unit-type-count fire-ship-line < 1)
+(unit-type-count demolition-ship-line < 1))
+(up-compare-flag gl-anti-lag-flag c:== anti-lag-level4))
+=>
+(up-jump-rule 52)
+)
+
+(defrule
+;(goal military-mode raid)
+(timer-triggered mini-raid-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: fire-ship-line c: 240)
+(up-find-local c: demolition-ship-line c: 240)
+(up-remove-objects search-local 73 != 2)
+(up-create-group 0 0 c: 2)
+(up-modify-group-flag 0 c: 2)
+)
+
+(defrule
+;(goal military-mode raid)
+(timer-triggered mini-raid-timer)
+=>
+(up-full-reset-search)
+(up-find-local c: fire-ship-line c: 240)
+(up-find-local c: demolition-ship-line c: 240)
+(up-remove-objects search-local 73 != 3)
+(up-create-group 0 0 c: 3)
+(up-modify-group-flag 0 c: 3)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-closest-enemy-id c:= -1)
+(up-modify-goal gl-danger-x c:= -255)
+(up-modify-goal gl-danger-y c:= -255)
+(up-modify-goal gl-selected-unit-id c:= 0)
+(up-full-reset-search)
+(up-find-local c: fire-ship-line c: 240)
+(up-find-local c: demolition-ship-line c: 240)
+(up-remove-objects search-local 0 g:== gl-scout-id)
+(up-remove-objects search-local 73 == 2)
+(up-clean-search search-local 0 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-rule-loops g:= gl-local-total)
+;(up-chat-data-to-self "archers found %d" g: gl-rule-loops)
+(up-modify-goal gl-current-list-number c:= 0)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-modify-goal gl-closest-enemy-id c:= -1)
+(up-modify-goal gl-danger-x c:= -255)
+(up-modify-goal gl-danger-y c:= -255)
+(up-modify-goal gl-selected-unit-id c:= 0)
+(up-full-reset-search)
+(up-find-local c: fire-ship-line c: 240)
+(up-find-local c: demolition-ship-line c: 240)
+(up-remove-objects search-local 0 g:== gl-scout-id)
+(up-remove-objects search-local 73 == 2)
+(up-clean-search search-local 0 1)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-temp-range c:= 0);1
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-local g: gl-current-list-number)
+=>
+(up-modify-goal gl-closest-enemy-id c:= -1)
+(up-get-object-data 0 gl-selected-unit-id)
+;(up-get-object-data 38 gl-precise-dot-x)
+;(up-get-object-data 39 gl-precise-dot-y)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-get-object-data 62 gl-object-min-range)
+(up-get-object-data 54 gl-reload-time)
+(up-get-object-data 55 gl-next-attack)
+(up-get-object-data 13 gl-unit-speed)
+(up-modify-goal gl-unit-speed c:+ 10)
+(up-modify-goal gl-close-slower-units c:= -1)
+(up-get-object-data 0 gl-direction)
+(up-modify-goal gl-direction c:mod 2);5
+(up-modify-goal gl-direction c:* 2)
+(up-modify-goal gl-direction c:- 1);- 3
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 26 < 2)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 2)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 26 < 2)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(or(not(player-in-game focus-player))
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(players-stance focus-player ally)))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 26 < 2)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-find-remote c: 906 c: 40)
+(up-remove-objects search-remote 13 g:>= gl-unit-speed)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 23 g:!= gl-selected-unit-id)
+(up-clean-search search-remote 46 1)
+;(up-remove-objects search-remote -1 > 0)
+(up-find-remote c: villager-class c: 40)
+(up-remove-objects search-remote 13 g:>= gl-unit-speed)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 23 g:!= gl-selected-unit-id)
+(up-clean-search search-remote 46 1)
+(up-remove-objects search-remote -1 > 1)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-get-search-state gl-local-total)
+(up-reset-filters)
+(up-reset-search 0 0 1 0)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote c: 0)
+;(up-get-object-data 46 gl-close-slower-units)
+(up-set-target-by-id g: gl-selected-unit-id)
+;(up-compare-goal gl-close-slower-units < 16)
+;(up-compare-goal gl-close-slower-units > -1)
+(up-compare-goal gl-remote-total > 1)
+;(up-object-data 55 <= 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 0 gl-closest-enemy-id)
+)
+
+(defrule
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 26 < 2)
+(up-object-data 73 != 3)
+(up-compare-goal gl-closest-enemy-id > 0)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+=>
+(up-set-target-by-id g: gl-closest-enemy-id)
+(up-modify-sn sn-target-point-adjustment c:= 6)
+(up-get-object-data 38 gl-temp-x)
+(up-get-object-data 39 gl-temp-y)
+(up-modify-goal gl-dot-x c:* 100)
+(up-modify-goal gl-dot-y c:* 100)
+(up-modify-goal gl-direction c:* 600);11
+(up-modify-goal gl-direction g:* gl-timed-edit)
+(up-lerp-tiles gl-dot-x gl-temp-x c: -1000);-800
+(up-cross-tiles gl-dot-x gl-temp-x g: gl-direction)
+(up-bound-precise-point gl-dot-x 1 c: 100)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+(up-target-point gl-dot-x action-move -1 3)
+(up-modify-sn sn-target-point-adjustment c:= 0)
+(up-create-group 0 0 c: 3)
+(up-modify-group-flag 1 c: 3)
+;(up-modify-goal gl-current-list-number c:+ 1)
+;(up-jump-rule -8)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-modify-goal gl-enemy-fortification-id c:= -1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(or(not(player-in-game focus-player))
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(players-stance focus-player ally)))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(up-compare-goal military-mode != assault)
+=>
+(up-filter-status c: 2 c: 0)
+(up-find-remote c: 952 c: 10)
+(up-find-remote c: donjon c: 5)
+(up-remove-objects search-remote 18 < 3)
+(up-remove-objects search-remote 23 g:!= gl-selected-unit-id)
+(up-find-remote c: town-center c: 10)
+(up-find-remote c: castle c: 10)
+(up-find-remote c: krepost c: 5)
+(up-remove-objects search-remote 1 == outpost)
+(up-add-object-by-id search-remote g: gl-enemy-fortification-id)
+(up-remove-objects search-remote 19 == 0)
+(up-clean-search search-remote 46 1)
+(up-remove-objects search-remote -1 > 0)
+(up-reset-filters)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(not(up-set-target-object search-remote c: 0))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -3)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 0 gl-enemy-fortification-id)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -4)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object gl-danger-x)
+(up-get-object-data 12 gl-enemy-building-range)
+(up-modify-goal gl-enemy-building-range c:+ 2)
+(up-modify-goal gl-enemy-building-range-sq g:= gl-enemy-building-range)
+(up-modify-goal gl-enemy-building-range-sq g:* gl-enemy-building-range-sq)
+(up-modify-goal gl-enemy-building-range-sq c:+ 5)
+(up-get-object-data 28 gl-building-arrow-damage)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-get-object-data 27 gl-temp-y)
+(up-modify-goal gl-temp-y c:- 2)
+(up-modify-goal gl-temp-x g:= gl-building-arrow-damage)
+(up-modify-goal gl-temp-x g:- gl-temp-y)
+(up-modify-goal gl-temp-x c:* 12);10
+(up-set-target-point gl-danger-x)
+;(up-get-object-data 46 274)
+;(up-chat-data-to-self "gl-enemy-building-damage: %d" g: gl-building-arrow-damage)
+;(up-chat-data-to-self "range from danger: %d" g: 274)
+)
+
+(defrule
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 73 != 2)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-object-data 46 g:<= gl-enemy-building-range-sq)
+(up-object-data 10 g:<= gl-temp-x)
+(up-compare-goal gl-direction < 0)
+(up-compare-goal gl-danger-x != -255)
+=>
+(up-get-point position-object gl-current-raiders-x)
+(up-copy-point gl-dot-x gl-danger-x)
+(up-modify-goal gl-range-variable g:= gl-enemy-building-range)
+(up-modify-goal gl-range-variable c:+ 3)
+(up-cross-tiles gl-dot-x gl-current-raiders-x c: 6);-12
+(up-lerp-tiles gl-dot-x gl-current-raiders-x g: gl-range-variable)
+(up-cross-tiles gl-dot-x gl-danger-x c: -4);12 gl-raid-target-x
+(up-bound-point gl-dot-x gl-dot-x)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+(up-add-object-by-id search-local g: gl-selected-unit-id)
+(up-create-group 0 0 c: 2)
+(up-modify-group-flag 1 c: 2)
+;(up-chat-data-to-self "danger-x: %d" g: gl-danger-x)
+(up-target-point gl-dot-x action-move -1 3)
+;(chat-local-to-self "Firing 1")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -15)
+)
+
+(defrule
+(goal military-mode raid)
+;(up-compare-goal gl-local-total > 0)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 73 != 2)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-object-data 46 g:<= gl-enemy-building-range-sq)
+(up-object-data 10 g:<= gl-temp-x)
+(up-compare-goal gl-direction >= 0)
+(up-compare-goal gl-danger-x != -255)
+=>
+(up-get-point position-object gl-current-raiders-x)
+(up-copy-point gl-dot-x gl-danger-x)
+(up-modify-goal gl-range-variable g:= gl-enemy-building-range)
+(up-modify-goal gl-range-variable c:+ 3)
+(up-cross-tiles gl-dot-x gl-current-raiders-x c: -6);-12
+(up-lerp-tiles gl-dot-x gl-current-raiders-x g: gl-range-variable)
+(up-cross-tiles gl-dot-x gl-danger-x c: 4);12 gl-raid-target-x
+(up-bound-point gl-dot-x gl-dot-x)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+(up-add-object-by-id search-local g: gl-selected-unit-id)
+(up-create-group 0 0 c: 2)
+(up-modify-group-flag 1 c: 2)
+;(up-chat-data-to-self "danger-x: %d" g: gl-danger-x)
+(up-target-point gl-dot-x action-move -1 3)
+;(chat-local-to-self "Firing 2")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -16)
+)
+
+(defrule
+(goal military-mode raid)
+;(up-compare-goal gl-local-total > 0)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 73 == 3)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-danger-x != -255)
+=>
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -17)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-reset-search 0 0 1 1)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-include 1 -1 -1 -1)
+(up-find-remote c: -1 c: 40)
+(up-remove-objects search-remote object-data-carry > 0)
+(up-reset-filters)
+(up-remove-objects search-remote 44 > 3)
+(up-clean-search search-remote 44 1)
+(up-remove-objects search-remote -1 > 0)
+(up-filter-distance g: gl-object-min-range g: gl-temp-range)
+(up-modify-sn sn-focus-player-number c:+ 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(or(not(player-in-game focus-player))
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(players-stance focus-player ally)))
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-find-remote c: -1 c: 40)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-remove-objects search-remote 2 == 920)
+(up-remove-objects search-remote 2 == 921)
+(up-remove-objects search-remote 2 g:== gl-target-navy-toggle)
+(up-remove-objects search-remote 2 == 903)
+(up-remove-objects search-remote 2 == 927)
+;(up-remove-objects search-remote 2 g:== gl-gate-toggle)
+(up-remove-objects search-remote 2 == 949)
+(up-remove-objects search-remote 2 == 952)
+(up-remove-objects search-remote 2 == 939)
+(up-add-object-by-id search-remote g: gl-left-wall-breach)
+(up-add-object-by-id search-remote g: gl-right-wall-breach)
+(up-add-object-by-id search-remote g: gl-back-wall-breach)
+(up-remove-objects search-remote 0 c:== 0)
+(up-remove-objects search-remote 44 g:> gl-temp-range)
+(up-remove-objects search-remote 10 c:< 1)
+(up-clean-search search-remote 46 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data 0 gl-closest-enemy-id)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote c: 0)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-get-object-data 27 gl-temp-y)
+(up-modify-goal gl-temp-y c:- 2)
+(up-modify-goal gl-temp-x g:= gl-building-arrow-damage)
+(up-modify-goal gl-temp-x g:- gl-temp-y)
+(up-modify-goal gl-temp-x c:* 12);10
+;(up-chat-data-to-self "temp-x: %d" g: gl-temp-x)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote c: 0)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(up-object-data 10 g:<= gl-temp-x)
+=>
+(up-set-target-point gl-danger-x)
+(up-remove-objects search-remote 46 g:< gl-enemy-building-range-sq)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-clean-search search-remote 46 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote c: 0);this line is the issue
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+;(up-set-target-by-id g: gl-selected-unit-id)
+(up-clean-search search-remote 10 1);44
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 10 gl-data)
+(up-remove-objects search-remote 10 g:> gl-data)
+;(up-clean-search search-remote 27 2)
+(up-set-target-by-id g: gl-selected-unit-id)
+;(up-remove-objects search-remote -1 > 2)
+;(up-clean-search search-remote 10 1)
+(up-remove-objects search-remote -1 > 0)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -7)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-remote-total < 1)
+;(up-compare-goal gl-temp-range g:<= gl-object-max-range)
+(up-compare-goal gl-temp-range <= 8)
+=>
+(up-modify-goal gl-temp-range c:+ 1);2
+(up-reset-filters)
+;(chat-local-to-self "searching for enemies")
+(up-jump-rule -10)
+)
+
+(defrule
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-reset-search 0 0 1 0)
+)
+
+(defrule
+(up-compare-goal gl-remote-total >= 1)
+=>
+(up-jump-rule 7)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(or(not(player-in-game focus-player))
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(players-stance focus-player ally)))
+;(up-compare-goal military-mode == assault)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+;(up-compare-goal military-mode == assault)
+=>
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance g: gl-object-min-range c: 5);15
+(up-find-remote c: town-center c: 40)
+(up-find-remote c: watch-tower c: 40)
+;(up-find-remote c: barracks c: 40)
+;(up-find-remote c: archery-range c: 40)
+;(up-find-remote c: stable c: 40)
+;(up-find-remote c: siege-workshop c: 40)
+;(up-find-remote c: monastery c: 40)
+;(up-find-remote c: market c: 40)
+;(up-find-remote c: mill c: 40)
+;(up-find-remote c: lumber-camp c: 40)
+;(up-find-remote c: mining-camp c: 40)
+(up-find-remote c: mule-cart c: 40)
+(up-find-remote c: dock c: 40)
+;(up-find-remote c: gate-class c: 40)
+(up-remove-objects search-remote 20 == my-player-number)
+(up-clean-search search-remote 28 2)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 28 gl-dot-x)
+(up-remove-objects search-remote 28 g:< gl-dot-x)
+(up-clean-search search-remote 46 1)
+(up-set-target-object search-remote c: 0)
+(up-get-object-data 0 gl-closest-enemy-id)
+;(up-set-target-by-id g: gl-selected-unit-id)
+;(up-clean-search search-remote 27 2)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-get-point position-object gl-dot-x)
+;(up-remove-objects search-remote -1 > 2)
+;(up-clean-search search-remote 10 1)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote c: 0)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-get-object-data 27 gl-temp-y)
+(up-modify-goal gl-temp-y c:- 2)
+(up-modify-goal gl-temp-x g:= gl-building-arrow-damage)
+(up-modify-goal gl-temp-x g:- gl-temp-y)
+(up-modify-goal gl-temp-x c:* 12);10
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-set-target-object search-remote c: 0)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+(up-object-data 10 g:<= gl-temp-x)
+=>
+(up-set-target-point gl-danger-x)
+(up-remove-objects search-remote 46 g:< gl-enemy-building-range-sq)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+;(up-clean-search search-remote 46 1)
+(up-clean-search search-remote 10 1);44
+;(up-set-target-object search-remote c: 0)
+;(up-get-object-data 10 gl-data)
+;(up-remove-objects search-remote 10 g:> gl-data)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-remote c: 0)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-compare-sn sn-focus-player-number > 0)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-remove-objects search-remote -1 > 0)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -5)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-set-target-by-id g: gl-selected-unit-id)
+;(up-compare-goal military-mode == assault)
+=>
+(up-get-search-state gl-local-total)
+;(up-chat-data-to-self "enemy buildings found %d" g: gl-remote-total)
+;(up-send-flare gl-temp-x)
+)
+
+(defrule
+(up-compare-goal military-mode == assault)
+(timer-triggered assault-timer)
+;(false)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-modify-goal gl-closest-enemy-id c:= 0)
+(up-reset-filters)
+(up-reset-search 0 0 1 0)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-find-remote c: cannon-galleon-line c: 240)
+(up-find-remote c: dromon c: 240)
+(up-find-remote c: lou-chuan c: 240)
+(up-clean-search search-remote 46 1)
+(up-remove-objects search-remote -1 > 0)
+(up-set-target-object search-remote c: 0)
+(up-get-point position-object gl-temp-x)
+(up-set-target-point gl-temp-x)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+(up-get-search-state gl-local-total)
+(up-jump-rule 1)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 3)
+)
+
+(defrule
+(timer-triggered assault-timer)
+(up-compare-goal military-mode == assault)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 44 >= 9)
+=>
+(up-reset-search 1 1 0 0)
+(up-add-object-by-id search-local g: gl-selected-unit-id)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x);added in along with the swap below
+(up-lerp-tiles gl-temp-x gl-dot-x c: 3);(up-lerp-tiles gl-temp-x gl-self-x c: 3) changing to give siege space
+(up-set-target-object search-remote c: 0)
+(up-target-point gl-temp-x action-move -1 1)
+;(chat-local-to-self "Firing 3")
+(up-jump-rule 8)
+)
+
+(defrule
+(timer-triggered assault-timer)
+(up-compare-goal military-mode == assault)
+(up-compare-goal gl-remote-total > 0)
+(up-set-target-by-id g: gl-selected-unit-id)
+(up-object-data 44 < 3)
+=>
+(up-reset-search 1 1 0 0)
+(up-add-object-by-id search-local g: gl-selected-unit-id)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x);added in along with the swap below
+(up-lerp-tiles gl-dot-x gl-temp-x c: -3);(up-lerp-tiles gl-temp-x gl-self-x c: 3) changing to give siege space
+(up-set-target-object search-remote c: 0)
+(up-target-point gl-dot-x action-move -1 1)
+;(chat-local-to-self "Firing 4")
+(up-jump-rule 7)
+)
+
+(defrule
+(timer-triggered assault-timer)
+(up-compare-goal military-mode == assault)
+(not(up-set-target-object search-remote c: 0))
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-full-reset-search)
+(up-add-object-by-id search-local g: gl-selected-unit-id)
+;(up-copy-point gl-temp-x gl-frontline-x);(up-get-point position-self gl-temp-x) changed to move gather point
+(up-get-point position-enemy gl-temp-x)
+(up-target-point gl-temp-x action-move -1 -1)
+;(chat-local-to-self "Firing 5")
+(up-jump-rule 6)
+)
+
+(defrule
+(goal military-mode raid)
+(timer-triggered mini-raid-timer)
+;(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total < 1)
+(players-building-type-count target-player town-center >= 1)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-direction < 0)
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-get-point position-object gl-current-raiders-x)
+(up-copy-point gl-dot-x gl-raid-target-x);gl-danger-x end of jan update
+(up-modify-goal gl-range-variable g:= gl-enemy-building-range)
+(up-modify-goal gl-range-variable g:+ gl-range-variable-modifier);6
+;(up-cross-tiles gl-dot-x gl-current-raiders-x c: 6);12
+(up-lerp-tiles gl-dot-x gl-current-raiders-x g: gl-range-variable)
+(up-cross-tiles gl-dot-x gl-raid-target-x c: -4);12
+(up-bound-point gl-dot-x gl-dot-x)
+;(up-send-flare gl-dot-x)
+;(up-get-object-data 0 gl-temp-id)
+;(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+;(up-modify-goal gl-temp-id c:mod 2)
+(up-get-search-state gl-local-total)
+(up-target-point gl-dot-x action-move -1 1)
+;(chat-local-to-self "Firing 6")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -42)
+)
+
+(defrule
+(goal military-mode raid)
+(timer-triggered mini-raid-timer)
+;(up-compare-goal gl-local-total > 0)
+(up-compare-goal gl-remote-total < 1)
+(players-building-type-count target-player town-center >= 1)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-compare-goal gl-direction >= 0)
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-get-point position-object gl-current-raiders-x)
+(up-copy-point gl-dot-x gl-raid-target-x);gl-danger-x end of jan update
+(up-modify-goal gl-range-variable g:= gl-enemy-building-range)
+(up-modify-goal gl-range-variable g:+ gl-range-variable-modifier);6
+;(up-cross-tiles gl-dot-x gl-current-raiders-x c: -6);-12
+(up-lerp-tiles gl-dot-x gl-current-raiders-x g: gl-range-variable)
+(up-cross-tiles gl-dot-x gl-raid-target-x c: 4);12
+(up-bound-point gl-dot-x gl-dot-x)
+;(up-send-flare gl-dot-x)
+;(up-get-object-data 0 gl-temp-id)
+;(up-remove-objects search-local -1 g:!= gl-current-list-number)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+;(up-modify-goal gl-temp-id c:mod 2)
+(up-get-search-state gl-local-total)
+(up-target-point gl-dot-x action-move -1 1)
+;(chat-local-to-self "Firing 7")
+(up-modify-goal gl-current-list-number c:+ 1)
+(up-jump-rule -43)
+)
+
+(defrule
+(up-compare-goal military-mode == raid)
+(not(up-set-target-object search-remote c: 0))
+(players-building-type-count target-player town-center < 1)
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+;(up-full-reset-search)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+;(up-add-object-by-id search-local g: gl-selected-unit-id)
+;(up-target-point gl-raid-target-x action-default -1 -1)
+(up-get-point position-enemy gl-temp-x)
+(up-target-point gl-temp-x action-move -1 -1)
+;(chat-local-to-self "Firing 8")
+;(up-chat-data-to-self "x: %d" g: gl-raid-target-x)
+;(up-chat-data-to-self "direction: %d" g: gl-direction)
+(up-jump-rule 3)
+)
+
+(defrule
+(or(up-compare-goal military-mode == hold)
+(up-compare-goal military-mode == shield))
+(not(up-set-target-object search-remote c: 0))
+(up-set-target-by-id g: gl-selected-unit-id)
+=>
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+(up-target-point gl-attacked-location-x action-default -1 -1)
+(up-jump-rule 2)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-set-target-object search-local g: gl-current-list-number)
+(up-compare-goal gl-remote-total > 0)
+;(up-set-target-object search-remote c: 0)
+;(or(up-object-data 55 == 0)
+;(up-object-data 55 >= 2000))
+;(up-object-data 6 != 700)
+(up-object-data 55 <= 0)
+(up-object-data 73 != 2)
+(up-object-data 73 != 3)
+;(up-object-data 73 != 1)
+;(or(up-object-data 32 < 1)
+;(up-compare-goal gl-closest-enemy-id == 0))
+;(up-object-data 32 < 1)
+=>
+;(up-chat-data-to-self "close enemy archers found %d" g: gl-remote-total)
+;(up-get-object-data 55 gl-next-attack)
+;(up-chat-data-to-self "ID %d" g: gl-next-attack)
+(up-set-target-object search-remote c: 0)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+;(chat-to-all "Firing rule")
+(up-target-objects 1 action-default -1 0)
+;(chat-local-to-self "Firing 9")
+;(up-modify-goal gl-current-list-number c:+ 1)
+;(up-jump-rule -10)
+;(disable-self)
+(up-jump-rule 1)
+)
+
+(defrule
+(false)
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+(up-object-data 55 g:< gl-reload-time);240
+;(or(up-object-data 55 > 0)
+;(up-object-data 32 >= 1))
+;(or(up-object-data 73 != 1)
+;(up-object-data 32 >= 1))
+(up-object-data 55 > 0)
+;(up-object-data 73 != 1)
+=>
+(up-get-object-data 55 gl-next-attack)
+;(up-chat-data-to-self "next attack: %d" g: gl-next-attack)
+;(up-send-flare gl-dot-x)
+;(up-set-target-object search-remote c: 0)
+(up-set-target-by-id g: gl-closest-enemy-id)
+(up-get-object-data 44 gl-distance)
+(up-modify-goal gl-distance c:* 0)
+(up-modify-goal gl-distance c:- 8)
+(up-get-point position-object gl-temp-x)
+;(up-get-point position-self gl-temp-x)
+;(up-get-point position-center gl-temp-x)
+(up-modify-goal gl-direction c:* 11);
+(up-modify-goal gl-direction g:* gl-timed-edit)
+(up-lerp-tiles gl-dot-x gl-temp-x g: gl-distance);-8 c-10
+(up-cross-tiles gl-dot-x gl-temp-x g: gl-direction)
+(up-remove-objects search-local 0 g:!= gl-selected-unit-id)
+(up-target-point gl-dot-x action-move -1 3)
+;(chat-local-to-self "Firing 10")
+;(chat-to-all "Running rule")
+(up-create-group 0 0 c: 1)
+(up-modify-group-flag 1 c: 1)
+;(up-modify-goal gl-current-list-number c:+ 1)
+;(up-jump-rule -47)
+)
+
+(defrule
+(up-compare-goal gl-current-list-number g:< gl-rule-loops)
+;(up-object-data 73 != 1)
+;(up-object-data 55 < 1650)
+=>
+;(up-chat-data-to-self "Fault with Archer %d" g: gl-current-list-number)
+(up-modify-goal gl-current-list-number c:+ 1)
+;(chat-local-to-self "Something has gone wrong")
+(up-jump-rule -48)
+)

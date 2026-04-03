@@ -1,0 +1,669 @@
+
+;Inspired by brightspark
+; temp goal -1: retreat to point
+; temp goal 1: no retreat necessary
+; temp goal 0: no unit found
+
+
+(defrule
+	(up-compare-goal g-ranged-group-size < 1)
+=>
+	(up-copy-point p-destination-x p-march-x)
+	(up-copy-point p-safety-x p-self-x)
+)
+(defrule
+	(up-compare-goal g-ranged-group-size > 0)
+=>
+	(up-copy-point p-destination-x p-largest-ranged-group-x)
+	(up-copy-point p-safety-x p-largest-ranged-group-x)
+)
+
+(defrule
+	(goal g-fifth-turn 1)
+=>
+	(up-set-attack-stance infantry-class c: stance-aggressive)
+	(up-set-attack-stance cavalry-class c: stance-aggressive)
+	(up-set-attack-stance scout-cavalry-class c: stance-aggressive)
+)
+
+
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-get-rule-id g-jump-direct-1)
+	(up-modify-goal g-jump-direct-1 c:+ 2)
+	(set-goal g-current-list-number 0)
+	(set-goal g-rule-loops -1))
+(defrule
+	(goal g-second-turn 1)
+=>
+	(up-find-local c: cavalry-class c: 60)
+	(up-find-local c: infantry-class c: 60)
+	(up-find-local c: scout-cavalry-class c: 60)
+	(up-remove-objects search-local object-data-type == armored-elephant)
+	(up-get-search-state lt)
+	(set-goal g-math-1 50)
+	(up-modify-goal g-math-1 g:- lt)
+	(up-modify-goal g-math-1 c:max 0)
+	(up-find-local c: villager-class g: g-math-1)
+
+	(up-clean-search search-local object-data-hitpoints search-order-desc)
+	(up-remove-objects search-local object-data-index > 60)
+	(up-clean-search search-local object-data-next-attack search-order-desc)
+	(up-create-group 0 0 c: melee-group)
+	(up-get-search-state lt)
+	(up-modify-goal lt c:/ 2)
+	(up-remove-objects search-local object-data-index g:>= lt)
+	(up-create-group 0 0 c: sub-melee-group-1)
+	(up-full-reset-search)
+	(up-set-group search-local c: melee-group)
+	(up-remove-objects search-local object-data-index g:< lt)
+	(up-create-group 0 0 c: sub-melee-group-2)
+)
+
+(defrule
+	(goal g-second-turn 1)
+=>
+	(set-goal check-goal 0)
+	(set-goal g-next-attack -1)
+	(set-goal g-my-elevation -100)
+	(set-goal g-enemy-elevation -100)
+	(set-goal temporary-goal 0)
+	(set-goal g-closest-enemy-id -1)
+	(set-goal p-danger-x -255)
+	(set-goal p-danger-y -255)
+	(set-goal g-current-unit-id 0)
+	(up-full-reset-search)
+;	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-set-group search-local c: sub-melee-group-1)
+	(up-get-search-state lt)
+	(up-modify-goal g-rule-loops g:= lt)
+)
+(defrule
+	(goal g-second-turn 0)
+=>
+	(set-goal check-goal 0)
+	(set-goal g-next-attack -1)
+	(set-goal g-my-elevation -100)
+	(set-goal g-enemy-elevation -100)
+	(set-goal temporary-goal 0)
+	(set-goal g-closest-enemy-id -1)
+	(set-goal p-danger-x -255)
+	(set-goal p-danger-y -255)
+	(set-goal g-current-unit-id 0)
+	(up-full-reset-search)
+;	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-set-group search-local c: sub-melee-group-2)
+	(up-get-search-state lt)
+	(up-modify-goal g-rule-loops g:= lt)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-local g: g-current-list-number)
+=>
+	(set-goal temporary-goal 1)
+	(set-goal g-closest-enemy-id -1)
+	(up-get-object-data object-data-id g-current-unit-id)
+	(up-get-object-data object-data-target-id g-current-target-id)
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(up-get-point-elevation p-x-1 g-my-elevation)
+	(up-get-object-data object-data-next-attack g-next-attack)
+	(up-get-object-data object-data-speed g-unit-speed)
+	(up-modify-goal g-unit-speed c:+ 10)
+
+	(up-set-target-by-id g: g-current-target-id)
+	(up-get-point position-object p-x-3)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-local g: g-current-list-number)
+	(up-object-data object-data-class == villager-class)
+=>
+	(up-modify-goal g-unit-speed c:* 2)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-distance c: -1 c: 5)
+	(up-jump-rule 1)
+)
+
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-local g: g-current-list-number)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-distance c: -1 c: 4)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-local g: g-current-list-number)
+	(up-object-data object-data-strike-armor < 3)
+	(stance-toward focus-player enemy)
+=>
+
+	(up-find-remote c: cavalry-class c: 10)
+	(up-find-remote c: infantry-class c: 20)
+	(up-find-remote c: villager-class c: 20)
+	(up-find-remote c: scout-cavalry-class c: 5)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-local g: g-current-list-number)
+	(up-object-data object-data-strike-armor >= 3)
+	(up-object-data object-data-strike-armor < 10)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: teutonic-knight-line c: 10)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-local g: g-current-list-number)
+	(up-object-data object-data-strike-armor >= 3)
+	(stance-toward focus-player enemy)
+	(or	(up-object-data object-data-class == cavalry-class)
+		(up-object-data object-data-class == scout-cavalry-class))
+=>
+	(up-find-remote c: spearman-line c: 10)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-local g: g-current-list-number)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -4)
+)
+(defrule
+	(up-set-target-object search-local g: g-current-list-number)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+=>
+	(set-goal temporary-goal 1)
+	(up-remove-objects search-remote object-data-range > 1)
+	(up-remove-objects search-remote object-data-speed g:>= g-unit-speed)
+	(up-remove-objects search-remote object-data-target-id g:!= g-current-unit-id)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id g-closest-enemy-id)
+	(up-get-point position-object p-enemy-melee-group-x)
+	(up-copy-point p-x-2 p-x-1)
+	(up-lerp-tiles p-x-2 p-enemy-melee-group-x c: 1)
+	(up-get-point-elevation p-x-2 g-enemy-elevation)
+)
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-remote c: 0)
+	(up-compare-goal g-enemy-elevation g:>= g-my-elevation)
+=>
+	(up-copy-point p-order-x p-x-1)
+	(up-lerp-tiles p-order-x p-enemy-melee-group-x c: -6)
+	(up-bound-point p-order-x p-order-x)
+	(set-goal temporary-goal -1)
+)
+(defrule
+	(goal temporary-goal -1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-point-distance p-order-x p-safety-x > 4)
+=>
+	(up-lerp-tiles p-order-x p-safety-x c: 4)
+	(up-lerp-tiles p-order-x p-x-1 c: -2)
+	(up-bound-point p-order-x p-order-x)
+)
+;-------------------------------------
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-object-data object-data-pierce-armor < 5)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-x-1)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-distance c: -1 c: 12)
+	(up-filter-status c: status-ready c: list-active)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(stance-toward focus-player enemy)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-object-data object-data-pierce-armor < 4)
+	(up-projectile-detected projectile-town-center < 5000)
+=>
+	(up-find-status-remote c: town-center c: 10)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(stance-toward focus-player enemy)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-object-data object-data-pierce-armor < 5)
+=>
+	(up-find-status-remote c: castle c: 10)
+	(up-find-status-remote c: krepost c: 5)
+)
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-object-data object-data-pierce-armor < 5)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -3)
+)
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+=>
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+)
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-remote c: 0)
+;	(up-object-data object-data-target-id g:== g-current-unit-id)
+=>
+;	(chat-to-player my-player-number "retreat from fortifications: we are targeted")
+	(set-goal temporary-goal -2)
+	(up-get-point position-object p-danger-x)
+	(up-copy-point p-order-x p-x-1)
+	(up-lerp-tiles p-order-x p-danger-x c: -5)
+	(up-copy-point p-x-2 p-order-x)
+	(up-cross-tiles p-order-x p-danger-x c: 10)
+	(up-cross-tiles p-x-2 p-danger-x c: -10)
+	(up-bound-point p-x-2 p-x-2)
+	(up-bound-point p-order-x p-order-x)
+	(up-get-point-distance p-x-2 p-destination-x g-math-1)
+	(enable-timer t-melee-retreat 3)
+)
+(defrule
+	(goal g-attack tsa-raid)
+	(goal temporary-goal -2)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+;	(up-object-data object-data-target-id g:== g-current-unit-id)
+	(up-point-distance p-order-x p-destination-x g:> g-math-1)
+=>
+	(up-copy-point p-order-x p-x-2)
+)
+
+;(defrule
+;	(goal temporary-goal 1)
+;	(up-set-target-object search-remote c: 0)
+;	(up-object-data object-data-target-id g:!= g-current-unit-id)
+;=>
+;	(chat-to-player my-player-number "retreat from fortifications: ally targeted")
+;	(set-goal temporary-goal -2)
+;	(up-get-point position-object p-danger-x)
+;	(up-copy-point p-order-x p-x-1)
+
+;	(up-chat-data-to-self "CHECK p-danger-x %d" g: p-danger-x)
+;	(up-chat-data-to-self "CHECK p-danger-y %d" g: p-danger-y)
+;	(up-chat-data-to-self "p-x-1 %d" g: p-x-1)
+;	(up-chat-data-to-self "p-y-1 %d" g: p-y-1)
+
+
+;	(up-lerp-tiles p-order-x p-danger-x c: -6)
+;	(up-bound-point p-order-x p-order-x)
+;	(enable-timer t-melee-retreat 2)
+;)
+
+;(defrule
+;	(goal temporary-goal -2)
+;	(up-set-target-object search-remote c: 0)
+;	(or	(and	(up-point-distance p-order-x p-destination-x > 4)
+;			(up-object-data object-data-target-id g:!= g-current-unit-id))
+;		(up-point-distance p-order-x p-danger-x < 3))
+;=>
+;	(up-lerp-tiles p-order-x p-destination-x c: 5)
+;	(up-lerp-tiles p-order-x p-x-1 c: -2)
+;	(up-bound-point p-order-x p-order-x)
+;)
+
+;-----------------------------DODGE RANGED ATTACKS-----------------------------
+
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-x-1)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-include -1 actionid-attack -1 -1)
+	(up-filter-distance c: 3 c: 8)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-object-data object-data-pierce-armor < 8)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: archery-class c: 20)
+	(up-find-remote c: cavalry-archer-class c: 20)
+	(up-find-remote c: scorpion-class c: 5)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+(defrule
+	(goal temporary-goal 1)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+=>
+;	(up-remove-objects search-remote object-data-next-attack < 1500)
+	(up-remove-objects search-remote object-data-target-id g:!= g-current-unit-id)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-object search-remote c: 1)
+=>
+	(up-modify-goal split-melee-turn c:* -1)
+	(up-get-point position-object p-enemy-ranged-group-x)
+	(up-copy-point p-x-2 p-x-1)
+	(up-copy-point p-order-x p-x-1)
+	(up-cross-tiles p-x-2 p-enemy-ranged-group-x c: 3)
+	(up-cross-tiles p-order-x p-enemy-ranged-group-x c: -3)
+	(up-bound-point p-x-2 p-x-2)
+	(up-bound-point p-order-x p-order-x)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-get-path-distance p-x-2 1 g-enemy-elevation)
+	(up-get-path-distance p-order-x 1 g-my-elevation)
+	(set-goal temporary-goal -4)
+)
+(defrule
+	(goal temporary-goal -4)
+	(or	(goal split-melee-turn 1)
+		(up-compare-goal g-enemy-elevation g:< g-my-elevation))
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-compare-goal g-enemy-elevation g:<= g-my-elevation)
+	(up-set-target-object search-remote c: 1)
+=>
+	(up-copy-point p-order-x p-x-2)
+	(up-modify-goal g-my-elevation g:= g-enemy-elevation)
+)
+(defrule
+	(goal temporary-goal -4)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-compare-goal g-my-elevation > 3)
+=>
+	(set-goal temporary-goal 1)
+;	(chat-to-all "cancel dodge")
+)
+;(defrule
+;	(goal temporary-goal -4)
+;	(up-set-target-object search-remote c: 0)
+;=>
+;	(chat-to-player my-player-number "dodge missile")
+;	(up-full-reset-search)
+;	(up-add-object-by-id search-local g: g-current-unit-id)
+;	(set-strategic-number sn-keystates 2)
+;	(up-target-point p-order-x action-move -1 -1)
+;	(set-strategic-number sn-keystates 1)
+;	(up-target-point p-enemy-ranged-group-x action-move -1 stance-aggressive)
+;	(set-strategic-number sn-keystates 0)
+
+;	(set-goal temporary-goal 0)
+;	(up-modify-goal g-current-list-number c:+ 1)
+;	(up-jump-direct g: g-jump-direct-1)
+;)
+;---------------------------additional retreat rules here:
+
+;(defrule
+;	(goal temporary-goal 1)
+;	(up-compare-goal g-current-list-number g:< g-rule-loops)
+;	(up-set-target-by-id g: g-current-unit-id)
+;	(up-compare-goal g-ranged-group-size >= 3)
+;	(up-object-data object-data-pierce-armor < 4)
+;	(up-object-data object-data-class != villager-class)
+;	(up-point-distance p-x-1 p-self-x > 13)
+;=>
+;	(up-full-reset-search)
+;	(up-set-target-point p-x-1)
+;	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+;	(up-filter-distance c: 1 c: 10)
+;	(up-find-remote c: archery-cannon-class c: 40)
+;	(up-find-remote c: archery-class c: 40)
+;	(up-find-remote c: cavalry-archer-class c: 40)
+;	(up-find-local c: archery-cannon-class c: 40)
+;	(up-find-local c: archery-class c: 40)
+;	(up-find-local c: cavalry-archer-class c: 40)
+;	(up-get-search-state lt)
+;	(up-modify-goal lt c:+ 5)
+;)
+
+;(defrule
+;	(goal temporary-goal 1)
+;	(up-compare-goal g-current-list-number g:< g-rule-loops)
+;	(or	(and	(up-compare-goal rt g:> lt)
+;			(up-compare-goal rt g:<= g-ranged-group-size))
+;		(and	(up-timer-status t-melee-retreat == timer-running)
+;			(goal g-fifth-turn 3)))
+;	(up-point-distance p-x-1 p-self-x > 13)
+;	(up-point-distance p-x-1 p-largest-ranged-group-x > 5)
+;	(up-set-target-by-id g: g-current-unit-id)
+;	(up-compare-goal g-ranged-group-size >= 3)
+;	(up-object-data object-data-pierce-armor < 4)
+;	(up-object-data object-data-class != villager-class)
+;=>
+;	(enable-timer t-melee-retreat 2)
+;	(set-goal temporary-goal -3)
+;	(up-copy-point p-order-x p-x-1)
+;	(up-lerp-tiles p-order-x p-largest-ranged-group-x c: 5)
+;	(up-bound-point p-order-x p-order-x)
+;)
+
+;-----------------------------------------------------
+(defrule
+	(up-compare-goal temporary-goal != 0)
+	(up-compare-goal temporary-goal != -2)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+	(or	(goal g-next-attack 0)
+		(up-compare-goal temporary-goal > -1))
+	(or	(up-object-data object-data-hitpoints > 20)
+		(up-object-data object-data-class != villager-class))
+=>
+	(up-get-point position-object p-x-1)
+	(up-set-target-point p-x-1)
+	(set-goal g-math-1 0)
+	(set-goal g-math-2 1)
+	(set-goal check-goal jump-to-attack-function)
+)
+(load "Ares/melee attack")
+;(defrule
+;	(up-compare-goal temporary-goal != 0)
+;	(up-compare-goal temporary-goal != -2)
+;	(up-compare-goal g-current-list-number g:< g-rule-loops)
+;	(up-set-target-by-id g: g-current-unit-id)
+;	(or	(goal g-next-attack 0)
+;		(up-compare-goal temporary-goal > -1))
+;	(or	(up-object-data object-data-hitpoints > 20)
+;		(up-object-data object-data-class != villager-class))
+;=>
+;	(up-get-rule-id function-recall-jump)
+;	(up-modify-goal function-recall-jump c:+ 1)
+;	(up-get-point position-object p-x-1)
+;	(up-set-target-point p-x-1)
+;	(set-goal g-math-1 0)
+;	(set-goal g-math-2 0)
+;	(set-goal check-goal jump-to-attack-function)
+;	(up-jump-direct g: jump-to-attack-function)
+;	(chat-to-all "scan for melee target")
+;)
+;(defrule
+;	(goal temporary-goal 1)
+;	(up-set-target-by-id g: g-current-unit-id)
+;	(up-object-data object-data-action != actionid-explore)
+;=>
+;	(up-full-reset-search)
+;	(up-get-rule-id function-recall-jump)
+;	(up-modify-goal function-recall-jump c:+ 1)
+;	(up-get-point position-object p-x-1)
+;	(up-set-target-point p-x-1)
+
+;	(set-goal g-math-1 0)
+;	(set-goal g-math-2 2)
+;	(set-goal check-goal jump-to-attack-function)
+;	(up-jump-direct g: jump-to-attack-function)
+;)
+
+(defrule
+	(goal temporary-goal 1)
+	(goal g-defend yes)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-point-distance p-x-1 p-march-x > 4)
+	(up-object-data object-data-action == -1)
+	(up-object-data object-data-class != villager-class)
+=>
+	(set-goal temporary-goal 2)
+	(up-copy-point p-order-x p-x-1)
+	(up-lerp-tiles p-order-x p-march-x c: 5)
+	(up-bound-point p-order-x p-order-x)
+)
+
+(defrule
+	(game-time >= 720)
+	(goal temporary-goal 1)
+	(goal g-defend no)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(strategic-number sn-maximum-town-size < 40)
+	(up-set-target-by-id g: g-current-unit-id)
+	(up-point-distance p-x-1 p-self-x s:> sn-maximum-town-size)
+	(up-object-data object-data-action == -1)
+	(up-object-data object-data-class != villager-class)
+=>
+	(set-goal temporary-goal 2)
+;	(chat-to-player my-player-number "send melee to defend")
+	(up-copy-point p-order-x p-x-1)
+	(up-lerp-tiles p-order-x p-march-x c: 5)
+	(up-bound-point p-order-x p-order-x)
+)
+
+;--------------------------Avoid Trees
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(or	(up-compare-goal temporary-goal < 0)
+		(goal temporary-goal 2))
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(set-goal g-math-1 3)
+	(set-goal g-math-2 -3)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(or	(up-compare-goal temporary-goal < 0)
+		(goal temporary-goal 2))
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-copy-point p-x-1 p-order-x)
+	(up-copy-point p-x-2 p-order-x)
+	(up-cross-tiles p-x-1 p-ranged-group-x g: g-math-1)
+	(up-cross-tiles p-x-2 p-ranged-group-x g: g-math-2)
+	(up-bound-point p-x-1 p-x-1)
+	(up-bound-point p-x-2 p-x-2)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(not	(up-point-contains p-x-1 c: trees-class))
+	(or	(up-compare-goal temporary-goal < 0)
+		(goal temporary-goal 2))
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-copy-point p-order-x p-x-1)
+	(up-jump-rule 2)
+)
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(not	(up-point-contains p-x-2 c: trees-class))
+	(or	(up-compare-goal temporary-goal < 0)
+		(goal temporary-goal 2))
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-copy-point p-order-x p-x-2)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+	(up-compare-goal g-math-1 < 25)
+	(or	(up-compare-goal temporary-goal < 0)
+		(goal temporary-goal 2))
+	(up-point-contains p-order-x c: trees-class)
+=>
+	(up-modify-goal g-math-1 c:+ 2)
+	(up-modify-goal g-math-2 c:- 2)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(goal temporary-goal 2)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+=>
+	(up-full-reset-search)
+	(up-add-object-by-id search-local g: g-current-unit-id)
+	(up-target-point p-order-x action-attack-move -1 stance-aggressive)
+)
+
+(defrule
+	(up-compare-goal temporary-goal < 0)
+	(up-compare-goal g-current-list-number g:< g-rule-loops)
+=>
+	(up-full-reset-search)
+;	(up-chat-data-to-self "p-x-1 %d" g: p-x-1)
+;	(up-chat-data-to-self "p-y-1 %d" g: p-y-1)
+;	(up-chat-data-to-self "p-danger-x %d" g: p-danger-x)
+;	(up-chat-data-to-self "p-danger-y %d" g: p-danger-y)
+;	(up-chat-data-to-self "p-order-x %d" g: p-order-x)
+;	(up-chat-data-to-self "p-order-y %d" g: p-order-x)
+;	(up-chat-data-to-self "p-enemy-melee-group-x %d" g: p-danger-x)
+;	(up-chat-data-to-self "p-enemy-melee-group-y %d" g: p-danger-y)
+	(up-add-object-by-id search-local g: g-current-unit-id)
+;	(up-set-target-object search-local c: 0)
+;	(set-strategic-number sn-keystates 2)
+	(up-target-point p-order-x action-move -1 stance-no-attack)
+;	(set-strategic-number sn-keystates 1)
+;	(up-target-objects 0 -1 -1 stance-aggressive)
+;	(set-strategic-number sn-keystates 0)
+)
+
+(defrule
+	(up-compare-goal temporary-goal != 0)
+=>
+	(set-goal temporary-goal 0)
+	(up-modify-goal g-current-list-number c:+ 1)
+	(up-jump-direct g: g-jump-direct-1)
+)

@@ -1,0 +1,383 @@
+; =◬= Illuminati AI =◬=
+; v2.2d
+; by Aleph
+
+; ==== SETTINGS ====
+; Game Version: AoE2:DE
+; Game Mode: Random Map
+; Civ: see below
+; Teams: Any
+; Map: Any land map
+; Map Size: Any (should correspond to number of players)
+; Difficulty: Extreme
+; Population: Any
+; Reveal Map: Normal
+; Starting Age: Standard
+; Victory: Conquest
+; Teams Together: On
+; Lock Teams: On
+; All Techs: Off
+
+; == SUPPORTED CIVS (25) ==
+; Aztecs, Bengalis, Bohemians, Burmese, Byzantines, Chinese, Hindustanis, Inca, Italians, Japanese, Jurchens, Koreans, Lithuanians, Malay, Malians, Mapuche, Maya, Muisca, Portuguese, Saracens, Slavs, Spanish, Teutons, Tupi, Vietnamese
+
+; == NOTES ==
+; Can play most maps, except island maps and extreme gimmick maps. Strongest on Arena, Michi, and in 4v4s.
+; Cannot play alternative game modes.
+; Does not cheat.
+; Designed to excel against other AIs in tournament settings.
+; Should work well in mixed AI teams.
+
+
+; changelog 2.2c -> 2.2d
+;
+; - can now play Inca (again), Muisca (very strong monk civ), Tupi and Mapuche (25 civs total)
+; - can now build, consider, delete and target settlements like other dropsites
+; - can now train and consider champis like champs
+; - champflood strat for champi civs
+; - added new units to threat evaluation
+; - added champi upgrades and new UTs
+; - Spanish will no longer make regular monks, only missionaries
+; - further changes for new content and March patch compatibility
+; - civs with no or terrible scouts can now make champ(i)s as a "win faster" supplementary unit instead
+; - will now reduce hunt range when very close to enemy TC
+; - fixed a bug that caused the AI to mistakenly prioritise knights in treaty start 1v1s
+; - fixed a CRITICAL BUG that prevented the AI from building towers in 1v1
+; - fixed towers under construction not being taken into account for new tower placement, leading to multiple towers in the same spot
+; - many minor tweaks and fixes
+
+;_____________________________________________________________________
+;:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+;*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+(load "Illuminati/A-Constants")
+(load "Illuminati/B-Initialise")
+(load "Illuminati/C-Tick")
+(load "Illuminati/D-Strat")
+(load "Illuminati/E-Research")
+(load "Illuminati/F-General")
+(load "Illuminati/G-Threat")
+(load "Illuminati/H-TSA")
+(load "Illuminati/I-DUC")
+(load "Illuminati/J-Military")
+(load "Illuminati/K-Chat")
+#load-if-defined UP-ALLY-IN-GAME (load "Illuminati/L-Coop") #end-if
+(load "Illuminati/M-Eco")
+(load "Illuminati/N-Build")
+(load "Illuminati/O-Debug")
+;:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+;*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+; ==== AI VERSION ====
+(defrule
+	(goal G-alpha-illu 1)
+	(game-time >= 40)
+	=>
+	(chat-to-all "Illuminati AI v2.2d")
+	(disable-self))
+;_____________________________________________________________________
+;:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+;*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; failsafe for mining camp placement - put a timer on it?
+; temporarily disable mining camp placement if aborted too many times?
+
+; build mining camp on gold/stone being taken without a camp
+; diagnose first stone camp sometimes 2 tiles away
+
+
+; tickle random idle villagers
+
+
+
+; - balance changes - fire lancers? korean uu?
+
+
+
+
+
+; another mill on untaken berries!
+; debug nomad first mill distance	- and shouldnt it build it on berries anyway?
+
+
+; garrison tc
+; monk garrison?
+; building focus lower pierce units?
+
+
+; delete foundations under attack if about to die
+
+
+; slinger trash war
+; slinger supp unit - vs inf and monks (better than archers), siege - only on high eco
+; all uts for slingers
+
+
+; tower defence STILL missing gold miners?? - diagnose
+; boar hunting turned off sometimes - diagnose, and should it be changed?
+
+
+
+
+; !!!
+; faux nomad with defined starting positions (VILLS START CLOSE TOGETHER): instantly build tc right in the middle of the vills if there's a scout (or on the closest resource of any kind?)
+; test other maps: golden stream, steppe - steppe tg insta build tc? amount-exploration? <- test chat this, compare to current method
+
+; burmese (after ut) supp scouts vs archers - similar to skirm factor
+
+; make buildings target other units over rams !
+;	- precise point and distance for distance calculations (filter?)
+; garrison towers/tc when enemy units walk through them?
+
+
+
+
+
+
+; == 2.2g ==
+; buy stone for tc - necessary? add general stone buy based on cost data?
+
+; FIX FILTER-DISTANCE USED WITH PRECISE TARGET POINT IN NOMAD/LN SHEEP GATHER SHIT - they dont work together
+
+; champ factor vs trash (remove hardcoded trash war champs?) and rams
+; use champ factor for infantry uus?
+
+; check buy/sell rules, add 2-stage (sell when one resource way too high and another too low)
+
+; sort out rax escrow - only escrow it if conditions for building are actually met
+
+; check boar hunts - debug, sometimes not taking a boar
+; test?? arena 1v1 boh vs naga gurj seed -1720528214
+
+; ?? rax split: not enough champs (/eagles?), too many halbs
+
+
+
+
+; == 2.2x ==
+; detect animal starting scout?
+
+; test civilian militia behaviour vs fwd buildings - (temporary debug chat?)
+; DE patch: remove tower debug
+
+; refine target player switch
+
+; unclog trade route - delete buildings around stuck trade carts - detect how? - WAIT FOR DE IMPLEMENTATION
+; delete converted markets - detect how?
+
+; lategame building upgrades - no escrow, just get em if can afford
+
+; MANGO MICRO: replace/qualify range and minimum range checks with precise distance, *100
+
+; overhaul superiority modifiers
+
+; need more wood in mid castle age?
+
+; fix stone spent on tc when cdrop castle cancelled ?
+
+; DEFENSIVE MONK MICRO
+;	- retreat monks without faith - only when not healing AND object-data-attacker-count >= 1 or not on the attack
+;	- garrison monks if threatened
+
+; double tower on location 1? when?
+
+
+; [after knight pocket reintroduction] pocket cavalier: change considerations to archetypes?
+
+
+
+; == 2.3 ==
+
+; later castles: lerp them towards team-centre and team-opposite, amount depending on number of existing castles
+; lategame fwd production buidings (naga style)
+
+
+; TRASH WAR !
+; 	2 stages
+; 	1st stage (replaces semi) modify all supp factors
+; 	2nd stage (full-blownsies) 
+;	trash war specific supp factors:	scouts vs tank inf, skirms vs main inf, check if counter-triangle is balanced
+
+
+; diagnose rebuild/relocate tc not being built (didn't reoccur, seemed to work fine)
+; diagnose lategame lumber camps
+; diagnose the monk bug - not making monks in early castle, but no escrow??
+; diagnose deer lure scout stuck bug?
+; experiment with civilian militia? never turn it off? or later?
+
+
+; if miners/lumberjacks on a resource far from a camp, build camp there with build-line
+
+; buy castle when don't have one and no stone to mine (fencrazy case), floating 1k gold
+; mine and sell stone when theres a lot of stone and little gold, and prices are still good
+
+
+; no melee attack upgrades when only on battering ele / ballista ele / war chariot
+; husbandry for armored elephants, but no attack upgrades (simple math, subtract)
+
+
+; units avoiding tc: cross tiles in either (random) direction?
+
+
+
+
+; == 2.4 ==
+
+; readress mango micro, make it work for tgs?
+
+; wat do if no enemy military and tower defence isnt needed (vs naga)
+
+; supp UU per archetype
+
+; try boar steal again? or at least the explore around enemy once found, on non-walled maps
+; FIX boar steal?
+;	doesnt hit boar long enough
+; 	"boar dead, aborting" before its even found
+;	scout cheating? straight to boar
+;	scout not garrisonning?
+;	reduce boar search radius
+
+; jurchens: supp grenadiers instead of hc/arb vs inf (dont forget ut)
+
+
+; later game strat evaluation and switches - similar to supp unit
+
+; shoot boar with tc?
+;
+; mid-late game TOWERS on exposed camps. also on neutral resources?
+; TOWER CREEP (place-point with g:+ G-tower-creep), use this for castle placement too. on hideout and enclosed, additionally lerp away from center
+;	 only for TOWERCIV 3+? prioritise with 4			use G-tower-defence > 1
+;
+; tower UTs (yasama, supremacy, sicilian hoardings, ...)
+; fletching, guard tower, bodkin, ballistics,... for towers / defences - when?
+; UTS: japanese, koreans, lithuanians, malay, malians, saracens, slavs, spanish, teutons
+; arrowslits, building techs
+;
+; dark age DUC:
+;	sheep scouting! (especially nomad maps or no scout starts) and DUC villager scouting
+;	shepherds to dead deer
+;	don't lure boar if enough dead deer food
+;
+; imp-up strat switches, checking CIV-IMP and also taking into account THREAT
+;
+; bbc vs siege?
+
+; UU ECO BALANCES FOR ALL CIVS
+
+; sicilians as first knight civ?
+; BURGUNDIANS as monk civ? needs eco upgrades. flemish instead of fire lancers (same utility?)
+
+; civ init constants:
+; 	UUCIV
+; 	ELE ARCH CIV - dravidians
+
+; SEPARATE POCKET STRAT SELECTION - load-if else
+
+; universal superiority modifier? similar to supp unit system. use to force strat switches too?
+; forced strat switches - something like supp unit system to determine best strat
+; don't switch for heresy if already massively ahead
+
+
+
+
+; == HIGH PRIORITY ==
+
+; more lumber camps lategame
+
+; later-game farm mills: how to when they're necessary??? could detect on a large timer when any farms are far-ish away, but all >15 range will be deleted
+
+; new archetypes: naval
+; SIEGE-SHIP - ele ram treatment
+
+; no supp champs, except malay trash, or to counter eagles, or if judged better than siege? (champciv 2+ and what?)
+; make scorps when no enemy siege and scorpciv > mangociv, or = and enemy cav archers/inf
+;
+;
+; SUPP KTS IF STABLES UP AND ENEMY SIEGE/SKIRM IN TOWN
+
+;
+; VILLS SUICIDING TO FAR GOLD - how to fix??	test vs britons ai arena
+;	evaluate remaining gold mines?
+;	measure vill performance?
+;	trash war early?
+;	gold miner percentage way down?
+;	prioritise hussite reforms when detected?
+
+;
+; task vills to dead deer, if none on it
+;
+; UNIQUE TECHS (and uu upgrade) FOR SUPPORTED CIVS
+; unique techs (for ALL civs, including old ones)
+; check uu upgrade (universal)
+; italian age-up escrows
+;
+; BUILDING CANCELLATION
+;
+; too early 3rd monastery - free wood? training ability?
+;
+; castle placement - further forward? further apart? hideout?
+; 
+; add ai identities to coop attack (check they have the goals)
+
+
+
+
+
+
+ 
+; repurpose (up-compare-goal G-strat != GV-klewproper) checks for general super-fast fc builds
+
+
+
+; == LOW PRIORITY ==
+
+; sn-maximum-patrol-distance ????
+
+; monk patrol... target shortest-to-path castle/tc? just calculate the point every x seconds?
+
+; SCOUTING
+;	replace scout when lost, with spear if no stable
+;
+; CASTLE DROP REACTION	- civilian militia??
+;
+;
+
+; cost data for all escrow
+
+
+
+
+; == HIDEOUT ==
+; 
+; DETECT deer being behind wall - how?
+; abort deer lure if behind wall OR HOLD OPEN GATE WITH SHEEP
+;
+; ATTACK POINT - HOW???
+;
+; force scout back (middle) wood?

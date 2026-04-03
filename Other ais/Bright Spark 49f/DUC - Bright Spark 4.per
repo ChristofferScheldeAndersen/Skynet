@@ -1,0 +1,397 @@
+(defconst gl-state-1 300)
+(defconst gl-state-2 301)
+(defconst gl-state-3 302)
+(defconst gl-state-4 303)
+(defconst gl-point-x 304)
+(defconst gl-point-y 305)
+(defconst gl-self-x 306)
+(defconst gl-self-y 307)
+(defconst gl-deer-x 308)
+(defconst gl-deer-y 309)
+(defconst gl-state-5 310)
+(defconst gl-state-6 311)
+(defconst gl-state-7 312)
+(defconst gl-state-8 313)
+(defconst gl-home-x 314)
+(defconst gl-home-y 315)
+(defconst gl-state-9 316)
+(defconst gl-state-10 317)
+(defconst gl-state-11 318)
+(defconst gl-state-12 319)
+(defconst gl-retreat-x 390)
+(defconst gl-retreat-y 391)
+(defconst gl-herd-x 392)
+(defconst gl-herd-y 393)
+(defconst gl-scout-location-x 345)
+(defconst gl-scout-location-y 346)
+
+(defconst fall-back-timer 30)
+
+(defconst gl-state-13 394)
+(defconst gl-state-14 395)
+(defconst gl-state-15 396)
+(defconst gl-state-16 397)
+
+#load-if-defined UP-POCKET-POSITION
+
+(defconst deer-luring-distance 60)
+
+#else
+
+(defconst deer-luring-distance 40);30
+
+#end-if
+
+(defrule
+(false)
+=>
+(up-full-reset-search)
+(up-find-local c: scout-cavalry-line c: 1)
+(up-get-search-state gl-state-1)
+(disable-self)
+)
+
+(defrule
+(goal deer-luring 0)
+=>
+(set-goal gl-deer-x -1)
+(set-goal gl-deer-y -1)
+)
+
+(defrule
+(unit-type-count villager-forager >= 6)
+(building-type-count mill > 0)
+=>
+(up-full-reset-search)
+(up-find-local c: mill c: 240)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(up-clean-search search-local 44 1)
+(up-set-target-object search-local c: 0)
+(up-get-point position-object gl-dot-x)
+)
+
+(defrule
+(or(unit-type-count villager-forager < 6)
+(building-type-count mill == 0))
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-dot-x)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-get-point position-self gl-home-x)
+;(up-target-point gl-home-x action-move -1 -1)
+(up-get-point position-self gl-self-x)
+)
+
+;(defrule
+;(true)
+;=>
+;(up-chat-data-to-self "deer luring goal: %d" g: deer-luring)
+;)
+
+(defrule
+(up-compare-goal deer-luring == 1)
+=>
+;(chat-local-to-self "Scout Found")
+(up-full-reset-search)
+(up-get-point position-self gl-self-x)
+(up-set-target-point gl-self-x)
+(set-strategic-number sn-focus-player-number 0)
+(up-set-group search-local c: 0)
+(up-filter-distance c: -1 c: deer-luring-distance)
+(up-find-remote c: 909 c: 40)
+(up-remove-objects search-remote 1 == 1955)
+(up-remove-objects search-remote 1 == 1958)
+(up-remove-objects search-remote 1 == 2084)
+(up-remove-objects search-remote 1 == 2086)
+(up-remove-objects search-remote 1 == 2088)
+(up-remove-objects search-remote 1 == 2098)
+(up-remove-objects search-remote 1 == 2099)
+(up-remove-objects search-remote 1 == 2100)
+(up-remove-objects search-remote 10 < 1)
+;(up-remove-objects search-remote 13 < 30)
+(up-clean-search search-remote 44 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total >= 1)
+(up-compare-sn sn-number-explore-groups != 0)
+=>
+(up-modify-sn sn-number-explore-groups c:= 0)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total > 0)
+=>
+;(chat-local-to-self "deer found")
+;(set-strategic-number sn-number-explore-groups 0)
+(up-set-target-object search-remote c: 0)
+;(up-get-point position-object gl-deer-x)
+(up-get-object-data 38 gl-deer-x)
+(up-get-object-data 39 gl-deer-y)
+(up-modify-goal gl-dot-x c:* 100)
+(up-modify-goal gl-dot-y c:* 100)
+(up-get-point position-self gl-self-x)
+)
+
+(defrule
+(false)
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-dot-x g:>= gl-deer-x)
+=>
+(up-modify-goal gl-deer-x c:- 70)
+)
+
+(defrule
+(false)
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-dot-x g:< gl-deer-x)
+=>
+(up-modify-goal gl-deer-x c:+ 70)
+)
+
+(defrule
+(false)
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-dot-y g:>= gl-deer-y)
+=>
+(up-modify-goal gl-deer-y c:- 70)
+)
+
+(defrule
+(false)
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total > 0)
+(up-compare-goal gl-dot-y g:< gl-deer-y)
+=>
+(up-modify-goal gl-deer-y c:+ 70)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-lerp-tiles gl-deer-x gl-dot-x c: -70)
+(up-bound-precise-point gl-deer-x 1 c: 0)
+(up-modify-sn sn-target-point-adjustment c:= 6)
+(up-target-point gl-deer-x action-move -1 -1)
+(up-modify-sn sn-target-point-adjustment c:= 0)
+;(up-jump-rule -1)
+;(disable-self)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-compare-sn sn-number-explore-groups != 1)
+=>
+(up-modify-sn sn-number-explore-groups c:= 1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x != 0)
+(up-point-explored gl-scout-point-x2 != 0)
+(up-point-explored gl-scout-point-x3 != 0)
+(up-point-explored gl-scout-point-x4 != 0)
+=>
+(up-lerp-tiles gl-scout-point-x gl-self-x c: -6);-4
+(up-bound-point gl-scout-point-x gl-scout-point-x)
+(up-lerp-tiles gl-scout-point-x2 gl-self-x c: -6);-4
+(up-bound-point gl-scout-point-x2 gl-scout-point-x2)
+(up-lerp-tiles gl-scout-point-x3 gl-self-x c: -6);-4
+(up-bound-point gl-scout-point-x3 gl-scout-point-x3)
+(up-lerp-tiles gl-scout-point-x4 gl-self-x c: -6);-4
+(up-bound-point gl-scout-point-x4 gl-scout-point-x4)
+;(up-send-flare gl-scout-point-x2)
+)
+
+(defrule
+(goal deer-luring 1)
+(building-type-count town-center > 0)
+(military-population > 0)
+=>
+(up-full-reset-search)
+;(up-find-local c: 1869 c: 1)
+(up-find-local c: scout-cavalry-line c: 1)
+(up-find-local c: eagle-warrior-line c: 1)
+(up-find-local c: 912 c: 1)
+(up-find-local c: 936 c: 1)
+(up-find-local c: 906 c: 1)
+(up-find-local c: 900 c: 1)
+(up-find-local c: camel-scout c: 1)
+(up-find-local c: trade-cart c: 1)
+(up-find-local c: 961 c: 1)
+(up-find-local c: 958 c: 1)
+(up-remove-objects search-local -1 > 0)
+(up-create-group 0 0 c: 0)
+;(up-modify-group-flag 1 c: 0)
+(up-full-reset-search)
+(up-set-group search-local c: 0)
+(up-get-point position-self gl-scout-point-x)
+(up-get-point position-self gl-scout-point-x2)
+(up-get-point position-self gl-scout-point-x3)
+(up-get-point position-self gl-scout-point-x4)
+(disable-self)
+)
+
+(defrule
+(goal deer-luring 1)
+(building-type-count town-center > 0)
+(military-population > 0)
+(up-set-target-object search-local c: 0)
+=>
+;(chat-local-to-self "rule 0 firing")
+(up-get-point position-self gl-self-x)
+(up-get-point position-object gl-scout-location-x)
+;(up-chat-data-to-self "self x %d" g: gl-self-x)
+;(up-chat-data-to-self "self y %d" g: gl-self-y)
+;(up-chat-data-to-self "scout x %d" g: gl-scout-location-x)
+;(up-chat-data-to-self "scout y %d" g: gl-scout-location-y)
+)
+
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x == 0)
+(up-path-distance gl-scout-point-x 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x == 0)
+=>
+;(chat-local-to-self "finding deer")
+(up-target-point gl-scout-point-x action-move -1 -1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x != 0)
+(up-point-explored gl-scout-point-x2 == 0)
+(up-path-distance gl-scout-point-x2 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x2 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x != 0)
+(up-point-explored gl-scout-point-x2 == 0)
+=>
+(up-target-point gl-scout-point-x2 action-move -1 -1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x != 0)
+(up-point-explored gl-scout-point-x2 != 0)
+(up-point-explored gl-scout-point-x3 == 0)
+(up-path-distance gl-scout-point-x3 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x3 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x != 0)
+(up-point-explored gl-scout-point-x2 != 0)
+(up-point-explored gl-scout-point-x3 == 0)
+=>
+(up-target-point gl-scout-point-x3 action-move -1 -1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x != 0)
+(up-point-explored gl-scout-point-x2 != 0)
+(up-point-explored gl-scout-point-x3 != 0)
+(up-point-explored gl-scout-point-x4 == 0)
+(up-path-distance gl-scout-point-x4 0 == 65535)
+=>
+(up-lerp-tiles gl-scout-point-x4 gl-scout-location-x c: 1)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-remote-total == 0)
+(up-point-explored gl-scout-point-x != 0)
+(up-point-explored gl-scout-point-x2 != 0)
+(up-point-explored gl-scout-point-x3 != 0)
+(up-point-explored gl-scout-point-x4 == 0)
+=>
+(up-target-point gl-scout-point-x4 action-move -1 -1)
+)
+
+(defrule
+(false)
+(goal deer-luring 1)
+(up-compare-goal gl-state-7 c:!= 0)
+(up-point-distance gl-deer-x gl-self-x < 6);3
+=>
+(up-reset-search 1 1 0 0)
+(up-find-local c: villager-forager c: 6);9
+(up-target-objects 1 action-default -1 -1)
+;(chat-local-to-self "deer-luring off")
+;(set-goal deer-luring 0)
+)
+
+(defrule
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-object search-remote c: 0)
+(up-full-reset-search)
+(up-get-point position-object gl-dot-x)
+(up-set-target-point gl-dot-x)
+(up-filter-distance c: 0 c: 2)
+(up-find-local c: wall-class c: 40)
+(up-clean-search search-local 46 1)
+(up-remove-objects search-local -1 > 0)
+(up-get-search-state gl-local-total)
+(up-jump-rule 1)
+)
+
+(defrule
+(true)
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(not(map-type arena))
+(goal deer-luring 1)
+(up-compare-goal gl-local-total >= 1)
+=>
+(up-target-point gl-dot-x action-delete -1 -1)
+(disable-self)
+)

@@ -1,0 +1,195 @@
+(defrule
+	(unit-type-count villager > 6)
+	(goal g-dynamic-gathering no)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(disable-self)
+)
+
+(defrule
+	(or	(not(goal g-rushing-age feudal-age))
+		(up-compare-flag f-map-type == fv-fish-map))
+	(unit-type-count villager > 8)
+	(goal g-dynamic-gathering no)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-flag f-map-type == fv-fish-map)
+	(unit-type-count villager > 10)
+	(goal g-dynamic-gathering no)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 55)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(disable-self)
+)
+
+(defrule
+	(goal g-rushing-age castle-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(goal g-dynamic-gathering no)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(disable-self)
+)
+
+;---------------------------flush------------------------------------------
+(defrule
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(goal g-dynamic-gathering no)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-retask-gather-amount 0)
+	(disable-self)
+)
+(defrule
+	(goal g-rushing-age feudal-age)
+	(building-type-count-total barracks > 0)
+	(strategic-number sn-gold-gatherer-percentage == 0);don't overwrite next rules
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(goal g-dynamic-gathering no)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(disable-self)
+)
+
+;retask villagers for next age
+(defrule
+	(goal g-dynamic-gathering no)
+	(goal g-rushing-unit eagle-warrior)
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(disable-self)
+)
+
+(defrule
+	(goal g-dynamic-gathering no)
+	(goal g-rushing-unit eagle-warrior)
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(up-research-status c: feudal-age >= research-pending)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(disable-self)
+)
+
+(defrule
+	(goal g-dynamic-gathering no)
+	(goal g-rushing-unit skirmisher)
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 56)
+	(set-strategic-number sn-gold-gatherer-percentage 1)
+	(up-assign-builders c: mining-camp c: 0)
+	(disable-self)
+)
+
+(defrule
+	(goal g-dynamic-gathering no)
+	(goal g-rushing-unit scout-cavalry)
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 57)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(up-assign-builders c: mining-camp c: 0)
+	(disable-self)
+)
+
+(defrule
+	(goal g-dynamic-gathering no)
+	(goal g-rushing-unit archer)
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(disable-self)
+)
+(defrule
+	(goal g-dynamic-gathering no)
+	(goal g-rushing-unit archer)
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(up-research-status c: feudal-age >= research-pending)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+	(disable-self)
+)
+
+(defrule
+	(goal g-dynamic-gathering no)
+	(or	(goal g-rushing-unit militiaman)
+		(goal g-rushing-unit champi-line))
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+	(disable-self)
+)
+
+(defrule
+	(goal g-dynamic-gathering no)
+	(goal g-rushing-unit archer)
+	(goal g-rushing-age feudal-age)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(up-research-status c: feudal-age >= research-pending)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-flag f-map-type == fv-fish-map)
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+	(goal g-dynamic-gathering no)
+	(food-amount >= 500)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-modifier-percentage 40)
+)
+
+(defrule
+	(or	(current-age g:>= g-rushing-age)
+		(strategic-number sn-wood-modifier-percentage > 0))
+	(unit-type-count-total villager g:>= g-dark-vills-2)
+=>
+	(up-modify-goal g-saved-food-percent s:= sn-food-gatherer-percentage)
+	(up-modify-goal g-saved-wood-percent s:= sn-wood-gatherer-percentage)
+	(up-modify-goal g-saved-gold-percent s:= sn-gold-gatherer-percentage)
+	(up-modify-goal g-saved-stone-percent s:= sn-stone-gatherer-percentage)
+	(up-modify-goal g-saved-wood-percent s:+ sn-wood-modifier-percentage)
+	(set-strategic-number sn-retask-gather-amount 200)
+	(set-goal g-dynamic-gathering yes)
+	(enable-timer t-dynamic-gather 50)
+	(disable-self)
+)

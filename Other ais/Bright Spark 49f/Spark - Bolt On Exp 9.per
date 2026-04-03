@@ -1,0 +1,2329 @@
+;###### Define Constants ######
+
+(defconst ml-danger -25)
+(defconst ml-low -10)
+(defconst ml-equal 0)
+(defconst ml-high 4)
+(defconst ml-v-high 15)
+(defconst ml-dominant 50)
+
+(defconst mc-danger -3)
+(defconst mc-v-low -2)
+(defconst mc-low -1)
+(defconst mc-equal 0)
+(defconst mc-high 1)
+(defconst mc-v-high 2)
+(defconst mc-dominant 3)
+
+(defconst counter-mode 403)
+(defconst anti-infantry 1)
+(defconst anti-archery 2)
+(defconst anti-cavalry 3)
+
+(defconst anti-archer 2)
+
+(defconst preferred 5)
+
+(defconst towers 1)
+(defconst forward-castles 2)
+(defconst sell -1)
+
+(defconst halt-production 404)
+(defconst halt-unit-production 405)
+
+(defconst retreat-timer 14)
+(defconst retreat-mode 512)
+(defconst need-siege 511)
+
+(defconst feudal-food 45)
+(defconst feudal-wood 35)
+(defconst feudal-gold 20)
+(defconst feudal-stone 0)
+
+(defconst castle-food 35)
+(defconst castle-wood 25)
+(defconst castle-gold 35)
+(defconst castle-stone 5)
+
+(defconst imperial-food 35)
+(defconst imperial-wood 25)
+(defconst imperial-gold 35)
+(defconst imperial-stone 5)
+
+#load-if-not-defined VIKING-CIV
+
+(defconst preferred-boat fire-ship-line)
+
+#else
+
+(defconst preferred-boat galley-line)
+
+#end-if
+
+(defconst castle-vote-offset 248)
+(defconst imperial-vote-offset 249)
+
+(defconst remain-weight-bonus 229)
+
+(defconst remain-militiaman-weight 230)
+(defconst remain-spearman-weight 231)
+(defconst remain-archer-weight 232)
+(defconst remain-skirmisher-weight 233)
+(defconst remain-cavalry-archer-weight 234)
+(defconst remain-scout-cavalry-weight 235)
+(defconst remain-knight-weight 236)
+(defconst remain-camel-weight 237)
+(defconst remain-battle-elephant-weight 238)
+(defconst remain-monk-weight 239)
+(defconst remain-eagle-warrior-weight 240)
+(defconst remain-hand-cannoneer-weight 241)
+(defconst remain-scorpion-weight 242)
+(defconst remain-genitour-weight 243)
+(defconst remain-mangonel-weight 244)
+(defconst remain-elephant-archer-weight 245)
+(defconst remain-condottiero-weight 246)
+(defconst remain-fire-lancer-weight 247)
+(defconst remain-mounted-trebuchet-weight 541)
+(defconst remain-my-special-unit-weight 567)
+
+;(load "Bright Spark 49f\Spark - Constants 4")
+;(load "MFA - Constants")
+
+(defrule
+(unit-type-count villager > 0)
+=>
+(set-goal 49 1);3 when multiplayer
+;(chat-local-to-self "Yay! I'm working!")
+;(chat-to-enemies "Bright Spark is operational.")
+;(chat-to-allies "Bright Spark is operational")
+(disable-self)
+)
+
+(defrule
+(unit-type-count monk >= 100)
+=>
+(chat-to-enemies "Wololo motherflippers.")
+(disable-self)
+)
+
+(defrule
+(current-age >= castle-age)
+(or(up-gaia-type-count c: gold < 4)
+(wood-amount >= 1000))
+(or(players-building-type-count any-ally market >= 1)
+(and(map-type michi)
+(up-players-in-game ally == 1)))
+(building-type-count-total town-center >= 3)
+(building-type-count-total market < 3)
+(can-build market)
+=>
+(up-set-target-point gl-market-x)
+(set-strategic-number sn-placement-zone-size 5)
+(up-build 3 0 c: market)
+)
+
+(defrule
+(false)
+(players-building-type-count any-ally market > 0)
+(unit-type-count trade-cart < 120)
+(can-train trade-cart)
+=>
+(train trade-cart)
+)
+
+(defrule
+(up-research-status c: castle-age < research-pending)
+(or(up-compare-goal gl-game-strategy == flush)
+(up-compare-goal gl-game-strategy == drush))
+(not(goal castle-vote-offset 800))
+=>
+(set-goal castle-vote-offset 800)
+)
+
+(defrule
+(or(up-research-status c: castle-age >= research-pending)
+(and(up-compare-goal gl-game-strategy != flush)
+(up-compare-goal gl-game-strategy != drush)))
+(not(goal castle-vote-offset 0))
+=>
+(set-goal castle-vote-offset 0)
+)
+
+(defrule
+;(up-research-status c: ri-chemistry != research-complete)
+;(not(civ-selected bohemians))
+(up-research-status c: imperial-age < research-pending)
+(not(goal imperial-vote-offset 800))
+=>
+(set-goal imperial-vote-offset 800)
+)
+
+(defrule
+;(up-research-status c: ri-chemistry == research-complete)
+;(civ-selected bohemians))
+(up-research-status c: imperial-age >= research-pending)
+(not(goal imperial-vote-offset 0))
+=>
+(set-goal imperial-vote-offset 0)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == fast-imp)
+(civ-selected turkish)
+(not(goal imperial-vote-offset 0))
+=>
+(set-goal imperial-vote-offset 0)
+)
+
+(defrule
+(up-compare-goal gl-game-strategy == fast-imp)
+(or(civ-selected italian)
+(players-civ any-ally italian))
+(not(goal imperial-vote-offset 0))
+=>
+(set-goal imperial-vote-offset 0)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal remain-weight-bonus c:= 0)
+)
+
+(defrule
+(current-age <= feudal-age)
+=>
+(up-modify-goal remain-weight-bonus c:+ 10)
+)
+
+(defrule
+(current-age == castle-age)
+=>
+(up-modify-goal remain-weight-bonus c:+ 15)
+)
+
+(defrule
+(current-age == imperial-age)
+=>
+(up-modify-goal remain-weight-bonus c:+ 20)
+)
+
+(defrule
+(current-age >= castle-age)
+=>
+(up-get-fact 42 ally gl-dot-x)
+(up-modify-goal gl-dot-x c:+ 1)
+(up-modify-goal remain-weight-bonus g:* gl-dot-x)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal 10 >= mc-v-high)
+=>
+(up-modify-goal remain-weight-bonus c:+ 50);100
+)
+
+(defrule
+(up-compare-goal military-mode == assault)
+=>
+(up-modify-goal remain-weight-bonus c:+ 50);100
+)
+
+(defrule
+(current-age == castle-age)
+=>
+(up-modify-goal remain-weight-bonus c:= 0)
+(disable-self)
+)
+
+(defrule
+(goal chosen-military-unit militiaman-line)
+(up-compare-goal remain-militiaman-weight == 0)
+=>
+(up-modify-goal remain-militiaman-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit militiaman-line))
+(up-compare-goal remain-militiaman-weight != 0)
+=>
+(up-modify-goal remain-militiaman-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit spearman-line)
+(up-compare-goal remain-spearman-weight == 0)
+=>
+(up-modify-goal remain-spearman-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit spearman-line))
+(up-compare-goal remain-spearman-weight != 0)
+=>
+(up-modify-goal remain-spearman-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit fire-lancer-line)
+(up-compare-goal remain-fire-lancer-weight == 0)
+=>
+(up-modify-goal remain-fire-lancer-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit fire-lancer-line))
+(up-compare-goal remain-fire-lancer-weight != 0)
+=>
+(up-modify-goal remain-fire-lancer-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit archer-line)
+(up-compare-goal remain-archer-weight == 0)
+=>
+(up-modify-goal remain-archer-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit archer-line))
+(up-compare-goal remain-archer-weight != 0)
+=>
+(up-modify-goal remain-archer-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit skirmisher-line)
+(up-compare-goal remain-skirmisher-weight == 0)
+=>
+(up-modify-goal remain-skirmisher-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit skirmisher-line))
+(up-compare-goal remain-skirmisher-weight != 0)
+=>
+(up-modify-goal remain-skirmisher-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit cavalry-archer-line)
+(up-compare-goal remain-cavalry-archer-weight == 0)
+=>
+(up-modify-goal remain-cavalry-archer-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit cavalry-archer-line))
+(up-compare-goal remain-cavalry-archer-weight != 0)
+=>
+(up-modify-goal remain-cavalry-archer-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit genitour-line)
+(up-compare-goal remain-genitour-weight == 0)
+=>
+(up-modify-goal remain-genitour-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit genitour-line))
+(up-compare-goal remain-genitour-weight != 0)
+=>
+(up-modify-goal remain-genitour-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit scout-cavalry-line)
+(up-compare-goal remain-scout-cavalry-weight == 0)
+=>
+(up-modify-goal remain-scout-cavalry-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit scout-cavalry-line))
+(up-compare-goal remain-scout-cavalry-weight != 0)
+=>
+(up-modify-goal remain-scout-cavalry-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit knight-line)
+(up-compare-goal remain-knight-weight == 0)
+=>
+(up-modify-goal remain-knight-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit knight-line))
+(up-compare-goal remain-knight-weight != 0)
+=>
+(up-modify-goal remain-knight-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit camel-line)
+(up-compare-goal remain-camel-weight == 0)
+=>
+(up-modify-goal remain-camel-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit camel-line))
+(up-compare-goal remain-camel-weight != 0)
+=>
+(up-modify-goal remain-camel-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit battle-elephant-line)
+(up-compare-goal remain-battle-elephant-weight == 0)
+=>
+(up-modify-goal remain-battle-elephant-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit battle-elephant-line))
+(up-compare-goal remain-battle-elephant-weight != 0)
+=>
+(up-modify-goal remain-battle-elephant-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit monk)
+(up-compare-goal remain-monk-weight == 0)
+=>
+(up-modify-goal remain-monk-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit monk))
+(up-compare-goal remain-monk-weight != 0)
+=>
+(up-modify-goal remain-monk-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit eagle-warrior-line)
+(up-compare-goal remain-eagle-warrior-weight == 0)
+=>
+(up-modify-goal remain-eagle-warrior-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit eagle-warrior-line))
+(up-compare-goal remain-eagle-warrior-weight != 0)
+=>
+(up-modify-goal remain-eagle-warrior-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit hand-cannoneer)
+(up-compare-goal remain-hand-cannoneer-weight == 0)
+=>
+(up-modify-goal remain-hand-cannoneer-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit hand-cannoneer))
+(up-compare-goal remain-hand-cannoneer-weight != 0)
+=>
+(up-modify-goal remain-hand-cannoneer-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit scorpion-line)
+(up-compare-goal remain-scorpion-weight == 0)
+=>
+(up-modify-goal remain-scorpion-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit scorpion-line))
+(up-compare-goal remain-scorpion-weight != 0)
+=>
+(up-modify-goal remain-scorpion-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit mangonel-line)
+(up-compare-goal remain-mangonel-weight == 0)
+=>
+(up-modify-goal remain-mangonel-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit mangonel-line))
+(up-compare-goal remain-mangonel-weight != 0)
+=>
+(up-modify-goal remain-mangonel-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit mounted-trebuchet)
+(up-compare-goal remain-mounted-trebuchet-weight == 0)
+=>
+(up-modify-goal remain-mounted-trebuchet-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit mounted-trebuchet))
+(up-compare-goal remain-mounted-trebuchet-weight != 0)
+=>
+(up-modify-goal remain-mounted-trebuchet-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit elephant-archer-line)
+(up-compare-goal remain-elephant-archer-weight == 0)
+=>
+(up-modify-goal remain-elephant-archer-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit elephant-archer-line))
+(up-compare-goal remain-elephant-archer-weight != 0)
+=>
+(up-modify-goal remain-elephant-archer-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit condottiero)
+(up-compare-goal remain-condottiero-weight == 0)
+=>
+(up-modify-goal remain-condottiero-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit condottiero))
+(up-compare-goal remain-condottiero-weight != 0)
+=>
+(up-modify-goal remain-condottiero-weight c:= 0)
+)
+
+(defrule
+(goal chosen-military-unit my-special-unit)
+(up-compare-goal remain-my-special-unit-weight == 0)
+=>
+(up-modify-goal remain-my-special-unit-weight g:= remain-weight-bonus)
+)
+
+(defrule
+(not(goal chosen-military-unit my-special-unit))
+(up-compare-goal remain-my-special-unit-weight != 0)
+=>
+(up-modify-goal remain-my-special-unit-weight c:= 0)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal militiaman-votes militiaman-weight)
+(up-modify-goal militiaman-votes g:+ remain-militiaman-weight)
+(up-modify-goal militiaman-votes g:+ spearman-presence)
+(up-modify-goal militiaman-votes g:+ spearman-presence)
+(up-modify-goal militiaman-votes g:+ fire-lancer-presence)
+(up-modify-goal militiaman-votes g:+ fire-lancer-presence)
+(up-modify-goal militiaman-votes g:+ eagle-warrior-presence)
+(up-modify-goal militiaman-votes g:+ eagle-warrior-presence)
+(up-modify-goal militiaman-votes g:+ skirmisher-presence)
+(up-modify-goal militiaman-votes g:+ skirmisher-presence)
+(up-modify-goal militiaman-votes g:+ scout-cavalry-presence)
+(up-modify-goal militiaman-votes g:+ camel-presence)
+(up-modify-goal militiaman-votes g:- archer-presence)
+(up-modify-goal militiaman-votes g:- archer-presence)
+(up-modify-goal militiaman-votes g:- cavalry-archer-presence)
+(up-modify-goal militiaman-votes g:- cavalry-archer-presence)
+(up-modify-goal militiaman-votes g:- hand-cannoneer-presence)
+(up-modify-goal militiaman-votes g:- hand-cannoneer-presence)
+(up-modify-goal militiaman-votes g:- knight-presence)
+(up-modify-goal militiaman-votes g:- knight-presence)
+(up-modify-goal militiaman-votes g:- battle-elephant-presence)
+(up-modify-goal militiaman-votes g:- battle-elephant-presence)
+;(up-chat-data-to-self "Militiaman Votes is now %d." g: militiaman-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal spearman-votes spearman-weight)
+(up-modify-goal spearman-votes g:+ remain-spearman-weight)
+(up-modify-goal spearman-votes g:+ scout-cavalry-presence)
+(up-modify-goal spearman-votes g:+ scout-cavalry-presence)
+(up-modify-goal spearman-votes g:+ scout-cavalry-presence)
+(up-modify-goal spearman-votes g:- fire-lancer-presence)
+(up-modify-goal spearman-votes g:+ knight-presence)
+(up-modify-goal spearman-votes g:+ knight-presence)
+(up-modify-goal spearman-votes g:+ camel-presence)
+(up-modify-goal spearman-votes g:+ camel-presence)
+(up-modify-goal spearman-votes g:+ battle-elephant-presence)
+(up-modify-goal spearman-votes g:+ battle-elephant-presence)
+(up-modify-goal spearman-votes g:- archer-presence)
+(up-modify-goal spearman-votes g:- archer-presence)
+(up-modify-goal spearman-votes g:- cavalry-archer-presence)
+(up-modify-goal spearman-votes g:- militiaman-presence)
+(up-modify-goal spearman-votes g:- hand-cannoneer-presence)
+(up-modify-goal spearman-votes g:- hand-cannoneer-presence)
+;(up-chat-data-to-self "Spearman Votes is now %d." g: spearman-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal fire-lancer-votes fire-lancer-weight)
+(up-modify-goal fire-lancer-votes g:- castle-vote-offset)
+(up-modify-goal fire-lancer-votes g:+ remain-fire-lancer-weight)
+(up-modify-goal fire-lancer-votes g:+ spearman-presence)
+(up-modify-goal fire-lancer-votes g:+ scout-cavalry-presence)
+(up-modify-goal fire-lancer-votes g:+ scout-cavalry-presence)
+(up-modify-goal fire-lancer-votes g:+ eagle-warrior-presence)
+(up-modify-goal fire-lancer-votes g:+ knight-presence)
+(up-modify-goal fire-lancer-votes g:+ camel-presence)
+(up-modify-goal fire-lancer-votes g:+ battle-elephant-presence)
+(up-modify-goal fire-lancer-votes g:- archer-presence)
+(up-modify-goal fire-lancer-votes g:- archer-presence)
+(up-modify-goal fire-lancer-votes g:- cavalry-archer-presence)
+(up-modify-goal fire-lancer-votes g:- militiaman-presence)
+(up-modify-goal fire-lancer-votes g:- hand-cannoneer-presence)
+(up-modify-goal fire-lancer-votes g:- hand-cannoneer-presence)
+;(up-chat-data-to-self "Spearman Votes is now %d." g: spearman-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal champi-scout-votes champi-scout-weight)
+(up-modify-goal champi-scout-votes g:+ remain-champi-scout-weight)
+(up-modify-goal champi-scout-votes g:+ spearman-presence)
+(up-modify-goal champi-scout-votes g:+ spearman-presence)
+(up-modify-goal champi-scout-votes g:+ skirmisher-presence)
+(up-modify-goal champi-scout-votes g:+ skirmisher-presence)
+(up-modify-goal champi-scout-votes g:+ scout-cavalry-presence)
+(up-modify-goal champi-scout-votes g:+ scout-cavalry-presence)
+(up-modify-goal champi-scout-votes g:+ eagle-warrior-presence)
+(up-modify-goal champi-scout-votes g:- knight-presence)
+(up-modify-goal champi-scout-votes g:- knight-presence)
+(up-modify-goal champi-scout-votes g:- battle-elephant-presence)
+(up-modify-goal champi-scout-votes g:- battle-elephant-presence)
+(up-modify-goal champi-scout-votes g:- archer-presence)
+(up-modify-goal champi-scout-votes g:- archer-presence)
+(up-modify-goal champi-scout-votes g:- cavalry-archer-presence)
+(up-modify-goal champi-scout-votes g:- militiaman-presence)
+(up-modify-goal champi-scout-votes g:- hand-cannoneer-presence)
+(up-modify-goal champi-scout-votes g:- hand-cannoneer-presence)
+;(up-chat-data-to-self "Spearman Votes is now %d." g: spearman-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal eagle-warrior-votes eagle-weight)
+(up-modify-goal eagle-warrior-votes g:+ remain-eagle-warrior-weight)
+(up-modify-goal eagle-warrior-votes g:+ scout-cavalry-presence)
+(up-modify-goal eagle-warrior-votes g:- knight-presence)
+(up-modify-goal eagle-warrior-votes g:- knight-presence)
+(up-modify-goal eagle-warrior-votes g:- fire-lancer-presence)
+(up-modify-goal eagle-warrior-votes g:+ scorpion-presence)
+(up-modify-goal eagle-warrior-votes g:+ scorpion-presence)
+(up-modify-goal eagle-warrior-votes g:+ mangonel-presence)
+(up-modify-goal eagle-warrior-votes g:+ mangonel-presence)
+(up-modify-goal eagle-warrior-votes g:- battle-elephant-presence)
+(up-modify-goal eagle-warrior-votes g:+ skirmisher-presence)
+(up-modify-goal eagle-warrior-votes g:+ skirmisher-presence)
+(up-modify-goal eagle-warrior-votes g:+ archer-presence)
+(up-modify-goal eagle-warrior-votes g:+ archer-presence)
+(up-modify-goal eagle-warrior-votes g:+ cavalry-archer-presence)
+(up-modify-goal eagle-warrior-votes g:+ cavalry-archer-presence)
+(up-modify-goal eagle-warrior-votes g:- militiaman-presence)
+(up-modify-goal eagle-warrior-votes g:- militiaman-presence)
+(up-modify-goal eagle-warrior-votes g:- hand-cannoneer-presence)
+(up-modify-goal eagle-warrior-votes g:- hand-cannoneer-presence)
+;(up-chat-data-to-self "Eagle Warrior Votes is now %d." g: eagle-warrior-votes)
+)
+
+(defrule
+(civ-selected wu)
+=>
+(up-modify-goal eagle-warrior-votes g:- castle-vote-offset)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal condottiero-votes condottiero-weight)
+(up-modify-goal condottiero-votes g:+ remain-condottiero-weight)
+(up-modify-goal condottiero-votes g:- imperial-vote-offset)
+(up-modify-goal condottiero-votes g:+ spearman-presence)
+(up-modify-goal condottiero-votes g:+ spearman-presence)
+(up-modify-goal condottiero-votes g:+ fire-lancer-presence)
+(up-modify-goal condottiero-votes g:+ fire-lancer-presence)
+(up-modify-goal condottiero-votes g:+ eagle-warrior-presence)
+(up-modify-goal condottiero-votes g:+ eagle-warrior-presence)
+(up-modify-goal condottiero-votes g:+ skirmisher-presence)
+(up-modify-goal condottiero-votes g:+ skirmisher-presence)
+(up-modify-goal condottiero-votes g:+ scout-cavalry-presence)
+(up-modify-goal condottiero-votes g:+ camel-presence)
+(up-modify-goal condottiero-votes g:- archer-presence)
+(up-modify-goal condottiero-votes g:- archer-presence)
+(up-modify-goal condottiero-votes g:- cavalry-archer-presence)
+(up-modify-goal condottiero-votes g:- cavalry-archer-presence)
+(up-modify-goal condottiero-votes g:+ hand-cannoneer-presence)
+(up-modify-goal condottiero-votes g:+ hand-cannoneer-presence)
+(up-modify-goal condottiero-votes g:- knight-presence)
+(up-modify-goal condottiero-votes g:- battle-elephant-presence)
+;(up-chat-data-to-self "Militiaman Votes is now %d." g: militiaman-votes)
+)
+
+(defrule
+(not(civ-selected italian))
+(not(players-civ any-ally italian))
+=>
+(up-modify-goal condottiero-votes c:= -800)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal archer-votes archer-weight)
+(up-modify-goal archer-votes g:+ remain-archer-weight)
+(up-modify-goal archer-votes g:+ spearman-presence)
+(up-modify-goal archer-votes g:+ spearman-presence)
+(up-modify-goal archer-votes g:+ fire-lancer-presence)
+(up-modify-goal archer-votes g:+ fire-lancer-presence)
+(up-modify-goal archer-votes g:+ militiaman-presence)
+(up-modify-goal archer-votes g:+ militiaman-presence)
+(up-modify-goal archer-votes g:+ hand-cannoneer-presence)
+(up-modify-goal archer-votes g:+ hand-cannoneer-presence)
+(up-modify-goal archer-votes g:- scout-cavalry-presence)
+(up-modify-goal archer-votes g:- knight-presence)
+(up-modify-goal archer-votes g:- knight-presence)
+(up-modify-goal archer-votes g:- camel-presence)
+(up-modify-goal archer-votes g:- battle-elephant-presence)
+(up-modify-goal archer-votes g:- skirmisher-presence)
+(up-modify-goal archer-votes g:- skirmisher-presence)
+(up-modify-goal archer-votes g:- eagle-warrior-presence)
+(up-modify-goal archer-votes g:- scorpion-presence)
+(up-modify-goal archer-votes g:- scorpion-presence)
+(up-modify-goal archer-votes g:- mangonel-presence)
+(up-modify-goal archer-votes g:- mangonel-presence)
+;(up-chat-data-to-self "Archer Votes is now %d." g: archer-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal skirmisher-votes skirmisher-weight)
+(up-modify-goal skirmisher-votes g:+ remain-skirmisher-weight)
+(up-modify-goal skirmisher-votes g:+ spearman-presence)
+(up-modify-goal skirmisher-votes g:+ archer-presence)
+(up-modify-goal skirmisher-votes g:+ archer-presence)
+(up-modify-goal skirmisher-votes g:+ skirmisher-presence)
+(up-modify-goal skirmisher-votes g:+ skirmisher-presence)
+(up-modify-goal skirmisher-votes g:+ cavalry-archer-presence)
+(up-modify-goal skirmisher-votes g:+ cavalry-archer-presence)
+(up-modify-goal skirmisher-votes g:+ hand-cannoneer-presence)
+(up-modify-goal skirmisher-votes g:+ hand-cannoneer-presence)
+(up-modify-goal skirmisher-votes g:- militiaman-presence)
+(up-modify-goal skirmisher-votes g:- militiaman-presence)
+(up-modify-goal skirmisher-votes g:- scout-cavalry-presence)
+(up-modify-goal skirmisher-votes g:- scout-cavalry-presence)
+(up-modify-goal skirmisher-votes g:- eagle-warrior-presence)
+(up-modify-goal skirmisher-votes g:- eagle-warrior-presence)
+(up-modify-goal skirmisher-votes g:- knight-presence)
+(up-modify-goal skirmisher-votes g:- knight-presence)
+(up-modify-goal skirmisher-votes g:- knight-presence)
+(up-modify-goal skirmisher-votes g:- camel-presence)
+(up-modify-goal skirmisher-votes g:- battle-elephant-presence)
+(up-modify-goal skirmisher-votes g:- battle-elephant-presence)
+(up-modify-goal skirmisher-votes g:- scorpion-presence)
+(up-modify-goal skirmisher-votes g:- scorpion-presence)
+(up-modify-goal skirmisher-votes g:- mangonel-presence)
+(up-modify-goal skirmisher-votes g:- mangonel-presence)
+;(up-chat-data-to-self "Skirmisher Votes is now %d." g: skirmisher-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal cavalry-archer-votes cavalry-archer-weight)
+(up-modify-goal cavalry-archer-votes g:+ remain-cavalry-archer-weight)
+(up-modify-goal cavalry-archer-votes g:- castle-vote-offset)
+(up-modify-goal cavalry-archer-votes g:+ spearman-presence)
+(up-modify-goal cavalry-archer-votes g:+ fire-lancer-presence)
+(up-modify-goal cavalry-archer-votes g:+ militiaman-presence)
+(up-modify-goal cavalry-archer-votes g:+ militiaman-presence)
+(up-modify-goal cavalry-archer-votes g:- mangonel-presence)
+(up-modify-goal cavalry-archer-votes g:- scout-cavalry-presence)
+(up-modify-goal cavalry-archer-votes g:+ monk-presence)
+(up-modify-goal cavalry-archer-votes g:+ hand-cannoneer-presence)
+(up-modify-goal cavalry-archer-votes g:+ hand-cannoneer-presence)
+(up-modify-goal cavalry-archer-votes g:- skirmisher-presence)
+(up-modify-goal cavalry-archer-votes g:- skirmisher-presence)
+(up-modify-goal cavalry-archer-votes g:- knight-presence)
+(up-modify-goal cavalry-archer-votes g:- camel-presence)
+(up-modify-goal cavalry-archer-votes g:- camel-presence)
+(up-modify-goal cavalry-archer-votes g:- battle-elephant-presence)
+(up-modify-goal cavalry-archer-votes g:- scorpion-presence)
+(up-modify-goal cavalry-archer-votes g:- eagle-warrior-presence)
+(up-modify-goal cavalry-archer-votes g:- eagle-warrior-presence)
+;(up-chat-data-to-self "Cavalry Archer Votes is now %d." g: cavalry-archer-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal elephant-archer-votes elephant-archer-weight)
+(up-modify-goal elephant-archer-votes g:+ remain-elephant-archer-weight)
+(up-modify-goal elephant-archer-votes g:- castle-vote-offset)
+(up-modify-goal elephant-archer-votes g:- spearman-presence)
+(up-modify-goal elephant-archer-votes g:+ fire-lancer-presence)
+(up-modify-goal elephant-archer-votes g:+ militiaman-presence)
+(up-modify-goal elephant-archer-votes g:+ militiaman-presence)
+(up-modify-goal elephant-archer-votes g:- mangonel-presence)
+(up-modify-goal elephant-archer-votes g:+ scout-cavalry-presence)
+(up-modify-goal elephant-archer-votes g:- monk-presence)
+(up-modify-goal elephant-archer-votes g:- monk-presence)
+(up-modify-goal elephant-archer-votes g:+ hand-cannoneer-presence)
+(up-modify-goal elephant-archer-votes g:+ hand-cannoneer-presence)
+(up-modify-goal elephant-archer-votes g:- skirmisher-presence)
+(up-modify-goal elephant-archer-votes g:- skirmisher-presence)
+(up-modify-goal elephant-archer-votes g:- knight-presence)
+(up-modify-goal elephant-archer-votes g:- camel-presence)
+(up-modify-goal elephant-archer-votes g:- camel-presence)
+(up-modify-goal elephant-archer-votes g:- battle-elephant-presence)
+(up-modify-goal elephant-archer-votes g:- scorpion-presence)
+(up-modify-goal elephant-archer-votes g:- eagle-warrior-presence)
+(up-modify-goal elephant-archer-votes g:- eagle-warrior-presence)
+;(up-chat-data-to-self "Cavalry Archer Votes is now %d." g: cavalry-archer-votes)
+)
+
+(defrule
+(true)
+;(or(civ-selected berbers)
+;(players-civ any-ally berbers))
+;(timer-triggered military-voting-timer)
+=>
+(set-goal genitour-votes genitour-weight)
+(up-modify-goal genitour-votes g:- castle-vote-offset)
+(up-modify-goal genitour-votes g:+ remain-genitour-weight)
+(up-modify-goal genitour-votes g:+ spearman-presence)
+(up-modify-goal genitour-votes g:+ spearman-presence)
+(up-modify-goal genitour-votes g:+ archer-presence)
+(up-modify-goal genitour-votes g:+ archer-presence)
+(up-modify-goal genitour-votes g:+ cavalry-archer-presence)
+(up-modify-goal genitour-votes g:+ cavalry-archer-presence)
+(up-modify-goal genitour-votes g:+ hand-cannoneer-presence)
+(up-modify-goal genitour-votes g:+ hand-cannoneer-presence)
+(up-modify-goal genitour-votes g:- militiaman-presence)
+(up-modify-goal genitour-votes g:- scout-cavalry-presence)
+(up-modify-goal genitour-votes g:- eagle-warrior-presence)
+(up-modify-goal genitour-votes g:- eagle-warrior-presence)
+(up-modify-goal genitour-votes g:- knight-presence)
+(up-modify-goal genitour-votes g:- knight-presence)
+(up-modify-goal genitour-votes g:- camel-presence)
+(up-modify-goal genitour-votes g:- camel-presence)
+(up-modify-goal genitour-votes g:- battle-elephant-presence)
+(up-modify-goal genitour-votes g:- scorpion-presence)
+(up-modify-goal genitour-votes g:- scorpion-presence)
+(up-modify-goal genitour-votes g:- mangonel-presence)
+)
+
+(defrule
+(not(civ-selected berbers))
+(not(players-civ any-ally berbers))
+=>
+(up-modify-goal genitour-votes c:= -800)
+;(chat-local-to-self "No Genitours")
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal hand-cannoneer-votes hand-cannoneer-weight)
+(up-modify-goal hand-cannoneer-votes g:+ remain-hand-cannoneer-weight)
+(up-modify-goal hand-cannoneer-votes g:- castle-vote-offset)
+(up-modify-goal hand-cannoneer-votes g:- imperial-vote-offset)
+(up-modify-goal hand-cannoneer-votes g:+ spearman-presence)
+(up-modify-goal hand-cannoneer-votes g:+ spearman-presence)
+(up-modify-goal hand-cannoneer-votes g:+ fire-lancer-presence)
+(up-modify-goal hand-cannoneer-votes g:+ fire-lancer-presence)
+(up-modify-goal hand-cannoneer-votes g:+ militiaman-presence)
+(up-modify-goal hand-cannoneer-votes g:+ militiaman-presence)
+(up-modify-goal hand-cannoneer-votes g:+ eagle-warrior-presence)
+(up-modify-goal hand-cannoneer-votes g:+ eagle-warrior-presence)
+(up-modify-goal hand-cannoneer-votes g:+ scout-cavalry-presence)
+(up-modify-goal hand-cannoneer-votes g:- archer-presence)
+(up-modify-goal hand-cannoneer-votes g:- archer-presence)
+(up-modify-goal hand-cannoneer-votes g:- skirmisher-presence)
+(up-modify-goal hand-cannoneer-votes g:- cavalry-archer-presence)
+(up-modify-goal hand-cannoneer-votes g:- cavalry-archer-presence)
+(up-modify-goal hand-cannoneer-votes g:- knight-presence)
+(up-modify-goal hand-cannoneer-votes g:- knight-presence)
+(up-modify-goal hand-cannoneer-votes g:- battle-elephant-presence)
+(up-modify-goal hand-cannoneer-votes g:- scorpion-presence)
+(up-modify-goal hand-cannoneer-votes g:- scorpion-presence)
+(up-modify-goal hand-cannoneer-votes g:- mangonel-presence)
+;(up-chat-data-to-self "Hand Cannoneer Votes is now %d." g: hand-cannoneer-votes)
+)
+
+(defrule
+(or(civ-selected jurchens)
+(civ-selected bohemians))
+=>
+(up-modify-goal hand-cannoneer-votes g:+ imperial-vote-offset)
+)
+
+(defrule
+(or(civ-selected incan)
+(or(civ-selected mapuche)
+(or(civ-selected muisca)
+(civ-selected tupi))))
+=>
+(up-modify-goal hand-cannoneer-votes g:+ imperial-vote-offset)
+)
+
+(defrule
+(not(research-completed ri-chemistry))
+(not(civ-selected jurchens))
+=>
+(up-modify-goal hand-cannoneer-votes g:- imperial-vote-offset)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal scout-cavalry-votes scout-cavalry-weight)
+(up-modify-goal scout-cavalry-votes g:+ remain-scout-cavalry-weight)
+(up-modify-goal scout-cavalry-votes g:- spearman-presence)
+(up-modify-goal scout-cavalry-votes g:- spearman-presence)
+(up-modify-goal scout-cavalry-votes g:- fire-lancer-presence)
+(up-modify-goal scout-cavalry-votes g:- fire-lancer-presence)
+(up-modify-goal scout-cavalry-votes g:+ archer-presence)
+(up-modify-goal scout-cavalry-votes g:+ skirmisher-presence)
+(up-modify-goal scout-cavalry-votes g:+ skirmisher-presence)
+(up-modify-goal scout-cavalry-votes g:+ monk-presence)
+(up-modify-goal scout-cavalry-votes g:+ monk-presence)
+(up-modify-goal scout-cavalry-votes g:+ monk-presence)
+(up-modify-goal scout-cavalry-votes g:+ scorpion-presence)
+(up-modify-goal scout-cavalry-votes g:+ scorpion-presence)
+(up-modify-goal scout-cavalry-votes g:+ mangonel-presence)
+(up-modify-goal scout-cavalry-votes g:+ mangonel-presence)
+(up-modify-goal scout-cavalry-votes g:- knight-presence)
+(up-modify-goal scout-cavalry-votes g:- knight-presence)
+(up-modify-goal scout-cavalry-votes g:- camel-presence)
+(up-modify-goal scout-cavalry-votes g:- camel-presence)
+(up-modify-goal scout-cavalry-votes g:- battle-elephant-presence)
+(up-modify-goal scout-cavalry-votes g:- battle-elephant-presence)
+;(up-chat-data-to-self "Scout-Cavalry Votes is now %d." g: scout-cavalry-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal knight-votes knight-weight)
+(up-modify-goal knight-votes g:+ remain-knight-weight)
+(up-modify-goal knight-votes g:- castle-vote-offset)
+(up-modify-goal knight-votes g:- spearman-presence)
+(up-modify-goal knight-votes g:- spearman-presence)
+(up-modify-goal knight-votes g:- fire-lancer-presence)
+(up-modify-goal knight-votes g:+ militiaman-presence)
+(up-modify-goal knight-votes g:+ militiaman-presence)
+(up-modify-goal knight-votes g:+ eagle-warrior-presence)
+(up-modify-goal knight-votes g:+ eagle-warrior-presence)
+(up-modify-goal knight-votes g:+ skirmisher-presence)
+(up-modify-goal knight-votes g:+ skirmisher-presence)
+(up-modify-goal knight-votes g:+ scout-cavalry-presence)
+(up-modify-goal knight-votes g:+ scout-cavalry-presence)
+(up-modify-goal knight-votes g:- camel-presence)
+(up-modify-goal knight-votes g:- camel-presence)
+(up-modify-goal knight-votes g:+ archer-presence)
+(up-modify-goal knight-votes g:+ cavalry-archer-presence)
+(up-modify-goal knight-votes g:+ hand-cannoneer-presence)
+(up-modify-goal knight-votes g:- battle-elephant-presence)
+(up-modify-goal knight-votes g:+ scorpion-presence)
+(up-modify-goal knight-votes g:+ scorpion-presence)
+(up-modify-goal knight-votes g:+ mangonel-presence)
+(up-modify-goal knight-votes g:+ mangonel-presence)
+(up-modify-goal knight-votes g:- monk-presence)
+(up-modify-goal knight-votes g:- monk-presence)
+(up-modify-goal knight-votes g:- monk-presence)
+;(up-chat-data-to-self "Knight Votes is now %d." g: knight-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal camel-votes camel-weight)
+(up-modify-goal camel-votes g:+ remain-camel-weight)
+(up-modify-goal camel-votes g:- castle-vote-offset)
+(up-modify-goal camel-votes g:- spearman-presence)
+(up-modify-goal camel-votes g:- spearman-presence)
+(up-modify-goal camel-votes g:- fire-lancer-presence)
+(up-modify-goal camel-votes g:+ skirmisher-presence)
+(up-modify-goal camel-votes g:+ scout-cavalry-presence)
+(up-modify-goal camel-votes g:+ scout-cavalry-presence)
+(up-modify-goal camel-votes g:+ knight-presence)
+(up-modify-goal camel-votes g:+ knight-presence)
+(up-modify-goal camel-votes g:+ archer-presence)
+(up-modify-goal camel-votes g:+ cavalry-archer-presence)
+(up-modify-goal camel-votes g:+ cavalry-archer-presence)
+(up-modify-goal camel-votes g:+ battle-elephant-presence)
+(up-modify-goal camel-votes g:+ battle-elephant-presence)
+(up-modify-goal camel-votes g:+ scorpion-presence)
+(up-modify-goal camel-votes g:+ mangonel-presence)
+(up-modify-goal camel-votes g:+ monk-presence)
+;(up-chat-data-to-self "Camel Votes is now %d." g: camel-votes)
+)
+
+(defrule
+(civ-selected gurjaras)
+=>
+(up-modify-goal camel-votes g:+ castle-vote-offset)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal battle-elephant-votes battle-elephant-weight)
+(up-modify-goal battle-elephant-votes g:+ remain-battle-elephant-weight)
+(up-modify-goal battle-elephant-votes g:- castle-vote-offset)
+(up-modify-goal battle-elephant-votes g:- spearman-presence)
+(up-modify-goal battle-elephant-votes g:- spearman-presence)
+(up-modify-goal battle-elephant-votes g:- fire-lancer-presence)
+(up-modify-goal battle-elephant-votes g:+ militiaman-presence)
+(up-modify-goal battle-elephant-votes g:+ eagle-warrior-presence)
+(up-modify-goal battle-elephant-votes g:+ eagle-warrior-presence)
+(up-modify-goal battle-elephant-votes g:+ skirmisher-presence)
+(up-modify-goal battle-elephant-votes g:+ skirmisher-presence)
+(up-modify-goal battle-elephant-votes g:+ scout-cavalry-presence)
+(up-modify-goal battle-elephant-votes g:- camel-presence)
+(up-modify-goal battle-elephant-votes g:- camel-presence)
+(up-modify-goal battle-elephant-votes g:+ archer-presence)
+(up-modify-goal battle-elephant-votes g:+ cavalry-archer-presence)
+(up-modify-goal battle-elephant-votes g:+ hand-cannoneer-presence)
+(up-modify-goal battle-elephant-votes g:+ knight-presence)
+(up-modify-goal battle-elephant-votes g:- monk-presence)
+(up-modify-goal battle-elephant-votes g:- monk-presence)
+(up-modify-goal battle-elephant-votes g:- monk-presence)
+;(up-chat-data-to-self "Battle Elephant Votes is now %d." g: battle-elephant-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal monk-votes monk-weight)
+(up-modify-goal monk-votes g:+ remain-monk-weight)
+(up-modify-goal monk-votes g:- castle-vote-offset)
+(up-modify-goal monk-votes g:+ militiaman-presence)
+(up-modify-goal monk-votes g:+ spearman-presence)
+(up-modify-goal monk-votes g:- eagle-warrior-presence)
+(up-modify-goal monk-votes g:- eagle-warrior-presence)
+(up-modify-goal monk-votes g:- scout-cavalry-presence)
+(up-modify-goal monk-votes g:- scout-cavalry-presence)
+(up-modify-goal monk-votes g:- archer-presence)
+(up-modify-goal monk-votes g:- cavalry-archer-presence)
+(up-modify-goal monk-votes g:+ knight-presence)
+(up-modify-goal monk-votes g:+ knight-presence)
+(up-modify-goal monk-votes g:+ camel-presence)
+(up-modify-goal monk-votes g:+ battle-elephant-presence)
+(up-modify-goal monk-votes g:+ battle-elephant-presence)
+(up-modify-goal monk-votes g:+ battle-elephant-presence)
+(up-modify-goal monk-votes g:- scorpion-presence)
+(up-modify-goal monk-votes g:- scorpion-presence)
+(up-modify-goal monk-votes g:- mangonel-presence)
+(up-modify-goal monk-votes g:- mangonel-presence)
+;(up-chat-data-to-self "Monk Votes is now %d." g: monk-votes)
+)
+
+(defrule
+(true)
+=>
+(up-modify-sn sn-focus-player-number c:= 1)
+)
+
+(defrule
+(player-in-game focus-player)
+(players-stance focus-player enemy)
+(up-compare-goal sn-focus-player-number > 0)
+(up-compare-goal sn-focus-player-number < 9)
+=>
+(up-full-reset-search)
+(up-find-remote c: -1 c: 1)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(player-in-game focus-player)
+(players-stance focus-player enemy)
+(up-compare-goal sn-focus-player-number > 0)
+(up-compare-goal sn-focus-player-number < 9)
+(up-compare-goal gl-remote-total > 0)
+=>
+(up-set-target-object search-remote c: 0)
+)
+
+(defrule
+(player-in-game focus-player)
+(players-stance focus-player enemy)
+(up-compare-goal sn-focus-player-number > 0)
+(up-compare-goal sn-focus-player-number < 9)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 64 == 1)
+(up-compare-goal monk-votes > 0)
+=>
+(up-modify-goal monk-votes c:/ 2)
+(up-modify-sn sn-focus-player-number c:= 9)
+)
+
+(defrule
+(player-in-game focus-player)
+(players-stance focus-player enemy)
+(up-compare-goal sn-focus-player-number > 0)
+(up-compare-goal sn-focus-player-number < 9)
+(up-compare-goal gl-remote-total > 0)
+(up-object-data 64 == 1)
+(up-compare-goal monk-votes < 0)
+=>
+(up-modify-goal monk-votes c:* 2)
+(up-modify-sn sn-focus-player-number c:= 9)
+)
+
+(defrule
+(player-in-game focus-player)
+(players-stance focus-player enemy)
+(up-compare-goal sn-focus-player-number > 0)
+(up-compare-goal sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -5)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal scorpion-votes scorpion-weight)
+(up-modify-goal scorpion-votes g:+ remain-scorpion-weight)
+(up-modify-goal scorpion-votes g:- castle-vote-offset)
+(up-modify-goal scorpion-votes g:+ skirmisher-presence)
+(up-modify-goal scorpion-votes g:+ skirmisher-presence)
+(up-modify-goal scorpion-votes g:- eagle-warrior-presence)
+(up-modify-goal scorpion-votes g:- eagle-warrior-presence)
+(up-modify-goal scorpion-votes g:- scout-cavalry-presence)
+(up-modify-goal scorpion-votes g:- scout-cavalry-presence)
+(up-modify-goal scorpion-votes g:+ archer-presence)
+(up-modify-goal scorpion-votes g:+ archer-presence)
+(up-modify-goal scorpion-votes g:+ cavalry-archer-presence)
+(up-modify-goal scorpion-votes g:+ cavalry-archer-presence)
+(up-modify-goal scorpion-votes g:+ hand-cannoneer-presence)
+(up-modify-goal scorpion-votes g:+ hand-cannoneer-presence)
+(up-modify-goal scorpion-votes g:- knight-presence)
+(up-modify-goal scorpion-votes g:- knight-presence)
+(up-modify-goal scorpion-votes g:- camel-presence)
+(up-modify-goal scorpion-votes g:- battle-elephant-presence)
+(up-modify-goal scorpion-votes g:- mangonel-presence)
+(up-modify-goal scorpion-votes g:- mangonel-presence)
+(up-modify-goal scorpion-votes g:+ monk-presence)
+(up-modify-goal scorpion-votes g:+ monk-presence)
+;(up-chat-data-to-self "Scorpion Votes is now %d." g: scorpion-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal mangonel-votes mangonel-weight)
+(up-modify-goal mangonel-votes g:+ remain-mangonel-weight)
+(up-modify-goal mangonel-votes g:- castle-vote-offset)
+(up-modify-goal mangonel-votes g:+ skirmisher-presence)
+(up-modify-goal mangonel-votes g:+ skirmisher-presence)
+(up-modify-goal mangonel-votes g:- eagle-warrior-presence)
+(up-modify-goal mangonel-votes g:- eagle-warrior-presence)
+(up-modify-goal mangonel-votes g:- scout-cavalry-presence)
+(up-modify-goal mangonel-votes g:- scout-cavalry-presence)
+(up-modify-goal mangonel-votes g:+ archer-presence)
+(up-modify-goal mangonel-votes g:- cavalry-archer-presence)
+(up-modify-goal mangonel-votes g:+ hand-cannoneer-presence)
+(up-modify-goal mangonel-votes g:- knight-presence)
+(up-modify-goal mangonel-votes g:- knight-presence)
+(up-modify-goal mangonel-votes g:- camel-presence)
+(up-modify-goal mangonel-votes g:- camel-presence)
+(up-modify-goal mangonel-votes g:- battle-elephant-presence)
+(up-modify-goal mangonel-votes g:- battle-elephant-presence)
+(up-modify-goal mangonel-votes g:+ scorpion-presence)
+(up-modify-goal mangonel-votes g:+ scorpion-presence)
+(up-modify-goal mangonel-votes g:+ scorpion-presence)
+(up-modify-goal mangonel-votes g:+ monk-presence)
+(up-modify-goal mangonel-votes g:+ monk-presence)
+;(up-chat-data-to-self "Mangonel Votes is now %d." g: mangonel-votes)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal mounted-trebuchet-votes mounted-trebuchet-weight)
+(up-modify-goal mounted-trebuchet-votes g:+ remain-mounted-trebuchet-weight)
+(up-modify-goal mounted-trebuchet-votes g:- imperial-vote-offset)
+(up-modify-goal mounted-trebuchet-votes g:- militiaman-presence)
+(up-modify-goal mounted-trebuchet-votes g:- spearman-presence)
+(up-modify-goal mounted-trebuchet-votes g:- spearman-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ skirmisher-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ skirmisher-presence)
+(up-modify-goal mounted-trebuchet-votes g:- eagle-warrior-presence)
+(up-modify-goal mounted-trebuchet-votes g:- eagle-warrior-presence)
+(up-modify-goal mounted-trebuchet-votes g:- scout-cavalry-presence)
+(up-modify-goal mounted-trebuchet-votes g:- scout-cavalry-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ archer-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ archer-presence)
+(up-modify-goal mounted-trebuchet-votes g:- cavalry-archer-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ hand-cannoneer-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ hand-cannoneer-presence)
+(up-modify-goal mounted-trebuchet-votes g:- knight-presence)
+(up-modify-goal mounted-trebuchet-votes g:- knight-presence)
+(up-modify-goal mounted-trebuchet-votes g:- camel-presence)
+(up-modify-goal mounted-trebuchet-votes g:- camel-presence)
+(up-modify-goal mounted-trebuchet-votes g:- battle-elephant-presence)
+(up-modify-goal mounted-trebuchet-votes g:- battle-elephant-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ scorpion-presence)
+(up-modify-goal mounted-trebuchet-votes g:+ mangonel-presence)
+;(up-chat-data-to-self "Mangonel Votes is now %d." g: mangonel-votes)
+)
+
+(defrule
+(civ-selected mapuche)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal my-special-unit-votes my-special-unit-weight)
+(up-modify-goal my-special-unit-votes g:+ remain-my-special-unit-weight)
+(up-modify-goal my-special-unit-votes g:- castle-vote-offset)
+(up-modify-goal my-special-unit-votes g:+ militiaman-presence)
+(up-modify-goal my-special-unit-votes g:+ militiaman-presence)
+(up-modify-goal my-special-unit-votes g:+ spearman-presence)
+(up-modify-goal my-special-unit-votes g:- fire-lancer-presence)
+(up-modify-goal my-special-unit-votes g:- archer-presence)
+(up-modify-goal my-special-unit-votes g:- skirmisher-presence)
+(up-modify-goal my-special-unit-votes g:- skirmisher-presence)
+(up-modify-goal my-special-unit-votes g:+ cavalry-archer-presence)
+;(up-modify-goal my-special-unit-votes g:- genitour-presence)
+;(up-modify-goal my-special-unit-votes g:+ elephant-archer-presence)
+(up-modify-goal my-special-unit-votes g:+ hand-cannoneer-presence)
+(up-modify-goal my-special-unit-votes g:+ scout-cavalry-presence)
+(up-modify-goal my-special-unit-votes g:+ scout-cavalry-presence)
+(up-modify-goal my-special-unit-votes g:+ knight-presence)
+(up-modify-goal my-special-unit-votes g:+ knight-presence)
+(up-modify-goal my-special-unit-votes g:- camel-presence)
+(up-modify-goal my-special-unit-votes g:+ battle-elephant-presence)
+(up-modify-goal my-special-unit-votes g:+ battle-elephant-presence)
+(up-modify-goal my-special-unit-votes g:- scorpion-presence)
+(up-modify-goal my-special-unit-votes g:- scorpion-presence)
+(up-modify-goal my-special-unit-votes g:- mangonel-presence)
+)
+
+(defrule
+(civ-selected muisca)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal my-special-unit-votes my-special-unit-weight)
+(up-modify-goal my-special-unit-votes g:+ remain-my-special-unit-weight)
+(up-modify-goal my-special-unit-votes g:- castle-vote-offset)
+(up-modify-goal my-special-unit-votes g:- militiaman-presence)
+(up-modify-goal my-special-unit-votes g:- militiaman-presence)
+(up-modify-goal my-special-unit-votes g:+ spearman-presence)
+(up-modify-goal my-special-unit-votes g:+ eagle-warrior-presence)
+(up-modify-goal my-special-unit-votes g:- fire-lancer-presence)
+(up-modify-goal my-special-unit-votes g:- archer-presence)
+(up-modify-goal my-special-unit-votes g:- archer-presence)
+(up-modify-goal my-special-unit-votes g:+ skirmisher-presence)
+(up-modify-goal my-special-unit-votes g:+ skirmisher-presence)
+(up-modify-goal my-special-unit-votes g:+ cavalry-archer-presence)
+;(up-modify-goal my-special-unit-votes g:+ genitour-presence)
+;(up-modify-goal my-special-unit-votes g:+ genitour-presence)
+(up-modify-goal my-special-unit-votes g:- hand-cannoneer-presence)
+(up-modify-goal my-special-unit-votes g:- hand-cannoneer-presence)
+(up-modify-goal my-special-unit-votes g:+ scout-cavalry-presence)
+(up-modify-goal my-special-unit-votes g:+ scout-cavalry-presence)
+(up-modify-goal my-special-unit-votes g:+ knight-presence)
+(up-modify-goal my-special-unit-votes g:+ knight-presence)
+(up-modify-goal my-special-unit-votes g:+ camel-presence)
+(up-modify-goal my-special-unit-votes g:+ camel-presence)
+(up-modify-goal my-special-unit-votes g:+ battle-elephant-presence)
+(up-modify-goal my-special-unit-votes g:+ battle-elephant-presence)
+)
+
+(defrule
+(civ-selected tupi)
+;(timer-triggered military-voting-timer)
+=>
+(up-modify-goal my-special-unit-votes g:+ remain-my-special-unit-weight)
+(up-modify-goal my-special-unit-votes g:- castle-vote-offset)
+(up-modify-goal my-special-unit-votes g:+ militiaman-presence)
+(up-modify-goal my-special-unit-votes g:+ militiaman-presence)
+(up-modify-goal my-special-unit-votes g:+ spearman-presence)
+(up-modify-goal my-special-unit-votes g:+ spearman-presence)
+(up-modify-goal my-special-unit-votes g:+ eagle-warrior-presence)
+(up-modify-goal my-special-unit-votes g:+ eagle-warrior-presence)
+(up-modify-goal my-special-unit-votes g:+ fire-lancer-presence)
+(up-modify-goal my-special-unit-votes g:+ fire-lancer-presence)
+(up-modify-goal my-special-unit-votes g:- archer-presence)
+(up-modify-goal my-special-unit-votes g:- archer-presence)
+(up-modify-goal my-special-unit-votes g:- cavalry-archer-presence)
+(up-modify-goal my-special-unit-votes g:- cavalry-archer-presence)
+(up-modify-goal my-special-unit-votes g:- hand-cannoneer-presence)
+(up-modify-goal my-special-unit-votes g:- hand-cannoneer-presence)
+(up-modify-goal my-special-unit-votes g:+ scout-cavalry-presence)
+(up-modify-goal my-special-unit-votes g:- knight-presence)
+(up-modify-goal my-special-unit-votes g:- knight-presence)
+(up-modify-goal my-special-unit-votes g:- battle-elephant-presence)
+(up-modify-goal my-special-unit-votes g:- battle-elephant-presence)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal galley-votes galley-weight)
+(up-modify-goal galley-votes g:+ demo-ship-presence)
+(up-modify-goal galley-votes g:+ demo-ship-presence)
+(up-modify-goal galley-votes g:- fire-ship-presence)
+(up-modify-goal galley-votes g:- fire-ship-presence)
+(up-modify-goal galley-votes g:- longboat-presence)
+(up-modify-goal galley-votes g:- longboat-presence)
+(up-modify-goal galley-votes g:- turtle-ship-presence)
+(up-modify-goal galley-votes g:- turtle-ship-presence)
+(up-modify-goal galley-votes g:+ caravel-presence)
+(up-modify-goal galley-votes g:+ thirisadai-presence)
+(up-modify-goal galley-votes g:+ thirisadai-presence)
+;(up-modify-goal galley-votes c:- 10)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal fire-ship-votes fire-ship-weight)
+(up-modify-goal fire-ship-votes g:- demo-ship-presence)
+(up-modify-goal fire-ship-votes g:- demo-ship-presence)
+(up-modify-goal fire-ship-votes g:- hulk-presence)
+(up-modify-goal fire-ship-votes g:- hulk-presence)
+(up-modify-goal fire-ship-votes g:+ galley-presence)
+(up-modify-goal fire-ship-votes g:+ galley-presence)
+;(up-modify-goal fire-ship-votes g:+ galley-presence)
+;(up-modify-goal fire-ship-votes g:+ galley-presence)
+;(up-modify-goal fire-ship-votes g:+ galley-presence)
+(up-modify-goal fire-ship-votes g:- longboat-presence)
+(up-modify-goal fire-ship-votes g:+ turtle-ship-presence)
+(up-modify-goal fire-ship-votes g:+ turtle-ship-presence)
+(up-modify-goal fire-ship-votes g:+ caravel-presence)
+(up-modify-goal fire-ship-votes g:+ caravel-presence)
+(up-modify-goal fire-ship-votes g:+ thirisadai-presence)
+(up-modify-goal fire-ship-votes g:+ thirisadai-presence)
+;(up-modify-goal fire-ship-votes c:+ 10)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal fire-ship-votes fire-ship-weight)
+(up-modify-goal hulk-votes g:- demo-ship-presence)
+(up-modify-goal hulk-votes g:- demo-ship-presence)
+(up-modify-goal hulk-votes g:+ fire-ship-presence)
+(up-modify-goal hulk-votes g:+ fire-ship-presence)
+(up-modify-goal hulk-votes g:+ hulk-presence)
+(up-modify-goal hulk-votes g:- longboat-presence)
+(up-modify-goal hulk-votes g:- longboat-presence)
+(up-modify-goal hulk-votes g:- thirisadai-presence)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal demo-ship-votes demo-ship-weight)
+(up-modify-goal demo-ship-votes g:- galley-presence)
+(up-modify-goal demo-ship-votes g:- galley-presence)
+(up-modify-goal demo-ship-votes g:+ fire-ship-presence)
+(up-modify-goal demo-ship-votes g:+ fire-ship-presence)
+(up-modify-goal demo-ship-votes g:+ hulk-presence)
+(up-modify-goal demo-ship-votes g:+ hulk-presence)
+(up-modify-goal demo-ship-votes g:+ longboat-presence)
+(up-modify-goal demo-ship-votes g:+ longboat-presence)
+(up-modify-goal demo-ship-votes g:- turtle-ship-presence)
+(up-modify-goal demo-ship-votes g:- turtle-ship-presence)
+(up-modify-goal demo-ship-votes g:- caravel-presence)
+(up-modify-goal demo-ship-votes g:- thirisadai-presence)
+(up-modify-goal demo-ship-votes g:- thirisadai-presence)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal longboat-votes longboat-weight)
+(up-modify-goal longboat-votes g:- castle-vote-offset)
+(up-modify-goal longboat-votes g:- demo-ship-presence)
+(up-modify-goal longboat-votes g:- fire-ship-presence)
+(up-modify-goal longboat-votes g:+ galley-presence)
+(up-modify-goal longboat-votes g:+ galley-presence)
+(up-modify-goal longboat-votes g:+ galley-presence)
+(up-modify-goal longboat-votes g:+ hulk-presence)
+(up-modify-goal longboat-votes g:+ hulk-presence)
+(up-modify-goal longboat-votes g:+ turtle-ship-presence)
+(up-modify-goal longboat-votes g:+ turtle-ship-presence)
+(up-modify-goal longboat-votes g:+ caravel-presence)
+(up-modify-goal longboat-votes g:+ caravel-presence)
+(up-modify-goal longboat-votes g:+ thirisadai-presence)
+(up-modify-goal longboat-votes g:+ thirisadai-presence)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal turtle-ship-votes turtle-ship-weight)
+(up-modify-goal turtle-ship-votes g:- castle-vote-offset)
+(up-modify-goal turtle-ship-votes g:+ demo-ship-presence)
+(up-modify-goal turtle-ship-votes g:- fire-ship-presence)
+(up-modify-goal turtle-ship-votes g:- fire-ship-presence)
+(up-modify-goal turtle-ship-votes g:- hulk-presence)
+(up-modify-goal turtle-ship-votes g:- longboat-presence)
+(up-modify-goal turtle-ship-votes g:- longboat-presence)
+(up-modify-goal turtle-ship-votes g:+ galley-presence)
+(up-modify-goal turtle-ship-votes g:+ galley-presence)
+(up-modify-goal turtle-ship-votes g:+ caravel-presence)
+(up-modify-goal turtle-ship-votes g:+ thirisadai-presence)
+(up-modify-goal turtle-ship-votes g:+ thirisadai-presence)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal caravel-votes caravel-weight)
+(up-modify-goal caravel-votes g:- castle-vote-offset)
+(up-modify-goal caravel-votes g:+ demo-ship-presence)
+(up-modify-goal caravel-votes g:+ demo-ship-presence)
+(up-modify-goal caravel-votes g:- fire-ship-presence)
+(up-modify-goal caravel-votes g:- fire-ship-presence)
+(up-modify-goal caravel-votes g:- longboat-presence)
+(up-modify-goal caravel-votes g:- longboat-presence)
+(up-modify-goal caravel-votes g:- turtle-ship-presence)
+(up-modify-goal caravel-votes g:+ thirisadai-presence)
+)
+
+(defrule
+(true)
+;(timer-triggered military-voting-timer)
+=>
+(set-goal thirisadai-votes thirisadai-weight)
+(up-modify-goal thirisadai-votes g:- castle-vote-offset)
+(up-modify-goal thirisadai-votes g:- imperial-vote-offset)
+(up-modify-goal thirisadai-votes g:+ demo-ship-presence)
+(up-modify-goal thirisadai-votes g:+ demo-ship-presence)
+(up-modify-goal thirisadai-votes g:+ hulk-presence)
+(up-modify-goal thirisadai-votes g:- fire-ship-presence)
+(up-modify-goal thirisadai-votes g:- longboat-presence)
+(up-modify-goal thirisadai-votes g:- turtle-ship-presence)
+(up-modify-goal thirisadai-votes g:- turtle-ship-presence)
+(up-modify-goal thirisadai-votes g:+ caravel-presence)
+(up-modify-goal thirisadai-votes g:+ caravel-presence)
+(up-modify-goal thirisadai-votes g:+ galley-presence)
+(up-modify-goal thirisadai-votes g:+ galley-presence)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: demolition-ship-line c: 240)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-local-total c:* 3)
+(up-modify-goal demo-ship-votes g:- gl-local-total)
+)
+
+(defrule
+(players-civ any-ally aztec)
+=>
+(up-modify-goal militiaman-votes c:+ 5)
+(up-modify-goal champi-scout-votes c:+ 5)
+(up-modify-goal fire-lancer-votes c:+ 5)
+(up-modify-goal condottiero-votes c:+ 5)
+(up-modify-goal eagle-warrior-votes c:+ 5)
+(up-modify-goal archer-votes c:+ 5)
+(up-modify-goal cavalry-archer-votes c:+ 5)
+(up-modify-goal elephant-archer-votes c:+ 5)
+(up-modify-goal hand-cannoneer-votes c:+ 5)
+(up-modify-goal knight-votes c:+ 5)
+(up-modify-goal camel-votes c:+ 5)
+(up-modify-goal battle-elephant-votes c:+ 5)
+(up-modify-goal monk-votes c:+ 5)
+(up-modify-goal scorpion-votes c:+ 5)
+(up-modify-goal mangonel-votes c:+ 5)
+(up-modify-goal mounted-trebuchet-votes c:+ 5)
+(up-modify-goal turtle-ship-votes c:+ 5)
+(up-modify-goal thirisadai-votes c:+ 5)
+(up-modify-goal my-special-unit-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally bengalis)
+=>
+(up-modify-goal militiaman-votes c:+ 5)
+(up-modify-goal champi-scout-votes c:+ 5)
+(up-modify-goal condottiero-votes c:+ 5)
+(up-modify-goal skirmisher-votes c:+ 5)
+(up-modify-goal genitour-votes c:+ 5)
+(up-modify-goal elephant-archer-votes c:+ 5)
+(up-modify-goal hand-cannoneer-votes c:+ 5)
+(up-modify-goal knight-votes c:+ 5)
+(up-modify-goal camel-votes c:+ 5)
+(up-modify-goal battle-elephant-votes c:+ 5)
+(up-modify-goal scout-cavalry-votes c:+ 5)
+(up-modify-goal spearman-votes c:+ 5)
+(up-modify-goal eagle-warrior-votes c:+ 5)
+(up-modify-goal mounted-trebuchet-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally bengalis)
+(or(civ-selected muisca)
+(civ-selected tupi))
+=>
+(up-modify-goal my-special-unit-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally briton)
+=>
+(up-modify-goal archer-votes c:+ 10)
+(up-modify-goal skirmisher-votes c:+ 10)
+(up-modify-goal cavalry-archer-votes c:+ 10)
+(up-modify-goal genitour-votes c:+ 10)
+(up-modify-goal elephant-archer-votes c:+ 10)
+(up-modify-goal hand-cannoneer-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally briton)
+(civ-selected mapuche)
+=>
+(up-modify-goal my-special-unit-votes c:+ 5)
+)
+
+;(defrule
+;(players-civ any-ally bulgarians)
+;=>
+;(up-modify-goal galley-votes c:+ 5)
+;(up-modify-goal caravel-votes c:+ 5)
+;(up-modify-goal longboat-votes c:+ 5)
+;)
+
+(defrule
+(players-civ any-ally burgundians)
+=>
+(up-modify-goal militiaman-votes c:+ 5)
+(up-modify-goal champi-scout-votes c:+ 5)
+(up-modify-goal condottiero-votes c:+ 5)
+(up-modify-goal skirmisher-votes c:+ 5)
+(up-modify-goal genitour-votes c:+ 5)
+(up-modify-goal elephant-archer-votes c:+ 5)
+(up-modify-goal hand-cannoneer-votes c:+ 5)
+(up-modify-goal knight-votes c:+ 5)
+(up-modify-goal camel-votes c:+ 5)
+(up-modify-goal battle-elephant-votes c:+ 5)
+(up-modify-goal scout-cavalry-votes c:+ 5)
+(up-modify-goal spearman-votes c:+ 5)
+(up-modify-goal eagle-warrior-votes c:+ 5)
+(up-modify-goal mounted-trebuchet-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally burgundians)
+(or(civ-selected muisca)
+(civ-selected tupi))
+=>
+(up-modify-goal my-special-unit-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally byzantine)
+=>
+(up-modify-goal monk-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally celtic)
+=>
+(up-modify-goal scorpion-votes c:+ 10)
+(up-modify-goal mangonel-votes c:+ 10)
+(up-modify-goal mounted-trebuchet-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally chinese)
+=>
+(up-modify-goal militiaman-votes c:+ 5)
+(up-modify-goal champi-scout-votes c:+ 5)
+(up-modify-goal fire-lancer-votes c:+ 5)
+(up-modify-goal condottiero-votes c:+ 5)
+(up-modify-goal skirmisher-votes c:+ 5)
+(up-modify-goal genitour-votes c:+ 5)
+(up-modify-goal elephant-archer-votes c:+ 5)
+(up-modify-goal hand-cannoneer-votes c:+ 5)
+(up-modify-goal knight-votes c:+ 5)
+(up-modify-goal camel-votes c:+ 5)
+(up-modify-goal battle-elephant-votes c:+ 5)
+(up-modify-goal scout-cavalry-votes c:+ 5)
+(up-modify-goal spearman-votes c:+ 5)
+(up-modify-goal eagle-warrior-votes c:+ 5)
+(up-modify-goal mounted-trebuchet-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally chinese)
+(or(civ-selected muisca)
+(civ-selected tupi))
+=>
+(up-modify-goal my-special-unit-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally gothic)
+=>
+(up-modify-goal militiaman-votes c:+ 10)
+(up-modify-goal champi-scout-votes c:+ 10)
+(up-modify-goal fire-lancer-votes c:+ 10)
+(up-modify-goal condottiero-votes c:+ 10)
+(up-modify-goal spearman-votes c:+ 10)
+(up-modify-goal eagle-warrior-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally gothic)
+(or(civ-selected muisca)
+(civ-selected tupi))
+=>
+(up-modify-goal my-special-unit-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally gurjaras)
+=>
+(up-modify-goal camel-votes c:+ 15)
+(up-modify-goal elephant-archer-votes c:+ 15)
+(up-modify-goal battle-elephant-votes c:+ 15)
+(up-modify-goal mounted-trebuchet-votes c:+ 15)
+)
+
+(defrule
+(players-civ any-ally indian)
+=>
+(up-modify-goal camel-votes c:+ 5)
+(up-modify-goal scout-cavalry-votes c:+ 5)
+(up-modify-goal mounted-trebuchet-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally hun)
+=>
+(up-modify-goal camel-votes c:+ 10)
+(up-modify-goal knight-votes c:+ 10)
+(up-modify-goal scout-cavalry-votes c:+ 10)
+(up-modify-goal battle-elephant-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally japanese)
+=>
+(up-modify-goal galley-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally khmer)
+=>
+(up-modify-goal scorpion-votes c:+ 5)
+)
+
+;(defrule
+;(players-civ any-ally korean)
+;=>
+;(up-modify-goal mangonel-votes c:+ 5)
+;)
+
+(defrule
+(players-civ any-ally lithuanians)
+=>
+(up-modify-goal monk-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally lithuanians)
+(civ-selected muisca)
+=>
+(up-modify-goal my-special-unit-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally magyar)
+=>
+(up-modify-goal cavalry-archer-votes c:+ 15)
+(up-modify-goal genitour-votes c:+ 15)
+)
+
+(defrule
+(players-civ any-ally magyar)
+(civ-selected mapuche)
+=>
+(up-modify-goal my-special-unit-votes c:+ 15)
+)
+
+(defrule
+(players-civ any-ally muisca)
+=>
+(up-modify-goal militiaman-votes c:+ 10)
+(up-modify-goal champi-scout-votes c:+ 10)
+(up-modify-goal condottiero-votes c:+ 10)
+(up-modify-goal eagle-warrior-votes c:+ 10)
+(up-modify-goal fire-lancer-votes c:+ 10)
+(up-modify-goal archer-votes c:+ 10)
+(up-modify-goal cavalry-archer-votes c:+ 10)
+(up-modify-goal hand-cannoneer-votes c:+ 10)
+(up-modify-goal knight-votes c:+ 10)
+(up-modify-goal camel-votes c:+ 10)
+(up-modify-goal battle-elephant-votes c:+ 10)
+(up-modify-goal monk-votes c:+ 10)
+(up-modify-goal scorpion-votes c:+ 10)
+(up-modify-goal mangonel-votes c:+ 10)
+(up-modify-goal mounted-trebuchet-votes c:+ 10)
+(up-modify-goal my-special-unit-votes c:+ 10)
+)
+
+(defrule
+(players-civ any-ally persian)
+=>
+(up-modify-goal knight-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally poles)
+=>
+(up-modify-goal scout-cavalry-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally saracen)
+=>
+(up-modify-goal archer-votes c:+ 5)
+(up-modify-goal skirmisher-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally slavic)
+=>
+(up-modify-goal spearman-votes c:+ 5)
+(up-modify-goal fire-lancer-votes c:+ 5)
+(up-modify-goal archer-votes c:+ 5)
+(up-modify-goal skirmisher-votes c:+ 5)
+(up-modify-goal cavalry-archer-votes c:+ 5)
+(up-modify-goal genitour-votes c:+ 5)
+(up-modify-goal elephant-archer-votes c:+ 5)
+(up-modify-goal scorpion-votes c:+ 5)
+(up-modify-goal mangonel-votes c:+ 5)
+(up-modify-goal turtle-ship-votes c:+ 5)
+(up-modify-goal thirisadai-votes c:+ 5)
+)
+
+(defrule
+(players-civ any-ally slavic)
+(civ-selected mapuche)
+=>
+(up-modify-goal my-special-unit-votes c:+ 5)
+)
+
+(defrule
+(or(civ-selected spanish)
+(players-civ any-ally spanish))
+=>
+(up-modify-goal militiaman-votes c:+ 10)
+(up-modify-goal champi-scout-votes c:+ 10)
+(up-modify-goal fire-lancer-votes c:+ 10)
+(up-modify-goal condottiero-votes c:+ 10)
+(up-modify-goal eagle-warrior-votes c:+ 10)
+(up-modify-goal archer-votes c:+ 10)
+(up-modify-goal cavalry-archer-votes c:+ 10)
+(up-modify-goal elephant-archer-votes c:+ 10)
+(up-modify-goal hand-cannoneer-votes c:+ 10)
+(up-modify-goal knight-votes c:+ 10)
+(up-modify-goal camel-votes c:+ 10)
+(up-modify-goal battle-elephant-votes c:+ 10)
+(up-modify-goal monk-votes c:+ 10)
+(up-modify-goal scorpion-votes c:+ 10)
+(up-modify-goal mangonel-votes c:+ 10)
+(up-modify-goal mounted-trebuchet-votes c:+ 10)
+(up-modify-goal turtle-ship-votes c:+ 10)
+(up-modify-goal thirisadai-votes c:+ 10)
+(up-modify-goal my-special-unit-votes c:+ 10)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: barracks c: 240)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+(up-modify-goal gl-local-total c:- 1)
+(up-modify-goal gl-local-total c:* 5)
+(up-modify-goal militiaman-votes g:+ gl-local-total)
+(up-modify-goal champi-scout-votes g:+ gl-local-total)
+(up-modify-goal spearman-votes g:+ gl-local-total)
+(up-modify-goal condottiero-votes g:+ gl-local-total)
+(up-modify-goal eagle-warrior-votes g:+ gl-local-total)
+(up-modify-goal fire-lancer-votes g:+ gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(or(civ-selected muisca)
+(civ-selected tupi))
+=>
+(up-modify-goal my-special-unit-votes g:+ gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: archery-range c: 240)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+;(up-modify-goal gl-local-total c:- 1)
+(up-modify-goal gl-local-total c:* 5)
+(up-modify-goal archer-votes g:+ gl-local-total)
+(up-modify-goal skirmisher-votes g:+ gl-local-total)
+(up-modify-goal genitour-votes g:+ gl-local-total)
+(up-modify-goal cavalry-archer-votes g:+ gl-local-total)
+(up-modify-goal elephant-archer-votes g:+ gl-local-total)
+(up-modify-goal hand-cannoneer-votes g:+ gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+(civ-selected mapuche)
+=>
+(up-modify-goal my-special-unit-votes g:+ gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: stable c: 240)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+;(up-modify-goal gl-local-total c:- 1)
+(up-modify-goal gl-local-total c:* 5)
+(up-modify-goal scout-cavalry-votes g:+ gl-local-total)
+(up-modify-goal knight-votes g:+ gl-local-total)
+(up-modify-goal camel-votes g:+ gl-local-total)
+(up-modify-goal battle-elephant-votes g:+ gl-local-total)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-find-local c: siege-workshop c: 240)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(up-compare-goal gl-local-total > 0)
+=>
+;(up-modify-goal gl-local-total c:- 1)
+(up-modify-goal gl-local-total c:* 5)
+(up-modify-goal scorpion-votes g:+ gl-local-total)
+(up-modify-goal mangonel-votes g:+ gl-local-total)
+(up-modify-goal mounted-trebuchet-votes g:+ gl-local-total)
+)
+
+(defrule
+(players-civ any-ally turkish)
+=>
+(up-modify-goal hand-cannoneer-votes c:+ 15)
+(up-modify-goal fire-lancer-votes c:+ 15)
+)
+
+(defrule
+(not(civ-selected turkish))
+(players-civ any-ally vietnamese)
+(current-age == imperial-age)
+=>
+(up-modify-goal skirmisher-votes c:+ 20)
+)
+
+(defrule
+(players-civ any-enemy teutonic)
+=>
+(up-modify-goal monk-votes c:- 50)
+)
+
+(defrule
+(false)
+(up-research-status c: imperial-age < research-pending)
+(up-compare-goal gl-game-strategy != fast-imp)
+=>
+(up-modify-goal condottiero-votes c:- 800)
+)
+
+(defrule
+(civ-selected armenians)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected aztec)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected bengalis)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected bohemians)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected burmese)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected byzantine)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected indian)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected incan)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected japanese)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected lithuanians)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected malian)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected muisca)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected portuguese)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected saracen)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected slavic)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected spanish)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected teutonic)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+)
+
+(defrule
+(civ-selected bulgarians)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal militiaman-votes c:+ 300)
+)
+
+(defrule
+(civ-selected italian)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal monk-votes c:+ 300)
+(up-modify-goal condottiero-votes c:+ 300)
+(up-modify-goal hand-cannoneer-votes c:+ 100)
+)
+
+(defrule
+(not(civ-selected italian))
+(players-civ any-ally italian)
+(up-compare-goal gl-game-strategy == fast-imp)
+(up-modify-goal condottiero-votes c:+ 300)
+(up-compare-goal condottiero-votes >= monk-votes)
+(up-modify-goal condottiero-votes c:- 300)
+=>
+(up-modify-goal condottiero-votes c:+ 300)
+)
+
+(defrule
+(civ-selected tupi)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+(up-modify-goal archer-votes c:+ 300)
+(up-modify-goal champi-scout-votes c:+ 300)
+(up-modify-goal my-special-unit-votes c:+ 300)
+)
+
+(defrule
+(civ-selected turkish)
+(up-compare-goal gl-game-strategy == fast-imp)
+=>
+;(up-modify-goal scout-cavalry-votes c:+ 100)
+(up-modify-goal hand-cannoneer-votes c:+ 300)
+)
+
+(defrule
+(game-time > 2400)
+(current-age >= feudal-age)
+(unit-type-count villager-gold < 1)
+(unit-type-count trade-cart < 10)
+=>
+(up-modify-goal spearman-votes c:+ 250);50
+(up-modify-goal skirmisher-votes c:+ 250);50
+(up-modify-goal scout-cavalry-votes c:+ 250);50
+(up-modify-goal genitour-votes c:+ 250);50
+)
+
+(defrule
+(game-time > 2400)
+(current-age >= feudal-age)
+(unit-type-count villager-gold < 1)
+(unit-type-count trade-cart < 10)
+(research-completed 488);Kamandaran for Persians
+=>
+(up-modify-goal archer-votes c:+ 250);50
+)
+
+(defrule
+(game-time > 2400)
+(current-age >= feudal-age)
+(unit-type-count villager-gold < 1)
+(unit-type-count trade-cart < 10)
+(research-completed 625);Forced Levy for Malay
+=>
+(up-modify-goal militiaman-votes c:+ 250);50
+)
+
+;#load-if-defined UP-POCKET-POSITION
+
+(defrule
+;(true)
+;(current-age < imperial-age)
+(up-compare-goal gl-game-strategy == castle-military)
+=>
+(up-modify-goal archer-votes c:+ 70)
+(up-modify-goal knight-votes c:+ 70)
+(up-modify-goal camel-votes c:+ 70)
+(up-modify-goal battle-elephant-votes c:+ 70)
+(up-modify-goal eagle-warrior-votes c:+ 70)
+(up-modify-goal champi-scout-votes c:+ 70)
+(up-modify-goal scorpion-votes c:+ 70)
+(up-modify-goal mangonel-votes c:+ 70)
+(up-modify-goal monk-votes c:+ 70)
+)
+
+(defrule
+(or(civ-selected armenians)
+(or(civ-selected bulgarians)
+(civ-selected romans)))
+(up-compare-goal gl-game-strategy == castle-military)
+=>
+(up-modify-goal militiaman-votes c:+ 70)
+)
+
+(defrule
+(civ-selected turkish)
+(up-compare-goal gl-game-strategy == castle-military)
+=>
+;(chat-local-to-self "boosting scout-cav votes")
+(up-modify-goal scout-cavalry-votes c:+ 70)
+)
+
+(defrule
+(false)
+(civ-selected mapuche)
+(up-compare-goal gl-game-strategy == flush)
+=>
+;(chat-local-to-self "boosting scout-cav votes")
+(up-modify-goal skirmisher-votes c:+ 300)
+(disable-self)
+)
+
+(defrule
+(current-age == dark-age)
+(up-compare-goal gl-game-strategy == drush)
+=>
+;(chat-local-to-self "boosting scout-cav votes")
+(up-modify-goal militiaman-votes c:+ 300)
+(up-modify-goal champi-scout-votes c:+ 300)
+)
+
+;#end-if
+
+(defrule
+(false)
+(goal chosen-military-unit monk)
+(goal supporting-military-unit monk)
+=>
+(up-modify-goal monk-votes c:- 2000)
+(up-modify-goal mangonel-votes c:- 2000)
+(up-modify-goal scorpion-votes c:- 2000)
+)
+
+(defrule
+(goal chosen-military-unit mangonel-line)
+(goal supporting-military-unit mangonel-line)
+=>
+(up-modify-goal mangonel-votes c:- 2000)
+(up-modify-goal scorpion-votes c:- 2000)
+)
+
+(defrule
+(goal chosen-military-unit scorpion-line)
+(goal supporting-military-unit scorpion-line)
+=>
+(up-modify-goal scorpion-votes c:- 2000)
+(up-modify-goal mangonel-votes c:- 2000)
+)
+
+(defrule
+(or(and(goal chosen-military-unit scorpion-line)
+(goal supporting-military-unit mangonel-line))
+(and(goal supporting-military-unit scorpion-line)
+(goal chosen-military-unit mangonel-line)))
+=>
+(up-modify-goal scorpion-votes c:- 2000)
+(up-modify-goal mangonel-votes c:- 2000)
+)
+
+#load-if-not-defined UP-POCKET-POSITION
+
+(defrule
+(false); want to remove forced range
+(up-compare-goal gl-game-strategy == flush)
+(current-age < castle-age)
+(up-compare-goal chosen-military-unit != archer-line)
+(up-compare-goal chosen-military-unit != skirmisher-line)
+(up-compare-goal supporting-military-unit != archer-line)
+(up-compare-goal supporting-military-unit != skirmisher-line)
+=>
+(up-modify-goal archer-votes c:+ 500)
+(up-modify-goal skirmisher-votes c:+ 500)
+)
+
+(defrule
+(civ-selected sicilians)
+(up-compare-goal gl-game-strategy == castle-military)
+=>
+(up-modify-goal militiaman-votes c:+ 70)
+)
+
+(defrule
+(civ-selected sicilians)
+(up-compare-goal gl-game-strategy == castle-military)
+(or(current-age == feudal-age)
+(and(current-age == castle-age)
+(or(current-age-time < 480)
+(up-compare-goal 10 >= mc-high))))
+=>
+(up-modify-goal militiaman-votes c:+ 430)
+)
+
+(defrule
+(civ-selected indian)
+(map-type arena)
+(up-compare-goal gl-game-strategy == flush)
+(current-age <= feudal-age)
+=>
+(up-modify-goal scout-cavalry-votes c:+ 200)
+)
+
+#end-if
+
+#load-if-defined UP-POCKET-POSITION
+
+(defrule
+(not(map-type land-nomad))
+(not(map-type nomad))
+(up-compare-goal gl-game-strategy == flush)
+(current-age < castle-age)
+=>
+(up-modify-goal scout-cavalry-votes c:+ 70)
+(up-modify-goal eagle-warrior-votes c:+ 70)
+(up-modify-goal champi-scout-votes c:+ 70)
+(up-modify-goal camel-votes c:+ 70)
+)
+
+#end-if
+
+(defrule
+(false); want to remove forced range
+(up-compare-goal gl-game-strategy == flush)
+(current-age < castle-age)
+(up-compare-goal archer-votes < 1)
+(up-compare-goal supporting-military-unit == archer-line)
+=>
+(up-modify-goal archer-votes c:= 1)
+)
+
+(defrule
+(false); want to remove forced range
+(up-compare-goal gl-game-strategy == flush)
+(current-age < castle-age)
+(up-compare-goal skirmisher-votes < 1)
+(up-compare-goal supporting-military-unit == skirmisher-line)
+=>
+(up-modify-goal skirmisher-votes c:= 1)
+)
+
+(defrule
+(goal chosen-dock-unit galley-line)
+=>
+(up-modify-goal galley-votes c:+ 5)
+)
+
+(defrule
+(goal chosen-dock-unit fire-ship-line)
+=>
+(up-modify-goal fire-ship-votes c:+ 5)
+)
+
+(defrule
+(goal chosen-dock-unit hulk-line)
+=>
+(up-modify-goal hulk-votes c:+ 5)
+)
+
+(defrule
+(goal chosen-dock-unit demolition-ship-line)
+=>
+(up-modify-goal demo-ship-votes c:+ 5)
+)
+
+(defrule
+(goal chosen-dock-unit turtle-ship-line)
+=>
+(up-modify-goal turtle-ship-votes c:+ 5)
+)
+
+(defrule
+(goal chosen-dock-unit longboat-line)
+=>
+(up-modify-goal longboat-votes c:+ 5)
+)
+
+(defrule
+(goal chosen-dock-unit caravel-line)
+=>
+(up-modify-goal caravel-votes c:+ 5)
+)
+
+(defrule
+(goal chosen-dock-unit thirisadai)
+=>
+(up-modify-goal thirisadai-votes c:+ 5)
+)
+
+(defrule
+(false)
+(true);testing for lag
+=>
+(up-modify-goal monk-votes c:- 20000)
+)

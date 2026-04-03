@@ -1,0 +1,631 @@
+(defrule
+(true)
+=>
+(up-modify-goal gl-gold-mine-attempts c:= 0)
+(disable-self)
+)
+
+(defrule
+(false)
+(true)
+=>
+;(up-chat-data-to-all "last-rule-save-two-id %d" g: gl-last-rule-save-two)
+(up-reset-placement c: mining-camp)
+;(up-jump-rule 49)
+)
+
+(defrule
+(up-compare-flag gl-anti-lag-flag != anti-lag-level2)
+(up-timer-status gold-camp-timer != timer-running)
+(goal gl-need-gold-mining-camp 1)
+(up-pending-objects c: town-center c:< 1)
+(dropsite-min-distance gold < 255)
+(up-pending-objects c: mining-camp < 1)
+(can-build mining-camp)
+(up-research-status c: feudal-age >= research-pending)
+=>
+;(chat-local-to-self "trying to place mining camp")
+;(enable-timer gold-camp-timer 20)
+(up-jump-rule 1)
+)
+
+(defrule
+;(false)
+(true)
+=>
+;(up-chat-data-to-all "last-rule-save-two-id %d" g: gl-last-rule-save-two)
+;(up-reset-placement c: mining-camp);not sure why this is here, lag testing?
+(up-jump-rule 53)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dot-x c:= 0)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= my-player-number)
+(up-find-remote c: mining-camp c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-goal gl-dot-x g:= gl-remote-total)
+(up-modify-goal gl-dot-x c:* 5)
+)
+
+(defrule
+(false)
+(or(building-type-count-total town-center == 3)
+(and(building-type-count-total town-center > 3)
+(up-compare-sn sn-town-center-placement == lumber-camp)))
+=>
+(up-modify-goal gl-wanted-resource c:= wood)
+)
+
+(defrule
+(true)
+;(false)
+;(or(building-type-count-total town-center == 1)
+;(and(up-compare-sn sn-town-center-placement == mining-camp)
+;(and(up-compare-sn sn-gold-gatherer-percentage s:>= sn-stone-gatherer-percentage)
+;(building-type-count-total town-center > 3))))
+=>
+(up-modify-goal gl-wanted-resource c:= gold)
+)
+
+(defrule
+(false)
+(or(building-type-count-total town-center == 2)
+(and(up-compare-sn sn-town-center-placement == mining-camp)
+(and(up-compare-sn sn-gold-gatherer-percentage s:< sn-stone-gatherer-percentage)
+(building-type-count-total town-center > 3))))
+=>
+(up-modify-goal gl-wanted-resource c:= stone)
+)
+
+(defrule
+(can-build mining-camp)
+=>
+(up-full-reset-search)
+(up-modify-goal gl-tile-score c:= 0)
+(up-modify-goal gl-tile-high-score c:= -1)
+;(up-get-point position-center gl-enemy-area-x)
+(up-copy-point gl-tile-checker-x gl-gold-x)
+;(up-lerp-percent gl-tile-checker-x gl-enemy-area-x g: gl-dot-x)
+;(up-lerp-tiles gl-tile-checker-x gl-enemy-area-x s: sn-maximum-town-size)
+(up-copy-point gl-tile-target-x gl-tile-checker-x)
+;(up-modify-goal gl-tile-checker-x c:- 20);14
+;(up-modify-goal gl-tile-checker-y c:- 20);14
+;(up-modify-goal gl-tile-target-x c:+ 20);14
+;(up-modify-goal gl-tile-target-y c:+ 20);14
+(up-modify-goal gl-tile-checker-x s:- sn-maximum-town-size)
+(up-modify-goal gl-tile-checker-y s:- sn-maximum-town-size)
+(up-modify-goal gl-tile-target-x s:+ sn-maximum-town-size)
+(up-modify-goal gl-tile-target-y s:+ sn-maximum-town-size)
+;(up-modify-goal gl-tile-checker-x s:- sn-maximum-town-size)
+;(up-modify-goal gl-tile-checker-y s:- sn-maximum-town-size)
+;(up-modify-goal gl-tile-target-x s:+ sn-maximum-town-size)
+;(up-modify-goal gl-tile-target-y s:+ sn-maximum-town-size)
+;(chat-local-to-self "tc rule 1")
+;(up-send-flare gl-tile-checker-x)
+;(up-send-flare gl-tile-target-x)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-tile-score c:= 0)
+(up-set-target-point gl-tile-checker-x)
+;(chat-to-all "tc rule 2")
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-can-build-line 0 gl-tile-checker-x c: mining-camp)
+=>
+(up-jump-rule 1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-tile-score c:- 7000)
+;(chat-to-all "Can't build here!")
+(up-jump-rule 37)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-point-explored gl-tile-checker-x == 0)
+=>
+(up-modify-goal gl-tile-score c:- 7000)
+;(chat-to-all "tile in fog of war")
+(up-jump-rule 36)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: 0 c: 4)
+(up-filter-status c: 2 c: 0)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-find-resource g: gl-wanted-resource c: 40)
+(up-reset-filters)
+(up-filter-distance c: 0 c: 4)
+(up-filter-status c: 3 c: 0)
+(up-find-resource g: gl-wanted-resource c: 40)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-goal gl-remote-total < 1)
+=>
+(up-modify-goal gl-tile-score c:- 7000)
+;(chat-to-all "required resource not near")
+(up-jump-rule 33)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 100)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-set-target-point gl-tile-checker-x)
+(up-filter-distance c: 0 c: 14)
+;(chat-local-to-self "castle rule 5")
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: castle c: 40);
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* -1000);-200
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 10)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: town-center c: 40)
+(up-find-remote c: krepost c: 40)
+(up-find-remote c: donjon c: 40)
+(up-find-remote c: watch-tower c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* -200);-50
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: lumber-camp c: 40)
+(up-find-remote c: mining-camp c: 40)
+(up-find-remote c: mill c: 40)
+(up-find-remote c: mule-cart c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 0);-20
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: villager-class c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* -1);-1
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8)
+(up-filter-include 4 -1 -1 -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(up-compare-sn sn-focus-player-number == my-player-number)
+(or(not(player-in-game focus-player))
+(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: -1 c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* -25);-5
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8);6
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(not(player-in-game focus-player))
+(not(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number c:!= my-player-number)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: lumber-camp c: 40)
+(up-find-remote c: mining-camp c: 40)
+(up-find-remote c: mill c: 40)
+(up-find-remote c: mule-cart c: 40)
+(up-find-remote c: town-center c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+;(up-modify-goal gl-remote-total c:- 1)
+(up-modify-goal gl-remote-total c:* -500);-300
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 1)
+(up-filter-distance c: 0 c: 8)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(or(not(player-in-game focus-player))
+(not(players-stance focus-player ally)))
+(up-compare-sn sn-focus-player-number c:!= my-player-number)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -1)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-sn sn-focus-player-number < 9)
+=>
+(up-find-remote c: castle c: 40)
+(up-find-remote c: krepost c: 40)
+(up-find-remote c: donjon c: 40)
+(up-find-remote c: watch-tower c: 40)
+(up-get-search-state gl-local-total)
+(up-modify-sn sn-focus-player-number c:+ 1)
+(up-jump-rule -2)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 100)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-full-reset-search)
+(up-modify-sn sn-focus-player-number c:= 0)
+(up-filter-distance c: 0 c: 8)
+(up-filter-status c: 3 c: 0)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-find-resource c: gold c: 10)
+(up-find-resource c: stone c: 10)
+(up-find-resource c: food c: 10)
+(up-reset-filters)
+(up-filter-distance c: 0 c: 8)
+(up-filter-status c: 2 c: 0)
+(up-find-resource c: food c: 10)
+(up-find-resource c: wood c: 10)
+(up-get-search-state gl-local-total)
+)
+
+(defrule
+(building-type-count-total town-center >= 1)
+(can-build town-center)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+=>
+(up-modify-goal gl-remote-total c:* 0)
+(up-modify-goal gl-tile-score g:+ gl-remote-total)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-goal gl-tile-score g:> gl-tile-high-score)
+=>
+;(up-chat-data-to-all "best score: %d" g: gl-tile-high-score)
+(up-modify-goal gl-tile-high-score g:= gl-tile-score)
+(up-modify-goal gl-best-tile-x g:= gl-tile-checker-x)
+(up-modify-goal gl-best-tile-y g:= gl-tile-checker-y)
+;(up-send-flare gl-best-tile-x)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-goal gl-tile-checker-x g:< gl-tile-target-x)
+=>
+(up-modify-goal gl-tile-checker-x c:+ 2);1
+;(up-chat-data-to-all "tile score: %d" g: gl-tile-score)
+;(up-chat-data-to-self "tile-checker-x: %d" g: gl-tile-checker-x)
+;(up-chat-data-to-self "tile-target-x: %d" g: gl-tile-target-x)
+;(up-chat-data-to-self "tile-target-y: %d" g: gl-tile-target-y)
+;(up-chat-data-to-self "tile-checker-y: %d" g: gl-tile-checker-y)
+(up-jump-rule -41)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:<= gl-tile-target-y)
+(up-compare-goal gl-tile-checker-x g:>= gl-tile-target-x)
+=>
+;(up-modify-goal gl-tile-checker-x c:- 40);28
+(up-modify-goal gl-tile-checker-x s:- sn-maximum-town-size)
+(up-modify-goal gl-tile-checker-x s:- sn-maximum-town-size)
+;(up-modify-goal gl-tile-checker-x s:- sn-maximum-town-size)
+;(up-modify-goal gl-tile-checker-x s:- sn-maximum-town-size)
+(up-modify-goal gl-tile-checker-y c:+ 2);1
+;(up-chat-data-to-self "tile-checker-x: %d" g: gl-tile-checker-x)
+;(up-chat-data-to-self "tile-checker-y: %d" g: gl-tile-checker-y)
+(up-jump-rule -42)
+)
+
+(defrule
+(can-build mining-camp)
+(up-compare-goal gl-tile-checker-y g:> gl-tile-target-y)
+(up-compare-goal gl-tile-high-score > -1)
+(up-can-build-line 0 gl-best-tile-x c: mining-camp)
+=>
+;(up-chat-data-to-self "list number: %d" g: gl-tile-high-score)
+;(chat-to-all "placing mining camp!")
+(up-build-line gl-best-tile-x gl-best-tile-x c: mining-camp)
+(up-modify-goal gl-tile-checker-x c:= -2000)
+(up-modify-goal gl-gold-mine-attempts c:= 0)
+(up-jump-rule 3)
+)
+
+(defrule
+(up-compare-goal gl-tile-checker-y g:> gl-tile-target-y)
+=>
+;(up-modify-goal gl-precise-time-a g:= gl-precise-time-b)
+;(up-get-precise-time 0 gl-precise-time-b)
+;(up-chat-data-to-self "precise time a %d" g: gl-precise-time-a)
+;(up-chat-data-to-self "precise time b %d" g: gl-precise-time-b)
+(up-modify-goal gl-tile-checker-x c:= -2000)
+(up-modify-goal gl-tile-checker-y c:= -2000)
+(up-modify-goal gl-gold-mine-attempts c:+ 1)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-tile-checker-x c:= -2000)
+(disable-self)
+)
+
+(defrule
+(false)
+(building-type-count-total town-center >= 1)
+(can-build town-center)
+(or(not(up-can-build-line 0 gl-best-tile-x c: town-center-foundation))
+(up-compare-goal gl-tile-high-score < 0))
+;(up-compare-goal gl-tile-high-score < 0)
+;(not(up-can-build-line 0 gl-best-tile-x c: town-center))
+=>
+;(up-modify-goal gl-last-rule-save c:+ 1)
+(up-modify-sn sn-camp-max-distance s:+ sn-maximum-town-size)
+(build town-center)
+(up-assign-builders c: town-center-foundation c: 4)
+(up-modify-sn sn-camp-max-distance s:- sn-maximum-town-size)
+;(chat-to-all "I'm building with normal TC rules")
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal gl-dot-x g:= gl-gold-mine-attempts)
+(up-modify-goal gl-dot-x c:min 6)
+(up-modify-goal gl-dot-x c:* 20)
+(up-set-timer c: gold-camp-timer g: gl-dot-x)
+;(chat-to-all "mining camp placement rule fired!")
+)
+
+;(defrule
+;(false)
+;(true)
+;=>
+;(up-modify-goal gl-last-rule-save c:+ 1)
+;(up-jump-direct g: gl-last-rule-save)
+;)

@@ -1,0 +1,2200 @@
+(defconst low-units 1)
+(defconst mid-units 4)
+(defconst high-units 15)
+
+(defconst low-presence 15)
+(defconst mid-presence 30)
+(defconst high-presence 45)
+
+(defconst militiaman-presence 150)
+(defconst spearman-presence 151)
+(defconst archer-presence 152)
+(defconst skirmisher-presence 153)
+(defconst cavalry-archer-presence 154)
+(defconst scout-cavalry-presence 155)
+(defconst knight-presence 156)
+(defconst camel-presence 157)
+(defconst battle-elephant-presence 158)
+(defconst monk-presence 159)
+(defconst eagle-warrior-presence 160)
+(defconst hand-cannoneer-presence 161)
+(defconst scorpion-presence 162)
+(defconst battering-ram-presence 163)
+(defconst mangonel-presence 164)
+(defconst bombard-cannon-presence 165)
+(defconst trebuchet-presence 166)
+(defconst galley-presence 167)
+(defconst fire-ship-presence 168)
+(defconst demo-ship-presence 169)
+(defconst turtle-ship-presence 170)
+(defconst longboat-presence 171)
+(defconst caravel-presence 172)
+(defconst thirisadai-presence 173)
+(defconst fire-lancer-presence 174)
+(defconst hulk-presence 175)
+
+(defrule
+(not(goal militiaman-presence 0))
+(players-unit-type-count any-enemy militiaman-line < low-units)
+=>
+(set-goal militiaman-presence 0)
+)
+
+(defrule
+(not(goal militiaman-presence low-presence))
+(players-unit-type-count any-enemy militiaman-line >= low-units)
+(players-unit-type-count any-enemy militiaman-line < mid-units)
+=>
+(set-goal militiaman-presence low-presence)
+)
+
+(defrule
+(not(goal militiaman-presence mid-presence))
+(players-unit-type-count any-enemy militiaman-line >= mid-units)
+(players-unit-type-count any-enemy militiaman-line < high-units)
+=>
+(set-goal militiaman-presence mid-presence)
+)
+
+(defrule
+(not(goal militiaman-presence high-presence))
+(players-unit-type-count any-enemy militiaman-line >= high-units)
+=>
+(set-goal militiaman-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy berserk-line >= low-units)
+(players-unit-type-count any-enemy berserk-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy berserk-line >= mid-units)
+(players-unit-type-count any-enemy berserk-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy berserk-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy teutonic-knight-line >= low-units)
+(players-unit-type-count any-enemy teutonic-knight-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy teutonic-knight-line >= mid-units)
+(players-unit-type-count any-enemy teutonic-knight-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy teutonic-knight-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy woad-raider-line >= low-units)
+(players-unit-type-count any-enemy woad-raider-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy woad-raider-line >= mid-units)
+(players-unit-type-count any-enemy woad-raider-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy woad-raider-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy jaguar-man-line >= low-units)
+(players-unit-type-count any-enemy jaguar-man-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy jaguar-man-line >= mid-units)
+(players-unit-type-count any-enemy jaguar-man-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy jaguar-man-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy throwing-axeman-line >= low-units)
+(players-unit-type-count any-enemy throwing-axeman-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy throwing-axeman-line >= mid-units)
+(players-unit-type-count any-enemy throwing-axeman-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy throwing-axeman-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy samurai-line >= low-units)
+(players-unit-type-count any-enemy samurai-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy samurai-line >= mid-units)
+(players-unit-type-count any-enemy samurai-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy samurai-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy karambit-warrior-line >= low-units)
+(players-unit-type-count any-enemy karambit-warrior-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy karambit-warrior-line >= mid-units)
+(players-unit-type-count any-enemy karambit-warrior-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy karambit-warrior-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy urumi-swordsman-line >= low-units)
+(players-unit-type-count any-enemy urumi-swordsman-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy urumi-swordsman-line >= mid-units)
+(players-unit-type-count any-enemy urumi-swordsman-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy urumi-swordsman-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy chakram-thrower-line >= low-units)
+(players-unit-type-count any-enemy chakram-thrower-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy chakram-thrower-line >= mid-units)
+(players-unit-type-count any-enemy chakram-thrower-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy chakram-thrower-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy obuch-line >= low-units)
+(players-unit-type-count any-enemy obuch-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy obuch-line >= mid-units)
+(players-unit-type-count any-enemy obuch-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy obuch-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy warrior-priest >= low-units)
+(players-unit-type-count any-enemy warrior-priest < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy warrior-priest >= mid-units)
+(players-unit-type-count any-enemy warrior-priest < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy warrior-priest >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy liao-dao-line >= low-units)
+(players-unit-type-count any-enemy liao-dao-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy liao-dao-line >= mid-units)
+(players-unit-type-count any-enemy liao-dao-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy liao-dao-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy white-feather-guard-line >= low-units)
+(players-unit-type-count any-enemy white-feather-guard < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy white-feather-guard >= mid-units)
+(players-unit-type-count any-enemy white-feather-guard < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy white-feather-guard >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal spearman-presence 0))
+(players-unit-type-count any-enemy spearman-line < low-units)
+=>
+(set-goal spearman-presence 0)
+)
+
+(defrule
+(not(goal spearman-presence low-presence))
+(players-unit-type-count any-enemy spearman-line >= low-units)
+(players-unit-type-count any-enemy spearman-line < mid-units)
+=>
+(set-goal spearman-presence low-presence)
+)
+
+(defrule
+(not(goal spearman-presence mid-presence))
+(players-unit-type-count any-enemy spearman-line >= mid-units)
+(players-unit-type-count any-enemy spearman-line < high-units)
+=>
+(set-goal spearman-presence mid-presence)
+)
+
+(defrule
+(not(goal spearman-presence high-presence))
+(players-unit-type-count any-enemy spearman-line >= high-units)
+=>
+(set-goal spearman-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy kamayuk-line >= low-units)
+(players-unit-type-count any-enemy kamayuk-line < mid-units)
+=>
+(up-modify-goal spearman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy kamayuk-line >= mid-units)
+(players-unit-type-count any-enemy kamayuk-line < high-units)
+=>
+(up-modify-goal spearman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy kamayuk-line >= high-units)
+=>
+(up-modify-goal spearman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy flemish-pikeman >= low-units)
+(players-unit-type-count any-enemy flemish-pikeman < mid-units)
+=>
+(up-modify-goal spearman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy flemish-pikeman >= mid-units)
+(players-unit-type-count any-enemy flemish-pikeman < high-units)
+=>
+(up-modify-goal spearman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy flemish-pikeman >= high-units)
+=>
+(up-modify-goal spearman-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal fire-lancer-presence 0))
+(players-unit-type-count any-enemy fire-lancer-line < low-units)
+=>
+(set-goal fire-lancer-presence 0)
+)
+
+(defrule
+(not(goal fire-lancer-presence low-presence))
+(players-unit-type-count any-enemy fire-lancer-line >= low-units)
+(players-unit-type-count any-enemy fire-lancer-line < mid-units)
+=>
+(set-goal fire-lancer-presence low-presence)
+)
+
+(defrule
+(not(goal fire-lancer-presence mid-presence))
+(players-unit-type-count any-enemy fire-lancer-line >= mid-units)
+(players-unit-type-count any-enemy fire-lancer-line < high-units)
+=>
+(set-goal fire-lancer-presence mid-presence)
+)
+
+(defrule
+(not(goal fire-lancer-presence high-presence))
+(players-unit-type-count any-enemy fire-lancer-line >= high-units)
+=>
+(set-goal fire-lancer-presence high-presence)
+)
+
+(defrule
+(not(goal archer-presence 0))
+(players-unit-type-count any-enemy archer-line < low-units)
+=>
+(set-goal archer-presence 0)
+)
+
+(defrule
+(not(goal archer-presence low-presence))
+(players-unit-type-count any-enemy archer-line >= low-units)
+(players-unit-type-count any-enemy archer-line < mid-units)
+=>
+(set-goal archer-presence low-presence)
+)
+
+(defrule
+(not(goal archer-presence mid-presence))
+(players-unit-type-count any-enemy archer-line >= mid-units)
+(players-unit-type-count any-enemy archer-line < high-units)
+=>
+(set-goal archer-presence mid-presence)
+)
+
+(defrule
+(not(goal archer-presence high-presence))
+(players-unit-type-count any-enemy archer-line >= high-units)
+=>
+(set-goal archer-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy longbowman-line >= low-units)
+(players-unit-type-count any-enemy longbowman-line < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy longbowman-line >= mid-units)
+(players-unit-type-count any-enemy longbowman-line < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy longbowman-line >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy plumed-archer-line >= low-units)
+(players-unit-type-count any-enemy plumed-archer-line < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy plumed-archer-line >= mid-units)
+(players-unit-type-count any-enemy plumed-archer-line < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy plumed-archer-line >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy rattan-archer-line >= low-units)
+(players-unit-type-count any-enemy rattan-archer-line < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy rattan-archer-line >= mid-units)
+(players-unit-type-count any-enemy rattan-archer-line < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy rattan-archer-line >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy chu-ko-nu-line >= low-units)
+(players-unit-type-count any-enemy chu-ko-nu-line < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy chu-ko-nu-line >= mid-units)
+(players-unit-type-count any-enemy chu-ko-nu-line < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy chu-ko-nu-line >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy slinger >= low-units)
+(players-unit-type-count any-enemy slinger < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy slinger >= mid-units)
+(players-unit-type-count any-enemy slinger < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy slinger >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy composite-bowman-line >= low-units)
+(players-unit-type-count any-enemy composite-bowman-line < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy composite-bowman-line >= mid-units)
+(players-unit-type-count any-enemy composite-bowman-line < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy composite-bowman-line >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy fire-archer-line >= low-units)
+(players-unit-type-count any-enemy fire-archer-line < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy fire-archer-line >= mid-units)
+(players-unit-type-count any-enemy fire-archer-line < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy fire-archer-line >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal skirmisher-presence 0))
+(players-unit-type-count any-enemy skirmisher-line < low-units)
+=>
+(set-goal skirmisher-presence 0)
+)
+
+(defrule
+(not(goal skirmisher-presence low-presence))
+(players-unit-type-count any-enemy skirmisher-line >= low-units)
+(players-unit-type-count any-enemy skirmisher-line < mid-units)
+=>
+(set-goal skirmisher-presence low-presence)
+)
+
+(defrule
+(not(goal skirmisher-presence mid-presence))
+(players-unit-type-count any-enemy skirmisher-line >= mid-units)
+(players-unit-type-count any-enemy skirmisher-line < high-units)
+=>
+(set-goal skirmisher-presence mid-presence)
+)
+
+(defrule
+(not(goal skirmisher-presence high-presence))
+(players-unit-type-count any-enemy skirmisher-line >= high-units)
+=>
+(set-goal skirmisher-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy genitour-line >= low-units)
+(players-unit-type-count any-enemy genitour-line < mid-units)
+=>
+(up-modify-goal skirmisher-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy genitour-line >= mid-units)
+(players-unit-type-count any-enemy genitour-line < high-units)
+=>
+(up-modify-goal skirmisher-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy genitour-line >= high-units)
+=>
+(up-modify-goal skirmisher-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy huskarl-line >= low-units)
+(players-unit-type-count any-enemy huskarl-line < mid-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy huskarl-line >= mid-units)
+(players-unit-type-count any-enemy huskarl-line < high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy huskarl-line >= high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 759 >= low-units)
+(players-unit-type-count any-enemy 759 < mid-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 759 >= mid-units)
+(players-unit-type-count any-enemy 759 < high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 759 >= high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 761 >= low-units)
+(players-unit-type-count any-enemy 761 < mid-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 761 >= mid-units)
+(players-unit-type-count any-enemy 761 < high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 761 >= high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ghulam-line >= low-units)
+(players-unit-type-count any-enemy ghulam-line < mid-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ghulam-line >= mid-units)
+(players-unit-type-count any-enemy ghulam-line < high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ghulam-line >= high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy jian-swordsman >= low-units)
+(players-unit-type-count any-enemy jian-swordsman < mid-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy jian-swordsman >= mid-units)
+(players-unit-type-count any-enemy jian-swordsman < high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy jian-swordsman >= high-units)
+=>
+(up-modify-goal eagle-warrior-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal cavalry-archer-presence 0))
+(players-unit-type-count any-enemy cavalry-archer-line < low-units)
+=>
+(set-goal cavalry-archer-presence 0)
+)
+
+(defrule
+(not(goal cavalry-archer-presence low-presence))
+(players-unit-type-count any-enemy cavalry-archer-line >= low-units)
+(players-unit-type-count any-enemy cavalry-archer-line < mid-units)
+=>
+(set-goal cavalry-archer-presence low-presence)
+)
+
+(defrule
+(not(goal cavalry-archer-presence mid-presence))
+(players-unit-type-count any-enemy cavalry-archer-line >= mid-units)
+(players-unit-type-count any-enemy cavalry-archer-line < high-units)
+=>
+(set-goal cavalry-archer-presence mid-presence)
+)
+
+(defrule
+(not(goal cavalry-archer-presence high-presence))
+(players-unit-type-count any-enemy cavalry-archer-line >= high-units)
+=>
+(set-goal cavalry-archer-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy camel-archer-line >= low-units)
+(players-unit-type-count any-enemy camel-archer-line < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy camel-archer-line >= mid-units)
+(players-unit-type-count any-enemy camel-archer-line < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy camel-archer-line >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy arambai-line >= low-units)
+(players-unit-type-count any-enemy arambai-line < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy arambai-line >= mid-units)
+(players-unit-type-count any-enemy arambai-line < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy arambai-line >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy kipchak-line >= low-units)
+(players-unit-type-count any-enemy kipchak-line < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy kipchak-line >= mid-units)
+(players-unit-type-count any-enemy kipchak-line < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy kipchak-line >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy elephant-archer-line >= low-units)
+(players-unit-type-count any-enemy elephant-archer-line < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy elephant-archer-line >= mid-units)
+(players-unit-type-count any-enemy elephant-archer-line < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy elephant-archer-line >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-wagon-line >= low-units)
+(players-unit-type-count any-enemy war-wagon-line < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-wagon-line >= mid-units)
+(players-unit-type-count any-enemy war-wagon-line < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-wagon-line >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy mangudai-line >= low-units)
+(players-unit-type-count any-enemy mangudai-line < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy mangudai-line >= mid-units)
+(players-unit-type-count any-enemy mangudai-line < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy mangudai-line >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ratha-ranged-line >= low-units)
+(players-unit-type-count any-enemy ratha-ranged-line < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ratha-ranged-line >= mid-units)
+(players-unit-type-count any-enemy ratha-ranged-line < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ratha-ranged-line >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy xianbei-raider >= low-units)
+(players-unit-type-count any-enemy xianbei-raider < mid-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy xianbei-raider >= mid-units)
+(players-unit-type-count any-enemy xianbei-raider < high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy xianbei-raider >= high-units)
+=>
+(up-modify-goal cavalry-archer-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal scout-cavalry-presence 0))
+(players-unit-type-count any-enemy scout-cavalry-line < 2)
+=>
+(set-goal scout-cavalry-presence 0)
+)
+
+(defrule
+(not(goal scout-cavalry-presence low-presence))
+(players-unit-type-count any-enemy scout-cavalry-line >= 2)
+(players-unit-type-count any-enemy scout-cavalry-line < mid-units)
+=>
+(set-goal scout-cavalry-presence low-presence)
+)
+
+(defrule
+(not(goal scout-cavalry-presence mid-presence))
+(players-unit-type-count any-enemy scout-cavalry-line >= mid-units)
+(players-unit-type-count any-enemy scout-cavalry-line < high-units)
+=>
+(set-goal scout-cavalry-presence mid-presence)
+)
+
+(defrule
+(not(goal scout-cavalry-presence high-presence))
+(players-unit-type-count any-enemy scout-cavalry-line >= high-units)
+=>
+(set-goal scout-cavalry-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy tarkan-line >= low-units)
+(players-unit-type-count any-enemy tarkan-line < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy tarkan-line >= mid-units)
+(players-unit-type-count any-enemy tarkan-line < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy tarkan-line >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 886 >= low-units)
+(players-unit-type-count any-enemy 886 < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 886 >= mid-units)
+(players-unit-type-count any-enemy 886 < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 886 >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 887 >= low-units)
+(players-unit-type-count any-enemy 887 < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 887 >= mid-units)
+(players-unit-type-count any-enemy 887 < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy 887 >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy magyar-huszar-line >= low-units)
+(players-unit-type-count any-enemy magyar-huszar-line < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy magyar-huszar-line >= mid-units)
+(players-unit-type-count any-enemy magyar-huszar-line < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy magyar-huszar-line >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy steppe-lancer-line >= low-units)
+(players-unit-type-count any-enemy steppe-lancer-line < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy steppe-lancer-line >= mid-units)
+(players-unit-type-count any-enemy steppe-lancer-line < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy steppe-lancer-line >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy keshik-line >= low-units)
+(players-unit-type-count any-enemy keshik-line < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy keshik-line >= mid-units)
+(players-unit-type-count any-enemy keshik-line < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy keshik-line >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ratha-melee-line >= low-units)
+(players-unit-type-count any-enemy ratha-melee-line < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ratha-melee-line >= mid-units)
+(players-unit-type-count any-enemy ratha-melee-line < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ratha-melee-line >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy shrivamsha-rider-line >= low-units)
+(players-unit-type-count any-enemy shrivamsha-rider-line < mid-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy shrivamsha-rider-line >= mid-units)
+(players-unit-type-count any-enemy shrivamsha-rider-line < high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy shrivamsha-rider-line >= high-units)
+=>
+(up-modify-goal scout-cavalry-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal knight-presence 0))
+(players-unit-type-count any-enemy knight-line < low-units)
+=>
+(set-goal knight-presence 0)
+)
+
+(defrule
+(not(goal knight-presence low-presence))
+(players-unit-type-count any-enemy knight-line >= low-units)
+(players-unit-type-count any-enemy knight-line < mid-units)
+=>
+(set-goal knight-presence low-presence)
+)
+
+(defrule
+(not(goal knight-presence mid-presence))
+(players-unit-type-count any-enemy knight-line >= mid-units)
+(players-unit-type-count any-enemy knight-line < high-units)
+=>
+(set-goal knight-presence mid-presence)
+)
+
+(defrule
+(not(goal knight-presence high-presence))
+(players-unit-type-count any-enemy knight-line >= high-units)
+=>
+(set-goal knight-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy konnik-line >= low-units)
+(players-unit-type-count any-enemy konnik-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy konnik-line >= mid-units)
+(players-unit-type-count any-enemy konnik-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy konnik-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy cataphract-line >= low-units)
+(players-unit-type-count any-enemy cataphract-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy cataphract-line >= mid-units)
+(players-unit-type-count any-enemy cataphract-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy cataphract-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy leitis-line >= low-units)
+(players-unit-type-count any-enemy leitis-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy leitis-line >= mid-units)
+(players-unit-type-count any-enemy leitis-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy leitis-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy boyar-line >= low-units)
+(players-unit-type-count any-enemy boyar-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy boyar-line >= mid-units)
+(players-unit-type-count any-enemy boyar-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy boyar-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-civ any-enemy burgundians)
+(players-current-age this-any-enemy >= castle-age)
+(players-unit-type-count this-any-enemy coustillier-line >= 1);1
+(players-unit-type-count this-any-enemy coustillier-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-civ any-enemy burgundians)
+(players-current-age this-any-enemy >= castle-age)
+(players-unit-type-count this-any-enemy coustillier-line >= mid-units)
+(players-unit-type-count this-any-enemy coustillier-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-civ any-enemy burgundians)
+(players-current-age this-any-enemy >= castle-age)
+(players-unit-type-count this-any-enemy coustillier-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy centurion-line >= low-units)
+(players-unit-type-count any-enemy centurion-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy centurion-line >= mid-units)
+(players-unit-type-count any-enemy centurion-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy centurion-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy monaspa-line >= low-units)
+(players-unit-type-count any-enemy monaspa-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy monaspa-line >= mid-units)
+(players-unit-type-count any-enemy monaspa-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy monaspa-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy hei-guang-cavalry-line >= low-units)
+(players-unit-type-count any-enemy hei-guang-cavalry-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy hei-guang-cavalry-line >= mid-units)
+(players-unit-type-count any-enemy hei-guang-cavalry-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy hei-guang-cavalry-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy iron-pagoda-line >= low-units)
+(players-unit-type-count any-enemy iron-pagoda-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy iron-pagoda-line >= mid-units)
+(players-unit-type-count any-enemy iron-pagoda-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy iron-pagoda-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy tiger-cavalry-line >= low-units)
+(players-unit-type-count any-enemy tiger-cavalry-line < mid-units)
+=>
+(up-modify-goal knight-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy tiger-cavalry-line >= mid-units)
+(players-unit-type-count any-enemy tiger-cavalry-line < high-units)
+=>
+(up-modify-goal knight-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy tiger-cavalry-line >= high-units)
+=>
+(up-modify-goal knight-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal camel-presence 0))
+(players-unit-type-count any-enemy camel-line < low-units)
+=>
+(set-goal camel-presence 0)
+)
+
+(defrule
+(not(goal camel-presence low-presence))
+(players-unit-type-count any-enemy camel-line >= low-units)
+(players-unit-type-count any-enemy camel-line < mid-units)
+=>
+(set-goal camel-presence low-presence)
+)
+
+(defrule
+(not(goal camel-presence mid-presence))
+(players-unit-type-count any-enemy camel-line >= mid-units)
+(players-unit-type-count any-enemy camel-line < high-units)
+=>
+(set-goal camel-presence mid-presence)
+)
+
+(defrule
+(not(goal camel-presence high-presence))
+(players-unit-type-count any-enemy camel-line >= high-units)
+=>
+(set-goal camel-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy genoese-crossbowman-line >= low-units)
+(players-unit-type-count any-enemy genoese-crossbowman-line < mid-units)
+=>
+(up-modify-goal archer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy genoese-crossbowman-line >= mid-units)
+(players-unit-type-count any-enemy genoese-crossbowman-line < high-units)
+=>
+(up-modify-goal archer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy genoese-crossbowman-line >= high-units)
+=>
+(up-modify-goal archer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy mameluke-line >= low-units)
+(players-unit-type-count any-enemy mameluke-line < mid-units)
+=>
+(up-modify-goal camel-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy mameluke-line >= mid-units)
+(players-unit-type-count any-enemy mameluke-line < high-units)
+=>
+(up-modify-goal camel-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy mameluke-line >= high-units)
+=>
+(up-modify-goal camel-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal battle-elephant-presence 0))
+(players-unit-type-count any-enemy battle-elephant-line < low-units)
+=>
+(set-goal battle-elephant-presence 0)
+)
+
+(defrule
+(not(goal battle-elephant-presence low-presence))
+(players-unit-type-count any-enemy battle-elephant-line >= low-units)
+(players-unit-type-count any-enemy battle-elephant-line < mid-units)
+=>
+(set-goal battle-elephant-presence low-presence)
+)
+
+(defrule
+(not(goal battle-elephant-presence mid-presence))
+(players-unit-type-count any-enemy battle-elephant-line >= mid-units)
+(players-unit-type-count any-enemy battle-elephant-line < high-units)
+=>
+(set-goal battle-elephant-presence mid-presence)
+)
+
+(defrule
+(not(goal battle-elephant-presence high-presence))
+(players-unit-type-count any-enemy battle-elephant-line >= high-units)
+=>
+(set-goal battle-elephant-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-elephant-line >= low-units)
+(players-unit-type-count any-enemy war-elephant-line < mid-units)
+=>
+(up-modify-goal battle-elephant-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-elephant-line >= mid-units)
+(players-unit-type-count any-enemy war-elephant-line < high-units)
+=>
+(up-modify-goal battle-elephant-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-elephant-line >= high-units)
+=>
+(up-modify-goal battle-elephant-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal monk-presence 0))
+(players-unit-type-count any-enemy monk < low-units)
+=>
+(set-goal monk-presence 0)
+)
+
+(defrule
+(not(goal monk-presence low-presence))
+(players-unit-type-count any-enemy monk >= low-units)
+(players-unit-type-count any-enemy monk < mid-units)
+=>
+(set-goal monk-presence low-presence)
+)
+
+(defrule
+(not(goal monk-presence mid-presence))
+(players-unit-type-count any-enemy monk >= mid-units)
+(players-unit-type-count any-enemy monk < high-units)
+=>
+(set-goal monk-presence mid-presence)
+)
+
+(defrule
+(not(goal monk-presence high-presence))
+(players-unit-type-count any-enemy monk >= high-units)
+=>
+(set-goal monk-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy missionary >= low-units)
+(players-unit-type-count any-enemy missionary < mid-units)
+=>
+(up-modify-goal monk-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy missionary >= mid-units)
+(players-unit-type-count any-enemy missionary < high-units)
+=>
+(up-modify-goal monk-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy missionary >= high-units)
+=>
+(up-modify-goal monk-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal eagle-warrior-presence 0))
+(players-unit-type-count any-enemy eagle-warrior-line < 2)
+=>
+(set-goal eagle-warrior-presence 0)
+)
+
+(defrule
+(not(goal eagle-warrior-presence low-presence))
+(players-unit-type-count any-enemy eagle-warrior-line >= 2)
+(players-unit-type-count any-enemy eagle-warrior-line < mid-units)
+=>
+(set-goal eagle-warrior-presence low-presence)
+)
+
+(defrule
+(not(goal eagle-warrior-presence mid-presence))
+(players-unit-type-count any-enemy eagle-warrior-line >= mid-units)
+(players-unit-type-count any-enemy eagle-warrior-line < high-units)
+=>
+(set-goal eagle-warrior-presence mid-presence)
+)
+
+(defrule
+(not(goal eagle-warrior-presence high-presence))
+(players-unit-type-count any-enemy eagle-warrior-line >= high-units)
+=>
+(set-goal eagle-warrior-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy shotel-line >= low-units)
+(players-unit-type-count any-enemy shotel-line < mid-units)
+=>
+(up-modify-goal militiaman-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy shotel-line >= mid-units)
+(players-unit-type-count any-enemy shotel-line < high-units)
+=>
+(up-modify-goal militiaman-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy shotel-line >= high-units)
+=>
+(up-modify-goal militiaman-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal hand-cannoneer-presence 0))
+(players-unit-type-count any-enemy hand-cannoneer < low-units)
+=>
+(set-goal hand-cannoneer-presence 0)
+)
+
+(defrule
+(not(goal hand-cannoneer-presence low-presence))
+(players-unit-type-count any-enemy hand-cannoneer >= low-units)
+(players-unit-type-count any-enemy hand-cannoneer < mid-units)
+=>
+(set-goal hand-cannoneer-presence low-presence)
+)
+
+(defrule
+(not(goal hand-cannoneer-presence mid-presence))
+(players-unit-type-count any-enemy hand-cannoneer >= mid-units)
+(players-unit-type-count any-enemy hand-cannoneer < high-units)
+=>
+(set-goal hand-cannoneer-presence mid-presence)
+)
+
+(defrule
+(not(goal hand-cannoneer-presence high-presence))
+(players-unit-type-count any-enemy hand-cannoneer >= high-units)
+=>
+(set-goal hand-cannoneer-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy gbeto-line >= low-units)
+(players-unit-type-count any-enemy gbeto-line < mid-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy gbeto-line >= mid-units)
+(players-unit-type-count any-enemy gbeto-line < high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy gbeto-line >= high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy conquistador-line >= low-units)
+(players-unit-type-count any-enemy conquistador-line < mid-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy conquistador-line >= mid-units)
+(players-unit-type-count any-enemy conquistador-line < high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy conquistador-line >= high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy janissary-line >= low-units)
+(players-unit-type-count any-enemy janissary-line < mid-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy janissary-line >= mid-units)
+(players-unit-type-count any-enemy janissary-line < high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy janissary-line >= high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy grenadier >= low-units)
+(players-unit-type-count any-enemy grenadier < mid-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy grenadier >= mid-units)
+(players-unit-type-count any-enemy grenadier < high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy grenadier >= high-units)
+=>
+(up-modify-goal hand-cannoneer-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal scorpion-presence 0))
+(players-unit-type-count any-enemy scorpion-line < low-units)
+=>
+(set-goal scorpion-presence 0)
+)
+
+(defrule
+(not(goal scorpion-presence low-presence))
+(players-unit-type-count any-enemy scorpion-line >= low-units)
+(players-unit-type-count any-enemy scorpion-line < mid-units)
+=>
+(set-goal scorpion-presence low-presence)
+)
+
+(defrule
+(not(goal scorpion-presence mid-presence))
+(players-unit-type-count any-enemy scorpion-line >= mid-units)
+(players-unit-type-count any-enemy scorpion-line < high-units)
+=>
+(set-goal scorpion-presence mid-presence)
+)
+
+(defrule
+(not(goal scorpion-presence high-presence))
+(players-unit-type-count any-enemy scorpion-line >= high-units)
+=>
+(set-goal scorpion-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ballista-elephant-line >= low-units)
+(players-unit-type-count any-enemy ballista-elephant-line < mid-units)
+=>
+(up-modify-goal scorpion-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ballista-elephant-line >= mid-units)
+(players-unit-type-count any-enemy ballista-elephant-line < high-units)
+=>
+(up-modify-goal scorpion-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy ballista-elephant-line >= high-units)
+=>
+(up-modify-goal scorpion-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy organ-gun-line >= low-units)
+(players-unit-type-count any-enemy organ-gun-line < mid-units)
+=>
+(up-modify-goal scorpion-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy organ-gun-line >= mid-units)
+(players-unit-type-count any-enemy organ-gun-line < high-units)
+=>
+(up-modify-goal scorpion-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy organ-gun-line >= high-units)
+=>
+(up-modify-goal scorpion-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy hussite-wagon-line >= low-units)
+(players-unit-type-count any-enemy hussite-wagon-line < mid-units)
+=>
+(up-modify-goal scorpion-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy hussite-wagon-line >= mid-units)
+(players-unit-type-count any-enemy hussite-wagon-line < high-units)
+=>
+(up-modify-goal scorpion-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy hussite-wagon-line >= high-units)
+=>
+(up-modify-goal scorpion-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-chariot-focus-fire >= low-units)
+(players-unit-type-count any-enemy war-chariot-focus-fire < mid-units)
+=>
+(up-modify-goal scorpion-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-chariot-focus-fire >= mid-units)
+(players-unit-type-count any-enemy war-chariot-focus-fire < high-units)
+=>
+(up-modify-goal scorpion-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-chariot-focus-fire >= high-units)
+=>
+(up-modify-goal scorpion-presence c:+ high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-chariot-barrage >= low-units)
+(players-unit-type-count any-enemy war-chariot-barrage < mid-units)
+=>
+(up-modify-goal scorpion-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-chariot-barrage >= mid-units)
+(players-unit-type-count any-enemy war-chariot-barrage < high-units)
+=>
+(up-modify-goal scorpion-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy war-chariot-barrage >= high-units)
+=>
+(up-modify-goal scorpion-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal battering-ram-presence 0))
+(players-unit-type-count any-enemy battering-ram-line < low-units)
+=>
+(set-goal battering-ram-presence 0)
+)
+
+(defrule
+(not(goal battering-ram-presence low-presence))
+(players-unit-type-count any-enemy battering-ram-line >= low-units)
+(players-unit-type-count any-enemy battering-ram-line < mid-units)
+=>
+(set-goal battering-ram-presence low-presence)
+)
+
+(defrule
+(not(goal battering-ram-presence mid-presence))
+(players-unit-type-count any-enemy battering-ram-line >= mid-units)
+(players-unit-type-count any-enemy battering-ram-line < high-units)
+=>
+(set-goal battering-ram-presence mid-presence)
+)
+
+(defrule
+(not(goal battering-ram-presence high-presence))
+(players-unit-type-count any-enemy battering-ram-line >= high-units)
+=>
+(set-goal battering-ram-presence high-presence)
+)
+
+(defrule
+(not(goal mangonel-presence 0))
+(players-unit-type-count any-enemy mangonel-line < low-units)
+=>
+(set-goal mangonel-presence 0)
+)
+
+(defrule
+(not(goal mangonel-presence low-presence))
+(players-unit-type-count any-enemy mangonel-line >= low-units)
+(players-unit-type-count any-enemy mangonel-line < mid-units)
+=>
+(set-goal mangonel-presence low-presence)
+)
+
+(defrule
+(not(goal mangonel-presence mid-presence))
+(players-unit-type-count any-enemy mangonel-line >= mid-units)
+(players-unit-type-count any-enemy mangonel-line < high-units)
+=>
+(set-goal mangonel-presence mid-presence)
+)
+
+(defrule
+(not(goal mangonel-presence high-presence))
+(players-unit-type-count any-enemy mangonel-line >= high-units)
+=>
+(set-goal mangonel-presence high-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy condottiero >= low-units)
+(players-unit-type-count any-enemy condottiero < mid-units)
+=>
+(up-modify-goal mangonel-presence c:+ low-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy condottiero >= mid-units)
+(players-unit-type-count any-enemy condottiero < high-units)
+=>
+(up-modify-goal mangonel-presence c:+ mid-presence)
+)
+
+(defrule
+(players-unit-type-count any-enemy condottiero >= high-units)
+=>
+(up-modify-goal mangonel-presence c:+ high-presence)
+)
+
+(defrule
+(not(goal bombard-cannon-presence 0))
+(players-unit-type-count any-enemy bombard-cannon < low-units)
+=>
+(set-goal bombard-cannon-presence 0)
+)
+
+(defrule
+(not(goal bombard-cannon-presence low-presence))
+(players-unit-type-count any-enemy bombard-cannon >= low-units)
+(players-unit-type-count any-enemy bombard-cannon < mid-units)
+=>
+(set-goal bombard-cannon-presence low-presence)
+)
+
+(defrule
+(not(goal bombard-cannon-presence mid-presence))
+(players-unit-type-count any-enemy bombard-cannon >= mid-units)
+(players-unit-type-count any-enemy bombard-cannon < high-units)
+=>
+(set-goal bombard-cannon-presence mid-presence)
+)
+
+(defrule
+(not(goal bombard-cannon-presence high-presence))
+(players-unit-type-count any-enemy bombard-cannon >= high-units)
+=>
+(set-goal bombard-cannon-presence high-presence)
+)
+
+(defrule
+(not(goal trebuchet-presence 0))
+(players-unit-type-count any-enemy trebuchet < low-units)
+=>
+(set-goal trebuchet-presence 0)
+)
+
+(defrule
+(not(goal trebuchet-presence low-presence))
+(players-unit-type-count any-enemy trebuchet >= low-units)
+(players-unit-type-count any-enemy trebuchet < mid-units)
+=>
+(set-goal trebuchet-presence low-presence)
+)
+
+(defrule
+(not(goal trebuchet-presence mid-presence))
+(players-unit-type-count any-enemy trebuchet >= mid-units)
+(players-unit-type-count any-enemy trebuchet < high-units)
+=>
+(set-goal trebuchet-presence mid-presence)
+)
+
+(defrule
+(not(goal trebuchet-presence high-presence))
+(players-unit-type-count any-enemy trebuchet >= high-units)
+=>
+(set-goal trebuchet-presence high-presence)
+)
+
+(defrule
+(not(goal galley-presence 0))
+(players-unit-type-count any-enemy galley-line < low-units)
+=>
+(set-goal galley-presence 0)
+)
+
+(defrule
+(not(goal galley-presence low-presence))
+(players-unit-type-count any-enemy galley-line >= low-units)
+(players-unit-type-count any-enemy galley-line < mid-units)
+=>
+(set-goal galley-presence low-presence)
+)
+
+(defrule
+(not(goal galley-presence mid-presence))
+(players-unit-type-count any-enemy galley-line >= mid-units)
+(players-unit-type-count any-enemy galley-line < high-units)
+=>
+(set-goal galley-presence mid-presence)
+)
+
+(defrule
+(not(goal galley-presence high-presence))
+(players-unit-type-count any-enemy galley-line >= high-units)
+=>
+(set-goal galley-presence high-presence)
+)
+
+(defrule
+(not(goal fire-ship-presence 0))
+(players-unit-type-count any-enemy fire-ship-line < low-units)
+=>
+(set-goal fire-ship-presence 0)
+)
+
+(defrule
+(not(goal fire-ship-presence low-presence))
+(players-unit-type-count any-enemy fire-ship-line >= low-units)
+(players-unit-type-count any-enemy fire-ship-line < mid-units)
+=>
+(set-goal fire-ship-presence low-presence)
+)
+
+(defrule
+(not(goal fire-ship-presence mid-presence))
+(players-unit-type-count any-enemy fire-ship-line >= mid-units)
+(players-unit-type-count any-enemy fire-ship-line < high-units)
+=>
+(set-goal fire-ship-presence mid-presence)
+)
+
+(defrule
+(not(goal fire-ship-presence high-presence))
+(players-unit-type-count any-enemy fire-ship-line >= high-units)
+=>
+(set-goal fire-ship-presence high-presence)
+)
+
+(defrule
+(not(goal hulk-presence 0))
+(players-unit-type-count any-enemy hulk-line < low-units)
+=>
+(set-goal hulk-presence 0)
+)
+
+(defrule
+(not(goal hulk-presence low-presence))
+(players-unit-type-count any-enemy hulk-line >= low-units)
+(players-unit-type-count any-enemy hulk-line < mid-units)
+=>
+(set-goal hulk-presence low-presence)
+)
+
+(defrule
+(not(goal hulk-presence mid-presence))
+(players-unit-type-count any-enemy hulk-line >= mid-units)
+(players-unit-type-count any-enemy hulk-line < high-units)
+=>
+(set-goal hulk-presence mid-presence)
+)
+
+(defrule
+(not(goal hulk-presence high-presence))
+(players-unit-type-count any-enemy hulk-line >= high-units)
+=>
+(set-goal hulk-presence high-presence)
+)
+
+(defrule
+(not(goal demo-ship-presence 0))
+(players-unit-type-count any-enemy demolition-ship-line < low-units)
+=>
+(set-goal demo-ship-presence 0)
+)
+
+(defrule
+(not(goal demo-ship-presence low-presence))
+(players-unit-type-count any-enemy demolition-ship-line >= low-units)
+(players-unit-type-count any-enemy demolition-ship-line < mid-units)
+=>
+(set-goal demo-ship-presence low-presence)
+)
+
+(defrule
+(not(goal demo-ship-presence mid-presence))
+(players-unit-type-count any-enemy demolition-ship-line >= mid-units)
+(players-unit-type-count any-enemy demolition-ship-line < high-units)
+=>
+(set-goal demo-ship-presence mid-presence)
+)
+
+(defrule
+(not(goal demo-ship-presence high-presence))
+(players-unit-type-count any-enemy demolition-ship-line >= high-units)
+=>
+(set-goal demo-ship-presence high-presence)
+)
+
+(defrule
+(not(goal turtle-ship-presence 0))
+(players-unit-type-count any-enemy turtle-ship-line < low-units)
+=>
+(set-goal turtle-ship-presence 0)
+)
+
+(defrule
+(not(goal turtle-ship-presence low-presence))
+(players-unit-type-count any-enemy turtle-ship-line >= low-units)
+(players-unit-type-count any-enemy turtle-ship-line < mid-units)
+=>
+(set-goal turtle-ship-presence low-presence)
+)
+
+(defrule
+(not(goal turtle-ship-presence mid-presence))
+(players-unit-type-count any-enemy turtle-ship-line >= mid-units)
+(players-unit-type-count any-enemy turtle-ship-line < high-units)
+=>
+(set-goal turtle-ship-presence mid-presence)
+)
+
+(defrule
+(not(goal turtle-ship-presence high-presence))
+(players-unit-type-count any-enemy turtle-ship-line >= high-units)
+=>
+(set-goal turtle-ship-presence high-presence)
+)
+
+(defrule
+(not(goal longboat-presence 0))
+(players-unit-type-count any-enemy longboat-line < low-units)
+=>
+(set-goal longboat-presence 0)
+)
+
+(defrule
+(not(goal longboat-presence low-presence))
+(players-unit-type-count any-enemy longboat-line >= low-units)
+(players-unit-type-count any-enemy longboat-line < mid-units)
+=>
+(set-goal longboat-presence low-presence)
+)
+
+(defrule
+(not(goal longboat-presence mid-presence))
+(players-unit-type-count any-enemy longboat-line >= mid-units)
+(players-unit-type-count any-enemy longboat-line < high-units)
+=>
+(set-goal longboat-presence mid-presence)
+)
+
+(defrule
+(not(goal longboat-presence high-presence))
+(players-unit-type-count any-enemy longboat-line >= high-units)
+=>
+(set-goal longboat-presence high-presence)
+)
+
+(defrule
+(not(goal caravel-presence 0))
+(players-unit-type-count any-enemy caravel-line < low-units)
+=>
+(set-goal caravel-presence 0)
+)
+
+(defrule
+(not(goal caravel-presence low-presence))
+(players-unit-type-count any-enemy caravel-line >= low-units)
+(players-unit-type-count any-enemy caravel-line < mid-units)
+=>
+(set-goal caravel-presence low-presence)
+)
+
+(defrule
+(not(goal caravel-presence mid-presence))
+(players-unit-type-count any-enemy caravel-line >= mid-units)
+(players-unit-type-count any-enemy caravel-line < high-units)
+=>
+(set-goal caravel-presence mid-presence)
+)
+
+(defrule
+(not(goal caravel-presence high-presence))
+(players-unit-type-count any-enemy caravel-line >= high-units)
+=>
+(set-goal caravel-presence high-presence)
+)
+
+(defrule
+(not(goal thirisadai-presence 0))
+(players-unit-type-count any-enemy thirisadai < low-units)
+=>
+(set-goal thirisadai-presence 0)
+)
+
+(defrule
+(not(goal thirisadai-presence low-presence))
+(players-unit-type-count any-enemy thirisadai >= low-units)
+(players-unit-type-count any-enemy thirisadai < mid-units)
+=>
+(set-goal thirisadai-presence low-presence)
+)
+
+(defrule
+(not(goal thirisadai-presence mid-presence))
+(players-unit-type-count any-enemy thirisadai >= mid-units)
+(players-unit-type-count any-enemy thirisadai < high-units)
+=>
+(set-goal thirisadai-presence mid-presence)
+)
+
+(defrule
+(not(goal thirisadai-presence high-presence))
+(players-unit-type-count any-enemy thirisadai >= high-units)
+=>
+(set-goal thirisadai-presence high-presence)
+)

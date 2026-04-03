@@ -1,0 +1,1734 @@
+; =====================
+; ==== ECO BALANCE ====
+; =====================
+; == DARK AGE ==
+(defrule
+	(goal G-eco-balance GV-ln-start)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 0)
+	(set-strategic-number sn-wood-gatherer-percentage 100)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-early-dark)
+	(up-compare-goal G-starting-tcs >= 1)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 100)
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-early-dark)
+	(goal G-starting-tcs 0)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 80)
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule; dark age economy
+	(goal G-eco-balance GV-mid-dark)
+	(up-compare-goal G-strat != GV-klewproper)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-late-dark)
+	(up-compare-goal G-build-order == GV-feudal-war)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 64)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-late-dark)
+	(up-compare-goal G-build-order >= GV-fast-castle)
+	(up-compare-goal G-strat != GV-klewproper)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+; == FEUDAL AGE ==
+(defrule
+	(goal G-eco-balance GV-early-feudal)
+	(goal G-build-order GV-fast-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 50); 53
+	(set-strategic-number sn-wood-gatherer-percentage 36); 35
+	(set-strategic-number sn-gold-gatherer-percentage 14); 12
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-early-feudal)
+	(goal G-strat GV-cdropproper)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 52)
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 11))
+(defrule
+	(goal G-eco-balance GV-early-feudal)
+	(goal G-build-order GV-slow-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48); 50
+	(set-strategic-number sn-wood-gatherer-percentage 38); 36
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+; -- tower defence --
+(defrule
+	(up-compare-goal G-age == GV-upfeudal)
+	(goal G-tower-defence 1)
+	(or	(goal G-strat-bo GV-fast-castle)
+		(goal G-strat-bo GV-slow-castle))
+	(up-compare-goal G-strat != GV-klewproper)
+	(up-compare-goal G-eco-balance >= GV-early-feudal)
+	(up-compare-goal G-eco-balance < GV-early-castle)
+	(dropsite-min-distance gold > 3)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 52); 60
+	(set-strategic-number sn-wood-gatherer-percentage 48); 40
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(up-compare-goal G-age == GV-feudal)
+	(goal G-tower-defence 1)
+	(or	(goal G-strat-bo GV-fast-castle)
+		(goal G-strat-bo GV-slow-castle))
+	(up-compare-goal G-strat != GV-klewproper)
+	(up-compare-goal G-eco-balance >= GV-early-feudal)
+	(up-compare-goal G-eco-balance < GV-early-castle)
+	(dropsite-min-distance gold > 3)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(up-compare-goal G-age == GV-feudal)
+	(goal G-tower-defence 1)
+	(or	(goal G-strat-bo GV-fast-castle)
+		(goal G-strat-bo GV-slow-castle))
+	(up-compare-goal G-strat != GV-klewproper)
+	(up-compare-goal G-eco-balance >= GV-early-feudal)
+	(up-compare-goal G-eco-balance < GV-early-castle)
+	(dropsite-min-distance gold <= 3)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(up-compare-goal G-age == GV-feudal)
+	(goal G-tower-defence 1)
+	(or	(goal G-strat-bo GV-fast-castle)
+		(goal G-strat-bo GV-slow-castle))
+	(up-compare-goal G-strat != GV-klewproper)
+	(up-compare-goal G-eco-balance >= GV-early-feudal)
+	(up-compare-goal G-eco-balance < GV-early-castle)
+	(dropsite-min-distance gold <= 3)
+	(building-type-count-total market >= 1)
+	(building-type-count-total blacksmith >= 1)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 56)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+
+; == FEUDAL WAR (legacy) ==
+(defrule
+	(or	(up-compare-goal G-age != GV-feudal)
+		(up-compare-goal G-build-order != GV-feudal-war))
+	=>
+	(up-jump-rule 8))
+;-----------------------------------------------------------------------
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 1)
+	(goal G-skirms 0)
+	(goal G-champs 0)
+	(up-compare-goal G-escrowing != castle-age)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 31)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 24)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+#load-if-defined AZTEC-CIV
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 1)
+	(goal G-skirms 0)
+	(goal G-champs 0)
+	(up-compare-goal G-escrowing == castle-age)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+#else
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 1)
+	(goal G-skirms 0)
+	(goal G-champs 0)
+	(up-compare-goal G-escrowing == castle-age)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 41)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+#end-if
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 1)
+	(goal G-skirms 1)
+	(goal G-champs 0)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 1)
+	(goal G-skirms 1)
+	(goal G-champs 1)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 1)
+	(goal G-skirms 0)
+	(goal G-champs 1)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 42)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 22)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 0)
+	(goal G-skirms 1)
+	(goal G-champs 0)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 4)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(building-type-count-total archery-range > 0)
+	(goal G-archers 0)
+	(goal G-skirms 1)
+	(goal G-champs 1)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 55)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 7)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-escrowing castle-age)
+	=>
+	(up-modify-sn sn-food-gatherer-percentage c:+ 4)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 4))
+;-----------------------------------------------------------------------
+; == while researching castle-up ==
+(defrule
+	(or	(goal G-strat GV-klew)
+		(goal G-strat GV-eagleflood))
+	(goal G-eco-balance GV-early-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 33)
+	(set-strategic-number sn-wood-gatherer-percentage 57)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-krush)
+		(goal G-strat GV-ele))
+	(goal G-eco-balance GV-early-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-early-castle)
+	;(or	(goal G-strat GV-smushboom)
+		(or	(goal G-strat GV-monks-only)
+			(goal G-strat GV-monkflood));)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 25)
+	(set-strategic-number sn-wood-gatherer-percentage 55)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-xbows)
+		(or	(goal G-strat GV-horsecock)
+			(goal G-strat GV-ca)))
+	(goal G-build-order GV-feudal-war)
+	(goal G-age GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 22)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-early-castle)
+	(or	(or	(goal G-strat GV-xbows)
+			(and	(goal G-strat GV-horsecock)
+				(not	(civ-selected hun))))
+		(goal G-strat GV-ca))
+	(goal G-build-order GV-slow-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 25)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-eco-balance GV-early-castle)
+	(goal G-strat GV-firelancers)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 25)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-klewproper)
+		(goal G-strat GV-ca))
+	(goal G-eco-balance GV-early-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-cdrop)
+	(or	(goal G-eco-balance GV-early-castle)
+		(and	(building-type-count-total castle < 1)
+			(up-compare-goal G-age >= GV-upcastle)))
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 30))
+(defrule
+	(goal G-strat GV-cdropproper)
+	(or	(goal G-eco-balance GV-early-castle)
+		(and	(building-type-count-total castle < 1)
+			(up-compare-goal G-age >= GV-upcastle)))
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 2)
+	(set-strategic-number sn-stone-gatherer-percentage 30))
+(defrule
+	(goal G-strat GV-boom)
+	(goal G-eco-balance GV-early-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 41)
+	(set-strategic-number sn-wood-gatherer-percentage 54)
+	(set-strategic-number sn-gold-gatherer-percentage 5)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-krushboom)
+	(goal G-eco-balance GV-early-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 52); 49
+	(set-strategic-number sn-wood-gatherer-percentage 33); 37
+	(set-strategic-number sn-gold-gatherer-percentage 15); 14
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+; == CASTLE AGE ==
+(defrule
+	(or	(goal G-strat GV-longswords)
+		(goal G-strat GV-champflood))
+	(building-type-count-total town-center == 1)
+	(up-compare-goal G-age <= GV-castle)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 57)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-longswords)
+		(goal G-strat GV-champflood))
+	(building-type-count-total town-center == 2)
+	(up-compare-goal G-age <= GV-castle)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 59)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-longswords)
+		(goal G-strat GV-champflood))
+	(building-type-count-total town-center >= 3)
+	(up-compare-goal G-age <= GV-castle)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 61)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(or	(goal G-strat GV-xbows)
+			(goal G-strat GV-ca))
+		(goal G-strat GV-firelancers))
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(or	(goal G-strat GV-xbows)
+			(goal G-strat GV-ca))
+		(goal G-strat GV-firelancers))
+	(building-type-count-total town-center == 2)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(or	(goal G-strat GV-xbows)
+			(goal G-strat GV-ca))
+		(goal G-strat GV-firelancers))
+	(building-type-count-total town-center >= 3)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+(defrule
+	(goal G-strat GV-horsecock)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-horsecock)
+	(building-type-count-total town-center == 2)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-horsecock)
+	(building-type-count-total town-center >= 3)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 41)
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+(defrule
+	(or	(goal G-strat GV-krush)
+		(goal G-strat GV-ele))
+	(goal G-age GV-castle)
+	(building-type-count-total town-center == 1)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 22)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-krush)
+		(goal G-strat GV-ele))
+	(goal G-age GV-castle)
+	(building-type-count-total town-center == 2)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 52)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-krush)
+		(goal G-strat GV-ele))
+	(goal G-age GV-castle)
+	(building-type-count-total town-center >= 3)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+; (defrule
+; 	(goal G-strat GV-smushboom)
+; 	(building-type-count-total town-center == 1)
+; 	(goal G-age GV-castle)
+; 	=>
+; 	(set-strategic-number sn-food-gatherer-percentage 20)
+; 	(set-strategic-number sn-wood-gatherer-percentage 50)
+; 	(set-strategic-number sn-gold-gatherer-percentage 30)
+; 	(set-strategic-number sn-stone-gatherer-percentage 0))
+; (defrule
+; 	(goal G-strat GV-smushboom)
+; 	(building-type-count-total town-center == 2)
+; 	(goal G-age GV-castle)
+; 	=>
+; 	(set-strategic-number sn-food-gatherer-percentage 30)
+; 	(set-strategic-number sn-wood-gatherer-percentage 40)
+; 	(set-strategic-number sn-gold-gatherer-percentage 30)
+; 	(set-strategic-number sn-stone-gatherer-percentage 0))
+; (defrule
+; 	(goal G-strat GV-smushboom)
+; 	(building-type-count-total town-center >= 3)
+; 	(goal G-age GV-castle)
+; 	=>
+; 	(set-strategic-number sn-food-gatherer-percentage 36)
+; 	(set-strategic-number sn-wood-gatherer-percentage 32)
+; 	(set-strategic-number sn-gold-gatherer-percentage 32)
+; 	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-monks-only)
+		(goal G-strat GV-monkflood))
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-monks-only)
+		(goal G-strat GV-monkflood))
+	(building-type-count-total town-center == 2)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 32)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-monks-only)
+		(goal G-strat GV-monkflood))
+	(building-type-count-total town-center >= 3)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 34)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-trashflood)
+	(goal G-age GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-trashflood)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 5)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-trashflood)
+	(or	(building-type-count-total town-center == 2)
+		(and	(building-type-count-total town-center == 1)
+			(building-type-count siege-workshop > 0)))
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-wood-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 4)
+	(set-strategic-number sn-stone-gatherer-percentage 2))
+(defrule
+	(goal G-strat GV-trashflood)
+	(building-type-count-total town-center >= 3)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 4))
+(defrule
+	(goal G-strat GV-boom)
+	(building-type-count-total town-center > 2)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 58)
+	(set-strategic-number sn-wood-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 5)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-boom)
+	(food-amount > 500)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-krushboom)
+	(building-type-count-total town-center < 3)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-krushboom)
+	(building-type-count-total town-center >= 3)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-krushboom)
+	(building-type-count-total town-center >= 3)
+	(food-amount > 500)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-klewproper)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-klewproper)
+	(goal G-age GV-castle)
+	(or	(building-type-count-total barracks >= 3)
+		(building-type-count-total siege-workshop >= 1))
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 32)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-klew)
+		(goal G-strat GV-eagleflood))
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-klew)
+		(goal G-strat GV-eagleflood))
+	(building-type-count-total town-center == 2)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(or	(goal G-strat GV-klew)
+		(goal G-strat GV-eagleflood))
+	(building-type-count-total town-center >= 3)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+(defrule; stone for dem castles
+	(or	(or	(or	(goal G-strat GV-xbows)
+				(goal G-strat GV-horsecock))
+			(goal G-strat GV-firelancers))
+		(goal G-strat GV-ca))
+	(building-type-count-total town-center >= 3)
+	(goal G-age GV-castle)
+	(up-compare-const UUCIV-CASTLE >= 2)
+	(strategic-number SN-superiority > 85)
+	=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 3)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 2)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 2)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 7))
+
+; == IMPERIAL AGE ==
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-eagleflood)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(goal G-age GV-upimp)
+	(or	(or	(goal G-strat GV-xbows)
+			(goal G-strat GV-firelancers))
+		(goal G-strat GV-ca))
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(current-age == imperial-age)
+	(or	(or	(goal G-strat GV-xbows)
+			(goal G-strat GV-firelancers))
+		(goal G-strat GV-ca))
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-gold-gatherer-percentage 42)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-champflood)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-champflood)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-mlp)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-mlp)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(goal G-strat GV-monkflood)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 26)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 38)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-monks-only)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 24)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 42)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+#load-if-defined BOHEMIANS-CIV
+(defrule
+	(or	(goal G-strat GV-monks-only)
+		(goal G-strat GV-monkflood))
+	(up-research-status c: ri-hussite-reforms >= research-pending)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+#end-if
+(defrule
+	(goal G-strat GV-trashflood)
+	(goal G-age GV-upimp)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-trashflood)
+	(current-age == imperial-age)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 5)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-eagleflood)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 37)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+
+ #load-if-not-defined CELTIC-CIV
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-trashwar)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+#else
+(defrule
+	(up-compare-goal G-age >= GV-upimp)
+	(goal G-strat GV-trashwar)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+#end-if
+
+; == CIV SPECIFIC ==
+#load-if-defined AZTEC-CIV
+
+#end-if
+#load-if-defined BRITON-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle > 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 46)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-gold-gatherer-percentage 29)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 33)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+#load-if-defined BYZANTINE-CIV
+
+#end-if
+;#load-if-defined CELTIC-CIV
+(defrule
+	(goal G-strat GV-siegewoads)
+;	(building-type-count-total castle >= 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+	(set-strategic-number sn-stone-gatherer-percentage 1))
+(defrule
+	(goal G-strat GV-siegewoads)
+	(building-type-count-total town-center == 2)
+;	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+	(set-strategic-number sn-stone-gatherer-percentage 4))
+(defrule
+	(goal G-strat GV-siegewoads)
+	(building-type-count-total town-center >= 3)
+;	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 52)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+	(set-strategic-number sn-stone-gatherer-percentage 4))
+(defrule
+	(goal G-strat GV-siegehalbs)
+	(building-type-count-total town-center == 1)
+	(up-compare-goal G-age <= GV-castle)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 46)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-siegehalbs)
+	(or	(building-type-count-total town-center == 2)
+		(and	(building-type-count-total town-center == 1)
+			(building-type-count siege-workshop > 0)))
+	(up-compare-goal G-age <= GV-castle)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 2))
+(defrule
+	(goal G-strat GV-siegehalbs)
+	(building-type-count-total town-center >= 3)
+	(up-compare-goal G-age <= GV-castle)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(up-compare-goal G-age >= GV-upimp)
+	(goal G-strat GV-siegehalbs)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(up-compare-goal G-age >= GV-upimp)
+	(goal G-strat GV-siegewoads)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+;#end-if
+#load-if-defined CHINESE-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle > 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 46)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-gold-gatherer-percentage 29)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 33)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+#load-if-defined FRANKISH-CIV
+
+#end-if
+#load-if-defined GOTHIC-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle >= 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 55)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+	(set-strategic-number sn-stone-gatherer-percentage 4))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 58)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-strategic-number sn-stone-gatherer-percentage 4))
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+#load-if-defined HUN-CIV
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-horsecock)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-gold-gatherer-percentage 26)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-horsecock)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+#end-if
+#load-if-defined JAPANESE-CIV
+
+#end-if
+#load-if-defined KOREAN-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 54)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 2))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 2))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 21)
+	(set-strategic-number sn-stone-gatherer-percentage 2))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle > 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 57)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 55)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 26)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+#load-if-defined MAYAN-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle > 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 46)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 5))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+#load-if-defined MONGOL-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle > 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 27)
+	(set-strategic-number sn-gold-gatherer-percentage 33)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 38)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+#load-if-defined PERSIAN-CIV
+
+#end-if
+#load-if-defined SARACEN-CIV
+
+#end-if
+#load-if-defined SPANISH-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle >= 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 22)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+#end-if
+#load-if-defined TEUTONIC-CIV
+
+#end-if
+#load-if-defined TUPI-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 27)
+	(set-strategic-number sn-gold-gatherer-percentage 29)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle > 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 46)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-gold-gatherer-percentage 31)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+#load-if-defined TURKISH-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 2))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle >= 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 2))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-civ-lategame)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 24)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-civ-lategame)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle == 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total castle > 1)
+	(building-type-count-total town-center == 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center == 2)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 46)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+(defrule
+	(goal G-strat GV-unique)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle > 1)
+	(goal G-age GV-castle)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-gold-gatherer-percentage 29)
+	(set-strategic-number sn-stone-gatherer-percentage 6))
+
+(defrule
+	(goal G-age GV-upimp)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+(defrule
+	(current-age == imperial-age)
+	(goal G-strat GV-unique)
+	=>
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 33)
+	(set-strategic-number sn-stone-gatherer-percentage 7))
+#end-if
+
+#load-if-defined VIKING-CIV
+
+#end-if
+
+; ================================
+; ==== DYNAMIC ECO ADJUSTMENT ====
+; ================================
+(defrule
+	(or	(current-age == dark-age)
+		(and	(current-age == feudal-age)
+			(up-compare-goal G-build-order >= GV-fish-castle)))
+	=>
+	(up-jump-rule 3))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-fact food-amount 0 G-temp1)
+	(up-get-fact wood-amount 0 G-temp2)
+	(up-get-fact gold-amount 0 G-temp3)
+	(up-modify-goal G-temp1 g:- G-cost-food)
+	(up-modify-goal G-temp2 g:- G-cost-wood)
+	(up-modify-goal G-temp3 g:- G-cost-gold))
+(defrule
+	(true)
+	=>
+	(up-modify-goal G-temp4 g:= G-temp1)
+	(up-modify-goal G-temp4 g:+ G-temp2)
+	(up-modify-goal G-temp4 g:+ G-temp3)
+	(up-modify-goal G-temp4 c:/ 3)
+	(up-modify-goal G-temp1 g:- G-temp4)
+	(up-modify-goal G-temp2 g:- G-temp4)
+	(up-modify-goal G-temp3 g:- G-temp4)
+	(up-get-fact unit-type-count villager G-temp5)
+	(up-modify-goal G-temp5 c:max 50)
+	(up-modify-goal G-temp5 c:/ 2)
+	(up-modify-goal G-temp1 g:/ G-temp5)
+	(up-modify-goal G-temp2 g:/ G-temp5)
+	(up-modify-goal G-temp3 g:/ G-temp5))
+(defrule
+	(true)
+	=>
+	(set-goal G-food-adj 0)
+	(set-goal G-wood-adj 0)
+	(set-goal G-gold-adj 0)
+	(up-modify-goal G-food-adj g:- G-temp1)
+	(up-modify-goal G-wood-adj g:- G-temp2)
+	(up-modify-goal G-gold-adj g:- G-temp3)
+	(up-modify-sn sn-food-gatherer-percentage g:+ G-food-adj)
+	(up-modify-sn sn-wood-gatherer-percentage g:+ G-wood-adj)
+	(up-modify-sn sn-gold-gatherer-percentage g:+ G-gold-adj))
+;-----------------------------------------------------------------------
+; == FC ENOUGH FOOD ==
+(defrule
+	(goal G-eco-balance GV-early-feudal)
+	(or	(goal G-build-order GV-fast-castle)
+		(goal G-build-order GV-slow-castle))
+	(food-amount >= 800)
+	=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 25)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 14)
+	(up-modify-sn sn-gold-gatherer-percentage c:+ 11))
+
+; == stone for towers ==
+(defrule
+	(goal G-tower-defence 1)
+	=>
+	(up-get-fact unit-type-count villager G-temp1)
+	(up-modify-goal G-temp1 c:/ 4)
+	(up-modify-goal G-temp2 c:= 100)
+	(up-modify-goal G-temp2 g:/ G-temp1)
+	(up-modify-goal G-temp3 g:= G-temp2)
+	(up-modify-goal G-temp4 g:= G-temp2)
+	(up-modify-goal G-temp4 c:/ 3)
+	(up-modify-goal G-temp3 g:- G-temp4)
+	; (up-chat-data-to-player my-player-number "stone +%d%" g: G-temp2)
+	; (up-chat-data-to-player my-player-number "food -%d%" g: G-temp3)
+	; (up-chat-data-to-player my-player-number "gold -%d%" g: G-temp4)
+	(up-modify-sn sn-food-gatherer-percentage g:- G-temp3)
+	(up-modify-sn sn-gold-gatherer-percentage g:- G-temp4)
+	(up-modify-sn sn-stone-gatherer-percentage g:+ G-temp2))
+
+; == stone for TCs ==
+(defrule
+	(up-compare-goal G-age >= GV-upcastle)
+	(building-type-count-total town-center g:< G-desiredtcs)
+	(stone-amount < 200)
+	(up-modify-goal G-temp1 g:= G-desiredtcs)
+	(up-modify-goal G-temp1 c:- 1)
+	(or	(building-type-count-total town-center g:< G-temp1)
+		(stone-amount < 100))
+	(up-compare-goal G-strat != GV-klewproper)
+	(civilian-population >= 30)
+	=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 2)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 5)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 8))
+(defrule
+	(goal G-rebuild 2)
+	(stone-amount < 100)
+	(up-pending-objects c: town-center < 1)
+	=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 4)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 4)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 4)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 12))
+
+; == failsafe ==
+(defrule
+	(up-modify-goal G-temp9 s:= sn-food-gatherer-percentage)
+	(up-modify-goal G-temp9 s:+ sn-wood-gatherer-percentage)
+	(up-modify-goal G-temp9 s:+ sn-gold-gatherer-percentage)
+	(up-modify-goal G-temp9 s:+ sn-stone-gatherer-percentage)
+	(up-compare-goal G-temp9 c:< 100)
+	=>
+	(up-modify-sn sn-food-gatherer-percentage c:+ 1)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 1)
+	(up-jump-rule -1))

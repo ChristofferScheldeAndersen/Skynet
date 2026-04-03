@@ -1,0 +1,222 @@
+
+(defrule
+	(players-building-count target-player > 0)
+=>
+	(up-get-point position-target p-enemy-x)
+)
+(defrule
+	(players-building-count target-player < 1)
+=>
+	(up-get-point position-flank p-enemy-x)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal check-goal 0)
+	(set-goal g-math-3 0)
+	(generate-random-number 8)
+	(up-modify-goal g-math-1 s:= sn-maximum-town-size)
+	(up-get-fact random-number 0 g-math-2)
+	(up-modify-goal g-math-1 g:+ g-math-2)
+
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+)
+
+(defrule
+	(timer-triggered t-11-sec)
+=>
+	(set-goal p-dodge-x 1)
+)
+(defrule
+	(random-number >= 5)
+	(timer-triggered t-11-sec)
+=>
+	(set-goal p-dodge-x 2)
+)
+(defrule
+	(timer-triggered t-41-sec)
+=>
+	(up-copy-point p-saved-march-x p-march-x)
+	(up-copy-point p-march-x p-self-x)
+	(up-lerp-tiles p-march-x p-enemy-x g: g-math-1)
+)
+(defrule
+	(goal g-attack tsa)
+=>
+	(set-goal check-goal 1)
+	(up-copy-point p-march-x p-enemy-x)
+	(up-lerp-tiles p-march-x p-self-x c: 2)
+	(up-set-target-point p-march-x)
+	(up-filter-distance c: -1 c: 10)
+)
+
+(defrule
+	(goal g-attack tsa-raid)
+	(or	(up-find-remote c: mill c: 5)
+	(or	(up-find-remote c: lumber-camp c: 5)
+	(or	(up-find-remote c: mining-camp c: 5)
+	(or	(up-find-remote c: gate-class c: 5)
+		(up-find-remote c: settlement c: 10)))))
+=>
+	(set-goal check-goal 1)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object p-march-x)
+	(up-set-target-point p-march-x)
+	(up-lerp-tiles p-march-x p-self-x c: 2)
+	(up-filter-distance c: -1 c: 10)
+)
+(defrule
+	(goal check-goal 1)
+	(up-compare-goal g-math-3 < 12)
+	(or	(up-find-remote c: castle c: 1)
+	(or	(up-find-remote c: krepost c: 1)
+		(up-find-remote c: tower-class c: 1)))
+=>
+	(up-modify-goal g-math-3 c:+ 1)
+	(up-lerp-tiles p-march-x p-self-x c: -4)
+	(up-full-reset-search)
+	(up-bound-point p-march-x p-march-x)
+	(up-set-target-point p-march-x)
+	(up-filter-distance c: -1 c: 10)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(goal g-attack tsa-clean)
+	(or	(up-find-remote c: town-center c: 5)
+	(or	(up-find-remote c: tower-class c: 5)
+	(or	(up-find-remote c: castle c: 5)
+		(up-find-remote c: krepost c: 5))))
+=>
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object p-march-x)
+	(up-lerp-tiles p-march-x p-self-x c: 2)
+)
+
+(defrule
+	(up-modify-goal g-math-1 s:+ sn-military-superiority)
+=>
+	(up-modify-goal g-math-1 c:min 40)
+	(up-modify-goal g-math-1 c:max 10)
+)
+
+(defrule
+	(military-population > 6)
+	(strategic-number sn-military-superiority > -18)
+	(up-compare-goal g-math-1 < 39)
+=>
+	(set-goal g-math-1 39))
+
+(defrule
+	(true)
+=>
+	(set-goal g-defend no)
+	(up-full-reset-search)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-set-target-point p-self-x)
+	(up-filter-distance c: -1 g: g-math-1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+)
+(defrule
+	(stance-toward focus-player enemy)
+	(up-find-remote c: -1 c: 240)
+=>
+	(set-goal g-defend maybe)
+)
+(defrule
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(player-valid focus-player)
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-jump-rule -2)
+)
+(defrule
+	(goal g-defend maybe)
+=>
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(set-goal g-defend yes)
+	(up-get-point position-object p-march-x)
+	(up-lerp-tiles p-march-x p-self-x c: 2)
+	(up-bound-point p-march-x p-march-x)
+)
+(defrule
+	(goal g-defend no)
+=>
+	(set-goal check-goal 0)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+	(up-reset-filters)
+	(up-filter-distance c: -1 g: g-math-1)
+)
+(defrule
+	(goal g-defend no)
+	(stance-toward focus-player enemy)
+	(up-find-remote c: villager c: 40)
+=>
+	(set-goal check-goal 1)
+)
+(defrule
+	(goal check-goal 1)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(strategic-number sn-focus-player-number < 8)
+	(player-valid focus-player)
+=>
+	(up-jump-rule -2)
+)
+(defrule
+	(goal check-goal 1)
+=>
+	(up-clean-search search-remote object-data-full-distance search-order-asc)
+)
+(defrule
+	(goal check-goal 1)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal g-defend yes)
+	(up-get-point position-object p-march-x)
+	(up-bound-point p-march-x p-march-x)
+)
+
+(defrule
+	(goal g-defend no)
+	(soldier-count > 7)
+	(strategic-number sn-military-superiority > -4)
+=>
+	(up-full-reset-search)
+	(up-set-target-point p-self-x)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-filter-include -1 actionid-attack -1 -1)
+	(up-filter-distance c: 40 c: -1)
+)
+
+(defrule
+	(goal g-defend no)
+	(soldier-count > 7)
+	(strategic-number sn-military-superiority > -4)
+=>
+	(up-find-local c: infantry-class c: 50)
+	(up-find-local c: cavalry-class c: 50)
+	(up-find-local c: scout-cavalry-class c: 50)
+	(up-find-local c: watch-tower c: 20)
+	(up-find-local c: ram-unit c: 10)
+	(up-clean-search search-local object-data-attack-count search-order-desc)
+	(up-clean-search search-local object-data-next-attack search-order-desc)
+)
+
+(defrule
+	(goal g-defend no)
+	(soldier-count > 7)
+	(strategic-number sn-military-superiority > -4)
+	(up-set-target-object search-local c: 0)
+=>
+	(set-goal g-defend yes)
+	(up-get-point position-object p-march-x)
+	(up-bound-point p-march-x p-march-x)
+)

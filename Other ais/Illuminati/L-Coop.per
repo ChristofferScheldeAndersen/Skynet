@@ -1,0 +1,774 @@
+#load-if-defined UP-POCKET-POSITION
+; ==== DETECT MY FLANK ====
+(defrule
+	(or	(strategic-number SN-my-flank > 0)
+		(or	(game-time < 20)
+			(players-building-type-count any-ally town-center < 1)))
+	=>
+	(up-jump-rule 5))
+;-----------------------------------------------------------------------
+(defrule
+	(up-compare-goal G-starting-tcs >= 1)
+	=>
+	(up-get-point position-flank P-x)
+	(up-set-target-point P-x)
+	(set-goal P-temp-x 0)
+	(set-goal P-temp-y 0)
+	(up-modify-goal G-temp1 g:= G-mapsize); smallest distance
+	(set-strategic-number sn-focus-player-number 1))
+(defrule
+	(up-compare-goal G-starting-tcs < 1)
+	=>
+	(up-get-point position-enemy P-x)
+	(up-set-target-point P-x)
+	(set-goal P-temp-x 0)
+	(set-goal P-temp-y 0)
+	(up-modify-goal G-temp1 g:= G-mapsize); smallest distance
+	(set-strategic-number sn-focus-player-number 1))
+(defrule; ~~new player~~
+	(stance-toward focus-player ally)
+	=>
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 1)
+	(up-find-remote c: town-center-foundation c: 1))
+(defrule
+	(stance-toward focus-player ally)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-distance g:< G-temp1)
+	=>
+	(up-get-object-data object-data-distance G-temp1)
+	(up-modify-sn SN-my-flank s:= sn-focus-player-number))
+(defrule
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3));~~~~next player
+;-----------------------------------------------------------------------
+
+; ==== GET FLANK COORDS ====
+(defrule
+	(strategic-number SN-my-flank > 0)
+	(up-compare-goal P-flanktc-x < 0)
+	=>
+	(up-modify-sn sn-focus-player-number s:= SN-my-flank))
+(defrule
+	(strategic-number SN-my-flank > 0)
+	(up-compare-goal P-flanktc-x < 0)
+	(players-building-type-count focus-player town-center > 0)
+	=>
+	(up-modify-sn sn-focus-player-number s:= SN-my-flank)
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object P-flanktc-x))
+
+; ==== DETECT ENEMY FLANK ====
+(defrule
+	(or	(players-building-count any-enemy < 1)
+		(or	(game-time < 30)
+			(or	(strategic-number SN-enemy-flank > 0)
+				(or	(strategic-number SN-my-flank <= 0)
+					(up-compare-goal G-closest-enemy <= 0)))))
+	=>
+	(up-jump-rule 3))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-modify-sn sn-focus-player-number s:= SN-my-flank))
+(defrule
+	(player-computer focus-player)
+	(up-allied-goal focus-player G-identity == Illuminati)
+	=>
+	(up-get-focus-fact allied-sn SN-enemy-flank G-temp1)
+	(up-modify-sn SN-enemy-flank g:= G-temp1)
+;	(up-modify-sn sn-target-player-number s:= SN-enemy-flank)
+	(up-jump-rule 1))
+(defrule
+	(true)
+	=>
+	(up-modify-sn SN-enemy-flank g:= G-closest-enemy))
+;	(up-modify-sn sn-target-player-number s:= SN-enemy-flank))
+;-----------------------------------------------------------------------
+#else ; flank
+(defrule
+	(players-building-count every-enemy >= 1)
+	=>
+	(up-find-player enemy find-closest G-closest-enemy)
+	(up-modify-sn SN-enemy-flank g:= G-closest-enemy)
+;	(up-modify-sn sn-target-player-number g:= G-closest-enemy)
+	(up-modify-sn SN-my-flank c:= my-player-number)
+	(up-copy-point P-flanktc-x P-self-x)
+	(disable-self))
+#end-if
+
+; ============================
+; ==== DETECT ENEMY KRUSH ====
+; ============================
+(defrule
+	(up-modify-goal G-temp1 c:= PLAYERCOUNT)
+	(up-modify-goal G-temp1	c:- ALLYCOUNT)
+	(up-modify-goal G-temp1	c:- 1)
+	(or	(goal G-enemy-krush 1)
+		(or	(up-compare-goal G-age >= GV-upimp)
+			(or	(and	(goal G-position GV-flank)
+					(up-compare-goal G-age >= GV-upcastle))
+				(up-compare-goal G-temp1 c:< 3))))
+	=>
+	(up-jump-rule 4))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-full-reset-search)
+	(up-find-remote c: building-class c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object P-x)
+	(set-strategic-number sn-focus-player-number 1))
+(defrule; ~~new player~~
+	(player-in-game focus-player)
+	(stance-toward focus-player enemy)
+	=>
+	(up-full-reset-search)
+	(up-set-target-point P-x)
+	(up-filter-distance c: -1 c: 50)
+	(up-find-remote c: knight-line c: 3)
+	(up-set-target-point P-flanktc-x)
+	(up-filter-distance c: -1 c: 50)
+	(up-find-remote c: knight-line c: 3)
+	(up-get-search-state G-local-total))
+(defrule
+	(player-in-game focus-player)
+	(stance-toward focus-player enemy)
+	(up-compare-goal G-remote-total >= 2); 3
+	=>
+	(up-modify-sn SN-enemy-pocket s:= sn-focus-player-number)
+	(set-goal G-enemy-krush 1)
+;	(up-chat-data-to-player my-player-number "enemy %d krushing" s: SN-enemy-pocket)
+	(up-jump-rule 1))
+(defrule
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3));~~~~next player
+;-----------------------------------------------------------------------
+; =====================
+; ==== COOP ATTACK ====
+; =====================
+(defrule
+	(goal G-coop-attack 1)
+	=>
+	(up-modify-sn sn-focus-player-number g:= G-coop-player))
+(defrule
+	(goal G-coop-attack 1)
+	(or	(up-allied-goal focus-player G-attacking <= 0)
+		(or	(up-allied-sn focus-player sn-target-player-number s:!= sn-target-player-number)
+			(or	(not	(player-in-game focus-player))
+				(not	(stance-toward focus-player ally)))))
+	=>
+	(chat-to-player my-player-number "stopping coop attack")
+	(set-goal G-coop-attack -1))
+
+(defrule
+	(or	(up-compare-goal G-attack >= 0)
+		(or	(military-population < 4)
+			(or	(town-under-attack)
+				(or	(strategic-number SN-enemy-units-in-town > 3)
+					(players-building-count target-player == 0)))))
+	=>
+	(up-jump-rule 4))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(set-strategic-number sn-focus-player-number 1))
+(defrule; ~~new player~~
+	(stance-toward focus-player ally)
+	(up-allied-goal focus-player G-identity != Illuminati)
+	(up-allied-goal focus-player G-identity != Barbarian)
+	(up-allied-goal focus-player G-identity != Promi)
+	(up-allied-goal focus-player G-identity != Naga)
+	(up-allied-goal focus-player G-identity != Horde)
+	(up-allied-goal focus-player G-identity != Juggernaut)
+	(up-allied-goal focus-player G-identity != Daedric)
+	(up-allied-goal focus-player G-identity != Maiar)
+	(up-allied-goal focus-player G-identity != Tribal)
+	(up-allied-goal focus-player G-identity != Pharaon)
+	(up-allied-goal focus-player G-identity != Yggdrasil)
+	(up-allied-goal focus-player G-identity != BruteForce)
+	(up-allied-goal focus-player G-identity != Subjugator)
+	(up-allied-goal focus-player G-identity != General)
+	(up-allied-goal focus-player G-identity != Morrigan)
+	=>
+	(up-jump-rule 1))
+(defrule
+	(player-in-game focus-player)
+	(stance-toward focus-player ally)
+	(strategic-number sn-focus-player-number c:!= my-player-number)
+	(up-allied-sn focus-player sn-target-player-number s:== sn-target-player-number)
+	(up-allied-goal focus-player G-attacking >= 1)
+	=>
+	(up-chat-data-to-player my-player-number "co-op attacking player %d" s: sn-target-player-number)
+	(up-modify-goal G-coop-player s:= sn-focus-player-number)
+	(set-goal G-coop-attack 1)
+	(up-jump-rule 1))
+(defrule
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3));~~~~next player
+;-----------------------------------------------------------------------
+; ====================
+; ==== HELP FLANK ====
+; ====================
+; == SEND ARMY ==
+#load-if-defined UP-POCKET-POSITION
+(defrule
+	; (or	(and	(up-compare-goal G-strat-class1 != cavalry-class)
+	;		(and	(up-compare-goal G-strat-class1 != monastery-class)
+	;			(up-compare-goal G-eagles < 1)))
+	(or	(goal G-position GV-flank)
+		(or	(and	(unit-type-count cavalry-class < 3)
+				(and	(unit-type-count monastery-class < 3)
+					(and	(unit-type-count eagle-warrior-line < 3)
+						(and	(unit-type-count my-unique-unit-line < 2)
+							(unit-type-count CHAMP < 3)))))
+			(or	(up-compare-goal G-age >= GV-upimp)
+				(or	(up-compare-goal G-attack >= 0)
+					(or	(up-compare-goal P-flanktc-x < 0)
+						(or	(up-timer-status T-30 != timer-disabled)
+							(or	(strategic-number SN-team-superiority <= 40)
+								(goal G-under-attack 1))))))));)
+	=>
+	(up-jump-rule 7))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(set-goal G-temp9 0)
+	(set-strategic-number sn-focus-player-number 1))
+(defrule; ~~next player~~
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	(stance-toward focus-player ally)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -1))
+(defrule
+	(strategic-number sn-focus-player-number <= PLAYERCOUNT)
+	(not	(stance-toward focus-player ally))
+	=>
+	(up-full-reset-search)
+	(up-set-target-point P-flanktc-x)
+	(up-filter-distance c: -1 c: 30)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-remote c: -1 c: 40))
+(defrule
+	(strategic-number sn-focus-player-number < PLAYERCOUNT)
+	(not	(stance-toward focus-player ally))
+	(not	(up-set-target-object search-remote c: 0))
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3)); ~~~~next player
+(defrule
+	(strategic-number sn-focus-player-number <= PLAYERCOUNT)
+	(not	(stance-toward focus-player ally))
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-reset-filters)
+	(up-filter-exclude -1 actionid-relic orderid-convert -1)
+	(up-find-local c: monastery-class c: 240)
+	(up-filter-exclude -1 actionid-explore orderid-attack -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-id g:== ID-myscout)
+	(up-target-objects 0 action-patrol -1 -1)
+	(up-jump-rule 2))
+	;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-copy-point P-x P-flanktc-x)
+	(up-get-point position-mirror P-temp-x)
+	(up-lerp-tiles P-x P-temp-x c: 12)
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-relic orderid-convert -1)
+	(up-find-local c: monastery-class c: 240)
+	(up-filter-exclude -1 actionid-explore orderid-attack -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-id g:== ID-myscout)
+	(up-target-point P-x action-patrol -1 -1)
+	(disable-self))
+(defrule
+;	(up-timer-status T-30 == timer-disabled); moved to jump rule
+	(true)
+	=>
+	(up-copy-point P-x P-flanktc-x)
+	(up-get-point position-mirror P-temp-x)
+	(up-lerp-tiles P-x P-temp-x c: 12)
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-relic orderid-convert -1)
+	(up-find-local c: monastery-class c: 240)
+	(up-filter-exclude -1 actionid-explore orderid-attack -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-id g:== ID-myscout)
+	(up-target-point P-x action-patrol -1 -1))
+	;-----------------------------------------------------------------------
+;-----------------------------------------------------------------------
+#end-if
+
+; =================
+; ==== TRIBUTE ====
+; =================
+; == ON TAUNT ==
+(defrule
+	(nor	(taunt-detected any-ally 3)
+		(or	(taunt-detected any-ally 4)
+			(or	(taunt-detected any-ally 5)
+				(taunt-detected any-ally 6))))
+	=>
+	(up-jump-rule 7))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total trade-cart G-temp2)
+	(up-modify-goal G-temp2 c:* 2)
+	(set-goal G-temp1 0))
+(defrule;~~~~
+	(taunt-detected any-ally 3)
+;	(up-compare-goal G-temp1 < 4)
+	(current-age == imperial-age)
+	(up-compare-goal G-free-food > 200)
+	(or	(up-compare-goal G-free-food > 500)
+		(population g:>= G-189-pop))
+	=>
+	(tribute-to-player this-any-ally food 200)
+	(up-modify-goal G-free-food c:- 200))
+(defrule
+	(taunt-detected any-ally 4)
+;	(up-compare-goal G-temp1 < 4)
+	(current-age == imperial-age)
+	(up-compare-goal G-free-wood > 300)
+	(or	(up-compare-goal G-free-wood > 500)
+		(current-age >= imperial-age))
+	=>
+	(tribute-to-player this-any-ally wood 200)
+	(up-modify-goal G-free-wood c:- 200))
+(defrule
+	(taunt-detected any-ally 5)
+;	(up-compare-goal G-temp1 < 4)
+	(current-age == imperial-age)
+	(up-compare-goal G-free-gold > 200)
+	(or	(up-compare-goal G-free-gold > 500)
+		(population g:>= G-189-pop))
+	(up-compare-goal G-temp2 g:>= G-desired-trade)
+	(goal G-trade 1)
+	=>
+	(tribute-to-player this-any-ally gold 200)
+	(up-modify-goal G-free-gold c:- 200))
+(defrule
+	(taunt-detected any-ally 6)
+;	(current-age == imperial-age)
+	(stone-amount >= 200)
+	(building-type-count-total castle >= 1)
+	(or	(goal G-uu 0)
+		(building-type-count-total castle >= 3))
+	(up-get-player-fact this-any-ally stone-amount 0 G-temp5)
+	(up-get-player-fact this-any-ally building-type-count-total castle G-temp6)
+	(or	(up-compare-goal G-temp5 c:< 100)
+		(up-compare-goal G-temp6 c:< 1))
+	(goal G-temp1 0)
+	=>
+	(tribute-to-player this-any-ally stone 100))
+(defrule
+	(up-compare-goal G-temp1 < 4)
+	=>
+	(up-modify-goal G-temp1 c:+ 1)
+	(up-jump-rule -5));~~~~
+(defrule
+	(true)
+	=>
+	(acknowledge-taunt every-ally 3)
+	(acknowledge-taunt every-ally 4)
+	(acknowledge-taunt every-ally 5)
+	(acknowledge-taunt every-ally 6))
+;-----------------------------------------------------------------------
+
+; == ILLU TO ILLU ==
+; subtract from free-res goals after tributing, because eco balance is loaded last
+
+; == EMERGENCY HELP ==
+(defrule
+	(up-timer-status T-10 == timer-disabled)
+	(up-allied-goal any-ally G-rebuild == 2)
+	(up-get-player-fact this-any-ally allied-goal G-identity G-temp1)
+	(up-get-player-fact this-any-ally stone-amount 0 G-temp2)
+	(up-get-player-fact this-any-ally unit-type-count villager G-temp3)
+	(up-compare-goal G-temp1 == Illuminati)
+	(up-compare-goal G-temp2 c:< 100)
+	(up-compare-goal G-temp3 c:>= 1)
+	; (up-allied-goal this-any-ally G-identity == Illuminati)
+	; (up-allied-resource-amount this-any-ally stone-amount < 100)
+	; (players-unit-type-count this-any-ally villager >= 1)
+	(building-type-count-total town-center >= 3)
+	(stone-amount > 100)
+	=>
+	(tribute-to-player this-any-ally stone 100))
+(defrule
+	(up-timer-status T-5 == timer-disabled)
+	(up-allied-goal any-ally G-rebuild == 2)
+	(up-get-player-fact this-any-ally allied-goal G-identity G-temp1)
+	(up-get-player-fact this-any-ally wood-amount 0 G-temp2)
+	(up-get-player-fact this-any-ally unit-type-count villager G-temp3)
+	(up-compare-goal G-temp1 == Illuminati)
+	(up-compare-goal G-temp2 c:< 275)
+	(up-compare-goal G-temp3 c:>= 1)
+	; (up-allied-goal this-any-ally G-identity == Illuminati)
+	; (up-allied-resource-amount this-any-ally wood-amount < 275)
+	; (players-unit-type-count this-any-ally villager >= 1)
+	(building-type-count-total town-center >= 3)
+	(wood-amount > 300)
+	=>
+	(tribute-to-player this-any-ally wood 100)
+	(up-modify-goal G-free-wood c:- 100))
+(defrule
+	(up-timer-status T-5 == timer-disabled)
+	(up-allied-goal any-ally G-rebuild >= 1)
+	(up-get-player-fact this-any-ally allied-goal G-identity G-temp1)
+	(up-get-player-fact this-any-ally food-amount 0 G-temp2)
+	(up-get-player-fact this-any-ally unit-type-count villager G-temp3)
+	(up-get-player-fact this-any-ally building-type-count town-center G-temp4)
+	(up-compare-goal G-temp1 == Illuminati)
+	(up-compare-goal G-temp2 c:< 50)
+	(up-compare-goal G-temp3 c:< 5)
+	(up-compare-goal G-temp4 c:>= 1)
+	; (up-allied-goal this-any-ally G-identity == Illuminati)
+	; (up-allied-resource-amount this-any-ally food-amount < 50)
+	; (players-unit-type-count this-any-ally villager < 5)
+	; (players-building-type-count this-any-ally town-center >= 1)
+	(food-amount > 200)
+	=>
+	(tribute-to-player this-any-ally food 100)
+	(up-modify-goal G-free-food c:- 100))
+
+; == ASK FOR TRIBUTE ==
+(defrule; rebuild
+	(up-timer-status T-30 == timer-disabled)
+	(up-compare-goal G-rebuild >= 1)
+	(wood-amount < 275)
+	(or	(wood-amount < 200)
+		(and	(up-compare-goal G-rebuild >= 2)
+			(up-pending-objects c: town-center == 0)))
+	=>
+	(chat-to-player my-player-number "Wood, please.")
+	(chat-to-player every-ally "4Wood, please."))
+(defrule
+	(up-timer-status T-30 == timer-disabled)
+	(up-compare-goal G-rebuild >= 2)
+	(up-pending-objects c: town-center == 0)
+	(stone-amount < 100)
+	=>
+	(chat-to-player my-player-number "Stone, please.")
+	(chat-to-player every-ally "6Stone, please."))
+(defrule
+	(up-timer-status T-30 == timer-disabled)
+	(up-compare-goal G-rebuild >= 1)
+	(building-type-count-total town-center >= 1)
+	(food-amount < 300)
+	=>
+	(chat-to-player my-player-number "Food, please.")
+	(chat-to-player every-ally "3Food, please."))
+
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(population g:<= G-184-pop)
+	(up-compare-goal G-free-food < 0)
+	(up-allied-resource-amount any-ally amount-food > 500)
+	(up-get-player-fact this-any-ally population 0 G-temp0)
+	(up-compare-goal G-temp0 g:> G-184-pop)	
+	=>
+	(chat-to-player this-any-ally "3Food, please.")
+	(up-jump-rule 1))
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(population g:<= G-184-pop)
+	(up-compare-goal G-free-food < 0)
+	(up-allied-resource-amount any-ally amount-food > 1500)
+	=>
+	(chat-to-player this-any-ally "3Food, please."))
+
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(population g:<= G-184-pop)
+	(up-compare-goal G-free-wood < 0)
+	(up-allied-resource-amount any-ally amount-wood > 500)
+	(up-get-player-fact this-any-ally population 0 G-temp0)
+	(up-compare-goal G-temp0 g:> G-184-pop)
+	=>
+	(chat-to-player this-any-ally "4Wood, please.")
+	(up-jump-rule 1))
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(population g:<= G-184-pop)
+	(up-compare-goal G-free-wood < 0)
+	(up-allied-resource-amount any-ally amount-wood > 1500)
+	=>
+	(chat-to-player this-any-ally "4Wood, please."))
+
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(population g:<= G-184-pop)
+	(up-compare-goal G-free-gold < 0)
+	(up-allied-resource-amount any-ally amount-gold > 500)
+	(up-get-player-fact this-any-ally population 0 G-temp0)
+	(up-compare-goal G-temp0 g:> G-184-pop)
+	=>
+	(chat-to-player this-any-ally "5Gold, please.")
+	(up-jump-rule 1))
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(population g:<= G-184-pop)
+	(up-compare-goal G-free-gold < 0)
+	(up-allied-resource-amount any-ally amount-gold > 1500)
+	=>
+	(chat-to-player this-any-ally "5Gold, please."))
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(stone-amount < 100)
+	(building-type-count-total town-center < 3)
+	(up-allied-resource-amount any-ally amount-stone > 200)
+	(up-get-player-fact this-any-ally building-type-count castle G-temp0)
+	(up-compare-goal G-temp0 >= 1)
+	=>
+	(chat-to-player this-any-ally "6Stone, please."))
+(defrule
+	(up-timer-status T-15 == timer-disabled)
+	(stone-amount < 650)
+	(building-type-count-total castle < 1)
+	(building-type-count town-center >= 1)
+	(civilian-population g:>= G-stopgap-pop)
+	(up-allied-resource-amount any-ally amount-stone > 500)
+	(up-get-player-fact this-any-ally building-type-count castle G-temp0)
+	(up-compare-goal G-temp0 >= 1)
+	=>
+	(chat-to-player this-any-ally "6Stone, please."))
+
+; =================
+; ==== REBUILD ====
+; =================
+(defrule
+	(up-compare-goal G-rebuild < 2)
+	=>
+	(set-goal G-rebuild 0)
+	(up-get-fact civilian-population 0 G-temp1)
+	(up-modify-goal G-temp1 c:* 3)
+	(up-get-fact military-population 0 G-temp2)
+	(up-modify-goal G-temp1 g:+ G-temp2)
+	(up-get-fact-max any-enemy civilian-population 0 G-temp3)
+	(up-modify-goal G-temp3 c:* 3)
+	(up-get-fact-max any-enemy military-population 0 G-temp4)
+	(up-modify-goal G-temp3 g:+ G-temp4)
+	(up-modify-goal G-temp1 c:* 100)
+	(up-modify-goal G-temp1 g:/ G-temp3))
+(defrule
+	(up-compare-goal G-rebuild != 2)
+	(goal G-strat GV-klew)
+	=>
+	(up-modify-goal G-temp1 c:* 2))
+(defrule
+	(up-compare-goal G-rebuild != 2)
+	(up-compare-goal G-temp1 <= 40)
+	=>
+;	(chat-to-player my-player-number "reboom")
+	(set-goal G-rebuild 1))
+(defrule
+	(up-compare-goal G-temp1 <= 40)
+	(or	(and	(up-compare-goal G-temp1 <= 25)
+			(current-age >= castle-age))
+		(building-type-count-total town-center == 0))
+	=>
+	(chat-to-player my-player-number "rebuild")
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-goal G-rebuild 2)
+	(disable-self))
+(defrule
+	(goal G-rebuild 4)
+	(building-type-count town-center >= 1)
+	=>
+	(chat-to-player my-player-number "rebuild successful")
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(set-goal G-rebuild 1))
+(defrule
+	(goal G-rebuild 3)
+	(up-pending-objects c: town-center >= 1)
+	=>
+	(chat-to-player my-player-number "new town center placed, deleting old buildings")
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 40)
+	(up-find-local c: mill c: 40)
+	(up-find-local c: lumber-camp c: 40)
+	(up-find-local c: farm c: 40)
+	(up-find-local c: mining-camp c: 40)
+	(up-find-local c: settlement c: 40)
+	(up-set-target-point P-self-x)
+	(up-filter-distance c: -1 c: 30)
+	(up-find-local c: market c: 40)
+	(up-target-point 0 action-delete -1 -1)
+	(set-goal G-rebuild 4))
+
+(defrule
+	(up-compare-goal G-rebuild >= 2)
+	(up-compare-goal J-coop-per > 0)
+	=>
+	(up-jump-direct g: J-coop-per))
+; ==================
+; ==== TG trade ====
+; ==================
+(defrule
+	(not	(goal G-trade 1))
+	(or	(up-compare-goal G-age >= GV-upimp)
+		(game-time > 2100)); 35min
+	(players-building-type-count any-ally market >= 1)
+	(civilian-population > 70)
+	=>
+	(set-goal G-trade 1))
+(defrule
+	(players-building-type-count every-ally market == 0)
+	(goal G-trade 1)
+	=>
+	(set-goal G-trade 0))
+
+(defrule
+	(goal G-trade 1)
+	(building-type-count-total market < 2)
+	=>
+	(up-get-fact building-type-count-total market G-temp1)
+	(set-goal G-temp2 2)
+	(up-modify-goal G-temp2 g:- G-temp1)
+	(up-add-object-cost c: market g: G-temp2))
+
+; (defrule
+; 	(goal G-trade 1)
+; 	(building-type-count-total market < 3)
+; 	(wood-amount > 240)
+; 	(can-build market)
+; 	=>
+; 	(set-strategic-number sn-placement-zone-size 5)
+; 	(set-strategic-number sn-placement-to-center 1)
+; 	(set-strategic-number sn-placement-fail-delta -2)
+; 	(up-copy-point P-placement-x P-self-x)
+; 	(up-get-point position-center P-temp-x)
+; 	(up-get-point position-flank P-x)
+; 	(up-lerp-tiles P-placement-x P-temp-x c: -160)
+; 	(up-lerp-tiles P-placement-x P-x c: 20)
+; 	(up-set-target-point P-placement-x)
+; 	(up-build place-point 0 c: market))
+; (defrule
+; 	(goal G-trade 1)
+; 	(building-type-count-total market == 0)
+; 	(can-build-with-escrow market)
+; 	=>
+; 	(set-strategic-number sn-placement-zone-size 5)
+; 	(set-strategic-number sn-placement-to-center 1)
+; 	(set-strategic-number sn-placement-fail-delta -2)
+; 	(up-copy-point P-placement-x P-self-x)
+; 	(up-get-point position-center P-temp-x)
+; 	(up-get-point position-flank P-x)
+; 	(up-lerp-tiles P-placement-x P-temp-x c: -160)
+; 	(up-lerp-tiles P-placement-x P-x c: 20)
+; 	(up-set-target-point P-placement-x)
+; 	(release-escrow wood)
+; 	(up-build place-point 0 c: market))
+
+(defrule
+	(goal G-trade 1)
+	(building-type-count-total market < 4)
+	=>
+	(up-get-point-distance P-my-one-corner-x P-self-x G-temp1)
+	(up-get-point-distance P-my-two-corner-x P-self-x G-temp2))
+(defrule
+	(goal G-trade 1)
+	(building-type-count-total market < 3)
+	(wood-amount > 240)
+	(can-build market)
+	(up-compare-goal G-temp1 g:<= G-temp2)
+	(up-timer-status T-trade != timer-running)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-to-center 1)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-target-point P-my-one-corner-x)
+	(up-build place-point 0 c: market))
+(defrule
+	(goal G-trade 1)
+	(building-type-count-total market < 3)
+	(wood-amount > 240)
+	(can-build market)
+	(up-compare-goal G-temp1 g:>= G-temp2)
+	(up-timer-status T-trade != timer-running)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-to-center 1)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-target-point P-my-two-corner-x)
+	(up-build place-point 0 c: market))
+
+(defrule; quick fix
+	(goal G-trade 1)
+	(building-type-count-total market == 3)
+	(civilian-population g:>= G-desired-vills)
+	(up-compare-goal G-free-wood >= 175)
+	(up-pending-objects c: market <= 0)
+	(can-build market)
+	(up-compare-goal G-temp1 g:<= G-temp2)
+	(up-timer-status T-trade != timer-running)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-to-center 1)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-target-point P-my-two-corner-x)
+	(up-build place-point 0 c: market))
+(defrule; quick fix
+	(goal G-trade 1)
+	(building-type-count-total market == 3)
+	(civilian-population g:>= G-desired-vills)
+	(up-compare-goal G-free-wood >= 175)
+	(up-pending-objects c: market <= 0)
+	(can-build market)
+	(up-compare-goal G-temp1 g:>= G-temp2)
+	(up-timer-status T-trade != timer-running)
+	=>
+	(set-strategic-number sn-placement-zone-size 8)
+	(set-strategic-number sn-placement-to-center 1)
+	(set-strategic-number sn-placement-fail-delta 1)
+	(up-set-target-point P-my-one-corner-x)
+	(up-build place-point 0 c: market))
+
+(defrule
+	(goal G-trade 1)
+	(building-type-count-total market >= 2)
+	(unit-type-count-total trade-cart g:< G-desired-trade)
+	=>
+	(up-modify-goal G-cost-wood c:+ 150))
+(defrule
+	(goal G-trade 1)
+	(building-type-count-total market >= 2)
+	(unit-type-count-total trade-cart < 10)
+	=>
+	(up-modify-goal G-cost-wood c:+ 250))
+(defrule
+	(goal G-trade 1)
+	(unit-type-count-total trade-cart g:< G-desired-trade)
+	(can-train trade-cart)
+	=>
+	(train trade-cart))
+
+; ==== END ====
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-coop-per)
+	(disable-self))

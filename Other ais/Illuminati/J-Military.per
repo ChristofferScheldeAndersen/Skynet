@@ -1,0 +1,1943 @@
+; ====================
+; ==== CORE UNITS ====
+; ====================
+(defrule
+	(true)
+	=>
+	(set-goal G-archers 0)
+	(set-goal G-skirms 0)
+	(set-goal G-hc 0)
+	(set-goal G-ca 0)
+	(set-goal G-champs 0)
+	(set-goal G-spears 0)
+	(set-goal G-eagles 0)
+	(set-goal G-condo 0)
+	(set-goal G-camels 0)
+	(set-goal G-knights 0)
+	(set-goal G-elephants 0)
+	(set-goal G-scouts 0)
+	(set-goal G-monks 0)
+	(set-goal G-missionaries 0)
+	(set-goal G-mangonel 0)
+	(set-goal G-ram 0)
+	(set-goal G-scorps 0)
+	(set-goal G-uu 0)
+	(set-goal G-treb 0)
+	(set-goal G-firelancers 0))
+
+(defrule
+	(up-compare-goal G-rebuild >= 1)
+	(up-compare-goal J-military-per > 0)
+	=>
+	(up-jump-direct g: J-military-per))
+
+; == swordsmen ==
+(defrule
+	(or	(goal G-strat GV-vanguard)
+		(or	(goal G-strat GV-longswords)
+			(goal G-strat GV-champflood)))
+	(nand	(goal G-strat GV-vanguard)
+		(goal G-escrowing castle-age))
+	(nand	(goal G-strat GV-champflood)
+		(up-compare-goal G-age < GV-upcastle))
+	=>
+	(set-goal G-champs 1))
+#load-if-defined CELTIC-CIV
+(defrule
+	(goal G-strat GV-siegewoads)
+	(up-compare-goal G-age >= GV-upimp)
+	(building-type-count castle == 0)
+	=>
+	(set-goal G-champs 1))
+#end-if
+; == fire lancers ==
+(defrule
+	(goal G-strat GV-firelancers)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-goal G-firelancers 1))
+; == eagles ==
+(defrule
+	(or	(goal G-strat GV-klew)
+		(or	(goal G-strat GV-eagleflood)
+			(goal G-strat GV-klewproper)))
+	(up-compare-goal G-age >= GV-upcastle); so as to not do things that would delay castle-up click
+	=>
+	(set-goal G-eagles 1))
+; == spears ==
+#load-if-not-defined TURKISH-CIV
+(defrule
+	(or	(goal G-strat GV-siegehalbs)
+		(or	(goal G-strat GV-trashwar)
+			(goal G-strat GV-trashflood)))
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-goal G-spears 1))
+#end-if
+; == archers ==
+(defrule
+	(or	(goal G-strat GV-xbows)
+		(goal G-strat GV-horsecock))
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-goal G-archers 1))
+(defrule
+	(or	(goal G-strat GV-rangedflush)
+		(and	(goal G-strat GV-vanguard)
+			(up-compare-const ARCHERCIV > SKIRMCIV)))
+	(or	(goal G-escrowing castle-age)
+		(or	(up-compare-goal G-skirm-threat < 15)
+			(or	(up-compare-goal G-main-inf-threat >= 6)
+				(up-compare-goal G-pike-threat > 6))))
+	=>
+	(set-goal G-archers 1))
+; == skirms ==
+(defrule
+	(or	(goal G-strat GV-rangedflush)
+		(or	(goal G-strat GV-vanguard)
+			(and	(up-compare-goal G-age >= GV-upcastle)
+				(or	(goal G-strat GV-trashwar)
+					(goal G-strat GV-trashflood)))))
+	(nand	(up-compare-goal G-escrowing == castle-age)
+		(and	(strategic-number SN-superiority >= 85)
+			(food-amount < 825)))
+	=>
+	(set-goal G-skirms 1))
+; == cav archers ==
+#load-if-defined HUN-CIV
+(defrule
+	(or	(goal G-strat GV-ca)
+		(goal G-strat GV-horsecock))
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-goal G-ca 1))
+#end-if
+; == hand cannons ==
+(defrule
+	(goal G-strat GV-civ-lategame)
+	(civ-selected turkish)
+	=>
+	(set-goal G-hc 1))
+; == knights ==
+(defrule
+	(or	(goal G-strat GV-krush)
+		(or	(goal G-strat GV-krushboom)
+			(or	(goal G-strat GV-horsecock)
+				(goal G-strat GV-mlp))))
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-goal G-knights 1))
+; == elephants ==
+(defrule
+	(goal G-strat GV-ele)
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-goal G-elephants 1))
+; == scouts ==
+(defrule
+	(goal G-strat GV-civ-lategame)
+	(civ-selected turkish)
+	=>
+	(set-goal G-scouts 1))
+; == camels ==
+(defrule; interchangable for main stable unit
+	(goal G-strat-stable 1)
+	(up-compare-goal G-strat != GV-trashwar)
+	(up-compare-const CAMELCIV >= 1)
+	(up-compare-goal G-age >= GV-castle)
+	(or	(up-compare-const CAMELCIV >= 2)
+		(up-compare-goal G-age == GV-castle))
+	(up-compare-goal G-total-threat > 8)
+	(up-modify-goal G-temp1 g:= G-scout-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-main-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-camel-cav-threat)
+	(up-modify-goal G-temp1 g:- G-pike-threat)
+	(up-modify-goal G-temp1 g:- G-main-arch-threat)
+	(up-modify-goal G-temp2 g:= G-total-threat)
+	(up-modify-goal G-temp2 c:/ 2)
+	(up-compare-goal G-temp1 g:>= G-temp2)
+	=>
+	(set-goal G-camels 1)
+	(set-goal G-temp5 5558282))
+(defrule
+	(goal G-temp5 5558282)
+	(up-get-fact unit-type-count-total knight-line G-temp1)
+	(up-get-fact unit-type-count-total scout-cavalry-line G-temp2)
+	(up-get-fact unit-type-count-total battle-elephant-line G-temp3)
+	(unit-type-count-total camel-line g:<= G-temp1)
+	(unit-type-count-total camel-line g:<= G-temp2)
+	(unit-type-count-total camel-line g:<= G-temp3)
+	=>
+	(set-goal G-knights 0)
+	(set-goal G-scouts 0)
+	(set-goal G-elephants 0))
+
+; == scorpions ==
+(defrule
+	(or	(goal G-strat GV-siegehalbs)
+		(goal G-strat GV-siegewoads))
+	=>
+	(set-goal G-scorps 1))
+; == siege ==
+(defrule
+	(current-age == imperial-age)
+	(up-compare-const BBCCIV >= 2)
+	(research-completed ri-chemistry)
+	(up-compare-goal G-strat != GV-trashwar)
+	(or	(or	(up-compare-goal G-siege-threat >= 9)
+			(up-compare-goal G-field-gun-threat >= 12))
+		(and	(goal G-strat GV-civ-lategame)
+			(civ-selected turkish)))
+	(unit-type-count-total bombard-cannon < 6)
+	=>
+;	(disable-timer T-eco)
+	(up-add-object-cost c: bombard-cannon c: 2); 1
+	(set-goal G-bbc 1))
+; == monks ==
+(defrule
+;	(or	(goal G-strat GV-smushboom)
+		(or	(goal G-strat GV-monks-only)
+			(goal G-strat GV-monkflood));)
+	=>
+	(set-goal G-monks 1))
+; == semi trash war==
+(defrule
+	(current-age == imperial-age)
+	(up-compare-goal G-strat != GV-monks-only)
+	(up-compare-goal G-strat != GV-trashwar)
+	(food-amount > 300)
+	(wood-amount > 300)
+	(gold-amount < 150)
+	=>
+	(set-goal G-spears 1)
+	(set-goal G-skirms 1))
+; == unique unit ==
+(defrule
+	(or	(goal G-strat GV-cdrop)
+		(or	(goal G-strat GV-unique)
+			(goal G-strat GV-siegewoads)))
+	(up-compare-goal G-age >= GV-upcastle)
+	=>
+	(set-goal G-uu 1))
+
+; =============================
+; ==== SUPPLEMENTARY UNITS ====
+; =============================
+(defrule
+	(true)
+	=>
+	(set-goal G-s-archers 0)
+	(set-goal G-s-spears 0)
+	(set-goal G-s-champs 0)
+	(set-goal G-s-firelancers 0)
+	(set-goal G-s-uu 0)
+	(set-goal G-s-eagles 0)
+	(set-goal G-s-skirms 0)
+	(set-goal G-s-monks 0)
+	(set-goal G-s-scouts 0)
+	(set-goal G-s-knights 0)
+	(set-goal G-s-camels 0)
+	(set-goal G-s-hc 0)
+	(set-goal G-supp-siege 0))
+(defrule
+	(true)
+	=>
+	(set-goal G-f-archers 0)
+	(set-goal G-f-spears 0)
+	(set-goal G-f-champs 0)
+	(set-goal G-f-firelancers 0)
+	(set-goal G-f-uu 0)
+	(set-goal G-f-eagles 0)
+	(set-goal G-f-skirms 0)
+	(set-goal G-f-monks 0)
+	(set-goal G-f-scouts 0)
+	(set-goal G-f-knights 0)
+	(set-goal G-f-camels 0)
+	(set-goal G-f-hc 0))
+
+
+(defrule; no-supp strats
+	(or	(up-compare-goal G-strat < 10)
+		(or	(goal G-strat GV-trashwar)
+			(up-compare-goal G-age < GV-upcastle)))
+	(up-compare-goal J-supp-units > 0)
+	=>
+	(up-jump-direct g: J-supp-units))
+
+
+; == CHAMPS ==
+(defrule
+	(goal G-champs 0)
+	(up-compare-const CHAMPCIV >= 1)
+	=>
+	(up-modify-goal G-temp1 g:= G-eagle-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:- G-monk-threat))
+(defrule
+	(goal G-champs 0)
+	(up-compare-const CHAMPCIV >= 1)
+	(up-compare-const CHAMP == militiaman-line)
+	=>
+	(up-modify-goal G-temp1 g:+ G-tank-inf-threat)
+	(up-modify-goal G-temp1 g:- G-cav-arch-threat))
+(defrule
+	(goal G-champs 0)
+	(up-compare-const CHAMPCIV >= 1)
+	(up-compare-const CHAMP == champi-line)
+	=>
+	(up-modify-goal G-temp1 g:+ G-skirm-threat)
+	(up-modify-goal G-temp1 g:+ G-siege-threat)
+	(up-modify-goal G-temp1 g:+ G-siege-threat)
+	(up-modify-goal G-temp1 g:+ G-cannon-threat)
+	(up-modify-goal G-temp1 g:+ G-cannon-threat))
+(defrule
+	(goal G-champs 0)
+	(up-compare-const CHAMPCIV >= 1)
+	=>
+	(up-modify-goal G-temp1 c:* 2)
+	(up-modify-goal G-temp1 c:* CHAMPCIV)
+	(up-modify-goal G-f-champs g:max G-temp1))
+
+(defrule; win faster
+	(goal G-champs 0)
+	(up-compare-const SCOUTCIV == 0)
+	(up-compare-const CHAMPCIV >= 1); at least 2hs and plate armour
+	(strategic-number SN-superiority > 150)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-modify-goal G-temp1 s:= SN-superiority)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:- G-monk-threat)
+	(up-modify-goal G-f-champs g:+ G-temp1))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-plate-mail >= research-pending)
+	=>
+	(up-modify-goal G-f-champs c:+ 20))
+(defrule
+	(up-research-status c: ri-chain-mail >= research-pending)
+	=>
+	(up-modify-goal G-f-champs c:+ 10))
+(defrule
+	(up-research-status c: ri-scale-mail < research-pending)
+	=>
+	(up-modify-goal G-f-champs c:- 10))
+(defrule
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	=>
+	(up-modify-goal G-f-champs c:+ 10))
+(defrule
+	(up-research-status c: ri-iron-casting >= research-pending)
+	=>
+	(up-modify-goal G-f-champs c:+ 5))
+(defrule
+	(up-research-status c: ri-forging < research-pending)
+	=>
+	(up-modify-goal G-f-champs c:- 5))
+(defrule
+	(up-research-status c: ri-gambesons >= research-pending)
+	=>
+	(up-modify-goal G-f-champs c:+ 10))
+(defrule
+	(up-compare-const CHAMP == champi-line)
+	=>
+	(up-modify-goal G-f-champs c:+ 10))
+(defrule
+	(up-research-status c: ri-squires >= research-pending)
+	=>
+	(up-modify-goal G-f-champs c:+ 10))
+(defrule
+	(or	(up-research-status c: ri-long-swordsman >= research-pending)
+		(up-research-status c: ri-champi-warrior >= research-pending))
+	=>
+	(up-modify-goal G-f-champs c:+ 5))
+(defrule
+	(or	(up-research-status c: ri-two-handed-swordsman >= research-pending)
+		(up-research-status c: ri-elite-champi-warrior >= research-pending))
+	=>
+	(up-modify-goal G-f-champs c:+ 5))
+
+; == F1RE LANCERS ==
+(defrule
+	(goal G-firelancers 0)
+	(up-compare-const FIRELANCERCIV >= 1)
+	=>
+;	(up-modify-goal G-temp1 g:= G-skirm-threat)
+	(up-modify-goal G-temp1 g:= G-pike-threat)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 g:+ G-scout-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-scout-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-camel-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-camel-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-main-cav-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:- G-monk-threat)
+	(up-modify-goal G-temp1 g:- G-main-inf-threat)
+	(up-modify-goal G-temp1 c:* 2)
+	(up-modify-goal G-temp1 c:* FIRELANCERCIV)
+	(up-modify-goal G-f-firelancers g:max G-temp1))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-plate-mail >= research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:+ 20))
+(defrule
+	(up-research-status c: ri-chain-mail >= research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:+ 10))
+(defrule
+	(up-research-status c: ri-scale-mail < research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:- 10))
+(defrule
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:+ 10))
+(defrule
+	(up-research-status c: ri-iron-casting >= research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:+ 5))
+(defrule
+	(up-research-status c: ri-gambesons >= research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:+ 10))
+(defrule
+	(up-research-status c: ri-squires >= research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:+ 10))
+(defrule
+	(up-research-status c: ri-elite-fire-lancer >= research-pending)
+	=>
+	(up-modify-goal G-f-firelancers c:+ 20))
+
+; == SKIRMS ==
+(defrule
+	(goal G-skirms 0)
+	(up-compare-const SKIRMCIV >= 1)
+	=>
+	(up-modify-goal G-temp1 g:= G-pike-threat)
+	(up-modify-goal G-temp1 g:+ G-monk-threat)
+	(up-modify-goal G-temp1 g:+ G-monk-threat)
+	(up-modify-goal G-temp1 g:+ G-main-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-cav-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-cav-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-heavy-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-cannoneer-threat)
+	(up-modify-goal G-temp1 c:* 3)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-siege-threat)
+	(up-modify-goal G-temp1 g:- G-siege-threat)
+	(up-modify-goal G-temp1 g:- G-tank-inf-threat)
+	(up-modify-goal G-temp1 g:- G-eagle-threat)
+	(up-modify-goal G-temp1 g:- G-ele-cav-threat)
+	(up-modify-goal G-temp1 g:- G-ele-cav-threat)
+	(up-modify-goal G-temp1 g:- G-main-cav-threat)
+	(up-modify-goal G-temp1 g:- G-scout-cav-threat)
+	(up-modify-goal G-temp1 c:* SKIRMCIV)
+	(up-modify-goal G-f-skirms g:max G-temp1))
+
+(defrule
+	(goal G-skirms 0)
+	(goal G-strat GV-mlp)
+	(nand (goal G-trade 1); otherwise hc
+		(up-compare-const HCCIV >= 2))
+	=>
+	(up-modify-goal G-temp1 g:= G-pike-threat)
+	(up-modify-goal G-temp1 g:+ G-cav-arch-threat)
+	(up-modify-goal G-temp1 c:* 2)
+	(up-modify-goal G-temp1 g:+ G-main-arch-threat)
+	(up-modify-goal G-temp1 g:+ G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:+ G-monk-threat)
+	(up-modify-goal G-temp1 c:* 2)
+	(up-modify-goal G-temp1 c:* SKIRMCIV)
+	(up-modify-goal G-f-skirms g:max G-temp1))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-elite-skirmisher >= research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:+ 10))
+(defrule
+	(current-age >= castle-age)
+	(up-research-status c: ri-elite-skirmisher < research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:- 10))
+(defrule
+	(up-research-status c: ri-ballistics >= research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:+ 10))
+(defrule
+	(up-research-status c: ri-bracer >= research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:+ 20))
+(defrule
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:+ 10))
+(defrule
+	(up-research-status c: ri-fletching < research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:- 10))
+(defrule
+	(up-research-status c: ri-ring-archer-armor >= research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:+ 10))
+(defrule
+	(up-research-status c: ri-leather-archer-armor >= research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:+ 5))
+(defrule
+	(up-research-status c: ri-padded-archer-armor < research-pending)
+	=>
+	(up-modify-goal G-f-skirms c:- 5))
+
+; == XBOWS ==
+(defrule
+	(goal G-archers 0)
+	(up-compare-const ARCHERCIV >= 1)
+	(up-compare-goal G-strat-class1 != monastery-class); already counters all the same things
+	=>
+	(up-modify-goal G-temp1 g:= G-main-inf-threat)
+	(up-modify-goal G-temp1 g:+ G-pike-threat)
+	(up-modify-goal G-temp1 g:+ G-camel-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-monk-threat)
+	(up-modify-goal G-temp1 g:+ G-monk-threat)
+	(up-modify-goal G-temp1 c:* 3)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 g:- G-skirm-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-siege-threat)
+	(up-modify-goal G-temp1 g:- G-siege-threat)
+	(up-modify-goal G-temp1 c:* ARCHERCIV)
+	(up-modify-goal G-f-archers g:max G-temp1))
+
+(defrule
+	(goal G-archers 0)
+	(goal G-strat GV-klew)
+	(building-type-count-total town-center >= 3)
+	(building-type-count archery-range >= 1)
+	=>
+	(up-modify-goal G-f-archers c:+ 50))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	=>
+	(up-modify-goal G-f-archers c:+ 5))
+(defrule
+	(up-research-status c: ri-crossbow >= research-pending)
+	=>
+	(up-modify-goal G-f-archers c:+ 5))
+(defrule
+	(current-age >= castle-age)
+	(up-research-status c: ri-crossbow < research-pending)
+	=>
+	(up-modify-goal G-f-archers c:- 10))
+(defrule
+	(up-research-status c: ri-ballistics >= research-pending)
+	=>
+	(up-modify-goal G-f-archers c:+ 10))
+(defrule
+	(up-research-status c: ri-bracer >= research-pending)
+	=>
+	(up-modify-goal G-f-archers c:+ 20))
+(defrule
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	=>
+	(up-modify-goal G-f-archers c:+ 10))
+(defrule
+	(up-research-status c: ri-fletching < research-pending)
+	=>
+	(up-modify-goal G-f-archers c:- 10))
+(defrule
+	(up-research-status c: ri-ring-archer-armor >= research-pending)
+	=>
+	(up-modify-goal G-f-archers c:+ 6))
+(defrule
+	(up-research-status c: ri-leather-archer-armor >= research-pending)
+	=>
+	(up-modify-goal G-f-archers c:+ 3))
+(defrule
+	(up-research-status c: ri-padded-archer-armor < research-pending)
+	=>
+	(up-modify-goal G-f-archers c:- 3))
+
+; == HAND CANNONS ==
+(defrule
+	(goal G-strat GV-mlp)
+	(up-compare-const HCCIV >= 2)
+	(goal G-trade 1)
+	=>
+	(up-modify-goal G-temp1 g:= G-pike-threat)
+	(up-modify-goal G-temp1 c:* 3)
+	(up-modify-goal G-temp1 g:+ G-main-inf-threat)
+	(up-modify-goal G-temp1 c:* 2)
+	(up-modify-goal G-f-hc g:max G-temp1))
+
+
+; == CAMELS ==
+(defrule
+	(goal G-camels 0)
+	(up-compare-const CAMELCIV > 0)
+	=>
+	(up-modify-goal G-temp1 g:= G-main-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-scout-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-siege-threat)
+	(up-modify-goal G-temp1 g:+ G-heavy-arch-threat)
+	(up-modify-goal G-temp1 g:- G-monk-threat)
+	(up-modify-goal G-temp1 g:- G-monk-threat)
+	(up-modify-goal G-temp1 g:- G-pike-threat)
+	(up-modify-goal G-temp1 g:- G-main-inf-threat)
+	(up-modify-goal G-temp1 c:* 2)
+	(up-modify-goal G-temp1 c:* CAMELCIV)
+	(up-modify-goal G-f-camels g:max G-temp1))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-plate-barding >= research-pending)
+	=>
+	(up-modify-goal G-f-camels c:+ 20))
+(defrule
+	(up-research-status c: ri-chain-barding >= research-pending)
+	=>
+	(up-modify-goal G-f-camels c:+ 10))
+(defrule
+	(up-research-status c: ri-scale-barding < research-pending)
+	=>
+	(up-modify-goal G-f-camels c:- 10))
+(defrule
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	=>
+	(up-modify-goal G-f-camels c:+ 10))
+(defrule
+	(up-research-status c: ri-iron-casting >= research-pending)
+	=>
+	(up-modify-goal G-f-camels c:+ 5))
+(defrule
+	(up-research-status c: ri-forging < research-pending)
+	=>
+	(up-modify-goal G-f-camels c:- 5))
+(defrule
+	(up-research-status c: ri-husbandry >= research-pending)
+	=>
+	(up-modify-goal G-f-camels c:+ 5))
+(defrule
+	(up-research-status c: ri-bloodlines >= research-pending)
+	=>
+	(up-modify-goal G-f-camels c:+ 10))
+(defrule
+	(up-research-status c: ri-heavy-camel >= research-pending)
+	=>
+	(up-modify-goal G-f-camels c:+ 10))
+
+; == SCOUTS ==
+(defrule
+	(goal G-scouts 0)
+	(up-compare-const SCOUTCIV > 0)
+	=>
+	(up-modify-goal G-temp1 g:= G-skirm-threat)
+	(up-modify-goal G-temp1 g:+ G-siege-threat)
+	(up-modify-goal G-temp1 g:+ G-siege-threat)
+	(up-modify-goal G-temp1 g:+ G-siege-threat)
+	(up-modify-goal G-temp1 g:+ G-cannon-threat)
+	(up-modify-goal G-temp1 g:+ G-cannon-threat)
+	(up-modify-goal G-temp1 g:+ G-cannon-threat)
+	(up-modify-goal G-temp1 g:+ G-monk-threat)
+	(up-modify-goal G-temp1 g:+ G-monk-threat)
+	(up-modify-goal G-temp1 g:- G-pike-threat)
+	(up-modify-goal G-temp1 g:- G-pike-threat)
+	(up-modify-goal G-temp1 g:- G-camel-cav-threat)
+	(up-modify-goal G-temp1 c:* 2)
+	(up-modify-goal G-temp1 c:* SCOUTCIV)
+	(up-modify-goal G-f-scouts g:max G-temp1))
+
+(defrule; win faster
+	(goal G-scouts 0)
+	(up-compare-const SCOUTCIV > 0)
+	(strategic-number SN-superiority > 150)
+	(up-compare-goal G-age >= GV-upimp)
+	=>
+	(up-modify-goal G-temp1 s:= SN-superiority)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 g:- G-pike-threat)
+	(up-modify-goal G-f-scouts g:+ G-temp1))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-plate-barding >= research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:+ 20))
+(defrule
+	(up-research-status c: ri-chain-barding >= research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:+ 10))
+(defrule
+	(up-research-status c: ri-scale-barding < research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:- 10))
+(defrule
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:+ 10))
+(defrule
+	(up-research-status c: ri-iron-casting >= research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:+ 5))
+(defrule
+	(up-research-status c: ri-forging < research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:- 5))
+(defrule
+	(up-research-status c: ri-husbandry >= research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:+ 5))
+(defrule
+	(up-research-status c: ri-bloodlines >= research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:+ 10))
+(defrule
+	(up-research-status c: ri-light-cavalry >= research-pending)
+	=>
+	(up-modify-goal G-f-scouts c:+ 10))
+
+; == SPEARS ==
+(defrule
+	(goal G-spears 0)
+	(players-current-age target-player == feudal-age)
+	(up-get-player-fact target-player unit-type-count scout-cavalry-line G-temp8)
+	(up-get-player-fact target-player unit-type-count camel-line G-temp9)
+	(up-modify-goal G-temp8 g:+ G-temp9)
+	(or	(current-age == feudal-age)
+		(military-population g:< G-temp8))
+	(or	(unit-type-count-total spearman-line g:< G-temp8)
+		(unit-type-count-total spearman-line < 3))
+	(or	(players-building-type-count target-player stable >= 1)
+		(up-compare-goal G-temp8 c:>= 3))
+	(or	(building-type-count barracks >= 1)
+		(up-compare-goal G-temp8 c:>= 3))
+	=>
+	(set-goal G-f-spears 200))
+
+(defrule
+	(goal G-spears 0)
+	(up-compare-const PIKECIV >= 1)
+	=>
+	(up-modify-goal G-temp1 g:= G-scout-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-main-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-camel-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-ele-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-ele-cav-threat)
+	(up-modify-goal G-temp1 c:* 3)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-field-gun-threat)
+	(up-modify-goal G-temp1 g:- G-skirm-threat)
+	(up-modify-goal G-temp1 g:- G-main-arch-threat)
+	(up-modify-goal G-temp1 g:- G-cav-arch-threat)
+	(up-modify-goal G-temp1 g:- G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:- G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:- G-ranged-inf-threat)
+	(up-modify-goal G-temp1 c:* 5)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 c:* PIKECIV)
+	(up-modify-goal G-f-spears g:max G-temp1))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-plate-mail >= research-pending)
+	=>
+	(up-modify-goal G-f-spears c:+ 20))
+(defrule
+	(up-research-status c: ri-chain-mail >= research-pending)
+	=>
+	(up-modify-goal G-f-spears c:+ 10))
+(defrule
+	(up-research-status c: ri-scale-mail < research-pending)
+	=>
+	(up-modify-goal G-f-spears c:- 10))
+(defrule
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	=>
+	(up-modify-goal G-f-spears c:+ 6))
+(defrule
+	(up-research-status c: ri-iron-casting >= research-pending)
+	=>
+	(up-modify-goal G-f-spears c:+ 3))
+(defrule
+	(up-research-status c: ri-forging < research-pending)
+	=>
+	(up-modify-goal G-f-spears c:- 3))
+(defrule
+	(up-research-status c: ri-squires >= research-pending)
+	=>
+	(up-modify-goal G-f-spears c:+ 10))
+(defrule
+	(up-research-status c: ri-pikeman >= research-pending)
+	=>
+	(up-modify-goal G-f-spears c:+ 10))
+(defrule
+	(up-research-status c: ri-halberdier >= research-pending)
+	=>
+	(up-modify-goal G-f-spears c:+ 10))
+
+; == EAGLES ==
+
+
+; == UU ==
+(defrule
+	(goal G-uu 0)
+	(up-compare-const UUCIV-CASTLE >= 2)
+;	(up-compare-const UUCIV-IMP >= 2)
+	(building-type-count castle >= 1)
+	(current-age == castle-age)
+	=>
+	(set-goal G-f-uu 140)); number?
+
+(defrule
+	(goal G-uu 0)
+	(up-compare-const UUCIV-IMP >= 2)
+	(building-type-count castle >= 2)
+	(current-age == imperial-age)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	=>
+	(set-goal G-f-uu 100)); number?
+
+(defrule
+	(goal G-uu 0)
+	(up-compare-const UUCIV-IMP >= 2)
+	(building-type-count castle >= 2)
+	(current-age == imperial-age)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	=>
+	(set-goal G-s-uu 1)); sic
+
+
+; == MONKS ==
+(defrule
+	(goal G-monks 0)
+	(up-compare-const MONKCIV-CASTLE >= 1)
+	(goal G-age GV-castle)
+	=>
+	(up-modify-goal G-temp1 g:= G-main-inf-threat)
+	(up-modify-goal G-temp1 g:+ G-tank-inf-threat)
+	(up-modify-goal G-temp1 g:+ G-main-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-ele-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-ele-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-heavy-arch-threat)
+	(up-modify-goal G-temp1 c:* 3)
+	(up-modify-goal G-temp1 g:- G-main-arch-threat)
+	(up-modify-goal G-temp1 g:- G-skirm-threat)
+	(up-modify-goal G-temp1 g:- G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:- G-scout-cav-threat)
+	(up-modify-goal G-temp1 g:- G-eagle-threat)
+	(up-modify-goal G-temp1 c:* MONKCIV-CASTLE)
+	(up-modify-goal G-f-monks g:max G-temp1))
+(defrule
+	(goal G-monks 0)
+	(up-compare-const MONKCIV-IMP >= 1)
+	(up-compare-goal G-age > GV-castle)
+	=>
+	(up-modify-goal G-temp1 g:= G-main-inf-threat)
+	(up-modify-goal G-temp1 g:+ G-tank-inf-threat)
+	(up-modify-goal G-temp1 g:+ G-main-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-ele-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-ele-cav-threat)
+	(up-modify-goal G-temp1 g:+ G-heavy-arch-threat)
+	(up-modify-goal G-temp1 c:* 5)
+	(up-modify-goal G-temp1 c:/ 2)
+	(up-modify-goal G-temp1 g:- G-main-arch-threat)
+	(up-modify-goal G-temp1 g:- G-skirm-threat)
+	(up-modify-goal G-temp1 g:- G-cannoneer-threat)
+	(up-modify-goal G-temp1 g:- G-scout-cav-threat)
+	(up-modify-goal G-temp1 g:- G-eagle-threat)
+	(up-modify-goal G-temp1 c:* MONKCIV-IMP)
+	(up-modify-goal G-f-monks g:max G-temp1))
+
+(defrule; low numbers multiplier
+	(goal G-monks 0)
+	(up-compare-const MONKCIV-CASTLE >= 1)
+	=>
+	(up-modify-goal G-temp1 g:= G-f-monks)
+	(up-modify-goal G-temp1 c:* 60)
+	(up-modify-goal G-temp1 g:/ G-total-threat)
+	(up-modify-goal G-temp2 c:= 45)
+	(up-modify-goal G-temp2 g:- G-total-threat)
+	(up-modify-goal G-temp1 g:+ G-temp2)
+	(up-modify-goal G-f-monks g:max G-temp1))
+
+; - existing tech -
+(defrule
+	(up-research-status c: ri-sanctity >= research-pending)
+	=>
+	(up-modify-goal G-f-monks c:+ 10))
+(defrule
+	(up-research-status c: ri-fervor >= research-pending)
+	=>
+	(up-modify-goal G-f-monks c:+ 5))
+(defrule
+	(up-research-status c: ri-redemption >= research-pending)
+	=>
+	(up-modify-goal G-f-monks c:+ 10))
+(defrule
+	(up-research-status c: ri-block-printing >= research-pending)
+	=>
+	(up-modify-goal G-f-monks c:+ 15))
+(defrule
+	(up-research-status c: ri-theocracy >= research-pending)
+	=>
+	(up-modify-goal G-f-monks c:+ 5))
+(defrule
+	(up-research-status c: ri-illumination >= research-pending)
+	=>
+	(up-modify-goal G-f-monks c:+ 5))
+
+; - heresy- 
+(defrule
+	(up-compare-goal G-heretic > 0)
+	=>
+	(set-goal G-f-monks 0))
+
+; == POCKET CAVALIERS ==
+#load-if-defined UP-POCKET-POSITION
+(defrule
+	(or	(up-compare-goal G-position != GV-pocket)
+		(or	(building-type-count-total stable < 2)
+			(or	(goal G-knights 1)
+				(or	(up-compare-const KNIGHTCIV-IMP < 1)
+					(or	(up-research-status c: ri-chain-barding < research-complete)
+						(goal G-monks 1))))))
+	=>
+	(up-jump-rule 8))
+;-----------------------------------------------------------------------
+(defrule
+	(true)
+	=>
+	(up-get-fact-sum any-enemy unit-type-count spearman-line G-temp1)
+	(up-get-player-fact target-player unit-type-count spearman-line G-temp2)
+	(up-get-fact-sum any-enemy unit-type-count halberdier G-temp3)
+	(up-get-player-fact target-player unit-type-count halberdier G-temp4)
+	(up-modify-goal G-temp1 g:+ G-temp3)
+	(up-modify-goal G-temp2 g:+ G-temp4)
+	(up-get-fact-sum any-enemy unit-type-count camel-line G-temp3)
+	(up-get-player-fact target-player unit-type-count camel-line G-temp4)
+	(up-modify-goal G-temp1 g:+ G-temp3)
+	(up-modify-goal G-temp2 g:+ G-temp4)
+	(up-get-fact-sum any-enemy unit-type-count mameluke-line G-temp3)
+	(up-get-player-fact target-player unit-type-count mameluke-line G-temp4)
+	(up-modify-goal G-temp1 g:+ G-temp3)
+	(up-modify-goal G-temp2 g:+ G-temp4))
+(defrule
+	(true)
+	=>
+	(up-get-fact-sum any-enemy unit-type-count monk-set G-temp3)
+	(up-get-fact-sum any-enemy unit-type-count missionary G-temp5)
+	(up-modify-goal G-temp3 g:+ G-temp5)
+	(up-get-player-fact target-player unit-type-count monk-set G-temp4)
+	(up-get-player-fact target-player unit-type-count missionary G-temp6)
+	(up-modify-goal G-temp4 g:+ G-temp6)
+	(up-modify-goal G-temp1 g:+ G-temp3)
+	(up-modify-goal G-temp2 g:+ G-temp4)
+	(up-modify-goal G-temp1 c:* 3); multiplier 1.5
+	(up-modify-goal G-temp1 c:/ 2)
+ 	(up-modify-goal G-temp2 c:* 5); multiplier 2.5
+	(up-modify-goal G-temp2 c:/ 2)
+	(up-modify-goal G-temp1 g:+ G-temp2))
+(defrule
+	(goal G-age GV-upimp)
+	=>
+	(up-modify-goal G-temp1 c:- 30))
+(defrule
+	(up-research-status c: ri-cavalier >= research-pending)
+	=>
+	(up-modify-goal G-temp1 c:- 25))
+(defrule
+	(up-research-status c: ri-bloodlines >= research-pending)
+	=>
+	(up-modify-goal G-temp1 c:- 10))
+(defrule
+	(up-research-status c: ri-plate-barding >= research-pending)
+	=>
+	(up-modify-goal G-temp1 c:- 15))
+(defrule
+	(true)
+	=>
+;	(up-chat-data-to-self "anti-cav threat: %d" g: G-temp1)
+	(up-modify-goal G-temp1 c:/ KNIGHTCIV-IMP))
+
+(defrule
+	(up-compare-goal G-temp1 < 30)
+	=>
+;	(chat-to-allies "making cavaliers")
+	(set-goal G-s-knights 1))
+;-----------------------------------------------------------------------
+#end-if
+
+
+; == DETERMINE NUMBER OF SUPP UNITS ==
+(defrule
+	(true)
+	=>
+	(set-goal HAX0 archery-class)
+	(set-goal HAX1 infantry-class)
+	(set-goal HAX2 infantry-class)
+	(set-goal HAX3 UU-CLASS)
+	(set-goal HAX4 infantry-class)
+	(set-goal HAX5 archery-class)
+	(set-goal HAX6 monastery-class)
+	(set-goal HAX7 archery-cannon-class)
+	(set-goal HAX8 cavalry-class)
+	(set-goal HAX9 cavalry-class)
+	(set-goal HAX10 cavalry-class)
+	(set-goal HAX11 infantry-class))
+(defrule
+	(true)
+	=>
+	(set-goal G-temp0 2))
+(defrule
+	(up-compare-goal G-strat-class2 c:!= 0)
+	=>
+	(up-modify-goal G-temp0 c:- 1))
+(defrule; dope uus and pocket cavaliers have priority, increase strat core units
+	(goal G-s-knights 1)
+	(and	(up-compare-goal G-strat-class1 != cavalry-class)
+		(up-compare-goal G-strat-class2 != cavalry-class))
+	=>
+	(up-modify-goal G-temp0 c:- 1))
+(defrule
+	(goal G-s-uu 1)
+	(and	(up-compare-goal G-strat-class1 != UU-CLASS)
+		(up-compare-goal G-strat-class2 != UU-CLASS))
+	=>
+	(up-modify-goal G-temp0 c:- 1))
+(defrule; fuck this strat
+	(goal G-strat GV-horsecock)
+	=>
+	(up-modify-goal G-temp0 c:- 1))
+
+(defrule; no more than 1 supp in castle age
+	(up-compare-goal G-age <= GV-castle)
+	=>
+	(up-modify-goal G-temp0 c:min 1))
+
+
+; (defconst G-f-archers 260)
+; (defconst G-f-spears 261)
+; (defconst G-f-champs 262)
+; (defconst G-f-uu 263)
+; (defconst G-f-eagles 264)
+; (defconst G-f-skirms 265)
+; (defconst G-f-monks 266)
+; (defconst G-f-hc 267)
+; (defconst G-f-knights 268)
+; (defconst G-f-camels 269)
+; (defconst G-f-scouts 270)
+; (defconst G-f-firelancers 271)
+
+; (defconst G-s-archers 275)
+; (defconst G-s-spears 276)
+; (defconst G-s-champs 277)
+; (defconst G-s-uu 278)
+; (defconst G-s-eagles 279)
+; (defconst G-s-skirms 280)
+; (defconst G-s-monks 281)
+; (defconst G-s-hc 282)
+; (defconst G-s-knights 283)
+; (defconst G-s-camels 284)
+; (defconst G-s-scouts 285)
+; (defconst G-s-firelancers 286)
+
+; (defconst HAX0 170)
+; (defconst HAX1 171)
+; (defconst HAX2 172)
+; (defconst HAX3 173)
+; (defconst HAX4 174)
+; (defconst HAX5 175)
+; (defconst HAX6 176)
+; (defconst HAX7 177)
+; (defconst HAX8 178)
+; (defconst HAX9 179)
+; (defconst HAX10 180)
+; (defconst HAX11 181)
+; (defconst HAX12 182)
+; (defconst HAX13 183)
+; (defconst HAX14 184)
+; (defconst HAX15 185)
+; (defconst HAX16 186)
+; (defconst HAX17 187)
+; (defconst HAX18 188)
+; (defconst HAX19 189)
+; (defconst HAX20 190)
+
+; == HIGHEST FACTORS ==
+; G-temp0 - supp unit slots
+; G-temp1 - current goal being checked (260-271)
+; G-temp2 - current goal factor
+; G-temp3 - current supp type goal (180-189)
+; G-temp4 - supp1 type
+; G-temp5 - supp2 type
+; G-temp6 - highest unit (260-271)
+; G-temp7 - highest factor
+; G-temp8 - 2nd highest unit (260-271)
+; G-temp9 - 2nd highest factor
+
+(defrule
+	(up-compare-goal J-supp-units > 0); not first tick
+	=>
+	(set-goal G-temp1 260)
+	(set-goal G-temp2 -1)
+	(set-goal G-temp3 170)
+	(set-goal G-temp4 -1)
+	(set-goal G-temp5 -1)
+	(set-goal G-temp6 -1)
+	(set-goal G-temp7 -1)
+	(set-goal G-temp8 -1)
+	(set-goal G-temp9 -1))
+
+(defrule; ~~ start loop
+	(up-compare-goal J-supp-units > 0)
+	=>
+	(up-get-indirect-goal g: G-temp1 G-temp2))
+(defrule
+	(up-compare-goal J-supp-units > 0)
+	(up-compare-goal G-temp2 g:> G-temp7)
+	=>
+	(up-modify-goal G-temp8 g:= G-temp6)
+	(up-modify-goal G-temp9 g:= G-temp7)
+	(up-modify-goal G-temp5 g:= G-temp4)
+	(up-modify-goal G-temp6 g:= G-temp1)
+	(up-modify-goal G-temp7 g:= G-temp2)
+	(up-get-indirect-goal g: G-temp3 G-temp4)
+	(up-jump-rule 1))
+(defrule
+	(up-compare-goal J-supp-units > 0)
+	(up-compare-goal G-temp2 g:> G-temp9)
+	=>
+	(up-modify-goal G-temp8 g:= G-temp1)
+	(up-modify-goal G-temp9 g:= G-temp2)
+	(up-get-indirect-goal g: G-temp3 G-temp5))
+(defrule
+	(up-compare-goal J-supp-units > 0)
+	(up-compare-goal G-temp1 < 271)
+	=>
+	(up-modify-goal G-temp1 c:+ 1)
+	(up-modify-goal G-temp3 c:+ 1)
+	(up-jump-rule -4)); next factor~~
+
+(defrule
+	(up-compare-goal J-supp-units > 0)
+	(up-compare-goal G-temp7 >= 100)
+	(or	(up-compare-goal G-temp4 g:== G-strat-class1)
+		(or	(up-compare-goal G-temp4 g:== G-strat-class2)
+			(or	(up-compare-goal G-temp5 g:== G-strat-class1)
+				(up-compare-goal G-temp5 g:== G-strat-class2))))
+	=>
+	(up-modify-goal G-temp0 c:+ 1))
+
+; - debug -
+;(defrule
+;	(up-compare-goal J-supp-units > 0)
+;	(up-compare-goal G-temp7 >= 100)
+;	(up-timer-status T-10 == timer-disabled); every 10 seconds
+;	(or	(up-compare-goal G-temp4 g:== G-strat-class1)
+;		(or	(up-compare-goal G-temp4 g:== G-strat-class2)
+;			(or	(up-compare-goal G-temp5 g:== G-strat-class1)
+;				(up-compare-goal G-temp5 g:== G-strat-class2))))
+;	=>
+;	(chat-to-player my-player-number "SAME TYPE"))
+;(defrule
+;	(up-compare-goal J-supp-units > 0)
+;	(up-compare-goal G-temp7 >= 100)
+;	(up-timer-status T-10 == timer-disabled); every 10 seconds
+;	=>
+;	(up-chat-data-to-player my-player-number "supp unit 1: %d" g: G-temp6)
+;	(up-chat-data-to-player my-player-number "supp factor 1: %d" g: G-temp7)
+;	(up-chat-data-to-player my-player-number "supp type 1: %d" g: G-temp4))
+;(defrule
+;	(up-compare-goal J-supp-units > 0)
+;	(up-compare-goal G-temp9 >= 100)
+;	(up-timer-status T-10 == timer-disabled); every 10 seconds
+;	=>
+;	(up-chat-data-to-player my-player-number "supp unit 2: %d" g: G-temp8)
+;	(up-chat-data-to-player my-player-number "supp factor 2: %d" g: G-temp9)
+;	(up-chat-data-to-player my-player-number "supp type 2: %d" g: G-temp5))
+;(defrule
+;	(up-compare-goal J-supp-units > 0)
+;	(up-compare-goal G-temp7 >= 100)
+;	(up-timer-status T-10 == timer-disabled); every 10 seconds
+;	=>
+;	(up-chat-data-to-player my-player-number "number of supp units: %d" g: G-temp0))
+
+; == FINALISE ==
+(defrule; unit 1
+	(up-compare-goal J-supp-units > 0)
+	(up-compare-goal G-temp0 >= 1)
+	(up-compare-goal G-temp7 >= 100)
+	=>
+	(up-modify-goal G-temp6 c:+ 15)
+	(up-set-indirect-goal g: G-temp6 c: 1))
+(defrule; unit 2
+	(up-compare-goal J-supp-units > 0)
+	(up-compare-goal G-temp0 >= 2)
+	(up-compare-goal G-temp9 >= 100)
+	=>
+	(up-modify-goal G-temp8 c:+ 15)
+	(up-set-indirect-goal g: G-temp8 c: 1))
+
+(defrule; supp unit jump
+	(true)
+	=>
+	(up-get-rule-id J-supp-units)
+	(disable-self))
+
+
+
+; == TRASH WAR ==
+(defrule
+	(goal G-strat GV-trashwar)
+	(up-compare-const CHAMPCIV >= 1); has at least 2HS and plate armour
+	=>
+	(set-goal G-s-champs 1))
+
+(defrule
+	(goal G-strat GV-trashwar)
+	(up-compare-const UU-TYPE == MAIN-INF)
+	(up-compare-const UUCIV-IMP >= CHAMPCIV)
+	(building-type-count castle >= 2)
+	(or	(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+			(up-research-status c: ri-champion < research-pending))
+		(up-compare-const UUCIV-IMP > CHAMPCIV))
+	=>
+	(set-goal G-s-champs 0)
+	(set-goal G-s-uu 1))
+
+; == MANGONEL ==
+(defrule
+	(goal G-mangonel 0)
+	(or	(goal G-strat GV-xbows)
+		(and	(or	(goal G-strat GV-cdrop)
+				(goal G-strat GV-unique))
+			(or	(up-compare-const UU-CLASS == archery-class)
+				(or	(up-compare-const UU-CLASS == archery-cannon-class)
+					(or	(up-compare-const UU-CLASS == cavalry-archer-class)
+						(up-compare-const UU-CLASS == cavalry-cannon-class))))))
+	=>
+	(set-goal G-temp6 17777))
+(defrule
+	(goal G-temp6 17777)
+	(or	(or	(up-compare-goal G-main-arch-threat c:>= 15)
+			(up-compare-goal G-skirm-threat c:>= 15))
+		(or	(up-compare-goal G-cannoneer-threat c:>= 15)
+			(or	(up-compare-goal G-field-gun-threat c:>= 12)
+				(up-compare-goal G-siege-threat c:>= 9))))
+	(nand	(unit-type-count-total MANGO >= 1)
+		(up-unit-type-in-town c: knight-line >= 2))
+	=>
+	(set-goal G-supp-siege GV-s-mangonel))
+(defrule
+	(goal G-mangonel 0)
+	(up-compare-goal G-strat >= 20); only siege-supp-eligible castle strats
+;	(up-compare-goal G-strat != GV-trashwar)
+	(or	(or	(up-compare-goal G-main-arch-threat c:>= 30)
+			(up-compare-goal G-skirm-threat c:>= 30))
+		(or	(up-compare-goal G-cannoneer-threat c:>= 30)
+			(or	(up-compare-goal G-field-gun-threat c:>= 18)
+				(up-compare-goal G-siege-threat c:>= 12))))
+	(strategic-number SN-raw-superiority < 120)
+	(nand	(unit-type-count-total MANGO >= 1)
+		(up-unit-type-in-town c: knight-line >= 2))
+	=>
+	(set-goal G-supp-siege GV-s-mangonel))
+
+; == RAM ==
+
+(defrule; all strats
+	(or	(up-compare-goal G-age >= GV-upimp)
+		(and	(current-age >= castle-age)
+			(strategic-number SN-superiority > 120)))
+	(or	(strategic-number SN-superiority > 80)
+		(population g:> G-184-pop))
+	(military-population > 5)
+	(up-modify-goal G-temp9 g:= G-main-arch-threat)
+	(up-modify-goal G-temp9 g:+ G-cav-arch-threat)
+	(up-modify-goal G-temp9 g:+ G-skirm-threat)
+	(up-modify-goal G-temp9 g:+ G-cannoneer-threat)
+	(up-modify-goal G-temp9 g:+ G-field-gun-threat)
+	(up-modify-goal G-temp2 c:= RAMCIV)
+	(up-modify-goal G-temp2 c:* 2)
+	(up-modify-goal G-temp4 c:= RAMCIV)
+	(up-modify-goal G-temp4 c:* 4)
+	=>
+	(set-goal G-temp1 14558839))
+(defrule
+	(goal G-temp1 14558839)
+	(or	(unit-type-count-total RAM g:< G-temp2); more?
+		(and	(unit-type-count-total RAM g:< G-temp4)
+			(or	(up-compare-const RAMCIV > 2)
+				(or	(building-type-count castle < 1)
+					(unit-type-count-total trebuchet-set < 2)))))
+	(or	(up-compare-goal G-temp9 >= 60)
+		(or	(strategic-number SN-superiority > 125)
+			(and	(strategic-number SN-superiority > 100)
+				(or	(building-type-count castle < 1)
+					(unit-type-count-total trebuchet-set < 3)))))
+	=>
+	(set-goal G-supp-siege GV-s-ram))
+(defrule; no castles
+	(up-compare-goal G-age >= GV-upimp)
+	(building-type-count-total castle < 1)
+	(unit-type-count-total RAM < 8)
+	(military-population > 5)
+	(strategic-number SN-superiority > 135)
+	=>
+	(set-goal G-supp-siege GV-s-ram))
+(defrule
+	(or	(current-age >= castle-age)
+		(civ-selected cumans))
+	(unit-type-count-total trebuchet-set < 2)
+	(or	(up-building-type-in-town c: castle > 0)
+		(or	(up-building-type-in-town c: krepost > 0)
+			(up-building-type-in-town c: tower-class > 1)))
+
+	=>
+	(set-goal G-supp-siege GV-s-ram))
+
+; ===================
+; ==== IMP SIEGE ====
+; ===================
+(defrule
+	(building-type-count castle >= 1)
+	(or	(or	(building-type-count castle >= 2)
+			(up-compare-goal G-uu < 1))
+		(unit-type-count-total trebuchet-set < 2))
+	(current-age == imperial-age)
+	(unit-type-count-total trebuchet-set < 4)
+	(or	(strategic-number SN-superiority > 90)
+		(population > 180))
+	=>
+	(set-goal G-treb 1))
+(defrule
+	(current-age == imperial-age)
+	(goal G-treb 0)
+	(population g:>= G-184-pop)
+	(or	(players-building-type-count target-player castle >= 2)
+		(and	(players-population target-player < 50)
+			(players-building-type-count any-enemy castle >= 3)))
+	=>
+	(set-goal G-treb 1))
+
+; ====================
+; ==== EXCEPTIONS ====
+; ====================
+(defrule; pockets shouldn't make siege too early
+	(goal G-position GV-pocket)
+	(up-compare-const ALLYCOUNT >= 2)
+	(or	(building-type-count-total town-center g:< G-desiredtcs)
+		(and	(up-compare-goal G-age < GV-upimp)
+			(idle-farm-count < 1)))
+	=>
+	(set-goal G-supp-siege 0))
+
+; == cap siege ==
+(defrule
+	(goal G-supp-siege GV-s-ram)
+	(unit-type-count-total RAM >= 3)
+	(or	(unit-type-count-total RAM >= 5)
+		(and	(players-building-type-count target-player castle == 0)
+			(players-building-type-count target-player krepost == 0)))
+	(building-type-count-total town-center g:< G-desiredtcs)
+	=>
+	(set-goal G-supp-siege 0))
+(defrule
+	(goal G-supp-siege GV-s-mangonel)
+	(unit-type-count-total MANGO >= 4)
+	(or	(unit-type-count-total MANGO >= 9)
+		(building-type-count-total town-center g:< G-desiredtcs))
+	=>
+	(set-goal G-supp-siege 0))
+
+; == failsafe for fc strats ==
+(defrule
+	(up-compare-goal G-age < GV-upcastle)
+	(up-compare-goal G-strat >= 15); castle strats
+	=>
+	(set-goal G-s-archers 0)
+	(set-goal G-s-spears 0)
+	(set-goal G-s-champs 0)
+	(set-goal G-s-firelancers 0)
+	(set-goal G-s-uu 0)
+	(set-goal G-s-eagles 0)
+	(set-goal G-s-skirms 0)
+	(set-goal G-s-monks 0)
+	(set-goal G-s-hc 0)
+	(set-goal G-s-scouts 0)
+	(set-goal G-s-knights 0)
+	(set-goal G-s-camels 0)
+	(set-goal G-supp-siege 0))
+; == failsafe for no-supplement strats ==
+(defrule
+	(up-compare-goal G-strat < 10)
+	=>
+	(set-goal G-s-archers 0)
+	(set-goal G-s-spears 0)
+	(set-goal G-s-champs 0)
+	(set-goal G-s-firelancers 0)
+	(set-goal G-s-uu 0)
+	(set-goal G-s-eagles 0)
+	(set-goal G-s-skirms 0)
+	(set-goal G-s-monks 0)
+	(set-goal G-s-hc 0)
+	(set-goal G-s-scouts 0)
+	(set-goal G-s-knights 0)
+	(set-goal G-s-camels 0)
+	(set-goal G-supp-siege 0))
+; == exceptions ==
+#load-if-defined UP-POCKET-POSITION
+(defrule
+	(goal G-position GV-pocket)
+	(goal G-strat GV-eagleflood)
+	(or	(current-age < imperial-age)
+		(current-age-time < 330))
+	=>
+;	(set-goal G-treb 0)
+	(set-goal G-s-archers 0)
+	(set-goal G-s-spears 0)
+	(set-goal G-s-champs 0)
+	(set-goal G-s-uu 0)
+	(set-goal G-s-eagles 0)
+	(set-goal G-s-skirms 0)
+	(set-goal G-s-monks 0))
+(defrule
+	(goal G-position GV-pocket)
+	(goal G-strat GV-champflood)
+	(up-compare-const CHAMP == champi-line)
+	(or	(current-age < imperial-age)
+		(current-age-time < 360))
+	=>
+;	(set-goal G-treb 0)
+	(set-goal G-s-archers 0)
+	(set-goal G-s-spears 0)
+	(set-goal G-s-champs 0)
+	(set-goal G-s-uu 0)
+	(set-goal G-s-eagles 0)
+	(set-goal G-s-skirms 0)
+	(set-goal G-s-monks 0))
+(defrule
+	(or	(goal G-strat GV-eagleflood)
+		(and	(goal G-strat GV-champflood)
+			(up-compare-const CHAMP == champi-line)))
+	(or	(current-age < imperial-age)
+		(current-age-time < 180))
+	=>
+	(set-goal G-supp-siege 0))
+#end-if
+
+; == NO FOOD UNITS WHEN GOING IMP ==
+(defrule
+	(goal G-escrowing imperial-age)
+	(food-amount < 1050); 1000
+	(up-get-fact food-amount 0 G-temp1)
+	(up-get-fact gold-amount 0 G-temp2)
+	(or	(gold-amount >= 800)
+		(and	(up-compare-goal G-temp1 g:< G-temp2)
+			(gold-amount >= 500)))
+	=>
+	(set-goal G-s-champs 0)
+	(set-goal G-s-scouts 0)
+	(set-goal G-s-knights 0)
+	(set-goal G-s-camels 0)
+	(set-goal G-s-skirms 0))
+
+; ==============================================
+; ==== ENABLE SUPPLEMENTS AND ADD COST DATA ====
+; ==============================================
+(defrule
+	(true)
+	=>
+	(up-get-fact building-type-count-total barracks G-temp1)
+	(up-get-fact building-type-count-total archery-range G-temp2)
+	(up-get-fact building-type-count-total archery-range G-temp7)
+	(up-get-fact building-type-count-total stable G-temp3)
+	(up-get-fact building-type-count-total siege-workshop G-temp4)
+	(up-get-fact building-type-count-total castle G-temp5)
+	(up-get-fact building-type-count-total monastery G-temp6))
+(defrule
+	(goal G-strat-rax 0)
+	=>
+	(up-modify-goal G-temp1 c:* 2))
+(defrule
+	(goal G-strat-range 0)
+	=>
+	(up-modify-goal G-temp2 c:* 2))
+(defrule
+	(goal G-strat-stable 0)
+	=>
+	(up-modify-goal G-temp3 c:* 2))
+(defrule
+	(goal G-strat-workshop 1)
+	=>
+	(up-modify-goal G-temp4 c:/ 2))
+(defrule
+	(true)
+	=>
+	(up-modify-goal G-temp5 c:* UU-TT-MULTIPLIER))
+
+(defrule
+	(goal G-supp-siege GV-s-ram)
+	=>
+	(up-add-object-cost c: RAM g: G-temp4)
+	(set-goal G-ram 1))
+(defrule
+	(goal G-supp-siege GV-s-mangonel)
+	=>
+	(up-add-object-cost c: MANGO g: G-temp4)
+	(set-goal G-mangonel 1))
+(defrule
+	(goal G-s-scouts 1)
+	=>
+	(up-add-object-cost c: scout-cavalry g: G-temp3)
+	(set-goal G-scouts 1))
+(defrule
+	(goal G-s-knights 1)
+	=>
+	(up-add-object-cost c: knight g: G-temp3)
+	(set-goal G-knights 1))
+(defrule
+	(goal G-s-camels 1)
+	=>
+	(up-add-object-cost c: camel g: G-temp3)
+	(set-goal G-camels 1))
+(defrule
+	(goal G-s-archers 1)
+	=>
+	(up-add-object-cost c: archer g: G-temp2)
+	(set-goal G-archers 1))
+(defrule
+	(goal G-s-skirms 1)
+	=>
+	(up-add-object-cost c: skirmisher g: G-temp2)
+	(set-goal G-skirms 1))
+(defrule
+	(goal G-s-spears 1)
+	=>
+	(up-add-object-cost c: spearman g: G-temp1)
+	(set-goal G-spears 1))
+(defrule
+	(goal G-s-champs 1)
+	=>
+	(up-add-object-cost c: CHAMP g: G-temp1)
+	(set-goal G-champs 1))
+(defrule
+	(goal G-s-firelancers 1)
+	=>
+	(up-add-object-cost c: fire-lancer g: G-temp1)
+	(set-goal G-firelancers 1))
+(defrule
+	(goal G-s-uu 1)
+	=>
+	(up-add-object-cost c: my-unique-unit g: G-temp5)
+	(set-goal G-uu 1))
+(defrule
+	(goal G-s-eagles 1)
+	=>
+	(up-add-object-cost c: eagle-warrior g: G-temp1)
+	(set-goal G-eagles 1))
+(defrule
+	(goal G-s-monks 1)
+	=>
+	(up-add-object-cost c: monk g: G-temp6)
+	(set-goal G-monks 1))
+(defrule
+	(goal G-s-hc 1)
+	=>
+	(up-add-object-cost c: hand-cannoneer g: G-temp7)
+	(set-goal G-hc 1))
+
+; ==== PRIORITY UNITS ====
+
+
+; == PREPARE MICHI CUT ==
+(defrule
+	(up-compare-goal G-michi-cut >= 1)
+	(up-compare-goal G-michi-cut <= 3)
+	(up-compare-goal G-age >= GV-upimp)
+	(unit-type-count-total MANGO < 2)
+	=>
+	(set-goal G-mangonel 1)
+	(set-goal G-ram 0))
+
+; =====================
+; ==== RECRUITMENT ====
+; =====================
+(defrule; prioritise vills over skirms
+	(current-age == feudal-age)
+	(or	(goal G-skirms 1)
+		(goal G-champs 1))
+	(goal G-vills 1)
+	(up-train-site-ready c: villager)
+	(or	(food-amount < 50)
+		(escrow-amount food > 0))
+	=>
+	(set-goal G-champs 0)
+	(set-goal G-skirms 0))
+; == SIEGE ==
+(defrule
+	(goal G-ram 1)
+	(up-compare-const RAM == battering-ram-line)
+	(unit-type-count-total RAM < 3)
+	(or	(unit-type-count-total RAM < 2)
+		(or	(players-building-type-count target-player castle >= 1)
+			(players-building-type-count target-player krepost >= 1)))
+	(or	(unit-type-count-total RAM == 0)
+		(or	(or	(players-building-type-count target-player watch-tower > 1)
+				(players-building-type-count target-player donjon > 1))
+			(or	(or	(players-building-type-count target-player castle >= 1)
+					(players-building-type-count target-player krepost >= 1))
+				(up-compare-goal G-attack >= 0))))
+	(up-can-train G-esc-state c: RAM)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(train RAM))
+(defrule
+	(goal G-ram 1)
+	(up-compare-const RAM == battering-ram-line)
+	(unit-type-count-total RAM < 2)
+	(or	(unit-type-count-total RAM == 0)
+		(or	(or	(players-building-type-count target-player watch-tower > 1)
+				(players-building-type-count target-player donjon > 1))
+			(or	(players-building-type-count target-player castle >= 1)
+				(or	(players-building-type-count target-player krepost >= 1)
+					(up-compare-goal G-attack >= 0)))))
+	(building-type-count siege-workshop >= 1)
+	(or	(wood-amount < 160)
+		(gold-amount < 75))
+	=>
+	(up-modify-escrow wood c:max 160)
+	(up-modify-escrow gold c:max 75)
+	(up-add-object-cost c: RAM c: 1))
+(defrule
+	(goal G-ram 1)
+	(up-compare-const RAM == armored-elephant-line)
+	(unit-type-count-total RAM < 3)
+	(or	(unit-type-count-total RAM < 2)
+		(or	(players-building-type-count target-player castle >= 1)
+			(players-building-type-count target-player krepost >= 1)))
+	(or	(unit-type-count-total RAM == 0)
+		(or	(or	(players-building-type-count target-player watch-tower > 1)
+				(players-building-type-count target-player donjon > 1))
+			(or	(or	(players-building-type-count target-player castle >= 1)
+					(players-building-type-count target-player krepost >= 1))
+				(up-compare-goal G-attack >= 0))))
+	(up-can-train G-esc-state c: RAM)
+	=>
+	(release-escrow food)
+	(release-escrow gold)
+	(train RAM))
+(defrule
+	(goal G-ram 1)
+	(up-compare-const RAM == armored-elephant-line)
+	(unit-type-count-total RAM < 2)
+	(or	(unit-type-count-total RAM == 0)
+		(or	(or	(players-building-type-count target-player watch-tower > 1)
+				(players-building-type-count target-player donjon > 1))
+			(or	(or	(players-building-type-count target-player castle >= 1)
+					(players-building-type-count target-player krepost >= 1))
+				(up-compare-goal G-attack >= 0))))
+	(building-type-count siege-workshop >= 1)
+	(or	(food-amount < 120)
+		(gold-amount < 95))
+	=>
+	(up-modify-escrow food c:max 120)
+	(up-modify-escrow gold c:max 95)
+	(up-add-object-cost c: RAM c: 1))
+(defrule
+	(goal G-mangonel 1)
+	(unit-type-count-total MANGO < MIN-MANGOS)
+	(or	(unit-type-count-total MANGO == 0)
+		(or	(up-compare-goal G-main-arch-threat > 40)
+			(and	(goal G-strat-class1 monastery-class)
+				(up-compare-goal G-main-arch-threat > 20))))
+	(up-can-train G-esc-state c: MANGO)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(train MANGO))
+(defrule
+	(goal G-mangonel 1)
+	(unit-type-count-total MANGO < MIN-MANGOS); 2 unless celts
+	(or	(unit-type-count-total MANGO == 0)
+		(or	(up-compare-goal G-main-arch-threat > 40)
+			(and	(goal G-strat-class1 monastery-class)
+				(up-compare-goal G-main-arch-threat > 20))))
+	(building-type-count siege-workshop >= 1)
+	(or	(wood-amount < 160)
+		(gold-amount < 155))
+	=>
+	(up-modify-escrow wood c:max 160)
+	(up-modify-escrow gold c:max 155)
+	(up-add-object-cost c: MANGO c: 1))
+(defrule
+	(goal G-treb 1)
+	(unit-type-count-total trebuchet-set < 2)
+	(or	(unit-type-count-total trebuchet-set == 0)
+		(or	(or	(players-building-type-count target-player castle >= 1)
+				(players-building-type-count target-player krepost >= 1))
+			(up-compare-goal G-attack >= 0)))
+	(up-can-train G-esc-state c: trebuchet)
+	=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(train trebuchet))
+(defrule
+	(goal G-treb 1)
+	(unit-type-count-total trebuchet-set < 2)
+	(or	(unit-type-count-total trebuchet-set == 0)
+		(or	(or	(players-building-type-count target-player castle >= 1)
+				(players-building-type-count target-player krepost >= 1))
+			(up-compare-goal G-attack >= 0)))
+	(building-type-count castle >= 1)
+;	(up-train-site-ready c: trebuchet)
+	(or	(wood-amount < 200)
+		(gold-amount < 200))
+	=>
+	(up-modify-escrow wood c:max 200)
+	(up-modify-escrow gold c:max 200)
+	(up-add-object-cost c: trebuchet c: 1))
+(defrule
+	(goal G-treb 1)
+	(or	(goal G-uu 0)
+		(goal G-2nd-tick 1))
+	(can-train trebuchet)
+	(unit-type-count-total trebuchet-set g:< G-stopgap-pop)
+	=>
+	(train trebuchet))
+(defrule; alternate when both unit types are being trained
+	(goal G-mangonel 1)
+	(can-train MANGO)
+	(or	(and	(goal G-scorps 1)
+			(can-train scorpion-line))
+		(and	(goal G-ram 1)
+			(can-train RAM)))
+	(goal G-2nd-tick 1)
+	=>
+	(up-jump-rule 1))
+(defrule
+	(goal G-mangonel 1)
+	(can-train MANGO)
+	=>
+	(train MANGO))
+(defrule; alternate when both unit types are being trained
+	(goal G-ram 1)
+	(can-train RAM)
+	(goal G-scorps 1)
+	(can-train scorpion-line)
+	(goal G-2nd-tick 1)
+	=>
+	(up-jump-rule 1))
+(defrule
+	(goal G-ram 1)
+	(can-train RAM)
+	=>
+	(train RAM))
+(defrule
+	(goal G-scorps 1)
+	(can-train scorpion-line)
+	=>
+	(train scorpion-line))
+; == MONK ==
+#load-if-defined SPANISH-CIV
+(defrule
+	(goal G-monks 1)
+	=>
+	(set-goal G-missionaries 1))
+(defrule
+	(or	(goal G-missionaries 1)
+		(unit-type-count-total monastery-class < 2))
+	(can-train missionary)
+	=>
+	(train missionary))
+#else
+(defrule
+	(or	(goal G-monks 1)
+		(unit-type-count-total monk-set < 2))
+	(can-train monk)
+	=>
+	(train monk))
+#end-if
+; == UU ==
+#load-if-defined GOTHIC-CIV
+(defrule
+	(research-completed ri-anarchy)
+	(goal G-spears 1)
+	(can-train spearman-line)
+	(goal G-uu 1)
+	(or	(can-train rax-huskarl)
+		(can-train rax-elite-huskarl))
+	(goal G-2nd-tick 0)
+	=>
+	(up-jump-rule 1))
+(defrule
+	(research-completed ri-anarchy)
+	(goal G-uu 1)
+	(or	(can-train rax-huskarl)
+		(can-train rax-elite-huskarl))
+	=>
+	(train rax-huskarl)
+	(train rax-elite-huskarl))
+#end-if
+(defrule
+	(goal G-uu 1)
+	(can-train my-unique-unit-line)
+	=>
+	(train my-unique-unit-line))
+; == RANGE ==
+(defrule; alternate when both unit types are being trained
+	(or	(and	(goal G-archers 1)
+			(can-train archer-line))
+		(or	(and	(goal G-ca 1)
+				(can-train cavalry-archer-line))
+			(and	(goal G-hc 1)
+				(can-train hand-cannoneer))))
+	(goal G-skirms 1)
+	(can-train skirmisher-line)
+	(goal G-2nd-tick 1)
+	=>
+	(up-jump-rule 1))
+(defrule
+	(goal G-skirms 1)
+	(can-train skirmisher-line)
+	=>
+	(train skirmisher-line))
+(defrule
+	(goal G-archers 1)
+	(can-train archer-line)
+	=>
+	(train archer-line))
+(defrule
+	(goal G-ca 1)
+	(can-train cavalry-archer-line)
+	=>
+	(train cavalry-archer-line))
+(defrule
+	(goal G-hc 1)
+	(can-train hand-cannoneer)
+	=>
+	(train hand-cannoneer))
+; == RAX ==
+(defrule; alternate when both unit types are being trained
+	(goal G-eagles 1)
+	(can-train eagle-warrior-line)
+	(or	(and	(goal G-spears 1)
+			(can-train spearman-line))
+		(or	(and	(goal G-champs 1)
+				(can-train CHAMP))
+			(and	(goal G-condo 1)
+				(can-train condottiero))))
+	(goal G-2nd-tick 0)
+	=>
+	(up-jump-rule 1))
+(defrule
+	(goal G-eagles 1)
+	(can-train eagle-warrior-line)
+	=>
+	(train eagle-warrior-line))
+(defrule; alternate when both unit types are being trained
+	(or	(and	(goal G-champs 1)
+			(can-train CHAMP))
+		(or	(and	(goal G-condo 1)
+				(can-train condottiero))
+			(and	(goal G-firelancers 1)
+				(can-train fire-lancer-line))))
+	(goal G-spears 1)
+	(can-train spearman-line)
+	(goal G-2nd-tick 1)
+	=>
+	(up-jump-rule 3))
+(defrule
+	(goal G-firelancers 1)
+	(can-train fire-lancer)
+	=>
+	(train fire-lancer))
+(defrule
+	(goal G-champs 1)
+	(can-train CHAMP)
+	=>
+	(train CHAMP))
+(defrule
+	(goal G-condo 1)
+	(can-train condottiero)
+	=>
+	(train condottiero))
+(defrule
+	(goal G-spears 1)
+	(can-train spearman-line)
+	=>
+	(train spearman-line))
+; == STABLE ==
+(defrule; dont delay imp click
+	(food-amount < 1000)
+	(up-get-fact food-amount 0 G-temp1)
+	(up-get-fact gold-amount 0 G-temp2)
+	(or	(gold-amount >= 800)
+		(and	(up-compare-goal G-temp1 g:< G-temp2)
+			(gold-amount >= 500)))
+	=>
+	(set-goal G-champs 0)
+	(set-goal G-spears 0)
+	(set-goal G-knights 0)
+	(set-goal G-elephants 0)
+	(set-goal G-scouts 0)
+	(set-goal G-camels 0))
+
+(defrule
+	(goal G-knights 1)
+	(can-train knight-line)
+	(nand	(goal G-2nd-tick 1)
+		(or	(and	(goal G-scouts 1)
+				(can-train scout-cavalry-line))
+			(and	(goal G-camels 1)
+				(can-train camel-line))))
+	=>
+	(train knight-line))
+(defrule
+	(goal G-elephants 1)
+	(can-train battle-elephant-line)
+	(nand	(goal G-2nd-tick 1)
+		(or	(and	(goal G-scouts 1)
+				(can-train scout-cavalry-line))
+			(and	(goal G-camels 1)
+				(can-train camel-line))))
+	=>
+	(train battle-elephant-line))
+(defrule
+	(goal G-scouts 1)
+	(can-train scout-cavalry-line)
+	(nand	(up-compare-goal G-5th-tick >= 2)
+		(and	(goal G-camels 1)
+			(can-train camel-line)))
+	=>
+	(train scout-cavalry-line))
+(defrule
+	(goal G-camels 1)
+	(can-train camel-line)
+	=>
+	(train camel-line))
+
+; ==== END ====
+(defrule
+	(true)
+	=>
+	(up-get-rule-id J-military-per)
+	(disable-self))

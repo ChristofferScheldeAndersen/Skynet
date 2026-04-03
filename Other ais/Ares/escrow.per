@@ -1,0 +1,841 @@
+
+
+
+;Escrow rules here
+
+(defrule
+	(true)
+=>
+	(set-goal g-build no)
+	(set-goal g-escrow no)
+	(up-reset-cost-data g-food-escrow)
+	(set-goal g-enable-escrow-vills without-escrow)
+	(set-goal g-food-escrow 0)
+	(set-goal g-wood-escrow 0)
+	(set-goal g-gold-escrow 0)
+	(set-goal g-stone-escrow 0)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage wood 0)
+	(set-escrow-percentage gold 0)
+	(set-escrow-percentage stone 0))
+
+;Heresy because monks
+
+(defrule
+	(goal g-escrow no)
+	(research-available ri-heresy)
+	(building-type-count-total town-center > 0)
+	(strategic-number sn-monks > 9)
+	(civilian-population >= 20)
+=>
+	(set-goal g-escrow ri-heresy))
+
+
+
+;eco escrow
+
+(defrule
+	(goal g-escrow no)
+	(up-compare-goal g-research-status >= rush-done)
+	(unit-type-count-total villager >= 20)
+	(research-available ri-double-bit-axe)
+=>
+	(set-goal g-escrow ri-double-bit-axe)
+	(set-goal g-enable-escrow-vills with-escrow))
+
+(defrule
+	(goal g-escrow no)
+	(strategic-number sn-military-superiority > 0)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(building-type-count-total farm > 0)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total town-center > 0)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(research-available ri-horse-collar)
+=>
+	(set-goal g-escrow ri-horse-collar)
+	(set-goal g-enable-escrow-vills with-escrow))
+
+(defrule
+	(goal g-escrow no)
+	(building-type-count-total farm > 14)
+	(current-age >= castle-age)
+	(research-available ri-horse-collar)
+	(research-completed ri-double-bit-axe)
+	(strategic-number sn-military-superiority >= -6)
+	(building-type-count-total town-center > 1)
+	(military-population > 15)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-horse-collar))
+
+#load-if-not-defined BERBERS-CIV
+(defrule
+	(goal g-escrow no)
+	(research-available ri-elite-skirmisher)
+	(building-type-count town-center > 0)
+	(or	(building-type-count-total town-center g:>= g-number-town-centers)
+		(and	(unit-type-count skirmisher > 3)
+			(strategic-number sn-military-superiority < -3)))
+	(strategic-number sn-ranged > 4)
+	(nand	(unit-available genitour-line)
+		(unit-type-count skirmisher-line < 7))
+=>
+	(set-goal g-escrow ri-elite-skirmisher))
+#load-if-not-defined HUN-CIV
+
+
+(defrule
+	(goal g-archer-rush yes)
+	(goal g-rushing-unit archer)
+	(building-type-count archery-range > 0)
+	(research-available ri-crossbow)
+	(civilian-population > 30)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(or	(unit-type-count archer > 1)
+		(current-age-time > 40))
+	(goal g-escrow no)
+=>
+	(set-goal g-escrow ri-crossbow)
+)
+
+#end-if
+#end-if
+
+#load-if-defined BERBERS-CIV
+(defrule
+	(goal g-escrow no)
+	(civilian-population > 63)
+	(goal g-archer-rush yes)
+	(unit-type-count-total my-unique-unit-line >= 3)
+	(up-compare-goal g-research-status >= imperial-done)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(research-available my-unique-unit-upgrade)
+	(building-type-count castle > 0)
+=>
+	(set-goal g-escrow my-unique-unit-upgrade)
+)
+#end-if
+
+(defrule
+	(goal g-escrow no)
+	(civilian-population > 33)
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit champi-line)
+	(or	(strategic-number sn-ranged > 2)
+		(unit-type-count-total champi-line >= 3)))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(research-available ri-champi-runner)
+	(building-type-count barracks > 0)
+=>
+	(set-goal g-escrow ri-champi-runner)
+)
+
+(defrule
+	(goal g-escrow no)
+	(civilian-population > 53)
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit champi-line)
+	(or	(strategic-number sn-ranged > 2)
+		(unit-type-count-total champi-line >= 3)))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(research-available ri-champi-warrior)
+	(building-type-count barracks > 0)
+=>
+	(set-goal g-escrow ri-champi-warrior)
+)
+(defrule
+	(goal g-escrow no)
+	(civilian-population > 73)
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit champi-line)
+	(or	(strategic-number sn-ranged > 2)
+		(unit-type-count-total champi-line >= 3)))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(research-available ri-elite-champi-warrior)
+	(building-type-count barracks > 0)
+=>
+	(set-goal g-escrow ri-elite-champi-warrior)
+)
+
+(defrule
+	(goal g-escrow no)
+	(civilian-population > 53)
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit eagle-warrior)
+	(or	(strategic-number sn-monksiege > 4)
+		(unit-type-count-total eagle-warrior-line >= 3)))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills-2)
+	(research-available ri-eagle-warrior)
+	(building-type-count barracks > 0)
+=>
+	(set-goal g-escrow ri-eagle-warrior)
+)
+
+(defrule
+	(goal g-escrow no)
+	(civilian-population > 87)
+	(goal g-infantry-rush yes)
+	(or	(goal g-rushing-unit eagle-warrior)
+	(or	(strategic-number sn-monksiege > 5)
+		(unit-type-count-total eagle-warrior-line >= 4)))
+	(up-research-status g: g-rushing-age >= research-pending)
+	(unit-type-count villager g:>= g-dark-vills)
+	(research-available ri-elite-eagle-warrior)
+	(building-type-count barracks > 0)
+=>
+	(set-goal g-escrow ri-elite-eagle-warrior)
+)
+
+(defrule
+	(goal g-escrow no)
+	(research-available ri-bow-saw)
+	(or	(nand	(goal g-position flank)
+			(goal g-town-under-attack yes))
+		(escrow-amount food >= 125))
+	(building-type-count-total town-center > 1)
+	(civilian-population >= 34)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-bow-saw))
+
+
+(defrule
+	(goal g-escrow no)
+	(research-available ri-heavy-plow)
+	(or	(nand	(goal g-position flank)
+			(goal g-town-under-attack yes))
+		(escrow-amount food >= 125))
+	(building-type-count-total town-center > 1)
+	(civilian-population >= 34)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-heavy-plow))
+
+(defrule
+	(goal g-escrow no)
+	(goal g-attack no)
+	(research-available ri-heavy-plow)
+	(current-age >= castle-age)
+	(building-type-count-total town-center > 1)
+	(unit-type-count-total villager > 34)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-heavy-plow))
+
+
+(defrule
+	(research-available ri-wheel-barrow)
+	(goal g-escrow no)
+	(or	(unit-type-count-total villager >= 56)
+		(and	(up-compare-goal g-rush-aggression <= rush-low)
+			(building-type-count-total town-center > 1)))
+	(unit-type-count-total villager >= 34)
+=>
+	(set-goal g-escrow ri-wheel-barrow))
+
+(defrule
+	(research-available ri-wheel-barrow)
+	(goal g-escrow no)
+	(up-compare-goal g-rush-aggression <= rush-medium)
+	(building-type-count-total town-center > 1)
+	(unit-type-count-total villager >= 34)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-wheel-barrow))
+
+(defrule
+	(research-available ri-wheel-barrow)
+	(up-compare-goal g-town-under-attack != yes)
+	(strategic-number sn-military-superiority >= -5)
+	(up-compare-goal g-research-status >= rush-done)
+	(or	(goal g-rushing-age feudal-age)
+		(building-type-count-total town-center > 1))
+	(goal g-escrow no)
+	(unit-type-count-total villager >= 34)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-wheel-barrow))
+
+(defrule
+	(up-compare-goal g-research-status >= rush-done)
+	(or	(up-compare-goal g-town-under-attack != yes)
+	(or	(gold-amount >= 200)
+		(strategic-number sn-military-superiority >= 6)))
+	(or	(strategic-number sn-military-superiority >= -12)
+		(goal g-town-under-attack no))
+	(research-available castle-age)
+	(goal g-escrow no)
+	(civilian-population >= 34)
+	(military-population >= 11)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow castle-age))
+
+
+(defrule
+	(research-available ri-hand-cart)
+	(goal g-escrow no)
+	(strategic-number sn-military-superiority > -5)
+	(military-population > 20)
+	(unit-type-count-total villager >= 69)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-hand-cart))
+
+(defrule
+	(research-available ri-hand-cart)
+	(building-type-count-total town-center > 2)
+	(goal g-escrow no)
+	(unit-type-count-total villager >= 56)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-hand-cart))
+
+
+
+
+;Counter research
+
+(defrule
+	(goal g-infantry-rush yes)
+	(goal g-escrow no)
+	(research-available ri-man-at-arms)
+	(unit-type-count-total villager >= 23)
+	(strategic-number sn-eagles > 4)
+=>
+	(set-goal g-escrow ri-man-at-arms))
+
+
+
+(defrule
+	(goal g-infantry-rush yes)
+	(research-available ri-pikeman)
+	(or	(strategic-number sn-cavalry > 4)
+		(unit-type-count-total spearman-line > 10))
+	(goal g-escrow no)
+=>
+	(set-goal g-escrow ri-pikeman))
+
+#load-if-not-defined BERBERS-CIV
+(defrule
+	(goal g-archer-rush yes)
+	(research-available ri-crossbow)
+	(or	(strategic-number sn-infantry > 10)
+		(unit-type-count-total archer > 10))
+	(goal g-escrow no)
+=>
+	(set-goal g-escrow ri-crossbow))
+#end-if
+
+;Research order techs here
+
+(defrule
+	(or	(strategic-number sn-gold-gatherer-percentage >= 6)
+		(gold-amount >= 50))
+	(goal g-archer-rush yes)
+	(building-type-count blacksmith > 0)
+	(unit-type-count archery-class >= 2)
+	(research-available ri-fletching)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-escrow no)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-fletching))
+
+(defrule
+	(building-type-count blacksmith > 0)
+	(up-compare-goal g-research-status >= castle-done)
+	(civilian-population > 30)
+	(research-available ri-bodkin-arrow)
+	(goal g-archer-rush yes)
+	(goal g-escrow no)
+=>
+	(set-goal g-escrow ri-bodkin-arrow)
+	(set-goal g-enable-escrow-vills with-escrow))
+
+(defrule
+	(goal g-escrow no)
+	(or	(building-type-count castle > 0)
+		(goal g-archer-rush yes))
+	(research-available ri-bracer)
+	(civilian-population >= 60)
+=>
+	(set-goal g-escrow ri-bracer)
+)
+
+(defrule
+	(building-type-count blacksmith > 0)
+	(building-type-count university > 0)
+	(building-type-count town-center > 0)
+	(up-compare-goal g-research-status >= castle-done)
+	(unit-type-count monk > 0)
+	(civilian-population > 37)
+	(research-available ri-ballistics)
+	(goal g-archer-rush yes)
+	(goal g-escrow no)
+=>
+	(set-goal g-escrow ri-ballistics)
+	(set-goal g-enable-escrow-vills with-escrow))
+
+(defrule
+	(goal g-escrow no)
+	(goal g-archer-rush yes)
+	(research-available ri-thumb-ring)
+	(building-type-count archery-range > 0)
+	(building-type-count blacksmith > 0)
+	(building-type-count university > 0)
+	(building-type-count town-center > 0)
+	(civilian-population >= 60)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-thumb-ring)
+)
+
+(defrule
+	(goal g-escrow no)
+	(building-type-count blacksmith > 0)
+	(civilian-population > 30)
+	(research-available ri-padded-archer-armor)
+	(goal g-archer-rush yes)
+	(up-compare-goal g-research-status >= castle-done)
+=>
+	(set-goal g-escrow ri-padded-archer-armor)
+	(set-goal g-enable-escrow-vills with-escrow))
+
+
+(defrule
+	(goal g-escrow no)
+	(civilian-population > 30)
+	(up-research-status g: g-rushing-age >= research-pending)
+	(building-type-count-total town-center >= 2)
+	(not	(unit-available genitour-line))
+	(or	(unit-type-count-total skirmisher > 8)
+		(and	(up-compare-goal g-research-status >= castle-done)
+			(building-type-count-total town-center > 2)))
+	(research-available ri-elite-skirmisher)
+=>
+	(set-goal g-escrow ri-elite-skirmisher))
+
+#load-if-not-defined BERBERS-CIV
+(defrule
+	(goal g-escrow no)
+	(goal g-infantry-rush yes)
+	(unit-type-count-total spearman >= 3)
+	(up-compare-goal g-research-status >= castle-done)
+	(civilian-population > 30)
+	(research-completed ri-bodkin-arrow)
+	(research-completed ri-padded-archer-armor)
+	(research-available ri-pikeman)
+=>
+	(set-goal g-escrow ri-pikeman))
+#end-if
+
+
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(unit-type-count monk > 2)
+	(research-available ri-sanctity)
+	(building-type-count monastery > 0)
+	(civilian-population > 30)
+=>
+	(set-goal g-escrow ri-sanctity)
+)
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(unit-type-count monk > 4)
+	(research-available ri-illumination)
+	(building-type-count monastery > 0)
+	(civilian-population > 60)
+=>
+	(set-goal g-escrow ri-illumination)
+)
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(unit-type-count monk > 5)
+	(building-type-count monastery > 0)
+	(research-available ri-block-printing)
+	(civilian-population > 60)
+=>
+	(set-goal g-escrow ri-block-printing)
+)
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(unit-type-count monk > 6)
+	(research-available ri-theocracy)
+	(building-type-count monastery > 0)
+	(civilian-population > 50)
+=>
+	(set-goal g-escrow ri-theocracy)
+)
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(unit-type-count monk > 7)
+	(up-research-status c: ri-sanctity != research-available)
+	(building-type-count monastery > 0)
+	(civilian-population > 36)
+	(research-available ri-fervor)
+=>
+	(set-goal g-escrow ri-fervor)
+)
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(unit-type-count monk > 9)
+	(research-available ri-herbal-medicine)
+	(civilian-population > 60)
+	(building-type-count monastery > 0)
+=>
+	(set-goal g-escrow ri-herbal-medicine)
+)
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(or	(unit-type-count monk > 4)
+		(strategic-number sn-monks > 9))
+	(strategic-number sn-monks > 1)
+	(civilian-population > 30)
+	(research-available ri-atonement)
+=>
+	(set-goal g-escrow ri-atonement)
+)
+
+(defrule
+	(goal g-escrow no)
+	(goal g-monk-rush yes)
+	(or	(unit-type-count monk > 5)
+		(strategic-number sn-siege > 8))
+	(strategic-number sn-siege > 2)
+	(civilian-population > 30)
+	(research-available ri-redemption)
+=>
+	(set-goal g-escrow ri-redemption)
+)
+
+(defrule
+	(goal g-escrow no)
+	(goal g-archer-rush yes)
+	(building-type-count archery-range > 0)
+	(unit-type-count-total elephant-archer-line > 5)
+	(unit-type-count-total villager >= 90)
+	(research-available ri-elite-elephant-archer)
+=>
+	(set-goal g-escrow ri-elite-elephant-archer))
+(defrule
+	(goal g-escrow no)
+	(goal g-infantry-rush yes)
+	(building-type-count castle > 0)
+	(unit-type-count-total jaguar-man > 5)
+	(unit-type-count-total villager >= 90)
+	(research-available ri-elite-jaguar-man)
+=>
+	(set-goal g-escrow ri-elite-jaguar-man))
+
+(defrule
+	(goal g-escrow no)
+	(goal g-cavalry-rush yes)
+	(building-type-count castle > 0)
+	(unit-type-count-total cataphract > 5)
+	(unit-type-count-total villager >= 90)
+	(research-available ri-elite-cataphract)
+=>
+	(set-goal g-escrow ri-elite-cataphract))
+
+#load-if-not-defined BERBERS-CIV
+(defrule
+	(civilian-population >= 69)
+	(goal g-escrow no)
+	(research-available ri-cavalier)
+	(goal g-cavalry-rush yes)
+	(unit-type-count knight > 4)
+=>
+	(set-goal g-escrow ri-cavalier))
+
+(defrule
+	(civilian-population >= 69)
+	(goal g-escrow no)
+	(research-available ri-paladin)
+	(goal g-cavalry-rush yes)
+	(unit-type-count cavalier > 4)
+=>
+	(set-goal g-escrow ri-paladin))
+#end-if
+(defrule
+	(civilian-population >= 69)
+	(goal g-escrow no)
+	(research-available ri-plate-barding)
+	(goal g-cavalry-rush yes)
+	(unit-type-count cavalry-class > 4)
+=>
+	(set-goal g-escrow ri-plate-barding))
+
+(defrule
+	(civilian-population >= 69)
+	(goal g-escrow no)
+	(research-available ri-chain-barding)
+	(goal g-cavalry-rush yes)
+	(unit-type-count cavalry-class > 4)
+=>
+	(set-goal g-escrow ri-chain-barding))
+
+(defrule
+	(civilian-population >= 29)
+	(goal g-escrow no)
+	(research-available ri-scale-barding)
+	(goal g-cavalry-rush yes)
+	(unit-type-count cavalry-class > 2)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-scale-barding))
+
+(defrule
+	(civilian-population >= 29)
+	(goal g-escrow no)
+	(research-available ri-bloodlines)
+	(goal g-cavalry-rush yes)
+	(unit-type-count cavalry-class > 2)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-bloodlines))
+(defrule
+	(civilian-population >= 29)
+	(goal g-escrow no)
+	(research-available ri-scale-mail)
+	(goal g-infantry-rush yes)
+	(unit-type-count infantry-class > 2)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-scale-mail))
+
+(defrule
+	(civilian-population >= 69)
+	(goal g-escrow no)
+	(research-available ri-plate-mail)
+	(goal g-infantry-rush yes)
+	(unit-type-count infantry-class > 4)
+=>
+	(set-goal g-escrow ri-plate-mail))
+
+(defrule
+	(civilian-population >= 59)
+	(goal g-escrow no)
+	(research-available ri-chain-mail)
+	(goal g-infantry-rush yes)
+	(unit-type-count infantry-class > 4)
+=>
+	(set-goal g-escrow ri-chain-mail))
+
+(defrule
+	(goal g-cavalry-rush yes)
+	(up-compare-goal g-research-status >= imperial-done)
+	(civilian-population >= 100)
+	(current-age-time > 120)
+	(goal g-escrow no)
+	(research-available ri-hussar)
+=>
+	(set-goal g-escrow ri-hussar))
+
+(defrule
+	(civilian-population >= 49)
+	(goal g-escrow no)
+	(research-available ri-hussar)
+	(goal g-cavalry-rush yes)
+	(unit-type-count-total light-cavalry > 4)
+=>
+	(set-goal g-escrow ri-hussar))
+
+
+(defrule
+	(civilian-population >= 43)
+	(goal g-escrow no)
+	(research-available ri-light-cavalry)
+	(goal g-cavalry-rush yes)
+	(unit-type-count-total scout-cavalry > 4)
+=>
+	(set-goal g-escrow ri-light-cavalry))
+
+
+(defrule
+	(goal g-escrow no)
+	(civilian-population >= 60)
+	(goal g-cavalry-rush yes)
+	(strategic-number sn-cavalry > 4)
+	(research-available ri-heavy-camel)
+=>
+	(set-goal g-escrow ri-heavy-camel))
+
+
+(defrule
+	(civilian-population >= 49)
+	(goal g-escrow no)
+	(research-available ri-forging)
+	(or	(goal g-infantry-rush yes)
+		(goal g-cavalry-rush yes))
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow ri-forging))
+
+(defrule
+	(civilian-population >= 79)
+	(goal g-escrow no)
+	(research-available ri-iron-casting)
+	(or	(goal g-infantry-rush yes)
+		(goal g-cavalry-rush yes))
+=>
+	(set-goal g-escrow ri-iron-casting))
+
+(defrule
+	(civilian-population >= 89)
+	(goal g-escrow no)
+	(research-available ri-blast-furnace)
+	(or	(goal g-infantry-rush yes)
+		(goal g-cavalry-rush yes))
+=>
+	(set-goal g-escrow ri-blast-furnace))
+
+
+#load-if-defined AZTEC-CIV
+(defrule
+	(goal g-escrow no)
+	(building-type-count castle > 0)
+	(research-available my-unique-research)
+	(goal g-infantry-rush yes)
+	(unit-type-count villager > 60)
+=>
+	(set-goal g-escrow my-unique-research)
+)
+(defrule
+	(goal g-escrow no)
+	(building-type-count castle > 0)
+	(or	(unit-type-count skirmisher-line > 2);commented out for genitours
+		(unit-type-count genitour-line > 1))
+	(goal g-archer-rush yes)
+	(unit-type-count villager > 40)
+	(research-available my-second-unique-research)
+=>
+	(set-goal g-escrow my-second-unique-research))
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+(defrule
+	(goal g-escrow no)
+	(building-type-count castle > 0)
+	(research-available my-unique-research)
+	(or	(goal g-infantry-rush yes)
+		(goal g-cavalry-rush yes))
+	(unit-type-count villager > 60)
+=>
+	(set-goal g-escrow my-unique-research)
+)
+(defrule
+	(goal g-escrow no)
+	(building-type-count castle > 0)
+	(or	(unit-type-count elephant-archer-line > 2);commented out for genitours
+		(unit-type-count armored-elephant-line > 5))
+	(unit-type-count villager > 40)
+	(research-available my-second-unique-research)
+=>
+	(set-goal g-escrow my-second-unique-research))
+#end-if
+
+
+#load-if-defined INCAN-CIV
+(defrule
+	(goal g-escrow no)
+	(building-type-count castle > 0)
+	(research-available my-unique-research)
+	(unit-type-count villager >= 60)
+=>
+	(set-goal g-escrow my-unique-research)
+)
+(defrule
+	(goal g-escrow no)
+	(building-type-count castle > 0)
+	(unit-type-count villager >= 40)
+	(research-available my-second-unique-research)
+=>
+	(set-goal g-escrow my-second-unique-research))
+#end-if
+
+(defrule
+	(goal g-escrow no)
+	(research-available imperial-age)
+	(up-compare-goal g-research-status >= castle-done)
+	(or	(nand	(goal g-position flank)
+			(goal g-town-under-attack yes))
+		(and	(escrow-amount food >= 700)
+			(escrow-amount gold >= 500)))
+	(civilian-population >= 110)
+	(military-population >= 31)
+	(strategic-number sn-military-superiority >= -5)
+=>
+	(set-goal g-enable-escrow-vills with-escrow)
+	(set-goal g-escrow imperial-age))
+
+
+
+(defrule
+	(goal g-escrow no)
+	(civilian-population >= 40)
+	(stone-amount >= 100)
+	(building-type-count monastery > 0)
+	(building-type-count-total town-center g:< g-number-town-centers)
+	(strategic-number sn-military-superiority > -4)
+	(military-population >= 10)
+=>
+	(set-goal g-escrow town-center)
+)
+
+(defrule
+	(building-type-count-total town-center == 0)
+=>
+	(set-goal g-escrow town-center)
+)
+	
+
+(defrule
+	(up-compare-goal g-escrow != no)
+	(up-compare-goal g-escrow != town-center)
+=>
+	(up-setup-cost-data 1 g-food-escrow)
+	(up-add-research-cost g: g-escrow c: 1) 
+	(up-modify-escrow food g:= g-food-escrow)
+	(up-modify-escrow wood g:= g-wood-escrow)
+	(up-modify-escrow gold g:= g-gold-escrow)
+	(up-modify-escrow stone g:= g-stone-escrow)
+	(set-goal g-math-1 with-escrow)
+)
+(defrule
+	(goal g-escrow town-center)
+=>
+	(up-setup-cost-data 1 g-food-escrow)
+	(up-add-object-cost g: g-escrow c: 1) 
+	(up-modify-escrow food g:= g-food-escrow)
+	(up-modify-escrow wood g:= g-wood-escrow)
+	(up-modify-escrow gold g:= g-gold-escrow)
+	(up-modify-escrow stone g:= g-stone-escrow)
+	(set-goal g-math-1 with-escrow)
+)
+
+(defrule
+	(up-compare-goal g-escrow != no)
+	(up-can-research g-math-1 g: g-escrow)
+=>
+	(up-research g-math-1 g: g-escrow))
+(defrule
+	(goal g-escrow no)
+=>
+	(release-escrow food)
+	(release-escrow wood)
+	(release-escrow gold)
+	(release-escrow stone)
+)

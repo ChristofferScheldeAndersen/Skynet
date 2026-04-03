@@ -1,0 +1,1126 @@
+
+#load-if-defined AZTEC-CIV
+(defrule
+	(true)
+=>
+	(up-modify-flag f-enable-infantry c:+ fv-uu)
+	(up-modify-flag f-enable-infantry c:+ fv-eagles)
+	(up-modify-flag f-enable-infantry c:+ fv-spears)
+	(up-modify-flag f-enable-archers c:+ fv-archers)
+	(up-modify-flag f-enable-archers c:+ fv-skirms)
+	(up-modify-flag f-enable-archers c:+ fv-genitour)
+	(up-modify-flag f-enable-monks c:+ fv-monks)
+	(up-modify-flag f-enable-siege c:+ fv-rams)
+	(up-modify-flag f-enable-siege c:+ fv-mangonels)
+	(set-goal g-dark-vills 23)
+	(set-goal g-dark-vills-2 21)
+	(set-goal g-rushing-unit eagle-warrior)
+	(set-goal g-rush-aggression rush-high)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(set-goal g-number-town-centers 1)
+	(set-goal g-archer-rush no)
+	(set-goal g-infantry-rush yes)
+	(set-goal g-cavalry-rush no)
+	(set-goal g-monk-rush no)
+	(set-goal g-siege-rush no)
+	(disable-self)
+)
+
+;likely to go archers or skirmishers
+;(defrule
+;	(goal g-rushing-unit militiaman)
+;	(or	(players-civ target-player mayan)
+;	(or	(players-civ target-player vietnamese)
+;	(or	(players-civ target-player italian)
+;	(or	(players-civ target-player ethiopian)
+;	(or	(players-civ target-player portuguese)
+;	(or	(players-civ target-player korean)
+;		(players-civ target-player byzantine)))))))
+;		
+;=>
+;	(set-goal g-number-barracks 2)
+;	(set-goal g-rushing-unit eagle-warrior)
+;	(disable-self)
+;)
+
+(defrule
+	(goal g-enemy-flusher yes)
+	(not	(goal g-rushing-unit archer))
+	(players-military-population target-player > 1)
+	(players-current-age target-player == dark-age)
+=>
+;	(set-goal g-number-ranges 2)
+;	(set-goal g-number-barracks 1)
+	(set-goal g-rushing-unit archer)
+	(set-goal g-archer-rush yes)
+;	(set-goal g-infantry-rush no)
+)
+
+(defrule
+	(current-age == feudal-age)
+	(goal g-rushing-age feudal-age)
+	(goal g-rushing-unit militiaman)
+	(strategic-number sn-archers s:>= sn-spears)
+	(players-military-population target-player > 8)
+	(or	(strategic-number sn-ranged > 5)
+	(or	(players-unit-type-count any-enemy monk > 1)
+		(gold-amount >= 245)))
+=>
+	(set-goal g-number-barracks 1)
+	(set-goal g-archer-rush yes)
+	(set-goal g-rushing-unit eagle-warrior)
+)
+(defrule
+	(current-age == feudal-age)
+	(building-type-count archery-range > 0)
+	(goal g-archer-rush no)
+=>
+;	(set-goal g-infantry-rush no)
+;	(set-goal g-rushing-unit -1)
+	(set-goal g-archer-rush yes)
+)
+(defrule
+	(goal g-rushing-unit -1)
+	(up-research-status c: imperial-age < research-pending)
+	(up-research-status c: castle-age >= research-pending)
+	(strategic-number sn-infantry < 9)
+=>
+	(set-goal g-number-barracks 3)
+	(set-goal g-infantry-rush yes)
+	(set-goal g-rushing-unit eagle-warrior)
+)
+(defrule
+	(unit-type-count eagle-warrior-line > 11)
+	(goal g-initial-attack -1)
+=>
+	(set-goal g-initial-attack eagle-warrior)
+	(disable-self)
+)
+
+(defrule
+	(goal g-initial-attack eagle-warrior)
+	(unit-type-count eagle-warrior-line <= 11)
+=>
+	(set-goal g-initial-attack -1)
+	(disable-self)
+)
+(defrule
+	(goal g-monk-rush no)
+	(up-research-status c: imperial-age >= research-pending)
+	(strategic-number sn-heavy-cavalry > 7)
+=>
+	(set-goal g-number-monasteries 3)
+	(set-goal g-monk-rush yes)
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(goal g-rushing-unit eagle-warrior)
+	(strategic-number sn-infantry > 10)
+=>
+	(set-goal g-monk-rush yes)
+	(set-goal g-archer-rush yes)
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(current-age == feudal-age)
+	(or	(strategic-number sn-cavalry > 5)
+		(strategic-number sn-eagles > 6))
+	(goal g-infantry-rush no)
+=>
+	(set-goal g-infantry-rush yes))
+	
+;---------------------------------Research status
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age feudal-age)
+	(research-completed ri-double-bit-axe)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age castle-age)
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status c: castle-age >= research-pending)
+	(or	(research-completed ri-bodkin-arrow)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-chain-mail)
+		(goal g-infantry-rush no))
+	(or	(research-completed ri-sanctity)
+		(goal g-monk-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status castle-done)
+	(disable-self)
+)
+(defrule
+	(goal g-research-status castle-done)
+	(up-research-status c: imperial-age >= research-pending)
+	(or	(research-completed ri-bracer)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-plate-mail)
+		(goal g-infantry-rush no))
+	(or	(research-completed ri-illumination)
+		(goal g-monk-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status imperial-done)
+	(disable-self)
+)
+(defrule
+	(research-completed my-unique-research)
+	(research-completed ri-elite-eagle-warrior)
+	(goal g-research-status imperial-done)
+	(up-research-status c: imperial-age >= research-pending)
+	(or	(research-completed ri-bracer)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-plate-mail)
+		(goal g-infantry-rush no))
+	(or	(research-completed ri-illumination)
+		(goal g-monk-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status research-complete)
+	(disable-self)
+)
+;reset desired buildings in castle age
+(defrule
+	(current-age >= feudal-age)
+=>
+	(set-goal g-number-town-centers 1)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(disable-self)
+)
+(defrule
+	(current-age >= castle-age)
+=>
+	(set-goal g-number-town-centers 4)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 2)
+	(set-goal g-number-siege-workshops 1)
+	(up-modify-goal g-number-town-centers g:- g-rush-aggression)
+	(disable-self)
+)
+#end-if
+
+
+#load-if-defined BERBERS-CIV
+(defrule
+	(true)
+=>
+	(set-goal g-dark-vills 23)
+	(set-goal g-dark-vills-2 21)
+	(set-goal g-rushing-unit skirmisher)
+	(set-goal g-rush-aggression rush-medium)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(set-goal g-number-town-centers 1)
+	(set-goal g-archer-rush yes)
+	(set-goal g-infantry-rush no)
+	(set-goal g-cavalry-rush no)
+	(set-goal g-monk-rush no)
+	(set-goal g-siege-rush no)
+	(disable-self)
+)
+
+(defrule
+	(current-age == feudal-age)
+	(goal g-number-stables 0)
+	(goal g-rushing-age feudal-age)
+	(goal g-rushing-unit militiaman)
+	(strategic-number sn-archers s:>= sn-skirms)
+	(strategic-number sn-archers s:>= sn-spears)
+	(players-military-population target-player > 13)
+	(or	(players-unit-type-count any-enemy archer-line > 2)
+	(or	(players-unit-type-count any-enemy monk > 1)
+		(gold-amount >= 245)))
+=>
+	(set-goal g-number-barracks 1)
+	(set-goal g-archer-rush yes)
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(current-age == feudal-age)
+	(building-type-count archery-range > 0)
+	(goal g-archer-rush no)
+=>
+	(set-goal g-number-stables 1)
+	(set-goal g-archer-rush yes)
+)
+
+(defrule
+	(current-age == feudal-age)
+	(building-type-count stable > 0)
+	(goal g-number-ranges 0)
+=>
+	(set-goal g-infantry-rush no)
+	(set-goal g-cavalry-rush yes)
+	(set-goal g-number-ranges yes)
+)
+
+(defrule
+	(current-age == feudal-age)
+	(or	(building-type-count stable > 0)
+		(strategic-number sn-skirms > 9))
+	(goal g-cavalry-rush no)
+=>
+	(set-goal g-cavalry-rush yes)
+)
+
+(defrule
+	(current-age == feudal-age)
+	(goal g-rushing-age feudal-age)
+	(goal g-infantry-rush yes)
+	(strategic-number sn-archers > 4)
+	(strategic-number sn-cavalry < 8)
+	(building-type-count archery-range > 0)
+=>
+	(set-goal g-number-barracks 1)
+	(set-goal g-infantry-rush no)
+	(set-goal g-archer-rush yes)
+	(set-goal g-rushing-unit -1)
+)
+
+(defrule
+	(goal g-cavalry-rush no)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-goal g-number-stables 1)
+	(set-goal g-number-barracks 1)
+	(set-goal g-cavalry-rush yes)
+	(set-goal g-rushing-unit knight)
+)
+
+(defrule
+	(or	(and	(goal g-rushing-unit scout-cavalry)
+			(strategic-number sn-spears > 4))
+		(and	(goal g-rushing-unit militiaman)
+			(building-type-count stable > 0)))
+=>
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(unit-type-count knight-line > 11)
+	(goal g-initial-attack -1)
+=>
+	(set-goal g-initial-attack knight)
+	(disable-self)
+)
+
+(defrule
+	(goal g-initial-attack knight-line)
+	(unit-type-count knight-line <= 11)
+=>
+	(set-goal g-initial-attack -1)
+	(disable-self)
+)
+(defrule
+	(goal g-rushing-unit knight)
+	(or	(players-unit-type-count any-enemy spearman-line > 5)
+	(or	(players-unit-type-count any-enemy monk > 3)
+		(players-unit-type-count any-enemy camel-line > 2)))
+=>
+	(set-goal g-archer-rush yes)
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(or	(research-completed ri-heavy-camel)
+		(strategic-number sn-cavalry < 3))
+	(or	(current-age >= castle-age)
+		(and	(strategic-number sn-cavalry < 3)
+		(and	(strategic-number sn-spears < 3)
+			(strategic-number sn-eagles < 4))))
+	(not	(goal g-rushing-unit militiaman))
+	(goal g-infantry-rush yes)
+=>
+	(set-goal g-number-barracks 1)
+	(set-goal g-infantry-rush no))
+(defrule
+	(up-research-status c: castle-age < research-pending)
+	(or	(strategic-number sn-cavalry > 5)
+		(strategic-number sn-eagles > 6))
+	(goal g-infantry-rush no)
+=>
+	(set-goal g-infantry-rush yes))
+	
+;---------------------------------Research status
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age feudal-age)
+	(research-completed ri-double-bit-axe)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age castle-age)
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(research-completed ri-thumb-ring)
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status castle-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(research-completed ri-thumb-ring)
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+	(research-completed ri-bracer)
+=>
+	(set-goal g-research-status imperial-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(research-completed my-unique-research)
+	(research-completed my-unique-unit-upgrade)
+	(research-completed ri-thumb-ring)
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+	(research-completed ri-bracer)
+=>
+	(set-goal g-research-status research-complete)
+	(disable-self)
+)
+;reset desired buildings in castle age
+(defrule
+	(current-age >= feudal-age)
+=>
+	(set-goal g-number-town-centers 1)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(disable-self)
+)
+(defrule
+	(current-age >= feudal-age)
+	(up-compare-flag f-map-type == fv-fish-map)
+=>
+	(set-goal g-number-town-centers 1)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 0)
+	(set-goal g-number-stables 1)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(disable-self)
+)
+(defrule
+	(current-age >= feudal-age)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-goal g-number-town-centers 4)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 2)
+	(set-goal g-number-monasteries 1)
+	(set-goal g-number-siege-workshops 1)
+	(up-modify-goal g-number-town-centers g:- g-rush-aggression)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+(defrule
+	(true)
+=>
+	(set-goal g-dark-vills 23)
+	(set-goal g-dark-vills-2 21)
+	(set-goal g-rushing-unit skirmisher)
+	(set-goal g-rush-aggression rush-medium)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(set-goal g-number-town-centers 1)
+	(set-goal g-archer-rush yes)
+	(set-goal g-infantry-rush no)
+	(set-goal g-cavalry-rush no)
+	(set-goal g-monk-rush no)
+	(set-goal g-siege-rush no)
+	(disable-self)
+)
+
+;likely to go archers or skirmishers
+;(defrule
+;	(goal g-rushing-unit militiaman)
+;	(or	(players-civ target-player mayan)
+;	(or	(players-civ target-player vietnamese)
+;	(or	(players-civ target-player italian)
+;	(or	(players-civ target-player ethiopian)
+;	(or	(players-civ target-player portuguese)
+;	(or	(players-civ target-player korean)
+;		(players-civ target-player byzantine)))))))
+;		
+;=>
+;	(set-goal g-number-barracks 2)
+;	(set-goal g-rushing-unit eagle-warrior)
+;	(disable-self)
+;)
+
+;likely to go infantry (it might be worth going scouts vs some)
+(defrule
+	(goal g-rushing-unit skirmisher)
+	(or	(players-civ target-player gothic)
+	(or	(players-civ target-player japanese)
+	(or	(players-civ target-player viking)
+	(or	(players-civ target-player aztec)
+	(or	(players-civ target-player incan)
+	(or	(players-civ target-player romans)
+		(players-civ target-player malian)))))))
+		
+=>
+	(set-goal g-number-ranges 2)
+	(set-goal g-rushing-unit archer)
+	(disable-self)
+)
+
+(defrule
+	(goal g-enemy-flusher yes)
+	(not	(goal g-rushing-unit archer))
+	(players-military-population target-player > 1)
+	(players-current-age target-player == dark-age)
+=>
+;	(set-goal g-number-ranges 2)
+;	(set-goal g-number-barracks 1)
+	(set-goal g-rushing-unit archer)
+	(set-goal g-archer-rush yes)
+;	(set-goal g-infantry-rush no)
+)
+(defrule
+	(goal g-enemy-flusher yes)
+	(not	(goal g-rushing-unit archer))
+	(strategic-number sn-infantry > 1)
+	(current-age == feudal-age)
+=>
+	(set-goal g-number-ranges 2)
+;	(set-goal g-number-barracks 1)
+	(set-goal g-rushing-unit archer)
+	(set-goal g-archer-rush yes)
+;	(set-goal g-infantry-rush no)
+)
+;(defrule
+;	(current-age >= feudal-age)
+;	(building-type-count archery-range > 1)
+;	(strategic-number sn-skirms > 5)
+;	(goal g-number-stables 0)
+;=>
+;	(set-goal g-number-stables 1)
+;	(set-goal g-archer-rush yes)
+;)
+;(defrule
+;	(research-completed my-unique-upgrade)
+;	(goal g-infantry-rush no)
+;=>
+;	(set-goal g-number-barracks 3)
+;	(set-goal g-infantry-rush yes)
+;)
+(defrule
+	(unit-type-count elephant-archer-line > 14)
+	(goal g-initial-attack -1)
+=>
+	(set-goal g-initial-attack elephant-archer-line)
+	(disable-self)
+)
+
+(defrule
+	(goal g-initial-attack elephant-archer-line)
+	(unit-type-count elephant-archer-line <= 14)
+=>
+	(set-goal g-initial-attack -1)
+	(disable-self)
+)
+(defrule
+	(goal g-infantry-rush no)
+;	(up-research-status c: imperial-age >= research-pending)
+	(strategic-number sn-heavy-cavalry > 5)
+=>
+	(set-goal g-number-barracks 3)
+	(set-goal g-infantry-rush yes)
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(or	(strategic-number sn-siege > 7)
+		(strategic-number sn-husks > 6))
+	(goal g-cavalry-rush no)
+	(current-age < imperial-age)
+=>
+	(set-goal g-cavalry-rush yes))
+(defrule
+	(goal g-rushing-unit skirmisher)
+	(or	(strategic-number sn-infantry > 10)
+	(or	(strategic-number sn-cavalry > 5)
+		(strategic-number sn-siege > 3)))
+=>
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(research-completed my-unique-research)
+=>
+	(set-goal g-number-barracks 6)
+	(set-goal g-infantry-rush yes)
+	(disable-self)
+)
+(defrule
+	(current-age == feudal-age)
+	(or	(strategic-number sn-cavalry > 5)
+		(strategic-number sn-eagles > 6))
+	(goal g-infantry-rush no)
+=>
+	(set-goal g-infantry-rush yes))
+	
+;---------------------------------Research status
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age feudal-age)
+	(research-completed ri-double-bit-axe)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age castle-age)
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status c: castle-age >= research-pending)
+	(or	(research-completed ri-bodkin-arrow)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-chain-mail)
+		(goal g-infantry-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status castle-done)
+	(disable-self)
+)
+(defrule
+	(goal g-research-status castle-done)
+	(up-research-status c: imperial-age >= research-pending)
+	(or	(research-completed ri-bracer)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-plate-mail)
+		(goal g-infantry-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status imperial-done)
+	(disable-self)
+)
+(defrule
+	(research-completed my-unique-research)
+	(research-completed my-second-unique-research)
+	(goal g-research-status imperial-done)
+	(up-research-status c: imperial-age >= research-pending)
+	(or	(research-completed ri-bracer)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-plate-mail)
+		(goal g-infantry-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status research-complete)
+	(disable-self)
+)
+;reset desired buildings in castle age
+(defrule
+	(current-age >= feudal-age)
+=>
+	(set-goal g-number-town-centers 1)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(disable-self)
+)
+(defrule
+	(current-age >= castle-age)
+=>
+	(set-goal g-number-town-centers 4)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 2)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 1)
+	(set-goal g-number-siege-workshops 1)
+	(up-modify-goal g-number-town-centers g:- g-rush-aggression)
+	(disable-self)
+)
+
+(defrule
+	(current-age >= imperial-age)
+=>
+	(set-goal g-number-stables 1)
+	(set-goal g-number-ranges 5)
+	(set-goal g-cavalry-rush no)
+	(disable-self)
+)
+(defrule
+	(current-age >= castle-age)
+	(building-type-count town-center > 3)
+=>
+	(set-goal g-number-stables 1)
+	(disable-self)
+)
+
+#end-if
+
+#load-if-defined INCAN-CIV
+(defrule
+	(true)
+=>
+	(set-goal g-dark-vills 23)
+	(set-goal g-dark-vills-2 21)
+	(set-goal g-rushing-unit champi-line)
+	(set-goal g-rush-aggression rush-medium)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(set-goal g-number-town-centers 1)
+	(set-goal g-archer-rush no)
+	(set-goal g-infantry-rush yes)
+	(set-goal g-cavalry-rush no)
+	(set-goal g-monk-rush no)
+	(set-goal g-siege-rush no)
+	(disable-self)
+)
+(defrule
+	(current-age == feudal-age)
+	(building-type-count archery-range > 0)
+	(goal g-archer-rush no)
+=>
+	(set-goal g-archer-rush yes)
+)
+(defrule
+	(goal g-rushing-unit -1)
+	(up-research-status c: imperial-age < research-pending)
+	(up-research-status c: castle-age >= research-pending)
+	(strategic-number sn-infantry < 9)
+=>
+	(set-goal g-number-barracks 3)
+	(set-goal g-infantry-rush yes)
+	(set-goal g-rushing-unit champi-line)
+)
+(defrule
+	(unit-type-count champi-line > 11)
+	(goal g-initial-attack -1)
+=>
+	(set-goal g-initial-attack champi-line)
+	(disable-self)
+)
+
+(defrule
+	(goal g-initial-attack champi-line)
+	(unit-type-count champi-line <= 11)
+=>
+	(set-goal g-initial-attack -1)
+	(disable-self)
+)
+(defrule
+	(goal g-rushing-unit champi-line)
+	(strategic-number sn-infantry > 10)
+=>
+	(set-goal g-archer-rush yes)
+	(set-goal g-rushing-unit -1)
+)
+(defrule
+	(current-age == feudal-age)
+	(or	(strategic-number sn-cavalry > 5)
+		(strategic-number sn-eagles > 6))
+	(goal g-infantry-rush no)
+=>
+	(set-goal g-infantry-rush yes))
+	
+;---------------------------------Research status
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age feudal-age)
+	(research-completed ri-double-bit-axe)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status g: g-rushing-age >= research-pending)
+	(goal g-rushing-age castle-age)
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status rush-done)
+	(disable-self)
+)
+(defrule
+	(up-research-status c: castle-age >= research-pending)
+	(or	(research-completed ri-bodkin-arrow)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-chain-mail)
+		(goal g-infantry-rush no))
+	(or	(research-completed ri-sanctity)
+		(goal g-monk-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status castle-done)
+	(disable-self)
+)
+(defrule
+	(goal g-research-status castle-done)
+	(up-research-status c: imperial-age >= research-pending)
+	(or	(research-completed ri-bracer)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-plate-mail)
+		(goal g-infantry-rush no))
+	(or	(research-completed ri-illumination)
+		(goal g-monk-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-crop-rotation)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status imperial-done)
+	(disable-self)
+)
+(defrule
+	(research-completed my-unique-research)
+	(research-completed my-unique-unit-upgrade)
+	(goal g-research-status imperial-done)
+	(up-research-status c: imperial-age >= research-pending)
+	(or	(research-completed ri-bracer)
+		(goal g-archer-rush no))
+	(or	(research-completed ri-plate-mail)
+		(goal g-infantry-rush no))
+	(or	(research-completed ri-illumination)
+		(goal g-monk-rush no))
+	(research-completed ri-double-bit-axe)
+	(research-completed ri-crop-rotation)
+	(research-completed ri-bow-saw)
+=>
+	(set-goal g-research-status research-complete)
+	(disable-self)
+)
+;reset desired buildings in castle age
+(defrule
+	(current-age >= feudal-age)
+=>
+	(set-goal g-number-town-centers 1)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 0)
+	(set-goal g-number-siege-workshops 0)
+	(disable-self)
+)
+(defrule
+	(current-age >= castle-age)
+=>
+	(set-goal g-number-town-centers 4)
+	(set-goal g-number-barracks 1)
+	(set-goal g-number-ranges 1)
+	(set-goal g-number-stables 0)
+	(set-goal g-number-monasteries 1)
+	(set-goal g-number-siege-workshops 1)
+	(up-modify-goal g-number-town-centers g:- g-rush-aggression)
+	(disable-self)
+)
+#end-if
+
+
+;----------------------------------------------------------number buildings
+(defrule
+	(wood-amount > 340)
+	(goal g-infantry-rush yes)
+	(up-compare-goal g-number-barracks < 4)
+	(or	(up-compare-goal g-number-barracks < 1)
+		(up-compare-goal g-research-status >= castle-done))
+	(up-compare-goal g-research-status >= rush-done)
+	(building-type-count barracks g:>= g-number-barracks)
+	(or	(building-type-count archery-range g:>= g-number-ranges)
+		(up-compare-goal g-number-barracks g:< g-number-ranges))
+	(or	(building-type-count stable g:>= g-number-stables)
+		(up-compare-goal g-number-barracks g:< g-number-stables))
+	(or	(building-type-count monastery g:>= g-number-monasteries)
+		(up-compare-goal g-number-barracks g:< g-number-monasteries))
+	(or	(building-type-count siege-workshop g:>= g-number-siege-workshops)
+		(up-compare-goal g-number-barracks g:< g-number-siege-workshops))
+	(building-type-count town-center g:>= g-number-town-centers)
+	(building-type-count-total blacksmith > 0)
+=>
+	(up-modify-goal g-number-barracks c:+ 1)
+)
+(defrule
+	(wood-amount > 340)
+	(goal g-archer-rush yes)
+	(up-compare-goal g-number-ranges < 4)
+	(or	(up-compare-goal g-number-ranges < 1)
+		(up-compare-goal g-research-status >= castle-done))
+	(up-compare-goal g-research-status >= rush-done)
+	(building-type-count archery-range g:>= g-number-ranges)
+	(or	(building-type-count barracks g:>= g-number-barracks)
+		(up-compare-goal g-number-ranges g:< g-number-barracks))
+	(or	(building-type-count stable g:>= g-number-stables)
+		(up-compare-goal g-number-ranges g:< g-number-stables))
+	(or	(building-type-count monastery g:>= g-number-monasteries)
+		(up-compare-goal g-number-ranges g:< g-number-monasteries))
+	(or	(building-type-count siege-workshop g:>= g-number-siege-workshops)
+		(up-compare-goal g-number-ranges g:< g-number-siege-workshops))
+	(building-type-count town-center g:>= g-number-town-centers)
+	(building-type-count-total blacksmith > 0)
+=>
+	(up-modify-goal g-number-ranges c:+ 1)
+)
+(defrule
+	(wood-amount > 340)
+	(goal g-cavalry-rush yes)
+	(up-compare-goal g-number-stables < 4)
+	(or	(up-compare-goal g-number-stables < 1)
+		(up-compare-goal g-research-status >= castle-done))
+	(up-compare-goal g-research-status >= rush-done)
+	(building-type-count stable g:>= g-number-stables)
+	(or	(building-type-count barracks g:>= g-number-barracks)
+		(up-compare-goal g-number-stables g:< g-number-barracks))
+	(or	(building-type-count archery-range g:>= g-number-ranges)
+		(up-compare-goal g-number-stables g:< g-number-ranges))
+	(or	(building-type-count monastery g:>= g-number-monasteries)
+		(up-compare-goal g-number-stables g:< g-number-monasteries))
+	(or	(building-type-count siege-workshop g:>= g-number-siege-workshops)
+		(up-compare-goal g-number-stables g:< g-number-siege-workshops))
+	(building-type-count town-center g:>= g-number-town-centers)
+	(building-type-count-total blacksmith > 0)
+=>
+	(up-modify-goal g-number-stables c:+ 1)
+)
+
+(defrule
+	(wood-amount > 340)
+	(goal g-monk-rush yes)
+	(up-compare-goal g-number-monasteries < 3)
+	(or	(up-compare-goal g-number-monasteries < 1)
+		(up-compare-goal g-research-status >= castle-done))
+	(up-compare-goal g-research-status >= rush-done)
+	(building-type-count monastery g:>= g-number-monasteries)
+	(or	(building-type-count barracks g:>= g-number-barracks)
+		(up-compare-goal g-number-monasteries g:< g-number-barracks))
+	(or	(building-type-count archery-range g:>= g-number-ranges)
+		(up-compare-goal g-number-monasteries g:< g-number-ranges))
+	(or	(building-type-count stable g:>= g-number-stables)
+		(up-compare-goal g-number-monasteries g:< g-number-stables))
+	(or	(building-type-count siege-workshop g:>= g-number-siege-workshops)
+		(up-compare-goal g-number-monasteries g:< g-number-siege-workshops))
+	(building-type-count town-center g:>= g-number-town-centers)
+	(building-type-count-total blacksmith > 0)
+=>
+	(up-modify-goal g-number-monasteries c:+ 1)
+)
+
+(defrule
+	(wood-amount > 340)
+	(goal g-siege-rush yes)
+	(up-compare-goal g-number-siege-workshops < 3)
+	(or	(up-compare-goal g-number-siege-workshops < 1)
+		(up-compare-goal g-research-status >= castle-done))
+	(up-compare-goal g-research-status >= rush-done)
+	(building-type-count siege-workshop g:>= g-number-siege-workshops)
+	(or	(building-type-count barracks g:>= g-number-barracks)
+		(up-compare-goal g-number-siege-workshops g:< g-number-barracks))
+	(or	(building-type-count archery-range g:>= g-number-ranges)
+		(up-compare-goal g-number-siege-workshops g:< g-number-ranges))
+	(or	(building-type-count stable g:>= g-number-stables)
+		(up-compare-goal g-number-siege-workshops g:< g-number-stables))
+	(or	(building-type-count monastery g:>= g-number-monasteries)
+		(up-compare-goal g-number-siege-workshops g:< g-number-monasteries))
+	(building-type-count town-center g:>= g-number-town-centers)
+	(building-type-count-total blacksmith > 0)
+=>
+	(up-modify-goal g-number-siege-workshops c:+ 1)
+)
+(defrule
+	(unit-type-count-total villager g:>= g-dark-vills)
+	(current-age == dark-age)
+	(food-amount >= 400)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+	(disable-self)
+)
+(defrule
+	(current-age == feudal-age)
+;	(up-compare-goal g-rush-aggression < rush-high)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+	(disable-self)
+)
+(defrule
+	(research-available castle-age)
+	(food-amount >= 720)
+	(gold-amount >= 200)
+	(unit-type-count-total villager g:>= g-dark-vills)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+	(disable-self)
+)
+(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-rush-aggression < rush-high)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+	(disable-self)
+)
+(defrule
+	(current-age >= castle-age)
+	(building-type-count town-center > 1)
+	(strategic-number sn-enable-training-queue != 0)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+
+(defrule
+	(military-population > 2)
+	(goal g-initial-attack g-enemy-flusher)
+=>
+	(set-goal g-initial-attack -1)
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1)
+)
+
+(defrule
+	(goal g-initial-attack -1)
+	(goal g-enemy-flusher yes)
+	(players-unit-type-count any-enemy militiaman-line > 0)
+	(military-population < 3)
+=>
+	(set-goal g-initial-attack g-enemy-flusher)
+	(up-reset-unit c: scout-unit)
+	(set-strategic-number sn-total-number-explorers 0)
+	(set-strategic-number sn-number-explore-groups 0)
+	(disable-self)
+)
+
+(defrule
+	(player-in-game target-player)
+=>
+	(up-modify-goal g-enemy-score-prev g:= g-enemy-score-curr)
+	(up-get-target-fact current-score 0 g-enemy-score-curr)
+	(up-modify-goal g-enemy-score-diff g:= g-enemy-score-prev)
+	(up-modify-goal g-enemy-score-diff g:- g-enemy-score-curr)
+)
+
+(defrule
+	(up-compare-goal g-store-target s:!= sn-target-player-number)
+=>
+	(up-modify-goal g-store-target s:= sn-target-player-number)
+	(up-modify-goal g-enemy-score-prev g:= g-enemy-score-curr)
+	(up-get-target-fact current-score 0 g-enemy-score-curr)
+	(up-modify-goal g-enemy-score-diff g:= g-enemy-score-prev)
+	(up-modify-goal g-enemy-score-diff g:- g-enemy-score-curr)
+	(up-jump-rule 4)
+)
+(defrule
+	(or	(players-population target-player < 25)
+		(unit-type-count fishing-ship > 0))
+	(players-population target-player < 28)
+	(population > 10)
+	(current-age == dark-age)
+	(goal g-enemy-flusher no)
+	(players-current-age target-player == dark-age)
+	(military-population < 3)
+	(up-compare-goal g-store-target s:== sn-target-player-number)
+	(or	(up-compare-goal g-enemy-score-diff c:> 30)
+		(players-military-population target-player > 1))
+=>
+	(set-goal g-enemy-flusher yes)
+	(set-goal g-rush-aggression rush-medium)
+	(chat-to-player my-player-number "enemy flusher found !!")
+	(disable-self)
+)
+
+(defrule
+	(or	(military-population < 11)
+		(players-current-age target-player > feudal-age))
+	(or	(goal g-initial-attack castle-age)
+		(and	(players-current-age target-player > castle-age)
+			(goal g-initial-attack imperial-age)))
+=>
+	(set-goal g-initial-attack -1)
+)
+
+(defrule
+	(goal g-initial-attack -1)
+	(strategic-number sn-military-superiority > -4)
+	(military-population > 10)
+	(players-current-age target-player == feudal-age)
+	(up-compare-goal g-store-target s:== sn-target-player-number)
+	(up-compare-goal g-enemy-score-diff c:> 62)
+=>
+	(set-goal g-initial-attack castle-age)
+	(chat-to-player my-player-number "enemy upping to castle !!")
+	(disable-self)
+)
+
+(defrule
+	(goal g-initial-attack -1)
+	(strategic-number sn-military-superiority > -4)
+	(military-population > 16)
+	(players-current-age target-player == castle-age)
+	(up-compare-goal g-store-target s:== sn-target-player-number)
+	(up-compare-goal g-enemy-score-diff c:> 117)
+=>
+	(set-goal g-initial-attack imperial-age)
+	(chat-to-player my-player-number "enemy upping to imperial !!")
+	(disable-self)
+)
+;---------------------------------------
+
+(defrule
+	(goal g-ballistic-enemies no)
+=>
+	(up-full-reset-search)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-find-remote c: archery-class c: 1)
+	(up-find-remote c: cavalry-archer-class c: 1)
+	(up-find-remote c: scorpion-class c: 1)
+	(up-find-remote c: tower-class c: 1)
+	(up-find-remote c: castle c: 1)
+	(up-clean-search search-remote object-data-ballistics search-order-desc)
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-ballistics g-math-1)
+	(up-modify-goal g-ballistic-enemies g:max g-math-1))
