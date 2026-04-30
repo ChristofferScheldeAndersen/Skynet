@@ -932,6 +932,8 @@
             (defconst gl-remote-loop-first-rule__#000 10037)
             (defconst gl-end-of-shooting-rules__#000 10038)
 
+            (defconst gl-enemy-going-monks 10039)
+
         ;Goals (ca. 50 fri efter integration af 1.61)
         ;1-40
             ;1 used unnamed
@@ -1919,6 +1921,9 @@
             (defconst saving-for-treb 53)
             (defconst saving-for-savar 54)
             (defconst saving-for-murder-holes 55)
+            (defconst saving-for-heresy 56)
+            (defconst saving-for-devotion 57)
+            (defconst saving-for-faith 58)
 
             (defconst flank 3) 
             (defconst pocket 4) 
@@ -10576,8 +10581,10 @@
                     )
 
                     (defrule
-                        (up-compare-goal gl-temp1 >= 175) ;our flank pop is over twice that of the enemy
-                        (up-compare-goal gl-temp12 > 5)
+                        (or(and(up-compare-goal gl-temp12 > 5)
+                        (up-compare-goal gl-temp1 >= 275)) ;our flank pop is over twice that of the enemy
+                        (and(up-compare-goal gl-temp1 >= 225)
+                        (up-compare-goal gl-temp12 > 9))) ;###
                         (up-compare-sn sn-change-target != back-to-flank)
                         (research-completed ri-crossbow)
                         (research-completed ri-bodkin-arrow)
@@ -10594,6 +10601,21 @@
                     (up-compare-goal gl-archer-micro-priority == -1)
                         =>
                         (set-strategic-number sn-change-target attack-pocket)
+                        (set-goal gl-split-rule 2001)
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-temp12 > 7)
+                        (players-building-type-count target-player watch-tower >= 2)
+                        (players-military-population target-player <= 1)
+                        (players-current-age target-player == feudal-age)
+                        (current-age == feudal-age)
+                        (up-compare-sn sn-change-target != back-to-flank)
+                        (goal gl-my-position 3)
+                        (up-compare-goal gl-enemy-pocket-x != -1)
+                        (up-compare-goal gl-archer-micro-priority == -1)
+                        (game-time < 960)
+                        =>
                         (set-goal gl-split-rule 2001)
                     )
 
@@ -11712,1066 +11734,1085 @@
                     )
                 ;
                 ;Group superiority ;9 temp goals used + gl-temp + 3 point goals
-                    ;Temp goal index
+                ;Temp goal index
 
-                        ;gl-temp1 - number of units in archer-group
-                        ;gl-temp2 - enemy military count
-                        ;gl-temp3 - base group superiority
-                        ;gl-temp4 - modifier for enemy skirms countering your achers
-                        ;gl-temp5 - modifier for your skirms countering enemy archers
-                    ;Setup
+                    ;gl-temp1 - number of units in archer-group
+                    ;gl-temp2 - enemy military count
+                    ;gl-temp3 - base group superiority
+                    ;gl-temp4 - modifier for enemy skirms countering your achers
+                    ;gl-temp5 - modifier for your skirms countering enemy archers
+                ;Setup
 
-                        (defrule
-                        (current-age >= castle-age)
-                        =>
-                        (up-full-reset-search)
-                        (up-set-group search-local c: 7)
-                        (up-remove-objects search-local object-data-hitpoints <= 0)
-                        ;chosen unit:
-                        ;(up-remove-objects search-local object-data-type != scout-cavalry)
-                        ;(up-remove-objects search-local object-data-type != archer)
-                        (up-remove-objects search-local object-data-type != skirmisher)
-                        ;(up-remove-objects search-local object-data-type != spearman)
-                        ;(up-remove-objects search-local object-data-type != mangonel)
-                        ;(up-remove-objects search-local object-data-type != scorpion)
-                        (up-clean-search search-local -1 search-order-asc)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp33 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
-                        )
+                    (defrule
+                    (current-age >= castle-age)
+                    =>
+                    (up-full-reset-search)
+                    (up-set-group search-local c: 7)
+                    (up-remove-objects search-local object-data-hitpoints <= 0)
+                    ;chosen unit:
+                    ;(up-remove-objects search-local object-data-type != scout-cavalry)
+                    ;(up-remove-objects search-local object-data-type != archer)
+                    (up-remove-objects search-local object-data-type != skirmisher)
+                    ;(up-remove-objects search-local object-data-type != spearman)
+                    ;(up-remove-objects search-local object-data-type != mangonel)
+                    ;(up-remove-objects search-local object-data-type != scorpion)
+                    (up-clean-search search-local -1 search-order-asc)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp33 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
+                    )
 
-                        (defrule
-                        (current-age >= castle-age)
-                        =>
-                        (up-full-reset-search)
-                        (up-set-group search-local c: 7)
-                        (up-remove-objects search-local object-data-hitpoints <= 0)
-                        ;chosen unit:
-                        ;(up-remove-objects search-local object-data-type != scout-cavalry)
-                        ;(up-remove-objects search-local object-data-type != archer)
-                        ;(up-remove-objects search-local object-data-type != skirmisher)
-                        ;(up-remove-objects search-local object-data-type != spearman)
-                        ;(up-remove-objects search-local object-data-type != mangonel)
-                        (up-remove-objects search-local object-data-type != scorpion)
-                        (up-clean-search search-local -1 search-order-asc)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp35 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
-                        )
+                    (defrule
+                    (current-age >= castle-age)
+                    =>
+                    (up-full-reset-search)
+                    (up-set-group search-local c: 7)
+                    (up-remove-objects search-local object-data-hitpoints <= 0)
+                    ;chosen unit:
+                    ;(up-remove-objects search-local object-data-type != scout-cavalry)
+                    ;(up-remove-objects search-local object-data-type != archer)
+                    ;(up-remove-objects search-local object-data-type != skirmisher)
+                    ;(up-remove-objects search-local object-data-type != spearman)
+                    ;(up-remove-objects search-local object-data-type != mangonel)
+                    (up-remove-objects search-local object-data-type != scorpion)
+                    (up-clean-search search-local -1 search-order-asc)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp35 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
+                    )
 
-                        (defrule
-                        (current-age >= castle-age)
-                        =>
-                        (up-full-reset-search)
-                        (up-set-group search-local c: 7)
-                        (up-remove-objects search-local object-data-hitpoints <= 0)
-                        ;chosen unit:
-                        ;(up-remove-objects search-local object-data-type != scout-cavalry)
-                        ;(up-remove-objects search-local object-data-type != archer)
-                        ;(up-remove-objects search-local object-data-type != skirmisher)
-                        ;(up-remove-objects search-local object-data-type != spearman)
-                        (up-remove-objects search-local object-data-type != mangonel)
-                        ;(up-remove-objects search-local object-data-type != scorpion)
-                        (up-clean-search search-local -1 search-order-asc)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp36 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
-                        )
+                    (defrule
+                    (current-age >= castle-age)
+                    =>
+                    (up-full-reset-search)
+                    (up-set-group search-local c: 7)
+                    (up-remove-objects search-local object-data-hitpoints <= 0)
+                    ;chosen unit:
+                    ;(up-remove-objects search-local object-data-type != scout-cavalry)
+                    ;(up-remove-objects search-local object-data-type != archer)
+                    ;(up-remove-objects search-local object-data-type != skirmisher)
+                    ;(up-remove-objects search-local object-data-type != spearman)
+                    (up-remove-objects search-local object-data-type != mangonel)
+                    ;(up-remove-objects search-local object-data-type != scorpion)
+                    (up-clean-search search-local -1 search-order-asc)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp36 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
+                    )
 
-                        ;gl-temp33 is skirm
-                        ;gl-temp35 is scorpion
-                        ;gl-temp36 is mangonell
-                    ;Find group size
-                        (defrule
-                        (true)
-                        =>
-                        (up-full-reset-search)
-                        (up-find-local c: all-units-class c: 200)
-                        (up-remove-objects search-local object-data-group-flag != archer-group)
-                        (up-get-search-state gl-local-total)
-                        )
+                    ;gl-temp33 is skirm
+                    ;gl-temp35 is scorpion
+                    ;gl-temp36 is mangonell
+                ;Find group size
+                    (defrule
+                    (true)
+                    =>
+                    (up-full-reset-search)
+                    (up-find-local c: all-units-class c: 200)
+                    (up-remove-objects search-local object-data-group-flag != archer-group)
+                    (up-get-search-state gl-local-total)
+                    )
 
-                    ;Ajust for 1v2 and 1v3 games for more agression
+                ;Ajust for 1v2 and 1v3 games for more agression
 
-                        #load-if-defined UP-3-PLAYER-GAME
-                        #load-if-defined UP-2-PLAYER-TEAM
-                        (defrule
-                        (true)
-                        =>
-                        (up-modify-goal gl-local-total c:* 150)
-                        (up-modify-goal gl-local-total c:/ 100)
-                        )
-                        #end-if
-                        #end-if
+                    #load-if-defined UP-3-PLAYER-GAME
+                    #load-if-defined UP-2-PLAYER-TEAM
+                    (defrule
+                    (true)
+                    =>
+                    (up-modify-goal gl-local-total c:* 150)
+                    (up-modify-goal gl-local-total c:/ 100)
+                    )
+                    #end-if
+                    #end-if
 
-                        #load-if-defined UP-4-PLAYER-GAME
-                        #load-if-defined UP-3-PLAYER-TEAM
-                        (defrule
-                        (true)
-                        =>
-                        (up-modify-goal gl-local-total c:* 170)
-                        (up-modify-goal gl-local-total c:/ 100)
-                        )
-                        #end-if
-                        #end-if
-
-                        
-                    ;Ajust for feudal ranged unit upgrades
-                        (defrule
-                                (not(research-completed ri-fletching))
-                                =>
-                                (up-modify-goal gl-local-total c:* 8)
-                                (up-modify-goal gl-local-total c:/ 10)
-                            )
-                        
-                        (defrule
-                                (not(research-completed ri-padded-archer-armor))
-                                =>
-                                (up-modify-goal gl-local-total c:* 19)
-                                (up-modify-goal gl-local-total c:/ 20)
-                            )
-                    ;Modifier for being more agressive when you have knight support
-                        ;lav en converter der omdanner egne knights til ca. at svare til 2 x bows. Kan dog tælle for
-                        ;mere afh af upgrades og om modstanderen er heavy på skirms og siege.
-
-                        (defrule
-                            (up-compare-goal gl-my-position == 3)
-                            =>
-                            (up-modify-sn sn-focus-player-number g:= gl-closest-ally)
-                            (up-get-focus-fact allied-goal gl-melee-group-strength gl-melee-group-strength)
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-melee-group-strength > 10)
-                            =>
-                            (up-modify-goal gl-temp31 g:= gl-melee-group-strength)
-                            (up-modify-goal gl-temp31 c:* 100)
-                            (up-modify-goal gl-temp31 c:/ 10)
-                            ;(up-get-target-fact unit-type-count scorpion-line gl-temp35)
-                            ;(up-get-target-fact unit-type-count mangonel-line gl-temp36)
-                            (up-modify-goal gl-temp36 c:* 2)
-                            (up-modify-goal gl-temp36 g:+ gl-temp35)
-                            (up-modify-goal gl-temp36 c:* 2)
-                            ;lad os sige enemy har 4 scorps og 1 mangonell og jeg har 7 knights
-                            ;normalt ville de 7 knights tælle for 14. Der kan maks være en bonus på 2*6 altså 12
-                            ;Hvis der f.eks. havde været 3 knights havde bonussen været på 6, men nu er den altså på 
-                            ;12.
-
-                            (up-get-target-fact unit-type-count skirmisher-line gl-temp33)
-                            (up-get-target-fact military-population 0 gl-temp34)
-                            (up-modify-goal gl-temp33 c:* 100)
-                            (up-modify-goal gl-temp33 g:/ gl-temp34)  ;gl-temp33 er procentel af modstanders hær der er skirms
-                            ;(up-modify-goal gl-temp33 c:/ 100)
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-temp31 g:< gl-temp36) ;der er ikke nok knights til at counter alt siege.
-                            (up-compare-goal gl-temp31 >= 0)
-                            =>
-                            (up-modify-goal gl-temp36 g:= gl-temp31)
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-temp33 > 100)
-                            =>
-                            (set-goal gl-temp33 100)
-                        )
-
-                        (defrule
-                            ;(current-age >= castle-age)
-                            ;(up-compare-goal gl-temp33 > 0)
-                            (true)
-                            =>
-                            (up-modify-goal gl-temp33 c:* 3) 
-                            (up-modify-goal gl-temp33 c:+ 350) ;gl-temp33 er factor mellem 350 og 550 der ganges med
-                            )
-
-                        (defrule
-                            (current-age >= castle-age)
-                            (up-compare-goal gl-temp33 == 0)
-                            =>
-                            (up-modify-goal gl-temp33 c:* 200) 
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-my-position == 3)
-                            =>
-                            (up-modify-sn sn-focus-player-number g:= gl-closest-ally)
-                            (up-get-focus-fact allied-goal gl-melee-army-x gl-melee-army-x)
-                            (up-get-focus-fact allied-goal gl-melee-army-y gl-melee-army-y)
-                        )
-
-                        (defrule
-                            (up-point-distance gl-melee-army-x gl-temp9-x < 2000)
-                            (up-compare-sn sn-lone-flank != 1)
-                            =>
-                            ;afhængigt af enemy skirm count
-                            (up-modify-goal gl-temp31 g:* gl-temp33)
-                            (up-modify-goal gl-temp31 c:/ 10000)
-                            (up-modify-goal gl-local-total g:+ gl-temp31) ;modifier for knights countering skirms
-                            ;(up-modify-goal gl-local-total g:+ gl-temp36) ;modifier for knights countering siege
-                            ;(up-chat-data-to-all "pocket knights adds %d to group superiority" g: gl-temp31)
-                        )
-                        
-                        
-                    ;Ajust for Castle ranged unit upgrades
-                        (defrule
-                        (players-current-age target-player == castle-age)
-                        =>
-                        (enable-timer enemy-has-imp-tech-timer 60)
-                        (disable-self)
-                        )
-
-                        
-                        (defrule
-                                (or(up-research-status c: ri-crossbow >= research-pending)
-                                (up-research-status c: ri-elite-skirmisher >= research-pending))
-                                (up-timer-status enemy-has-imp-tech-timer != timer-running)
-                                (up-timer-status enemy-has-imp-tech-timer != timer-triggered)
-                                =>
-                                (up-modify-goal gl-local-total c:* 2)
-                            )
-                    ;Find ajusted number of local units
-                        (defrule
-                        (true)
-                        =>
-                        (up-modify-goal gl-group-superiority g:= gl-local-total)
-                        (up-modify-goal gl-temp1 g:= gl-group-superiority)
-                        )
-                    ;Find base group superiority
-
-                        (defrule
-                        (true)
-                        =>
-
-                        (up-get-player-fact target-player military-population 0 gl-temp2)
-                        (up-modify-goal gl-temp2 c:* -1)
-                        (up-modify-goal gl-group-superiority g:+ gl-temp2)
-                        (up-modify-goal gl-temp3 g:= gl-group-superiority)
-                        )
-
-            
-                    ;Modify for counter units
-
-                        (defrule
-                        (true)
-                        =>
-                        (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-                        (up-full-reset-search)
-                        (up-find-local c: archer-line c: 200) 
-                        (up-remove-objects search-local object-data-group-flag != archer-group)
-                        (up-get-search-state gl-local-total)   
-                        (up-modify-goal gl-temp41 g:= gl-local-total) ;temp41 is all own archers
-                        (up-full-reset-search)
-                        (up-find-local c: skirmisher-line c: 200) 
-                        (up-remove-objects search-local object-data-group-flag != archer-group)
-                        (up-get-search-state gl-local-total)   
-                        (up-modify-goal gl-temp42 g:= gl-local-total) ;temp42 is all own skirmishers
-                        )
-
-                        (defrule
-                            (current-age <= feudal-age)
-                            =>
-                            (up-full-reset-search)
-                            (up-find-remote c: archer-line c: 40) 
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-temp43 g:= gl-remote-total)
-                            (up-get-player-fact focus-player unit-type-count archer-line gl-temp43)
-                            (up-full-reset-search)
-                            (up-find-remote c: skirmisher-line c: 40) 
-                            (up-get-search-state gl-local-total)
-                            (set-goal gl-temp 0)
-                        (set-goal gl-temp4 0)
-                        (set-goal gl-temp5 0)
-                        )
-
-                        (defrule
-                            (current-age >= castle-age)
-                            =>
-                            (up-full-reset-search)
-                            (up-find-remote c: archer-line c: 40) 
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-temp43 g:= gl-remote-total)
-                            ;(up-get-player-fact focus-player unit-type-count archer-line gl-temp43)
-                            (up-full-reset-search)
-                            (up-find-remote c: skirmisher-line c: 40) 
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-temp44 g:= gl-remote-total)
-                            (set-goal gl-temp 0)
-                        (set-goal gl-temp4 0)
-                        (set-goal gl-temp5 0)
-                        )
-
-                        ; copy the remote list into the local list.
-                        (defrule
-                            (up-compare-goal gl-temp g:< gl-remote-total)
-                        =>
-                            (up-set-target-object search-remote g: gl-temp)
-                            (up-get-object-data object-data-id gl-temp45)
-                            (up-add-object-by-id search-local g: gl-temp45)
-                            (up-modify-goal gl-temp c:+ 1)
-                            (up-jump-rule -1)
-                        )
-                        ; update control group 4 (monk counter)
-                        (defrule
-                            (current-age <= feudal-age)
-                        =>
-                            (up-clean-search search-local -1 search-order-asc)
-                            (up-remove-objects search-local object-data-status > status-ready) ; if it's dead remove it.
-                            (up-remove-objects search-local object-data-player == my-player-number) ; if we own it now, remove it.
-                            ;(up-reset-group c: 4)
-                            ;(up-create-group 0 0 c: 4)
-                            (up-get-search-state gl-local-total)
-                            ;(up-modify-goal gl-temp44 g:= gl-local-total)
-                            (up-get-player-fact focus-player unit-type-count skirmisher-line gl-temp44)
-                        )
-
-                        (defrule
-                            (current-age >= castle-age)
-                        =>
-                            (up-clean-search search-local -1 search-order-asc)
-                            (up-remove-objects search-local object-data-status > status-ready) ; if it's dead remove it.
-                            (up-remove-objects search-local object-data-player == my-player-number) ; if we own it now, remove it.
-                            ;(up-reset-group c: 4)
-                            ;(up-create-group 0 0 c: 4)
-                            (up-get-search-state gl-local-total)
-                            ;(up-modify-goal gl-temp44 g:= gl-local-total)
-                            ;(up-get-player-fact focus-player unit-type-count skirmisher-line gl-temp44)
-                        )
-
-                        (defrule
-                        (up-compare-goal gl-temp44 > 0)
-                        (up-compare-goal gl-temp41 > 0)
-                        (up-compare-goal gl-temp44 g:> gl-temp41)
-                        =>
-                        (up-modify-goal gl-temp44 g:= gl-temp41)
-                        )
-
-                        (defrule
-                        (up-compare-goal gl-temp44 > 0)
-                        (up-compare-goal gl-temp41 > 0)
-                        =>
-                        (up-modify-goal gl-temp44 c:* -1)
-                        (up-modify-goal gl-group-superiority g:+ gl-temp44)
-                        (up-modify-goal gl-temp4 g:= gl-temp44)
-                        )
-
-                        (defrule
-                        (up-compare-goal gl-temp43 > 0)
-                        (up-compare-goal gl-temp42 > 0)
-                        (up-compare-goal gl-temp42 g:> gl-temp43)
-                        =>
-                        (up-modify-goal gl-temp42 g:= gl-temp43)
-                        )
-
-                        (defrule
-                            (true)
-                            =>
-                            (up-modify-goal gl-temp42 c:* 75)
-                            (up-modify-goal gl-temp42 c:/ 100)
-                        )
-
-                        (defrule
-                        (up-compare-goal gl-temp43 > 0)
-                        (up-compare-goal gl-temp42 > 0)
-
-                        =>
-                        (up-modify-goal gl-group-superiority g:+ gl-temp42)
-                        (up-modify-goal gl-temp5 g:= gl-temp42)
-                        )
-
-                    ;Modifier for strong enemy units
-                        
-
-                        (defrule
-                        (current-age >= castle-age)
-                        =>
-                        (up-full-reset-search)
-                        (up-set-group search-local c: 7)
-                        (up-remove-objects search-local object-data-hitpoints <= 0)
-                        ;chosen unit:
-                        ;(up-remove-objects search-local object-data-type != scout-cavalry)
-                        ;(up-remove-objects search-local object-data-type != archer)
-                        ;(up-remove-objects search-local object-data-type != skirmisher)
-                        ;(up-remove-objects search-local object-data-type != spearman)
-                        ;(up-remove-objects search-local object-data-type != mangonel)
-                        ;(up-remove-objects search-local object-data-type != scorpion)
-                        (up-remove-objects search-local object-data-type != knight)
-                        (up-clean-search search-local -1 search-order-asc)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp37 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
-                        )
-
-                        (defrule
-                        (current-age >= castle-age)
-                        =>
-                        (up-full-reset-search)
-                        (up-set-group search-local c: 7)
-                        (up-remove-objects search-local object-data-hitpoints <= 0)
-                        ;chosen unit:
-                        ;(up-remove-objects search-local object-data-type != scout-cavalry)
-                        ;(up-remove-objects search-local object-data-type != archer)
-                        ;(up-remove-objects search-local object-data-type != skirmisher)
-                        ;(up-remove-objects search-local object-data-type != spearman)
-                        ;(up-remove-objects search-local object-data-type != mangonel)
-                        (up-remove-objects search-local object-data-type != scorpion)
-                        (up-clean-search search-local -1 search-order-asc)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp38 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
-                        )
-
-                        (defrule
-                        (current-age >= castle-age)
-                        =>
-                        (up-full-reset-search)
-                        (up-set-group search-local c: 7)
-                        (up-remove-objects search-local object-data-hitpoints <= 0)
-                        ;chosen unit:
-                        ;(up-remove-objects search-local object-data-type != scout-cavalry)
-                        ;(up-remove-objects search-local object-data-type != archer)
-                        ;(up-remove-objects search-local object-data-type != skirmisher)
-                        ;(up-remove-objects search-local object-data-type != spearman)
-                        (up-remove-objects search-local object-data-type != mangonel)
-                        ;(up-remove-objects search-local object-data-type != scorpion)
-                        (up-clean-search search-local -1 search-order-asc)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp39 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
-                        )
-
-                        ;gl-temp37 knights
-                        ;gl-temp38 scorps
-                        ;gl-temp39 mangos
-
-                        ;til at starte med bare knights, mangonells og scorps
-                        ;knights tæller for 2 x bows (6 hvis army er skirm heavy)
-                        ;mangonells tæller for 4-5
-                        ;scorps tæller for 3-4
-
-                        
-                        (defrule
-                            (true)
-                            =>
-                            (up-full-reset-search)
-                            (up-find-local c: archer-line c: 200)
-                            (up-find-local c: skirmisher-line c: 200)
-                            (up-remove-objects search-local object-data-group-flag != archer-group)
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-temp47 g:= gl-local-total)
-                            (up-full-reset-search)
-                            (up-find-local c: skirmisher-line c: 200)
-                            (up-remove-objects search-local object-data-group-flag != archer-group)
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-temp g:= gl-local-total)
-                            (up-modify-goal gl-temp c:* 100)
-                            (up-modify-goal gl-temp g:/ gl-temp47) ;gl-temp er procentdel af army der er skirms
-                        )
-
-                        (defrule
-                            (current-age >= castle-age)
-                            =>
-                            (up-modify-goal gl-temp c:* 4) 
-                            (up-modify-goal gl-temp c:+ 200) 
-                            (up-modify-goal gl-temp37 g:* gl-temp) 
-                            (up-modify-goal gl-temp37 c:/ 100) 
-                            (up-modify-goal gl-temp38 c:* 5)
-                            (up-modify-goal gl-temp39 c:* 8)
-                            (up-modify-goal gl-temp37 c:* -1)
-                            (up-modify-goal gl-temp38 c:* -1)
-                            (up-modify-goal gl-temp39 c:* -1)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp37)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp38)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp39)
-                        )
-
-                        (defrule
-                            (current-age == feudal-age)
-                            (or(players-unit-type-count target-player mangonel-line == 0)
-                            (players-unit-type-count target-player scorpion-line == 0))
-                            =>
-                            (up-modify-goal gl-temp37 c:= 0)
-                            (up-modify-goal gl-temp38 c:= 0)
-                            (up-modify-goal gl-temp39 c:= 0)
-                        )
-
-                        (defrule
-                            (current-age == feudal-age)
-                            (or(players-unit-type-count target-player mangonel-line > 0)
-                            (players-unit-type-count target-player scorpion-line > 0))
-                            =>
-                            (up-modify-goal gl-temp39 c:= -50)
-                            (up-modify-goal gl-temp37 c:= 0)
-                            (up-modify-goal gl-temp38 c:= 0)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp39)
-                        )
-
-
-
-
-
-
+                    #load-if-defined UP-4-PLAYER-GAME
+                    #load-if-defined UP-3-PLAYER-TEAM
+                    (defrule
+                    (true)
+                    =>
+                    (up-modify-goal gl-local-total c:* 170)
+                    (up-modify-goal gl-local-total c:/ 100)
+                    )
+                    #end-if
+                    #end-if
 
                     
-
-
-
-                    ;Modify for distance to enemy tc
-                        (defrule
-                                    (true)
-                                    =>
-                                    (set-strategic-number sn-target-point-adjustment 6)
-                                    (up-full-reset-search)
-                                    (up-find-local c: archer-line c: 200)
-                                    (up-find-local c: skirmisher-line c: 200)
-                                    (up-remove-objects search-local object-data-group-flag != archer-group)
-                                    (set-goal gl-temp 0)
-                                    (set-goal gl-temp1-x 0)
-                                    (set-goal gl-temp1-y 0)
-                                    (set-goal gl-local-total 0)
-                                    )
-
-                                    (defrule
-                                    (up-set-target-object search-local c: 0)
-                                    =>
-                                    (up-get-object-data object-data-precise-x gl-temp2-x) ;coordinate * 100
-                                    (up-get-object-data object-data-precise-y gl-temp2-y)
-                                    (up-modify-goal gl-temp1-x g:+ gl-temp2-x)
-                                    (up-modify-goal gl-temp1-y g:+ gl-temp2-y)
-                                    (up-get-search-state gl-local-total)
-                                    (up-modify-goal gl-temp c:+ 1) ;number of points checked
-                                    )
-
-                                    (defrule
-                                    (up-compare-goal gl-local-total > 0)
-                                    =>
-                                    (up-remove-objects search-local object-data-index == 0)
-                                    (up-get-search-state gl-local-total)
-                                    (up-jump-rule -2)
-                                    )
-
-                                    (defrule
-                                    (up-compare-goal gl-temp > 0)
-                                    =>
-                                    (up-modify-goal gl-temp1-x g:/ gl-temp) ; finder gennemsnitskoordinaten
-                                    (up-modify-goal gl-temp1-y g:/ gl-temp)
-                                    ;(up-copy-point gl-temp9-x gl-temp1-x) ;local group center of gravity
-                                    (up-modify-goal gl-temp-x g:= gl-temp9-x)
-                                    (up-modify-goal gl-temp-y g:= gl-temp9-y)
-                                    (up-modify-goal gl-temp-x c:/ 100)
-                                    (up-modify-goal gl-temp-y c:/ 100)
-                                    (up-get-point-distance gl-enemy-x gl-temp-x gl-temp6)
-                                    (up-modify-goal gl-temp6 c:/ 15)
-                                    (up-modify-goal gl-temp6 c:* -1)
-                                    )
-
-                                    (defrule
-                                    (up-compare-goal gl-temp6 > 10)
-                                    =>
-                                    (up-modify-goal gl-temp6 c:= 10)
-                                    )
-
-                                    (defrule
-                                    (up-compare-goal gl-temp6 > 0)
-                                    =>
-                                    (up-modify-goal gl-group-superiority g:+ gl-temp6)
-                                    )
-
-                    ;Modifier for agression at higher army size
-                        (defrule
-                            (up-players-in-game enemy < 3)
-                            (up-compare-goal 10 < 1100)
+                ;Ajust for feudal ranged unit upgrades
+                    (defrule
+                            (not(research-completed ri-fletching))
                             =>
-                            (up-full-reset-search)
-                        (up-find-local c: all-units-class c: 200)
-                        (up-remove-objects search-local object-data-group-flag != archer-group)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp7 g:= gl-local-total)
-                        (up-modify-goal gl-temp7 c:/ 4)
-                        (up-modify-goal gl-temp7 c:- 2)
-                        (up-modify-goal gl-group-superiority g:+ gl-temp7)
+                            (up-modify-goal gl-local-total c:* 8)
+                            (up-modify-goal gl-local-total c:/ 10)
                         )
+                    
+                    (defrule
+                            (not(research-completed ri-padded-archer-armor))
+                            =>
+                            (up-modify-goal gl-local-total c:* 19)
+                            (up-modify-goal gl-local-total c:/ 20)
+                        )
+                ;Modifier for being more agressive when you have knight support
+                    ;lav en converter der omdanner egne knights til ca. at svare til 2 x bows. Kan dog tælle for
+                    ;mere afh af upgrades og om modstanderen er heavy på skirms og siege.
 
-                        (defrule
-                            (up-players-in-game enemy < 3)
-                            (up-compare-goal 10 >= 1100)
-                            (up-compare-goal 10 < 2000)
-                            =>
-                            (up-full-reset-search)
-                        (up-find-local c: all-units-class c: 200)
-                        (up-remove-objects search-local object-data-group-flag != archer-group)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp7 g:= gl-local-total)
-                        (up-modify-goal gl-temp7 c:/ 8)
-                        (up-modify-goal gl-temp7 c:- 2)
-                        (up-modify-goal gl-group-superiority g:+ gl-temp7)
-                        )
-                        ;#load-if-defined DE-AVAILABLE
-                        (defrule
-                            (up-players-in-game enemy < 3)
-                            (up-compare-goal 10 >= 2000)
-                            =>
-                            (up-full-reset-search)
-                        (up-find-local c: all-units-class c: 200)
-                        (up-remove-objects search-local object-data-group-flag != archer-group)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp7 g:= gl-local-total)
-                        (up-modify-goal gl-temp7 c:/ 12)
-                        (up-modify-goal gl-temp7 c:- 2)
-                        (up-modify-goal gl-group-superiority g:+ gl-temp7)
-                        )
-                        ;#end-if
-
-                        (defrule
-                            (up-players-in-game enemy >= 3)
-                            =>
-                            (up-full-reset-search)
-                        (up-find-local c: all-units-class c: 200)
-                        (up-remove-objects search-local object-data-group-flag != archer-group)
-                        (up-get-search-state gl-local-total)
-                        (up-modify-goal gl-temp7 g:= gl-local-total)
-                        (up-modify-goal gl-temp7 c:/ 4)
-                        (up-modify-goal gl-temp7 c:- 4)
-                        (up-modify-goal gl-group-superiority g:+ gl-temp7)
-                        )
-
-                    ;Modifier for not overextending in bigger team games
-                        (defrule
-                            (up-compare-sn sn-target-player-is-going-scouts == 1)
-                            (up-group-size c: archer-group > 5)
-                            (game-time < 1050)
-                            =>
-                            ;(up-modify-goal gl-group-superiority c:+ 5)
-                            (do-nothing)
-                        )
-                    ;Modifiers for taunts
-                        (defrule
-                            (taunt-detected my-player-number 41)
-                            =>
-                            (set-goal gl-temp9 1000)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp9)
-                        )
-
-                        (defrule
-                            (taunt-detected my-player-number 42)
-                            =>
-                            (acknowledge-taunt my-player-number 42)
-                            (acknowledge-taunt my-player-number 41)
-                        )
-                    ;Modifiers for waiting for castle age upgrades
-                        (defrule
-                            (true)
-                            =>
-                            (set-goal gl-temp9 0)
-                            (set-goal gl-temp12 0)
-                        )
-
-                        (defrule
-                        (up-research-status c: castle-age == research-pending)
-                        ;(players-current-age target-player < castle-age)
+                    (defrule
+                        (up-compare-goal gl-my-position == 3)
                         =>
-                        (set-goal gl-temp9 -12) ;12
-                        (up-modify-goal gl-group-superiority g:+ gl-temp9)
-                        )
+                        (up-modify-sn sn-focus-player-number g:= gl-closest-ally)
+                        (up-get-focus-fact allied-goal gl-melee-group-strength gl-melee-group-strength)
+                    )
 
-                        (defrule
-                        (or(up-research-status c: ri-crossbow == research-pending)
-                        (or(up-research-status c: ri-elite-skirmisher == research-pending)
-                        (up-research-status c: ri-bodkin-arrow == research-pending)))
+                    (defrule
+                        (up-compare-goal gl-melee-group-strength > 10)
                         =>
-                        (set-goal gl-temp12 -20) ;15
-                        (up-modify-goal gl-group-superiority g:+ gl-temp12)
-                        )
-                    ;Modifiers for when enemy has multiple castles
-                        
-                        (defrule
-                        (players-building-type-count target-player castle > 1)
-                        ;(players-current-age target-player < castle-age)
+                        (up-modify-goal gl-temp31 g:= gl-melee-group-strength)
+                        (up-modify-goal gl-temp31 c:* 100)
+                        (up-modify-goal gl-temp31 c:/ 10)
+                        ;(up-get-target-fact unit-type-count scorpion-line gl-temp35)
+                        ;(up-get-target-fact unit-type-count mangonel-line gl-temp36)
+                        (up-modify-goal gl-temp36 c:* 2)
+                        (up-modify-goal gl-temp36 g:+ gl-temp35)
+                        (up-modify-goal gl-temp36 c:* 2)
+                        ;lad os sige enemy har 4 scorps og 1 mangonell og jeg har 7 knights
+                        ;normalt ville de 7 knights tælle for 14. Der kan maks være en bonus på 2*6 altså 12
+                        ;Hvis der f.eks. havde været 3 knights havde bonussen været på 6, men nu er den altså på 
+                        ;12.
+
+                        (up-get-target-fact unit-type-count skirmisher-line gl-temp33)
+                        (up-get-target-fact military-population 0 gl-temp34)
+                        (up-modify-goal gl-temp33 c:* 100)
+                        (up-modify-goal gl-temp33 g:/ gl-temp34)  ;gl-temp33 er procentel af modstanders hær der er skirms
+                        ;(up-modify-goal gl-temp33 c:/ 100)
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-temp31 g:< gl-temp36) ;der er ikke nok knights til at counter alt siege.
+                        (up-compare-goal gl-temp31 >= 0)
                         =>
-                        (up-modify-goal gl-group-superiority c:- 10)
-                        )
+                        (up-modify-goal gl-temp36 g:= gl-temp31)
+                    )
 
-                    ;Modifier for gathering army when against trush
-
-                        (defrule
-                            (true)
-                            =>
-                            (set-goal gl-temp13 0)
-                        )
-
-                        (defrule
-                            (true)
-                            =>
-                            (up-get-point position-self gl-temp-x)
-                            (up-modify-goal gl-temp-x c:* 100)
-                            (up-modify-goal gl-temp-y c:* 100)
-                            (up-full-reset-search)
-                            (up-find-local c: archer-line c: 200)
-                            (up-find-local c: skirmisher-line c: 200)
-                            (up-remove-objects search-local object-data-group-flag != archer-group)
-                            (up-get-search-state gl-local-total)
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-local-total < 2)
-                            (up-point-distance gl-temp-x gl-temp9-x < 1300)
-                            (up-compare-goal gl-anti-trush == 1)
-                            (game-time >= 840)
-                            =>
-                            (set-goal gl-temp13 -10)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp13)
-                        )
-                    ;Modifier for not retreating when enemy have no defense
-                        ;hvis hær er tæt på modstander og de har <= 1 military units der ikke er en knight eller 
-                        ;siege bør der gives en bonus så man ikke flygter for at få upgrades når der er gratis skade
-                        (defrule
-                            (true)
-                            =>
-                            (set-goal gl-temp14 0)
-                        )
-                        
-                        (defrule
-                            (true)
-                            =>
-                            (up-copy-point gl-temp-x gl-temp9-x)
-                            (up-modify-goal gl-temp-x c:/ 100)
-                            (up-modify-goal gl-temp-y c:/ 100)
-                            (up-full-reset-search)
-                            (up-find-local c: archer-line c: 200)
-                            (up-remove-objects search-local object-data-group-flag != archer-group)
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-temp g:= gl-local-total)
-                            (up-full-reset-search)
-                            (up-find-local c: skirmisher-line c: 200)
-                            (up-remove-objects search-local object-data-group-flag != archer-group)
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-local-total g:+ gl-temp)
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-found-enemy == 1)
-                            (or(up-point-distance gl-temp-x gl-enemy-x < 35)
-                            (up-compare-goal gl-anti-trush == 1))
-
-                            (players-military-population target-player <= 1)
-                            (players-unit-type-count target-player mangonel-line == 0)
-                            (players-unit-type-count target-player scorpion-line <= 1)
-                            (or(players-unit-type-count target-player knight-line == 0)
-                            (and(players-unit-type-count target-player knight-line <= 1)
-                            (or(up-compare-goal gl-temp > 8)
-                            (up-compare-goal gl-temp > 15))))
-                            =>
-                            (set-goal gl-temp14 15)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp14)
-                        )
-                        
-                    ;Don't attack if ungrouped units cannot defend the base on their own.
-                        (defrule
-                            (true)
-                            =>
-                            (up-full-reset-search)
-                            (up-find-local c: archer-line c: 200)
-                            (up-find-local c: skirmisher-line c: 200)
-                            ;(up-find-local c: knight-line c: 200)
-                            (up-remove-objects search-local object-data-group-flag == archer-group)
-                            (set-strategic-number sn-focus-player-number 1)
-                            (up-get-point position-self gl-temp-x)
-                            (up-set-target-point gl-temp-x)
-                            (up-filter-distance c: -1 c: 40)
-                        )
-
-                        (defrule
-                            (players-stance focus-player enemy)
-                            =>
-                            (up-find-remote c: janissary-line c: 40)
-                            (up-find-remote c: conquistador-line c: 40)
-                            (up-find-remote c: arambai-line c: 40)
-                        )
-
-                        (defrule
-                        (up-compare-sn sn-focus-player-number < 8)
+                    (defrule
+                        (up-compare-goal gl-temp33 > 100)
                         =>
-                        (up-modify-sn sn-focus-player-number c:+ 1)
-                        (up-jump-rule -2)
-                        )
+                        (set-goal gl-temp33 100)
+                    )
 
-                        (defrule
-                            (true)
-                            =>
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-temp34 g:= gl-remote-total)
-                            (up-modify-goal gl-temp34 c:* 4)
-                        )
-                        
-                        (defrule
-                            (true)
-                            =>
-                            (up-full-reset-search)
-                            (up-find-local c: archer-line c: 200)
-                            (up-find-local c: skirmisher-line c: 200)
-                            ;(up-find-local c: knight-line c: 200)
-                            (up-remove-objects search-local object-data-group-flag == archer-group)
-                            (set-strategic-number sn-focus-player-number 1)
-                            (up-get-point position-self gl-temp-x)
-                            (up-set-target-point gl-temp-x)
-                            (up-filter-distance c: -1 c: 40)
-                        )
-
-                        (defrule
-                            (players-stance focus-player enemy)
-                            =>
-                            (up-filter-include cmdid-military -1 -1 -1)(up-find-remote c: all-units-class c: 240)
-                        )
-
-                        (defrule
-                        (up-compare-sn sn-focus-player-number < 8)
+                    (defrule
+                        ;(current-age >= castle-age)
+                        ;(up-compare-goal gl-temp33 > 0)
+                        (true)
                         =>
-                        (up-modify-sn sn-focus-player-number c:+ 1)
-                        (up-jump-rule -2)
+                        (up-modify-goal gl-temp33 c:* 3) 
+                        (up-modify-goal gl-temp33 c:+ 350) ;gl-temp33 er factor mellem 350 og 550 der ganges med
                         )
 
-                        (defrule
-                            (true)
+                    (defrule
+                        (current-age >= castle-age)
+                        (up-compare-goal gl-temp33 == 0)
+                        =>
+                        (up-modify-goal gl-temp33 c:* 200) 
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-my-position == 3)
+                        =>
+                        (up-modify-sn sn-focus-player-number g:= gl-closest-ally)
+                        (up-get-focus-fact allied-goal gl-melee-army-x gl-melee-army-x)
+                        (up-get-focus-fact allied-goal gl-melee-army-y gl-melee-army-y)
+                    )
+
+                    (defrule
+                        (up-point-distance gl-melee-army-x gl-temp9-x < 2000)
+                        (up-compare-sn sn-lone-flank != 1)
+                        =>
+                        ;afhængigt af enemy skirm count
+                        (up-modify-goal gl-temp31 g:* gl-temp33)
+                        (up-modify-goal gl-temp31 c:/ 10000)
+                        (up-modify-goal gl-local-total g:+ gl-temp31) ;modifier for knights countering skirms
+                        ;(up-modify-goal gl-local-total g:+ gl-temp36) ;modifier for knights countering siege
+                        ;(up-chat-data-to-all "pocket knights adds %d to group superiority" g: gl-temp31)
+                    )
+                    
+                    
+                ;Ajust for Castle ranged unit upgrades
+                    (defrule
+                    (players-current-age target-player == castle-age)
+                    =>
+                    (enable-timer enemy-has-imp-tech-timer 60)
+                    (disable-self)
+                    )
+
+                    
+                    (defrule
+                            (or(up-research-status c: ri-crossbow >= research-pending)
+                            (up-research-status c: ri-elite-skirmisher >= research-pending))
+                            (up-timer-status enemy-has-imp-tech-timer != timer-running)
+                            (up-timer-status enemy-has-imp-tech-timer != timer-triggered)
                             =>
-                            (up-get-search-state gl-local-total)
-                            (up-modify-goal gl-remote-total g:+ gl-temp34)
-                            (up-get-fact unit-type-count-total knight-line gl-temp34)
-                            (up-modify-goal gl-local-total g:+ gl-temp34)
                             (up-modify-goal gl-local-total c:* 2)
-                            (up-modify-goal gl-local-total c:* 100)
-                            (up-modify-goal gl-local-total c:/ 80)
-                            (up-get-point position-self gl-temp-x)
-                            (up-modify-goal gl-temp-x c:* 100)
-                            (up-modify-goal gl-temp-y c:* 100)
                         )
+                ;Find ajusted number of local units
+                    (defrule
+                    (true)
+                    =>
+                    (up-modify-goal gl-group-superiority g:= gl-local-total)
+                    (up-modify-goal gl-temp1 g:= gl-group-superiority)
+                    )
+                ;Find base group superiority
 
-                        (defrule
-                            (up-point-distance gl-temp-x gl-temp9-x > 60)
-                            =>
-                            (up-modify-goal gl-local-total c:* 100)
-                            (up-modify-goal gl-local-total c:/ 50)
-                        )
+                    (defrule
+                    (true)
+                    =>
 
-                        (defrule
-                            (true)
-                            =>
-                            (up-copy-point gl-temp-x gl-temp9-x)
-                            (up-modify-goal gl-temp-x c:/ 100)
-                            (up-modify-goal gl-temp-y c:/ 100)
-                            (set-strategic-number sn-cant-defend-base -1)
-                            (up-modify-goal gl-remote-total c:* 4)
-                        )
-                        
+                    (up-get-player-fact target-player military-population 0 gl-temp2)
+                    (up-modify-goal gl-temp2 c:* -1)
+                    (up-modify-goal gl-group-superiority g:+ gl-temp2)
+                    (up-modify-goal gl-temp3 g:= gl-group-superiority)
+                    )
 
-                        (defrule
-                            (up-compare-goal gl-local-total g:< gl-remote-total)
-                            =>
-                            (set-strategic-number sn-cant-defend-base 1)
-                        )
+        
+                ;Modify for counter units
 
-                        (defrule
-                            (true)
-                            =>
-                            (up-modify-goal gl-remote-total c:/ 4)
-                        )
+                    (defrule
+                    (true)
+                    =>
+                    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+                    (up-full-reset-search)
+                    (up-find-local c: archer-line c: 200) 
+                    (up-remove-objects search-local object-data-group-flag != archer-group)
+                    (up-get-search-state gl-local-total)   
+                    (up-modify-goal gl-temp41 g:= gl-local-total) ;temp41 is all own archers
+                    (up-full-reset-search)
+                    (up-find-local c: skirmisher-line c: 200) 
+                    (up-remove-objects search-local object-data-group-flag != archer-group)
+                    (up-get-search-state gl-local-total)   
+                    (up-modify-goal gl-temp42 g:= gl-local-total) ;temp42 is all own skirmishers
+                    )
 
-                        (defrule
-                            (up-compare-goal gl-local-total g:< gl-remote-total)
-                            (up-compare-goal gl-remote-total > 2)
-                            ;(or(up-compare-goal gl-temp34 > 0)
-                            (up-point-distance gl-temp-x gl-enemy-x > 20)
-                            =>
-                            (up-modify-goal gl-group-superiority c:= -10)
-                        )
-
-                    ;Modifier for lowering retreat thresshold while allready attacking
-
-                        (defrule
-                            (true)
-                            =>
-                            (set-goal gl-temp8 0)
-                        )
-
-                        (defrule
-                            (goal 1 1)
-                            (up-compare-goal gl-temp1 >= 8) ;dont keep attacking when army numbers are low
-                            =>
-                            (set-goal gl-temp8 5)
-                            (up-modify-goal gl-group-superiority g:+ gl-temp8)
-                        )
-
-                    ;Stop attacking when first enemy is killed in FFA
-                        #load-if-not-defined UP-2-PLAYER-GAME
-                        #load-if-not-defined UP-3-PLAYER-GAME
-                        #load-if-not-defined UP-2-PLAYER-TEAM
-                        #load-if-not-defined UP-3-PLAYER-TEAM
-                        #load-if-not-defined UP-4-PLAYER-TEAM
-                        #load-if-not-defined UP-5-PLAYER-TEAM
-                        #load-if-not-defined UP-6-PLAYER-TEAM
-                        #load-if-not-defined UP-7-PLAYER-TEAM
-                        (defrule
-                            (true)
-                            =>
-                            (up-modify-sn sn-focus-player-number g:= gl-flank)
-                        )
-                        
-                        (defrule
-                            (or(players-population focus-player < 15)
-                            (player-resigned focus-player))
-                            (game-time > 800)
-                            =>
-                            (set-strategic-number sn-stay-defensive-untill-imp 1)
-                            (disable-self)
-                        )
-
-                        (defrule
-                            (players-population focus-player < 20)
-                            (game-time > 900)
-                            =>
-                            (set-strategic-number sn-stay-defensive-untill-imp 1)
-                            (disable-self)
-                        )
-
-                        (defrule
-                            (players-population focus-player < 25)
-                            (game-time > 1000)
-                            =>
-                            (set-strategic-number sn-stay-defensive-untill-imp 1)
-                            (disable-self)
-                        )
-
-                        (defrule
-                            (players-population focus-player < 30)
-                            (game-time > 1100)
-                            =>
-                            (set-strategic-number sn-stay-defensive-untill-imp 1)
-                            (disable-self)
-                        )
-
-                        (defrule
-                            (game-time > 1200)
-                            =>
-                            (set-strategic-number sn-stay-defensive-untill-imp 1)
-                            (disable-self)
-                        )
-
-                        (defrule
-                            (up-compare-sn sn-stay-defensive-untill-imp == 1)
-                            =>
-                            (set-goal gl-group-superiority -1)
-                        )
-                        #end-if
-                        #end-if
-                        #end-if
-                        #end-if
-                        #end-if
-                        #end-if
-                        #end-if
-                        #end-if
-
-                    ;Modifier for not retreating when behind enemy tc.
-                        (defrule
-                            (true)
-                            =>
-                            (up-get-point position-self gl-temp1-x)
-                            (up-modify-goal gl-temp1-x c:* 100)
-                            (up-modify-goal gl-temp1-y c:* 100)
-                            (up-copy-point gl-temp2-x gl-enemy-x)
-                            (up-modify-goal gl-temp2-x c:* 100)
-                            (up-modify-goal gl-temp2-y c:* 100)
-                            (up-get-point-distance gl-temp1-x gl-temp2-x gl-temp10)
-                            (up-get-point-distance gl-temp1-x gl-temp9-x gl-temp11)
-                            (up-modify-goal gl-temp11 g:- gl-temp10)
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-temp11 > 200)
-                            =>
-                            (up-modify-goal gl-group-superiority c:+ 1000)
-                        )
-                    ;Keep attacking pocket untill army dies
-
-                        (defrule
-                            (true)
-                            =>
-                            (up-copy-point gl-temp-x gl-ranged-army-x)
-                            (up-modify-goal gl-temp-x c:/ 100)
-                            (up-modify-goal gl-temp-y c:/ 100)
-                            (up-get-point position-self gl-temp1-x)
-                        )
-                        
-                        (defrule
-                            (up-compare-goal gl-enemy-x g:== gl-enemy-pocket-x)
-                            (up-compare-goal gl-enemy-y g:== gl-enemy-pocket-y)
-                            (up-point-distance gl-temp-x gl-temp1-x > 65)
-                            =>
-                            (set-goal gl-group-superiority 999)
-                        )
-                    ;Changing attacking goal
-
-                        (defrule
-                            (true)
-                            =>
-                            (set-goal 1 0)
-                        )
-
-                        (defrule
-                            (up-compare-goal gl-group-superiority >= 0)
-                            =>
-                            (set-goal 1 1)
-                        )
-
-                    ;Debug
-                        (defrule
-                        (or(taunt-detected my-player-number 40)
-                        (taunt-detected any-ally 40))
+                    (defrule
+                        (current-age <= feudal-age)
                         =>
-                        (up-chat-data-to-all "number of units in archer-group is %d" g: gl-temp1)
-                        (up-chat-data-to-all "enemy military count is %d" g: gl-temp2)
-                        (up-chat-data-to-all "base group superiority is %d" g: gl-temp3)
-                        (up-chat-data-to-all "modifier for enemy skirms countering your achers is %d" g: gl-temp4)
-                        (up-chat-data-to-all "modifier for your skirms countering enemy archers is %d" g: gl-temp5)
-                        (up-chat-data-to-all "modifier for distance to enemy tc is %d" g: gl-temp6)
-                        (up-chat-data-to-all "modifier for agression at higher army size is %d" g: gl-temp7)
-                        (up-chat-data-to-all "modifier for lowering retreat thresshold while allready attacking is %d" g: gl-temp8)
-                        (up-chat-data-to-all "modifier for advancing to castle while enemy is feudal is %d" g: gl-temp9)
-                        (up-chat-data-to-all "modifier for waiting for castle age upgrades is %d" g: gl-temp12)
-                        (up-chat-data-to-all "modifier for gathering army when trushed is %d" g: gl-temp13)
-                        
-                        )
+                        (up-full-reset-search)
+                        (up-find-remote c: archer-line c: 40) 
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp43 g:= gl-remote-total)
+                        (up-get-player-fact focus-player unit-type-count archer-line gl-temp43)
+                        (up-full-reset-search)
+                        (up-find-remote c: skirmisher-line c: 40) 
+                        (up-get-search-state gl-local-total)
+                        (set-goal gl-temp 0)
+                    (set-goal gl-temp4 0)
+                    (set-goal gl-temp5 0)
+                    )
 
-                        (defrule
-                        (or(taunt-detected my-player-number 40)
-                        (taunt-detected any-ally 40))
+                    (defrule
+                        (current-age >= castle-age)
                         =>
-                        
-                        (up-chat-data-to-all "modifier for not retreating when enemy can't defend is %d" g: gl-temp14)
-                        (up-chat-data-to-all "modifier for knights countering enemy skirms is %d" g: gl-temp31)
-                        (up-chat-data-to-all "modifier for knights countering enemy siege is %d" g: gl-temp36)
-                        (up-chat-data-to-all "modifier for enemy knights countering our army is %d" g: gl-temp37)
-                        (up-chat-data-to-all "modifier for enemy scorpions countering our army is %d" g: gl-temp38)
-                        (up-chat-data-to-all "modifier for enemy mangonells countering our army is %d" g: gl-temp39)
-                        (up-chat-data-to-all "gl-group-superiority is %d" g: gl-group-superiority)
-                        (acknowledge-taunt my-player-number 40)
-                        (acknowledge-taunt every-ally 40)
-                        )
+                        (up-full-reset-search)
+                        (up-find-remote c: archer-line c: 40) 
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp43 g:= gl-remote-total)
+                        ;(up-get-player-fact focus-player unit-type-count archer-line gl-temp43)
+                        (up-full-reset-search)
+                        (up-find-remote c: skirmisher-line c: 40) 
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp44 g:= gl-remote-total)
+                        (set-goal gl-temp 0)
+                    (set-goal gl-temp4 0)
+                    (set-goal gl-temp5 0)
+                    )
 
-                        ;gl-temp1 - number of units in archer-group
-                        ;gl-temp2 - enemy military count
-                        ;gl-temp3 - base group superiority
-                        ;gl-temp4 - modifier for enemy skirms countering your achers
-                        ;gl-temp5 - modifier for your skirms countering enemy archers
-                        ;gl-temp6 - modifier for distance to enemy tc
-                        ;gl-temp7 - modifier for agression at higher army size
-                        ;gl-temp8 - modifier for lowering retreat thresshold while allready attacking
-                        ;gl-temp9 - 
-                        ;gl-temp10 - 
-                        ;gl-temp11 - 
-                        ;gl-temp12 - 
-                
-                    ;
+                    ; copy the remote list into the local list.
+                    (defrule
+                        (up-compare-goal gl-temp g:< gl-remote-total)
+                    =>
+                        (up-set-target-object search-remote g: gl-temp)
+                        (up-get-object-data object-data-id gl-temp45)
+                        (up-add-object-by-id search-local g: gl-temp45)
+                        (up-modify-goal gl-temp c:+ 1)
+                        (up-jump-rule -1)
+                    )
+                    ; update control group 4 (monk counter)
+                    (defrule
+                        (current-age <= feudal-age)
+                    =>
+                        (up-clean-search search-local -1 search-order-asc)
+                        (up-remove-objects search-local object-data-status > status-ready) ; if it's dead remove it.
+                        (up-remove-objects search-local object-data-player == my-player-number) ; if we own it now, remove it.
+                        ;(up-reset-group c: 4)
+                        ;(up-create-group 0 0 c: 4)
+                        (up-get-search-state gl-local-total)
+                        ;(up-modify-goal gl-temp44 g:= gl-local-total)
+                        (up-get-player-fact focus-player unit-type-count skirmisher-line gl-temp44)
+                    )
+
+                    (defrule
+                        (current-age >= castle-age)
+                    =>
+                        (up-clean-search search-local -1 search-order-asc)
+                        (up-remove-objects search-local object-data-status > status-ready) ; if it's dead remove it.
+                        (up-remove-objects search-local object-data-player == my-player-number) ; if we own it now, remove it.
+                        ;(up-reset-group c: 4)
+                        ;(up-create-group 0 0 c: 4)
+                        (up-get-search-state gl-local-total)
+                        ;(up-modify-goal gl-temp44 g:= gl-local-total)
+                        ;(up-get-player-fact focus-player unit-type-count skirmisher-line gl-temp44)
+                    )
+
+                    (defrule
+                    (up-compare-goal gl-temp44 > 0)
+                    (up-compare-goal gl-temp41 > 0)
+                    (up-compare-goal gl-temp44 g:> gl-temp41)
+                    =>
+                    (up-modify-goal gl-temp44 g:= gl-temp41)
+                    )
+
+                    (defrule
+                    (up-compare-goal gl-temp44 > 0)
+                    (up-compare-goal gl-temp41 > 0)
+                    =>
+                    (up-modify-goal gl-temp44 c:* -1)
+                    (up-modify-goal gl-group-superiority g:+ gl-temp44)
+                    (up-modify-goal gl-temp4 g:= gl-temp44)
+                    )
+
+                    (defrule
+                    (up-compare-goal gl-temp43 > 0)
+                    (up-compare-goal gl-temp42 > 0)
+                    (up-compare-goal gl-temp42 g:> gl-temp43)
+                    =>
+                    (up-modify-goal gl-temp42 g:= gl-temp43)
+                    )
+
+                    (defrule
+                        (true)
+                        =>
+                        (up-modify-goal gl-temp42 c:* 75)
+                        (up-modify-goal gl-temp42 c:/ 100)
+                    )
+
+                    (defrule
+                    (up-compare-goal gl-temp43 > 0)
+                    (up-compare-goal gl-temp42 > 0)
+
+                    =>
+                    (up-modify-goal gl-group-superiority g:+ gl-temp42)
+                    (up-modify-goal gl-temp5 g:= gl-temp42)
+                    )
+
+                ;Modifier for strong enemy units
+                    
+
+                    (defrule
+                    (current-age >= castle-age)
+                    =>
+                    (up-full-reset-search)
+                    (up-set-group search-local c: 7)
+                    (up-remove-objects search-local object-data-hitpoints <= 0)
+                    ;chosen unit:
+                    ;(up-remove-objects search-local object-data-type != scout-cavalry)
+                    ;(up-remove-objects search-local object-data-type != archer)
+                    ;(up-remove-objects search-local object-data-type != skirmisher)
+                    ;(up-remove-objects search-local object-data-type != spearman)
+                    ;(up-remove-objects search-local object-data-type != mangonel)
+                    ;(up-remove-objects search-local object-data-type != scorpion)
+                    (up-remove-objects search-local object-data-type != knight)
+                    (up-clean-search search-local -1 search-order-asc)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp37 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
+                    )
+
+                    (defrule
+                    (current-age >= castle-age)
+                    =>
+                    (up-full-reset-search)
+                    (up-set-group search-local c: 7)
+                    (up-remove-objects search-local object-data-hitpoints <= 0)
+                    ;chosen unit:
+                    ;(up-remove-objects search-local object-data-type != scout-cavalry)
+                    ;(up-remove-objects search-local object-data-type != archer)
+                    ;(up-remove-objects search-local object-data-type != skirmisher)
+                    ;(up-remove-objects search-local object-data-type != spearman)
+                    ;(up-remove-objects search-local object-data-type != mangonel)
+                    (up-remove-objects search-local object-data-type != scorpion)
+                    (up-clean-search search-local -1 search-order-asc)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp38 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
+                    )
+
+                    (defrule
+                    (current-age >= castle-age)
+                    =>
+                    (up-full-reset-search)
+                    (up-set-group search-local c: 7)
+                    (up-remove-objects search-local object-data-hitpoints <= 0)
+                    ;chosen unit:
+                    ;(up-remove-objects search-local object-data-type != scout-cavalry)
+                    ;(up-remove-objects search-local object-data-type != archer)
+                    ;(up-remove-objects search-local object-data-type != skirmisher)
+                    ;(up-remove-objects search-local object-data-type != spearman)
+                    (up-remove-objects search-local object-data-type != mangonel)
+                    ;(up-remove-objects search-local object-data-type != scorpion)
+                    (up-clean-search search-local -1 search-order-asc)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp39 g:= gl-local-total) ;gl-temp is enemy nr of the chosen unit
+                    )
+
+                    ;gl-temp37 knights
+                    ;gl-temp38 scorps
+                    ;gl-temp39 mangos
+
+                    ;til at starte med bare knights, mangonells og scorps
+                    ;knights tæller for 2 x bows (6 hvis army er skirm heavy)
+                    ;mangonells tæller for 4-5
+                    ;scorps tæller for 3-4
+
+                    
+                    (defrule
+                        (true)
+                        =>
+                        (up-full-reset-search)
+                        (up-find-local c: archer-line c: 200)
+                        (up-find-local c: skirmisher-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag != archer-group)
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp47 g:= gl-local-total)
+                        (up-full-reset-search)
+                        (up-find-local c: skirmisher-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag != archer-group)
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp g:= gl-local-total)
+                        (up-modify-goal gl-temp c:* 100)
+                        (up-modify-goal gl-temp g:/ gl-temp47) ;gl-temp er procentdel af army der er skirms
+                    )
+
+                    (defrule
+                        (current-age >= castle-age)
+                        =>
+                        (up-modify-goal gl-temp c:* 4) 
+                        (up-modify-goal gl-temp c:+ 200) 
+                        (up-modify-goal gl-temp37 g:* gl-temp) 
+                        (up-modify-goal gl-temp37 c:/ 100) 
+                        (up-modify-goal gl-temp38 c:* 5)
+                        (up-modify-goal gl-temp39 c:* 8)
+                        (up-modify-goal gl-temp37 c:* -1)
+                        (up-modify-goal gl-temp38 c:* -1)
+                        (up-modify-goal gl-temp39 c:* -1)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp37)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp38)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp39)
+                    )
+
+                    (defrule
+                        (current-age == feudal-age)
+                        (or(players-unit-type-count target-player mangonel-line == 0)
+                        (players-unit-type-count target-player scorpion-line == 0))
+                        =>
+                        (up-modify-goal gl-temp37 c:= 0)
+                        (up-modify-goal gl-temp38 c:= 0)
+                        (up-modify-goal gl-temp39 c:= 0)
+                    )
+
+                    (defrule
+                        (current-age == feudal-age)
+                        (or(players-unit-type-count target-player mangonel-line > 0)
+                        (players-unit-type-count target-player scorpion-line > 0))
+                        =>
+                        (up-modify-goal gl-temp39 c:= -50)
+                        (up-modify-goal gl-temp37 c:= 0)
+                        (up-modify-goal gl-temp38 c:= 0)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp39)
+                    )
+
+
+
+
+
+
+
                 
 
-                    ;jeg vil ginde den gennemsnitlige tid mellem passes for de sidste 10 passes.
-                    ;Udgangspunktet må være at sætte en start value til 666 og så starte
-                    ;Herfra kopieres gennemsnittet over i et temp-goal, ganges med 10, fratrækkes gennemsnittet,
-                    ;tillægges gl-time-since-last-pass og divideres med 10. Til sidst erstattes gennemsnittet med
-                    ;det nye temp goal.
+
+
+                ;Modify for distance to enemy tc
+                    (defrule
+                                (true)
+                                =>
+                                (set-strategic-number sn-target-point-adjustment 6)
+                                (up-full-reset-search)
+                                (up-find-local c: archer-line c: 200)
+                                (up-find-local c: skirmisher-line c: 200)
+                                (up-remove-objects search-local object-data-group-flag != archer-group)
+                                (set-goal gl-temp 0)
+                                (set-goal gl-temp1-x 0)
+                                (set-goal gl-temp1-y 0)
+                                (set-goal gl-local-total 0)
+                                )
+
+                                (defrule
+                                (up-set-target-object search-local c: 0)
+                                =>
+                                (up-get-object-data object-data-precise-x gl-temp2-x) ;coordinate * 100
+                                (up-get-object-data object-data-precise-y gl-temp2-y)
+                                (up-modify-goal gl-temp1-x g:+ gl-temp2-x)
+                                (up-modify-goal gl-temp1-y g:+ gl-temp2-y)
+                                (up-get-search-state gl-local-total)
+                                (up-modify-goal gl-temp c:+ 1) ;number of points checked
+                                )
+
+                                (defrule
+                                (up-compare-goal gl-local-total > 0)
+                                =>
+                                (up-remove-objects search-local object-data-index == 0)
+                                (up-get-search-state gl-local-total)
+                                (up-jump-rule -2)
+                                )
+
+                                (defrule
+                                (up-compare-goal gl-temp > 0)
+                                =>
+                                (up-modify-goal gl-temp1-x g:/ gl-temp) ; finder gennemsnitskoordinaten
+                                (up-modify-goal gl-temp1-y g:/ gl-temp)
+                                ;(up-copy-point gl-temp9-x gl-temp1-x) ;local group center of gravity
+                                (up-modify-goal gl-temp-x g:= gl-temp9-x)
+                                (up-modify-goal gl-temp-y g:= gl-temp9-y)
+                                (up-modify-goal gl-temp-x c:/ 100)
+                                (up-modify-goal gl-temp-y c:/ 100)
+                                (up-get-point-distance gl-enemy-x gl-temp-x gl-temp6)
+                                (up-modify-goal gl-temp6 c:/ 15)
+                                (up-modify-goal gl-temp6 c:* -1)
+                                )
+
+                                (defrule
+                                (up-compare-goal gl-temp6 > 10)
+                                =>
+                                (up-modify-goal gl-temp6 c:= 10)
+                                )
+
+                                (defrule
+                                (up-compare-goal gl-temp6 > 0)
+                                =>
+                                (up-modify-goal gl-group-superiority g:+ gl-temp6)
+                                )
+
+                ;Modifier for agression at higher army size
+                    (defrule
+                        (up-players-in-game enemy < 3)
+                        (up-compare-goal 10 < 1100)
+                        =>
+                        (up-full-reset-search)
+                    (up-find-local c: all-units-class c: 200)
+                    (up-remove-objects search-local object-data-group-flag != archer-group)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp7 g:= gl-local-total)
+                    (up-modify-goal gl-temp7 c:/ 4)
+                    (up-modify-goal gl-temp7 c:- 2)
+                    (up-modify-goal gl-group-superiority g:+ gl-temp7)
+                    )
+
+                    (defrule
+                        (up-players-in-game enemy < 3)
+                        (up-compare-goal 10 >= 1100)
+                        (up-compare-goal 10 < 2000)
+                        =>
+                        (up-full-reset-search)
+                    (up-find-local c: all-units-class c: 200)
+                    (up-remove-objects search-local object-data-group-flag != archer-group)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp7 g:= gl-local-total)
+                    (up-modify-goal gl-temp7 c:/ 8)
+                    (up-modify-goal gl-temp7 c:- 2)
+                    (up-modify-goal gl-group-superiority g:+ gl-temp7)
+                    )
+                    ;#load-if-defined DE-AVAILABLE
+                    (defrule
+                        (up-players-in-game enemy < 3)
+                        (up-compare-goal 10 >= 2000)
+                        =>
+                        (up-full-reset-search)
+                    (up-find-local c: all-units-class c: 200)
+                    (up-remove-objects search-local object-data-group-flag != archer-group)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp7 g:= gl-local-total)
+                    (up-modify-goal gl-temp7 c:/ 12)
+                    (up-modify-goal gl-temp7 c:- 2)
+                    (up-modify-goal gl-group-superiority g:+ gl-temp7)
+                    )
+                    ;#end-if
+
+                    (defrule
+                        (up-players-in-game enemy >= 3)
+                        =>
+                        (up-full-reset-search)
+                    (up-find-local c: all-units-class c: 200)
+                    (up-remove-objects search-local object-data-group-flag != archer-group)
+                    (up-get-search-state gl-local-total)
+                    (up-modify-goal gl-temp7 g:= gl-local-total)
+                    (up-modify-goal gl-temp7 c:/ 4)
+                    (up-modify-goal gl-temp7 c:- 4)
+                    (up-modify-goal gl-group-superiority g:+ gl-temp7)
+                    )
+
+                ;Modifier for not overextending in bigger team games
+                    (defrule
+                        (up-compare-sn sn-target-player-is-going-scouts == 1)
+                        (up-group-size c: archer-group > 5)
+                        (game-time < 1050)
+                        =>
+                        ;(up-modify-goal gl-group-superiority c:+ 5)
+                        (do-nothing)
+                    )
+                ;Modifiers for taunts
+                    (defrule
+                        (taunt-detected my-player-number 41)
+                        =>
+                        (set-goal gl-temp9 1000)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp9)
+                    )
+
+                    (defrule
+                        (taunt-detected my-player-number 42)
+                        =>
+                        (acknowledge-taunt my-player-number 42)
+                        (acknowledge-taunt my-player-number 41)
+                    )
+                ;Modifiers for waiting for castle age upgrades
+                    (defrule
+                        (true)
+                        =>
+                        (set-goal gl-temp9 0)
+                        (set-goal gl-temp12 0)
+                    )
+
+                    (defrule
+                    (up-research-status c: castle-age == research-pending)
+                    ;(players-current-age target-player < castle-age)
+                    =>
+                    (set-goal gl-temp9 -12) ;12
+                    (up-modify-goal gl-group-superiority g:+ gl-temp9)
+                    )
+
+                    (defrule
+                    (or(up-research-status c: ri-crossbow == research-pending)
+                    (or(up-research-status c: ri-elite-skirmisher == research-pending)
+                    (up-research-status c: ri-bodkin-arrow == research-pending)))
+                    =>
+                    (set-goal gl-temp12 -20) ;15
+                    (up-modify-goal gl-group-superiority g:+ gl-temp12)
+                    )
+                ;Modifiers for when enemy has multiple castles
+                    
+                    (defrule
+                    (players-building-type-count target-player castle > 1)
+                    ;(players-current-age target-player < castle-age)
+                    =>
+                    (up-modify-goal gl-group-superiority c:- 10)
+                    )
+
+                ;Modifier for gathering army when against trush
+
+                    (defrule
+                        (true)
+                        =>
+                        (set-goal gl-temp13 0)
+                    )
+
+                    (defrule
+                        (true)
+                        =>
+                        (up-get-point position-self gl-temp-x)
+                        (up-modify-goal gl-temp-x c:* 100)
+                        (up-modify-goal gl-temp-y c:* 100)
+                        (up-full-reset-search)
+                        (up-find-local c: archer-line c: 200)
+                        (up-find-local c: skirmisher-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag != archer-group)
+                        (up-get-search-state gl-local-total)
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-local-total < 2)
+                        (up-point-distance gl-temp-x gl-temp9-x < 1300)
+                        (up-compare-goal gl-anti-trush == 1)
+                        (game-time >= 840)
+                        =>
+                        (set-goal gl-temp13 -10)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp13)
+                    )
+                ;Modifier for not retreating when enemy have no defense
+                    ;hvis hær er tæt på modstander og de har <= 1 military units der ikke er en knight eller 
+                    ;siege bør der gives en bonus så man ikke flygter for at få upgrades når der er gratis skade
+                    (defrule
+                        (true)
+                        =>
+                        (set-goal gl-temp14 0)
+                        (set-goal gl-temp1 0)
+                    )
+                    
+                    (defrule
+                        (true)
+                        =>
+                        (up-copy-point gl-temp-x gl-temp9-x)
+                        (up-modify-goal gl-temp-x c:/ 100)
+                        (up-modify-goal gl-temp-y c:/ 100)
+                        (up-full-reset-search)
+                        (up-find-local c: archer-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag != archer-group)
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp1 g:= gl-local-total)
+                        (up-full-reset-search)
+                        (up-find-local c: skirmisher-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag != archer-group)
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp1 g:+ gl-local-total)
+                        (up-full-reset-search)
+                        (up-find-local c: archer-line c: 200)
+                        (up-find-local c: skirmisher-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag == archer-group)
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp2 g:+ gl-local-total)
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-found-enemy == 1)
+                        (or(up-point-distance gl-temp-x gl-enemy-x < 35)
+                        (up-compare-goal gl-anti-trush == 1))
+
+                        (players-military-population target-player <= 1)
+                        (players-unit-type-count target-player mangonel-line == 0)
+                        (players-unit-type-count target-player scorpion-line <= 1)
+                        (or(players-unit-type-count target-player knight-line == 0)
+                        (and(players-unit-type-count target-player knight-line <= 1)
+                        (or(up-compare-goal gl-temp > 8)
+                        (up-compare-goal gl-temp > 15))))
+                        (up-compare-goal gl-local-total <= 10)
+                        (or(up-compare-goal gl-temp1 >= 4)
+                        (up-compare-goal gl-anti-trush == 1))
+                        =>
+                        (set-goal gl-temp14 15)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp14)
+                    )
+
+                    (defrule
+                        (or(up-compare-goal gl-temp1 < 4)
+                        (up-compare-goal gl-local-total >= 12))
+                        (up-compare-goal gl-anti-trush != 1)
+                        (current-age == feudal-age)
+                        =>
+                        (set-goal gl-group-superiority -1)
+                    )
+                    
+                ;Don't attack if ungrouped units cannot defend the base on their own.
+                    (defrule
+                        (true)
+                        =>
+                        (up-full-reset-search)
+                        (up-find-local c: archer-line c: 200)
+                        (up-find-local c: skirmisher-line c: 200)
+                        ;(up-find-local c: knight-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag == archer-group)
+                        (set-strategic-number sn-focus-player-number 1)
+                        (up-get-point position-self gl-temp-x)
+                        (up-set-target-point gl-temp-x)
+                        (up-filter-distance c: -1 c: 40)
+                    )
+
+                    (defrule
+                        (players-stance focus-player enemy)
+                        =>
+                        (up-find-remote c: janissary-line c: 40)
+                        (up-find-remote c: conquistador-line c: 40)
+                        (up-find-remote c: arambai-line c: 40)
+                    )
+
+                    (defrule
+                    (up-compare-sn sn-focus-player-number < 8)
+                    =>
+                    (up-modify-sn sn-focus-player-number c:+ 1)
+                    (up-jump-rule -2)
+                    )
+
+                    (defrule
+                        (true)
+                        =>
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-temp34 g:= gl-remote-total)
+                        (up-modify-goal gl-temp34 c:* 4)
+                    )
+                    
+                    (defrule
+                        (true)
+                        =>
+                        (up-full-reset-search)
+                        (up-find-local c: archer-line c: 200)
+                        (up-find-local c: skirmisher-line c: 200)
+                        ;(up-find-local c: knight-line c: 200)
+                        (up-remove-objects search-local object-data-group-flag == archer-group)
+                        (set-strategic-number sn-focus-player-number 1)
+                        (up-get-point position-self gl-temp-x)
+                        (up-set-target-point gl-temp-x)
+                        (up-filter-distance c: -1 c: 40)
+                    )
+
+                    (defrule
+                        (players-stance focus-player enemy)
+                        =>
+                        (up-filter-include cmdid-military -1 -1 -1)(up-find-remote c: all-units-class c: 240)
+                    )
+
+                    (defrule
+                    (up-compare-sn sn-focus-player-number < 8)
+                    =>
+                    (up-modify-sn sn-focus-player-number c:+ 1)
+                    (up-jump-rule -2)
+                    )
+
+                    (defrule
+                        (true)
+                        =>
+                        (up-get-search-state gl-local-total)
+                        (up-modify-goal gl-remote-total g:+ gl-temp34)
+                        (up-get-fact unit-type-count-total knight-line gl-temp34)
+                        (up-modify-goal gl-local-total g:+ gl-temp34)
+                        (up-modify-goal gl-local-total c:* 2)
+                        (up-modify-goal gl-local-total c:* 100)
+                        (up-modify-goal gl-local-total c:/ 80)
+                        (up-get-point position-self gl-temp-x)
+                        (up-modify-goal gl-temp-x c:* 100)
+                        (up-modify-goal gl-temp-y c:* 100)
+                    )
+
+                    (defrule
+                        (up-point-distance gl-temp-x gl-temp9-x > 60)
+                        =>
+                        (up-modify-goal gl-local-total c:* 100)
+                        (up-modify-goal gl-local-total c:/ 50)
+                    )
+
+                    (defrule
+                        (true)
+                        =>
+                        (up-copy-point gl-temp-x gl-temp9-x)
+                        (up-modify-goal gl-temp-x c:/ 100)
+                        (up-modify-goal gl-temp-y c:/ 100)
+                        (set-strategic-number sn-cant-defend-base -1)
+                        (up-modify-goal gl-remote-total c:* 4)
+                    )
+                    
+
+                    (defrule
+                        (up-compare-goal gl-local-total g:< gl-remote-total)
+                        =>
+                        (set-strategic-number sn-cant-defend-base 1)
+                    )
+
+                    (defrule
+                        (true)
+                        =>
+                        (up-modify-goal gl-remote-total c:/ 4)
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-local-total g:< gl-remote-total)
+                        (up-compare-goal gl-remote-total > 2)
+                        ;(or(up-compare-goal gl-temp34 > 0)
+                        (up-point-distance gl-temp-x gl-enemy-x > 20)
+                        =>
+                        (up-modify-goal gl-group-superiority c:= -10)
+                    )
+
+                ;Modifier for lowering retreat thresshold while allready attacking
+
+                    (defrule
+                        (true)
+                        =>
+                        (set-goal gl-temp8 0)
+                    )
+
+                    (defrule
+                        (goal 1 1)
+                        (up-compare-goal gl-temp1 >= 8) ;dont keep attacking when army numbers are low
+                        =>
+                        (set-goal gl-temp8 5)
+                        (up-modify-goal gl-group-superiority g:+ gl-temp8)
+                    )
+
+                ;Stop attacking when first enemy is killed in FFA
+                    #load-if-not-defined UP-2-PLAYER-GAME
+                    #load-if-not-defined UP-3-PLAYER-GAME
+                    #load-if-not-defined UP-2-PLAYER-TEAM
+                    #load-if-not-defined UP-3-PLAYER-TEAM
+                    #load-if-not-defined UP-4-PLAYER-TEAM
+                    #load-if-not-defined UP-5-PLAYER-TEAM
+                    #load-if-not-defined UP-6-PLAYER-TEAM
+                    #load-if-not-defined UP-7-PLAYER-TEAM
+                    (defrule
+                        (true)
+                        =>
+                        (up-modify-sn sn-focus-player-number g:= gl-flank)
+                    )
+                    
+                    (defrule
+                        (or(players-population focus-player < 15)
+                        (player-resigned focus-player))
+                        (game-time > 800)
+                        =>
+                        (set-strategic-number sn-stay-defensive-untill-imp 1)
+                        (disable-self)
+                    )
+
+                    (defrule
+                        (players-population focus-player < 20)
+                        (game-time > 900)
+                        =>
+                        (set-strategic-number sn-stay-defensive-untill-imp 1)
+                        (disable-self)
+                    )
+
+                    (defrule
+                        (players-population focus-player < 25)
+                        (game-time > 1000)
+                        =>
+                        (set-strategic-number sn-stay-defensive-untill-imp 1)
+                        (disable-self)
+                    )
+
+                    (defrule
+                        (players-population focus-player < 30)
+                        (game-time > 1100)
+                        =>
+                        (set-strategic-number sn-stay-defensive-untill-imp 1)
+                        (disable-self)
+                    )
+
+                    (defrule
+                        (game-time > 1200)
+                        =>
+                        (set-strategic-number sn-stay-defensive-untill-imp 1)
+                        (disable-self)
+                    )
+
+                    (defrule
+                        (up-compare-sn sn-stay-defensive-untill-imp == 1)
+                        =>
+                        (set-goal gl-group-superiority -1)
+                    )
+                    #end-if
+                    #end-if
+                    #end-if
+                    #end-if
+                    #end-if
+                    #end-if
+                    #end-if
+                    #end-if
+
+                ;Modifier for not retreating when behind enemy tc.
+                    (defrule
+                        (true)
+                        =>
+                        (up-get-point position-self gl-temp1-x)
+                        (up-modify-goal gl-temp1-x c:* 100)
+                        (up-modify-goal gl-temp1-y c:* 100)
+                        (up-copy-point gl-temp2-x gl-enemy-x)
+                        (up-modify-goal gl-temp2-x c:* 100)
+                        (up-modify-goal gl-temp2-y c:* 100)
+                        (up-get-point-distance gl-temp1-x gl-temp2-x gl-temp10)
+                        (up-get-point-distance gl-temp1-x gl-temp9-x gl-temp11)
+                        (up-modify-goal gl-temp11 g:- gl-temp10)
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-temp11 > 200)
+                        =>
+                        (up-modify-goal gl-group-superiority c:+ 1000)
+                    )
+                ;Keep attacking pocket untill army dies
+
+                    (defrule
+                        (true)
+                        =>
+                        (up-copy-point gl-temp-x gl-ranged-army-x)
+                        (up-modify-goal gl-temp-x c:/ 100)
+                        (up-modify-goal gl-temp-y c:/ 100)
+                        (up-get-point position-self gl-temp1-x)
+                    )
+                    
+                    (defrule
+                        (up-compare-goal gl-enemy-x g:== gl-enemy-pocket-x)
+                        (up-compare-goal gl-enemy-y g:== gl-enemy-pocket-y)
+                        (up-point-distance gl-temp-x gl-temp1-x > 65)
+                        =>
+                        (set-goal gl-group-superiority 999)
+                    )
+                ;Changing attacking goal
+
+                    (defrule
+                        (true)
+                        =>
+                        (set-goal 1 0)
+                    )
+
+                    (defrule
+                        (up-compare-goal gl-group-superiority >= 0)
+                        =>
+                        (set-goal 1 1)
+                    )
+
+                ;Debug
+                    (defrule
+                    (or(taunt-detected my-player-number 40)
+                    (taunt-detected any-ally 40))
+                    =>
+                    (up-chat-data-to-all "number of units in archer-group is %d" g: gl-temp1)
+                    (up-chat-data-to-all "enemy military count is %d" g: gl-temp2)
+                    (up-chat-data-to-all "base group superiority is %d" g: gl-temp3)
+                    (up-chat-data-to-all "modifier for enemy skirms countering your achers is %d" g: gl-temp4)
+                    (up-chat-data-to-all "modifier for your skirms countering enemy archers is %d" g: gl-temp5)
+                    (up-chat-data-to-all "modifier for distance to enemy tc is %d" g: gl-temp6)
+                    (up-chat-data-to-all "modifier for agression at higher army size is %d" g: gl-temp7)
+                    (up-chat-data-to-all "modifier for lowering retreat thresshold while allready attacking is %d" g: gl-temp8)
+                    (up-chat-data-to-all "modifier for advancing to castle while enemy is feudal is %d" g: gl-temp9)
+                    (up-chat-data-to-all "modifier for waiting for castle age upgrades is %d" g: gl-temp12)
+                    (up-chat-data-to-all "modifier for gathering army when trushed is %d" g: gl-temp13)
+                    
+                    )
+
+                    (defrule
+                    (or(taunt-detected my-player-number 40)
+                    (taunt-detected any-ally 40))
+                    =>
+                    
+                    (up-chat-data-to-all "modifier for not retreating when enemy can't defend is %d" g: gl-temp14)
+                    (up-chat-data-to-all "modifier for knights countering enemy skirms is %d" g: gl-temp31)
+                    (up-chat-data-to-all "modifier for knights countering enemy siege is %d" g: gl-temp36)
+                    (up-chat-data-to-all "modifier for enemy knights countering our army is %d" g: gl-temp37)
+                    (up-chat-data-to-all "modifier for enemy scorpions countering our army is %d" g: gl-temp38)
+                    (up-chat-data-to-all "modifier for enemy mangonells countering our army is %d" g: gl-temp39)
+                    (up-chat-data-to-all "gl-group-superiority is %d" g: gl-group-superiority)
+                    (acknowledge-taunt my-player-number 40)
+                    (acknowledge-taunt every-ally 40)
+                    )
+
+                    ;gl-temp1 - number of units in archer-group
+                    ;gl-temp2 - enemy military count
+                    ;gl-temp3 - base group superiority
+                    ;gl-temp4 - modifier for enemy skirms countering your achers
+                    ;gl-temp5 - modifier for your skirms countering enemy archers
+                    ;gl-temp6 - modifier for distance to enemy tc
+                    ;gl-temp7 - modifier for agression at higher army size
+                    ;gl-temp8 - modifier for lowering retreat thresshold while allready attacking
+                    ;gl-temp9 - 
+                    ;gl-temp10 - 
+                    ;gl-temp11 - 
+                    ;gl-temp12 - 
+            
+                ;
+            
+
+                ;jeg vil ginde den gennemsnitlige tid mellem passes for de sidste 10 passes.
+                ;Udgangspunktet må være at sætte en start value til 666 og så starte
+                ;Herfra kopieres gennemsnittet over i et temp-goal, ganges med 10, fratrækkes gennemsnittet,
+                ;tillægges gl-time-since-last-pass og divideres med 10. Til sidst erstattes gennemsnittet med
+                ;det nye temp goal.
 
 
 
@@ -12992,8 +13033,10 @@
                     (defrule ;list remote units after id (every time)
                     (players-stance focus-player enemy)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
-                    (up-find-remote c: monk c: 40)
+                    (up-find-remote c: monk c: 20)
+                    
                     (up-filter-include cmdid-military -1 -1 -1)   
                     (up-find-remote c: all-units-class c: 240)
                     (up-filter-include cmdid-villager -1 -1 -1)
@@ -13619,8 +13662,9 @@
                     (defrule ;list remote units after id (every time)
                     (players-stance focus-player enemy)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
-                    (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
+                    (up-find-remote c: monk c: 20)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
                     )
 
                     (defrule
@@ -14333,8 +14377,10 @@
                     (goal 11 1)
                     =>
                     (up-clean-search search-remote -1 search-order-asc)
+                     (up-find-remote c: missionary c: 0)
                     (up-filter-include cmdid-monk -1 -1 -1)
-                    (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
+                    (up-find-remote c: monk c: 20)
+                        (up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
                     )
 
@@ -14522,6 +14568,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == ranged-units)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
@@ -14593,6 +14640,7 @@
                     (up-modify-goal gl-temp-y c:/ 100)
                     (up-set-target-point gl-temp-x)
                     (up-filter-distance c: -1 c: 12) ; 10
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 40)     
                     )
@@ -14749,6 +14797,7 @@
                     (up-get-point position-self gl-temp-x)
                     (up-set-target-point gl-temp-x)
                     (up-filter-distance c: -1 c: 30)
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 40)     
                     )
@@ -14861,6 +14910,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == all-units)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     )
@@ -15137,6 +15187,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == ranged-units)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
@@ -15169,6 +15220,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == all-units)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     ;(up-clean-search search-remote object-data-id search-order-asc)
@@ -15926,6 +15978,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == ranged-units)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
@@ -15948,6 +16001,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == all-units)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     (up-clean-search search-remote object-data-id search-order-asc)
@@ -16001,6 +16055,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == ranged-units)
                     =>
+                    (up-find-remote c: missionary c: 20)
                     (up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
@@ -16023,7 +16078,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == all-units)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     (up-set-precise-target-point gl-temp9-x)
                     (up-clean-search search-remote object-data-distance search-order-asc)
@@ -16437,7 +16492,7 @@
                     (defrule ; the optimised version should ideally include close units in the list first if there are more than 40 total
                         (players-stance focus-player enemy)
                         =>
-                        (up-filter-include cmdid-monk -1 -1 -1)
+                        (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                         (up-find-remote c: monk c: 40)
                         (up-filter-include cmdid-military -1 -1 -1)   
                         (up-find-remote c: all-units-class c: 40)
@@ -17519,7 +17574,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == ranged-units)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
                     (up-find-local c: archer-line c: 200)
@@ -17545,7 +17600,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == all-units)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     (up-find-local c: archer-line c: 200)
                     (up-find-local c: skirmisher-line c: 200)
@@ -17585,7 +17640,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == ranged-units)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
                     (up-find-local c: archer-line c: 200)
@@ -17611,7 +17666,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == all-units)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     (up-find-local c: archer-line c: 200)
                     (up-find-local c: skirmisher-line c: 200)
@@ -18821,7 +18876,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == ranged-units)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     
                     (up-clean-search search-remote object-data-id search-order-asc)
@@ -18843,7 +18898,7 @@
                     (players-stance focus-player enemy)
                     (up-compare-goal gl-archer-micro-priority == all-units)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     (up-clean-search search-remote object-data-id search-order-asc)
                     (set-goal gl-temp11 0)
@@ -19408,7 +19463,7 @@
                         (defrule
                             (players-stance focus-player enemy)
                             =>
-                            (up-filter-include cmdid-monk -1 -1 -1)
+                            (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                             (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                         )
 
@@ -19973,7 +20028,7 @@
                         (up-modify-goal gl-temp-y c:/ 100)
                         (up-set-target-point gl-temp-x)
                         (up-filter-distance c: -1 c: 11)
-                        (up-filter-include cmdid-monk -1 -1 -1)
+                        (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                         (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)    
                         )
 
@@ -21667,7 +21722,7 @@
                     (players-stance focus-player enemy)
                     =>
                     ;(up-clean-search search-remote -1 search-order-asc)
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                     (up-copy-point gl-temp-x gl-temp9-x)
                     (up-modify-goal gl-temp-x c:/ 100)
@@ -21798,7 +21853,7 @@
                         (defrule ;list remote units after id (every time)
                         (players-stance focus-player enemy)
                         =>
-                        (up-filter-include cmdid-monk -1 -1 -1)
+                        (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                         (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                         )
 
@@ -22390,7 +22445,7 @@
                         (defrule ;list remote units after id (every time)
                         (players-stance focus-player enemy)
                         =>
-                        (up-filter-include cmdid-monk -1 -1 -1)
+                        (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                         (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                         )
 
@@ -22627,7 +22682,7 @@
                         (defrule
                             (players-stance focus-player enemy)
                             =>
-                            (up-filter-include cmdid-monk -1 -1 -1)
+                            (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                             (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   
                             (up-find-remote c: all-units-class c: 240)
                             (up-filter-include cmdid-villager -1 -1 -1)
@@ -22755,7 +22810,7 @@
                         (defrule
                             (players-stance focus-player enemy)
                             =>
-                            (up-filter-include cmdid-monk -1 -1 -1)
+                            (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                             (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   
                             (up-find-remote c: all-units-class c: 240)
                             (up-filter-include cmdid-villager -1 -1 -1)
@@ -22935,7 +22990,7 @@
                     (goal gl-temp2 1)
                     (players-stance focus-player enemy)
                     =>
-                    (up-filter-include cmdid-monk -1 -1 -1)
+                    (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                     (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)        
                     )
 
@@ -23275,7 +23330,8 @@
                     (defrule
                         (players-stance focus-player enemy)
                         =>
-                        (up-filter-include cmdid-monk -1 -1 -1)
+                        (up-find-remote c: 913 c: 40)
+                        (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                         (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   
                         (up-find-remote c: all-units-class c: 240)
                         (up-filter-include cmdid-villager -1 -1 -1)
@@ -23304,7 +23360,7 @@
                     (research-completed ri-chain-barding)))
                     =>
                     (up-set-target-point gl-enemy-x)
-                    (up-remove-objects search-remote object-data-distance <= 12)
+                    (up-remove-objects search-remote object-data-distance <= 10)
                     )
 
                     (defrule
@@ -23313,15 +23369,15 @@
                     (research-completed ri-chain-barding)))
                     =>
                     (up-set-target-point gl-temp1-x)
-                    (up-remove-objects search-remote object-data-distance <= 12)
+                    (up-remove-objects search-remote object-data-distance <= 10)
                     (up-set-target-point gl-temp2-x)
-                    (up-remove-objects search-remote object-data-distance <= 12)
+                    (up-remove-objects search-remote object-data-distance <= 10)
                     (up-set-target-point gl-temp3-x)
-                    (up-remove-objects search-remote object-data-distance <= 12)
+                    (up-remove-objects search-remote object-data-distance <= 10)
                     (up-set-target-point gl-temp4-x)
-                    (up-remove-objects search-remote object-data-distance <= 12)
+                    (up-remove-objects search-remote object-data-distance <= 10)
                     (up-set-target-point gl-temp5-x)
-                    (up-remove-objects search-remote object-data-distance <= 12)
+                    (up-remove-objects search-remote object-data-distance <= 10)
                     (up-get-search-state gl-local-total)
                     )
 
@@ -23432,6 +23488,17 @@
                         (do-nothing)
                     )
 
+                    (defrule
+                    (up-set-target-object search-local g: gl-temp1)
+                        (up-set-target-by-id g: gl-temp3)
+                        (or(up-object-data object-data-type == mangonel)
+                        (up-object-data object-data-type == monk))
+                        =>
+                        (up-modify-goal gl-temp5 c:+ 150) ;gl-temp8 is checked units score
+                        ;(up-chat-data-to-all "checked unit score is %d" g: gl-temp8)
+                        (do-nothing)
+                    )
+
 
                     (defrule
                         (true)
@@ -23463,6 +23530,7 @@
                         (up-get-object-data object-data-distance gl-temp8) ;distance to enemy tc
                         (up-get-object-data object-data-hitpoints gl-temp25) ;hitpoints
                         (up-get-object-data object-data-maxhp gl-temp26) ;hitpoints
+                        (up-get-object-data object-data-type gl-temp42) ;type
                         (up-modify-goal gl-temp25 c:* 10000) ;percentage hp remaining
                         (up-modify-goal gl-temp26 c:* 100)
                         (up-modify-goal gl-temp25 g:/ gl-temp26) ;percentage hp remaining
@@ -23568,6 +23636,17 @@
                     )
 
                     (defrule
+                    (up-set-target-object search-local g: gl-temp1)
+                        (up-set-target-by-id g: gl-temp3)
+                        (or(up-object-data object-data-type == mangonel)
+                        (up-object-data object-data-type == monk))
+                        =>
+                        (up-modify-goal gl-temp8 c:+ 150) ;gl-temp8 is checked units score
+                        ;(up-chat-data-to-all "checked unit score is %d" g: gl-temp8)
+                        (do-nothing)
+                    )
+
+                    (defrule
                         (up-compare-goal gl-temp9 g:< gl-temp8) ;checked units has highest score found
                         (up-set-target-object search-remote g: gl-temp2)
                         (up-set-target-object search-local g: gl-temp1)
@@ -23583,7 +23662,7 @@
                         (up-compare-goal gl-temp2 g:< gl-remote-total)
                         =>
                         (up-modify-goal gl-temp2 c:+ 1)
-                        (up-jump-rule -13)
+                        (up-jump-rule -14)
                     )
 
                     ;Hvis:
@@ -23717,7 +23796,7 @@
                         (up-compare-goal gl-temp1 g:< gl-local-total)
                         =>
                         (up-modify-goal gl-temp1 c:+ 1)
-                        (up-jump-rule -34)
+                        (up-jump-rule -36)
                     )
 
                     
@@ -23806,7 +23885,7 @@
                     (defrule
                         (players-stance focus-player enemy)
                         =>
-                        (up-filter-include cmdid-monk -1 -1 -1)
+                        (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                         (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   
                         (up-find-remote c: all-units-class c: 240)
                         (up-filter-include cmdid-villager -1 -1 -1)
@@ -27183,7 +27262,7 @@
         (defrule
         (players-stance focus-player enemy)
         =>
-        (up-filter-include cmdid-monk -1 -1 -1)
+        (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
         (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   
         (up-find-remote c: all-units-class c: 240)
         (up-filter-include cmdid-villager -1 -1 -1)
@@ -30468,7 +30547,7 @@
             (defrule
             (players-stance focus-player enemy)
             =>
-            (up-filter-include cmdid-monk -1 -1 -1)
+            (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
             (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   
             (up-find-remote c: all-units-class c: 240)
             (up-filter-include cmdid-villager -1 -1 -1)
@@ -51444,7 +51523,6 @@
                     ;(chat-to-all "moving extra sheep behind tc")
                 )
 
-        
             ;Change ID's between sheep that have already been asigned ID's.
                 (defrule
                     (or(not(up-set-target-by-id g: gl-current-sheep))
@@ -53446,7 +53524,7 @@
                 (up-filter-distance c: -1 c: 5)
                 (up-find-remote c: scout-cavalry-line c: 40)
                 (up-find-remote c: villager-class c: 40)
-                (up-filter-include cmdid-monk -1 -1 -1)
+                (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                 (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)(up-filter-include cmdid-villager -1 -1 -1)(up-find-remote c: all-units-class c: 240)
                 
                 )
@@ -81073,6 +81151,7 @@
                 (up-remove-objects search-local object-data-group-flag != farm-group)
                 (up-remove-objects search-local object-data-target == building-class)
                 (up-remove-objects search-local object-data-target == farm-class)
+                (up-remove-objects search-local object-data-target == 913)
                 (up-clean-search search-local object-data-id search-order-asc)
                 (up-get-search-state gl-local-total)
                 ;(up-chat-data-to-all "number of idle farmers is %d." g: gl-local-total)
@@ -81164,6 +81243,7 @@
                 (up-remove-objects search-local object-data-group-flag != farm-group2)
                 (up-remove-objects search-local object-data-target == building-class)
                 (up-remove-objects search-local object-data-target == farm-class)
+                (up-remove-objects search-local object-data-target == 913)
                 (up-clean-search search-local object-data-id search-order-asc)
                 (up-get-search-state gl-local-total)
                 ;(up-chat-data-to-all "number of idle farmers is %d." g: gl-local-total)
@@ -83396,6 +83476,8 @@
                     (up-remove-objects search-local object-data-type == 581) ; female gold miner
                     (up-remove-objects search-local object-data-type == 579) ; male gold miner
                     (up-remove-objects search-local object-data-carry > 0) ; male gold miner
+                    (up-remove-objects search-local object-data-target == building-class) ; male gold miner
+                    (up-remove-objects search-local object-data-target == 913) ; male gold miner
                 )
 
                 (defrule
@@ -83409,6 +83491,8 @@
                     (up-remove-objects search-local object-data-type == 118) ; male builder
                     (up-remove-objects search-local object-data-target == 932) ;gold mine
                     (up-remove-objects search-local object-data-target == building-class) ;gold mine
+                    (up-remove-objects search-local object-data-target == building-class) ; male gold miner
+                    (up-remove-objects search-local object-data-target == 913) ; male gold miner
                 )
 
                 (defrule
@@ -83458,6 +83542,8 @@
                             (up-find-local c: villager-class c: 200)
                             (up-remove-objects search-local object-data-target == 932) ;gold mine
                             (up-remove-objects search-local object-data-target == farm-class)
+                            (up-remove-objects search-local object-data-target == building-class) ; male gold miner
+                    (up-remove-objects search-local object-data-target == 913) ; male gold miner
                             (up-remove-objects search-local object-data-target-id g:== gl-temp)
                             (up-clean-search search-local object-data-distance search-order-asc)
                             (up-remove-objects search-local object-data-index != 0)
@@ -83586,6 +83672,8 @@
                     (up-remove-objects search-local object-data-type == 220) ; female stone miner
                     (up-remove-objects search-local object-data-type == 124) ; male stone miner
                     (up-remove-objects search-local object-data-carry > 0) ; male gold miner
+                    (up-remove-objects search-local object-data-target == building-class) ; male gold miner
+                    (up-remove-objects search-local object-data-target == 913) ; male gold miner
                 )
 
                 (defrule
@@ -83634,6 +83722,8 @@
                         (up-find-local c: villager-class c: 200)
                         (up-remove-objects search-local object-data-target == 102) ;stone mine
                         (up-remove-objects search-local object-data-target == farm-class)
+                        (up-remove-objects search-local object-data-target == building-class) ; male gold miner
+                    (up-remove-objects search-local object-data-target == 913) ; male gold miner
                         (up-remove-objects search-local object-data-target-id g:== gl-temp)
                         (up-clean-search search-local object-data-distance search-order-asc)
                         (up-remove-objects search-local object-data-index != 0)
@@ -84473,8 +84563,8 @@
                 (defrule
                     (players-stance focus-player enemy)
                     =>
-                    (up-filter-include cmdid-military -1 -1 -1)
-                    (up-find-remote c: all-units-class c: 40)
+                    (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
+                
                 )
 
                 (defrule
@@ -84676,6 +84766,7 @@
 
                 (defrule
                 (up-compare-goal gl-temp20 >= 3)
+                (up-compare-goal gl-my-position == pocket)
                 (up-compare-goal gl-temp48 > 0)
                 (up-set-target-object search-local g: gl-temp1)
                     (or(up-point-distance gl-temp-x gl-temp1-x <= 10)
@@ -84697,7 +84788,7 @@
 
                 (defrule
                     (up-compare-goal gl-temp20 >= 3)
-                    (up-compare-goal gl-temp48 > 0)
+                    (up-compare-goal gl-my-position == pocket)
                     (or(current-age == castle-age)
                     (military-population < 15))
                     (up-set-target-object search-local c: 0)
@@ -84746,6 +84837,7 @@
                     (or(current-age == castle-age)
                     (military-population < 15))
                     (game-time < 2100)
+                    (up-compare-goal gl-my-position == pocket)
                     (up-set-target-object search-local c: 0)
                     (up-set-target-object search-remote c: 0)
                     =>
@@ -84813,6 +84905,7 @@
                     (or(current-age == castle-age)
                     (military-population < 15))
                     (game-time < 2100)
+                    (up-compare-goal gl-my-position == pocket)
                     (up-set-target-object search-local c: 0)
                     (up-set-target-object search-remote c: 0)
                     =>
@@ -84840,6 +84933,207 @@
                     =>
                     (up-chat-data-to-all "nr of checked vills were %d" g: gl-temp1)
                 )
+        ; Villager ram defense
+
+            (defrule
+                (true)
+                =>
+                (set-goal gl-temp1 0)
+            )
+            (defrule
+                (true)
+                =>
+                (up-full-reset-search)
+                (up-find-local c: town-center c: 10)
+                (up-find-local c: watch-tower c: 10)
+                (up-find-local c: castle c: 10)
+                (up-get-search-state gl-local-total)
+                (up-modify-goal gl-temp2 g:= gl-local-total)
+                (up-modify-goal gl-temp2 c:- 1)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                =>
+                (up-get-point position-object gl-temp-x)
+                (up-set-target-point gl-temp-x)
+                (up-filter-distance c: -1 c: 5)
+                (set-strategic-number sn-focus-player-number 1)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                (players-stance focus-player enemy)
+                =>
+                (up-find-remote c: battering-ram-line c: 10)
+                (up-find-remote c: 1744 c: 10)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                (up-compare-sn sn-focus-player-number < 8)
+                =>
+                (up-modify-sn sn-focus-player-number c:+ 1)
+                (up-jump-rule -2)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                =>
+                (up-remove-objects search-remote object-data-tasks-count > 7)
+                (up-filter-distance c: -1 c: 12)
+                (up-reset-search 1 1 0 0)
+                (up-find-local c: villager-class c: 200)
+                (up-remove-objects search-local object-data-tasks-count > 0)
+                (up-remove-objects search-local object-data-target == building-class)
+                (up-remove-objects search-local object-data-target == 913)
+                (up-clean-search search-remote object-data-distance search-order-asc)
+            )
+
+            (defrule
+                (up-set-target-object search-remote c: 0)
+                (up-set-target-object search-local c: 0)
+                =>
+                (up-clean-search search-local object-data-distance search-order-asc)
+                (up-remove-objects search-local object-data-index >= 7)
+                (up-target-objects 0 action-default -1 -1)
+            )
+
+            (defrule
+                (up-compare-goal gl-temp1 g:< gl-temp2)
+                =>
+                (up-modify-goal gl-temp1 c:+ 1)
+                (up-jump-rule -7)
+            )
+        ; Fortification targeting
+            (defrule
+                (true)
+                =>
+                (set-goal gl-temp1 0)
+            )
+            (defrule
+                (true)
+                =>
+                (up-full-reset-search)
+                (up-find-local c: town-center c: 10)
+                (up-find-local c: watch-tower c: 10)
+                (up-find-local c: castle c: 10)
+                (up-get-search-state gl-local-total)
+                (up-modify-goal gl-temp2 g:= gl-local-total)
+                (up-modify-goal gl-temp2 c:- 1)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                =>
+                (up-get-point position-object gl-temp-x)
+                (up-set-target-point gl-temp-x)
+                (up-filter-distance c: -1 c: 8)
+                (set-strategic-number sn-focus-player-number 1)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                (up-object-data object-data-type == castle)
+                =>
+                (up-get-point position-object gl-temp-x)
+                (up-set-target-point gl-temp-x)
+                (up-filter-distance c: -1 c: 12)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                (players-stance focus-player enemy)
+                =>
+                (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
+                (up-find-remote c: monk c: 40)
+                (up-filter-include cmdid-military -1 -1 -1)   
+                (up-find-remote c: all-units-class c: 240)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                (up-compare-sn sn-focus-player-number < 8)
+                =>
+                (up-modify-sn sn-focus-player-number c:+ 1)
+                (up-jump-rule -2)
+            )
+
+            (defrule
+                (up-set-target-object search-local g: gl-temp1)
+                =>
+                (up-get-object-data object-data-target-id gl-temp)
+                
+                (up-clean-search search-remote object-data-pierce-armor search-order-asc)
+            )
+
+            (defrule
+                (up-set-target-object search-remote c: 0)
+                (up-object-data object-data-id g:!= gl-temp)
+                (up-set-target-object search-local g: gl-temp1)
+                =>
+                (up-remove-objects search-local object-data-index g:!= gl-temp1)
+                (up-remove-objects search-remote object-data-index != 0)
+                (up-target-objects 0 action-default -1 -1)
+                ;(chat-to-all "changing target")
+            )
+
+            (defrule
+                (up-compare-goal gl-temp1 g:< gl-temp2)
+                =>
+                (up-modify-goal gl-temp1 c:+ 1)
+                (up-jump-rule -7)
+            )
+        ; Repair fortifications
+            (defrule
+                (true)
+                =>
+                (set-goal gl-temp1 0)
+            )
+            (defrule
+                (true)
+                =>
+                (up-full-reset-search)
+                (up-modify-sn sn-focus-player-number c:= my-player-number)
+                (up-find-remote c: town-center c: 10)
+                (up-find-remote c: watch-tower c: 10)
+                (up-find-remote c: castle c: 10)
+                (up-get-search-state gl-local-total)
+                (up-modify-goal gl-temp2 g:= gl-remote-total)
+                (up-modify-goal gl-temp2 c:- 1)
+            )
+
+            (defrule
+                (up-set-target-object search-remote g: gl-temp1)
+                =>
+                (up-get-object-data object-data-maxhp gl-temp)
+                (up-get-point position-object gl-temp-x)
+                (up-set-target-point gl-temp-x)
+                (up-filter-distance c: -1 c: 8)
+                (up-find-local c: villager-class c: 5)
+                (up-remove-objects search-local object-data-tasks-count > 0)
+                (up-remove-objects search-local object-data-target == 913)
+                (up-remove-objects search-local object-data-target == building-class)
+                (up-clean-search search-local object-data-distance search-order-asc)
+            )
+
+
+            (defrule
+                (up-set-target-object search-local c: 0)
+                (up-set-target-object search-remote g: gl-temp1)
+                (up-object-data object-data-hitpoints g:< gl-temp)
+                =>
+                (up-remove-objects search-local object-data-index != 0)
+                (up-remove-objects search-remote object-data-index g:!= gl-temp1)
+                (up-target-objects 0 action-default -1 -1)
+            )
+
+            (defrule
+                (up-compare-goal gl-temp1 g:< gl-temp2)
+                =>
+                (up-modify-goal gl-temp1 c:+ 1)
+                (up-jump-rule -4)
+            )
         ;
             (defrule
                 ;(true)
@@ -85350,6 +85644,48 @@
                 
                     =>
                     (research ri-ballistics)
+                    (set-goal gl-saving-for-upgrade -1)
+                    (set-goal gl-saving-wood-needed 0)
+                    (set-goal gl-saving-food-needed 0)
+                    (set-goal gl-saving-gold-needed 0)
+                )
+
+                (defrule
+                    (goal gl-saving-for-upgrade saving-for-heresy)
+                    (or(can-research ri-heresy)
+                    (or(up-research-status c: ri-heresy >= research-pending)
+                    (building-type-count-total monastery == 0)))
+                
+                    =>
+                    (research ri-heresy)
+                    (set-goal gl-saving-for-upgrade -1)
+                    (set-goal gl-saving-wood-needed 0)
+                    (set-goal gl-saving-food-needed 0)
+                    (set-goal gl-saving-gold-needed 0)
+                )
+
+                (defrule
+                    (goal gl-saving-for-upgrade saving-for-devotion)
+                    (or(can-research ri-devotion)
+                    (or(up-research-status c: ri-devotion >= research-pending)
+                    (building-type-count-total monastery == 0)))
+                
+                    =>
+                    (research ri-devotion)
+                    (set-goal gl-saving-for-upgrade -1)
+                    (set-goal gl-saving-wood-needed 0)
+                    (set-goal gl-saving-food-needed 0)
+                    (set-goal gl-saving-gold-needed 0)
+                )
+
+                (defrule
+                    (goal gl-saving-for-upgrade saving-for-faith)
+                    (or(can-research ri-faith)
+                    (or(up-research-status c: ri-faith >= research-pending)
+                    (building-type-count-total monastery == 0)))
+                
+                    =>
+                    (research ri-faith)
                     (set-goal gl-saving-for-upgrade -1)
                     (set-goal gl-saving-wood-needed 0)
                     (set-goal gl-saving-food-needed 0)
@@ -96379,6 +96715,39 @@
                 ;(up-chat-data-to-all "Second loop-duration 1: %d" g: 181)
                 )
         ;
+        ; detect enemy monk strat
+            (defrule
+                    (true)
+                    =>
+                    (up-get-target-fact unit-type-count monk gl-temp1)
+                    (up-get-target-fact unit-type-count missionary gl-temp)
+                    (up-modify-goal gl-temp1 g:+ gl-temp)
+                    (set-strategic-number sn-focus-player-number 1)
+                    (set-goal gl-temp2 0)
+                )
+
+                (defrule
+                    (players-stance focus-player enemy)
+                    =>
+                    (up-get-focus-fact unit-type-count monk gl-temp)
+                    (up-modify-goal gl-temp2 g:+ gl-temp)
+                    (up-get-focus-fact unit-type-count missionary gl-temp)
+                    (up-modify-goal gl-temp2 g:+ gl-temp)
+                )
+
+                (defrule
+                    (up-compare-sn sn-focus-player-number < 8)
+                    =>
+                    (up-modify-sn sn-focus-player-number c:+ 1)
+                    (up-jump-rule -2)
+                )
+
+                (defrule
+                    (or(up-compare-goal gl-temp1 >= 4)
+                    (up-compare-goal gl-temp2 >= 10))
+                    =>
+                    (set-goal gl-enemy-going-monks YES)
+                )
     ;
         (defrule
                 ;(true)
@@ -96799,6 +97168,14 @@
                     (true)
                     =>
                     (set-goal gl-stone-vills 0)
+                )
+
+                (defrule
+                    (up-research-status c: imperial-age < research-pending)
+                    (unit-type-count villager > 45)
+                    (building-type-count-total castle < 1)
+                    =>
+                    (up-modify-goal gl-stone-vills c:+ 10)
                 )
 
                 (defrule
@@ -98243,7 +98620,7 @@
                         )
 
                         (defrule
-                            (true)
+                            (game-time > 5)
                             =>
                             (up-modify-goal gl-temp2 c:/ 100)
                             (up-modify-goal gl-temp3 c:/ 100)
@@ -98711,7 +99088,8 @@
 
                     (defrule 
                         (or(building-type-count-total castle >= 1)
-                        (up-research-status c: imperial-age < research-pending))
+                        (and(up-research-status c: imperial-age < research-pending)
+                        (unit-type-count villager <= 45)))
                         =>
                         (up-get-fact unit-type-count villager-stone gl-temp3)
                         (up-modify-goal gl-temp2 c:+ 1) ; så der ikke bygges stone mining camp med det samme
@@ -98724,6 +99102,18 @@
                     (defrule 
                         (building-type-count-total castle < 1)
                         (up-research-status c: imperial-age >= research-pending)
+                        =>
+                        (up-get-fact unit-type-count villager-stone gl-temp3)
+                        (up-modify-goal gl-temp2 c:* 100)
+                        (up-modify-goal gl-temp2 g:/ gl-temp3)
+                        ;(up-modify-goal gl-temp2 c:/ 100)
+                        ;(up-chat-data-to-all "stone mines per 100 stone miners are %d." g: gl-temp2)
+                    )
+
+                    (defrule 
+                        (building-type-count-total castle < 1)
+                        (up-research-status c: imperial-age < research-pending)
+                    (unit-type-count villager > 45)
                         =>
                         (up-get-fact unit-type-count villager-stone gl-temp3)
                         (up-modify-goal gl-temp2 c:* 100)
@@ -98911,6 +99301,41 @@
                     (set-goal gl-saving-wood-needed 0)
                     (set-goal gl-saving-food-needed 0)
                     (set-goal gl-saving-gold-needed 0)
+                    )
+
+                    (defrule
+                    (goal gl-saving-for-upgrade -1)
+                    (research-available ri-heresy)
+                    (building-type-count-total monastery > 0)
+                    (unit-type-count-total archer-line >= 15)
+                    (up-compare-goal gl-enemy-going-monks == YES)
+                    =>
+                    (set-goal gl-saving-for-upgrade saving-for-heresy)
+                    (set-goal gl-saving-gold-needed 1000)
+                    )
+
+                    (defrule
+                        (goal gl-saving-for-upgrade -1)
+                        (research-available ri-devotion)
+                        (building-type-count-total monastery > 0)
+                        (up-compare-goal gl-enemy-going-monks == YES)
+                        (unit-type-count-total archer-line >= 25)
+                        =>
+                        (set-goal gl-saving-for-upgrade saving-for-devotion)
+                        (set-goal gl-saving-food-needed 100)
+                        (set-goal gl-saving-gold-needed 200)
+                    )
+
+                    (defrule
+                        (goal gl-saving-for-upgrade -1)
+                        (research-available ri-faith)
+                        (building-type-count-total monastery > 0)
+                        (up-compare-goal gl-enemy-going-monks == YES)
+                        (unit-type-count-total archer-line >= 35)
+                        =>
+                        (set-goal gl-saving-for-upgrade saving-for-faith)
+                        (set-goal gl-saving-food-needed 550)
+                        (set-goal gl-saving-gold-needed 750)
                     )
 
                     (defrule
@@ -100296,14 +100721,18 @@
 
                         
                 ;train monks
-                    (defrule
-                        (can-train monk)
-                        (unit-type-count-total monk < 1)
-                        (up-research-status c: imperial-age >= research-pending)
-                        (up-compare-goal gl-temp3 >= 100)
-                        =>
-                        (train monk)
-                    )
+                (defrule
+                    (can-train monk)
+                    (unit-type-count-total monk < 1)
+                     (up-compare-goal gl-temp3 >= 100)
+                    (up-research-status c: imperial-age >= research-pending)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-heresy)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-devotion)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-faith)
+                    =>
+                    (train monk)
+                )
+                    
                 
 
 
@@ -100928,7 +101357,7 @@
                     (defrule
                         (players-stance focus-player enemy)
                         =>
-                         (up-filter-include cmdid-monk -1 -1 -1)
+                         (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                          (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
                     )
 
@@ -102115,7 +102544,7 @@
                         )
 
                         (defrule
-                            (true)
+                            (game-time > 5)
                             =>
                             (up-modify-goal gl-temp2 c:/ 140) ;100 i scenario build. Der er vidst brug for færre her
                             (up-modify-goal gl-temp3 c:/ 140) ;100
@@ -102185,6 +102614,15 @@
                         ;(goal gl-fase-3-stage 2)
                         (building-type-count-total monastery < 1)
                         (up-compare-goal gl-calibrated-farm-count >= 43) ;45
+                        ;(up-research-status c: ri-hand-cart >= research-pending)
+                        =>
+                        (up-modify-goal gl-monastery-building-priority c:+ 91)
+                    )
+
+                    (defrule
+                        ;(goal gl-fase-3-stage 2)
+                        (building-type-count-total monastery < 1)
+                        (up-compare-goal gl-enemy-going-monks == YES) ;45
                         ;(up-research-status c: ri-hand-cart >= research-pending)
                         =>
                         (up-modify-goal gl-monastery-building-priority c:+ 91)
@@ -102368,7 +102806,7 @@
 
         
         ; Saving for upgrades
-            
+                
             
                     (defrule
                         (true)
@@ -102384,7 +102822,7 @@
                     (defrule
                         (players-stance focus-player enemy)
                         =>
-                         (up-filter-include cmdid-monk -1 -1 -1)
+                         (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                          (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
                     )
 
@@ -102460,6 +102898,46 @@
                         (set-goal gl-saving-gold-needed 175)
                         (set-goal gl-saving-wood-needed 300)
                     )
+                
+
+                
+
+
+                    (defrule
+                    (goal gl-saving-for-upgrade -1)
+                    (research-available ri-heresy)
+                    (building-type-count-total monastery > 0)
+                    (up-compare-goal gl-enemy-going-monks == YES)
+                    =>
+                    (set-goal gl-saving-for-upgrade saving-for-heresy)
+                    (set-goal gl-saving-gold-needed 1000)
+                )
+
+                (defrule
+                    (goal gl-saving-for-upgrade -1)
+                    (research-available ri-devotion)
+                    (building-type-count-total monastery > 0)
+                    (up-compare-goal gl-enemy-going-monks == YES)
+                    (unit-type-count-total knight-line >= 25)
+                    =>
+                    (set-goal gl-saving-for-upgrade saving-for-devotion)
+                    (set-goal gl-saving-food-needed 100)
+                    (set-goal gl-saving-gold-needed 200)
+                )
+
+                (defrule
+                    (goal gl-saving-for-upgrade -1)
+                    (research-available ri-faith)
+                    (building-type-count-total monastery > 0)
+                    (up-compare-goal gl-enemy-going-monks == YES)
+                    (unit-type-count-total knight-line >= 25)
+                    =>
+                    (set-goal gl-saving-for-upgrade saving-for-faith)
+                    (set-goal gl-saving-food-needed 550)
+                    (set-goal gl-saving-gold-needed 750)
+                )
+
+
 
                     (defrule
                     (goal gl-saving-for-upgrade -1)
@@ -103040,7 +103518,7 @@
                     (defrule
                         (players-stance focus-player enemy)
                         =>
-                         (up-filter-include cmdid-monk -1 -1 -1)
+                         (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                          (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
                     )
 
@@ -103153,7 +103631,7 @@
                     (defrule
                         (players-stance focus-player enemy)
                         =>
-                         (up-filter-include cmdid-monk -1 -1 -1)
+                         (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                          (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
                     )
 
@@ -103543,6 +104021,9 @@
                     (can-train monk)
                     (unit-type-count-total monk < 1)
                     (up-research-status c: imperial-age >= research-pending)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-heresy)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-devotion)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-faith)
                     =>
                     (train monk)
                 )
@@ -103550,6 +104031,9 @@
                 (defrule
                     (can-train monk)
                     (unit-type-count-total monk < 2)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-heresy)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-devotion)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-faith)
                     (or(up-research-status c: ri-paladin >= research-pending)
                             (up-research-status c: ri-savar >= research-pending))
                     =>
@@ -105591,7 +106075,7 @@
                         )
 
                         (defrule
-                            (true)
+                            (game-time > 5)
                             =>
                             (up-modify-goal gl-temp2 c:* 95) ;150
                             (up-modify-goal gl-temp2 c:/ 100)
@@ -105770,7 +106254,17 @@
                         =>
                         (up-modify-goal gl-monastery-building-priority c:+ 121)
                     )
+
+                    
                     #end-if
+
+                    (defrule
+                        ;(goal gl-fase-3-stage 2)
+                        (building-type-count-total monastery < 1)
+                        (up-compare-goal gl-enemy-going-monks == YES) ;45
+                        =>
+                        (up-modify-goal gl-monastery-building-priority c:+ 91)
+                    )
 
                     #load-if-defined UP-2-PLAYER-TEAM
                     (defrule
@@ -105998,7 +106492,7 @@
                     (defrule
                         (players-stance focus-player enemy)
                         =>
-                         (up-filter-include cmdid-monk -1 -1 -1)
+                         (up-find-remote c: missionary c: 20)(up-filter-include cmdid-monk -1 -1 -1)
                          (up-find-remote c: monk c: 40)(up-filter-include cmdid-military -1 -1 -1)   (up-find-remote c: all-units-class c: 240)
                     )
 
@@ -106048,6 +106542,42 @@
                         (set-goal gl-saving-gold-needed 175)
                         (set-goal gl-saving-wood-needed 300)
                     )
+
+                    (defrule
+                    (goal gl-saving-for-upgrade -1)
+                    (research-available ri-heresy)
+                    (building-type-count-total monastery > 0)
+                    (up-compare-goal gl-enemy-going-monks == YES)
+                    (unit-type-count-total knight-line >= 2)
+
+                    =>
+                    (set-goal gl-saving-for-upgrade saving-for-heresy)
+                    (set-goal gl-saving-gold-needed 1000)
+                )
+
+                (defrule
+                    (goal gl-saving-for-upgrade -1)
+                    (research-available ri-devotion)
+                    (building-type-count-total monastery > 0)
+                    (up-compare-goal gl-enemy-going-monks == YES)
+                    (unit-type-count-total knight-line >= 25)
+                    =>
+                    (set-goal gl-saving-for-upgrade saving-for-devotion)
+                    (set-goal gl-saving-food-needed 100)
+                    (set-goal gl-saving-gold-needed 200)
+                )
+
+                (defrule
+                    (goal gl-saving-for-upgrade -1)
+                    (research-available ri-faith)
+                    (building-type-count-total monastery > 0)
+                    (up-compare-goal gl-enemy-going-monks == YES)
+                    (unit-type-count-total knight-line >= 25)
+                    =>
+                    (set-goal gl-saving-for-upgrade saving-for-faith)
+                    (set-goal gl-saving-food-needed 550)
+                    (set-goal gl-saving-gold-needed 750)
+                )
 
             #load-if-defined UP-2-PLAYER-TEAM
             (defrule
@@ -107274,6 +107804,9 @@
                 (defrule
                     (can-train monk)
                     (unit-type-count-total monk < 1)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-heresy)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-devotion)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-faith)
                     =>
                     (train monk)
                     (disable-self)
@@ -107282,6 +107815,9 @@
                 (defrule
                     (can-train monk)
                     (unit-type-count monk == 1)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-heresy)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-devotion)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-faith)
                     =>
                     (train monk)
                     (disable-self)
@@ -107289,9 +107825,24 @@
 
                 (defrule
                     (can-train monk)
-                    (unit-type-count-total monk < 2)
+                    (unit-type-count-total monk < 1)
                     (up-research-status c: imperial-age >= research-pending)
-                    (unit-type-count-total spearman-line < 5)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-heresy)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-devotion)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-faith)
+                    =>
+                    (train monk)
+                )
+
+                (defrule
+                    (can-train monk)
+                    (unit-type-count-total monk < 2)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-heresy)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-devotion)
+                    (up-compare-goal gl-saving-for-upgrade != saving-for-faith)
+                    (or(up-research-status c: ri-paladin >= research-pending)
+                            (up-research-status c: ri-savar >= research-pending))
+                    (up-research-status c: imperial-age >= research-pending)
                     =>
                     (train monk)
                 )
@@ -109806,3 +110357,42 @@
 ; den gode læring ligger i at bygge noget nyt. 
 ; Der er jo én ting jeg længe har tænkt kunne være spændende at bygge. Eller... der er mange ting, men der har været én ting, der ligesom skulle klares,
 ; før jeg rigtigt ville kunne bruge resten til noget. Og det er DUC eco der er til at arbejde med.
+
+
+; Tests mod illuminati:
+; At få monk techs, særligt heresy, for pockets gør en giga forskel. Det virker også generelt rigtig fint at sørge for der angribes
+;med en grundhær på minimum 4 units. Umiddelbart er der ikke behov for mere.
+
+
+;V - Jeg tror dog fortsat der er potentiale i at skifte target til pocket tidlgiere, når flank laver masser af towers uden at lave units
+;V - Vi bør nok slukke for villager retreat for flanks når de bliver angrebet for alvor 
+;V tilføj at vills skal angribe rams omkring castles og tc's og at fortifications skal skyde på de units i områddet med mindst pierce armor.
+;- Jeg bliver måske nødt til at kigge lidt på builden ift. at sende early sheep tidligere på plads og at bygge flere farms tidligt som
+;pocket på chicken arabia.
+;V - Flanks og 1v1 skal også researche anti monk techs
+;V-Flanks skal bygge første castle tidlgiere
+
+;V Se om du kan øge chancen for at knights angriber monks og mangonells
+;V repair tc's? 
+;V første castle stadig for sent
+;V vi har nok gjort det lidt for svært at gå direkte til pocket
+
+;tænker det sidste vi vil have med er at prøve at få fortification defense mod rams til at være lidt mere effektivt da det vil kunne
+; købe afgørende tid i det store billede.
+; skal også virke for elefant ram
+; farm retasking skal ekskludere repair og ram
+; lad os prøve med 10 stone vills tidligere
+; virker fortification targeting rent faktisk?
+
+; skal nok ikke skifte direkte til pocket hvis de allerede er castle age?
+;fjern repair vills fra stone og gold retasking
+
+; mindst 4 virker ikke i 2v2
+; monastery for sent i 2v2
+; archers skal target misionaries
+
+
+;okay. Nu skal jeg ikke bruge mere tid på Reho. Det er en dead end. Den har fået en del stærkere defense og en del bedre respons til
+;monks nu. Der er desværre stadig en masse bugs der er blevet introduceret af nyere patches og den bugger også en del mere ud når 
+;det er en low end computer. Det er ikke værd at gå mere ned i de ting. Jeg tror Reho burde være farvorit mod Illuminati overall på 
+;arabia nu, så længe det er en nogenlunde computer, men det er okay tætte games.
